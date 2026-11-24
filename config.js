@@ -9,8 +9,13 @@ window.PT_CONFIG = {
   instagram: 'ptmencaricintasejati', // tanpa @ ; kosongkan jika belum ada
   donasi: '',                        // contoh: 'https://saweria.co/namamu' ; kosongkan untuk menyembunyikan
 
-  // Kuota karyawan angkatan pertama (untuk bar di halaman ID Card)
+  // Target tamu angkatan pertama (untuk bar di halaman Kartu Tamu)
   kuota: 10000,
+
+  // PIN "Direktur demo" — HANYA untuk mode lokal (firebase: null) supaya kamu bisa
+  // mencoba Panel Direktur. Di mode online, Direktur masuk dengan email & password
+  // Firebase (lihat README). Kosongkan '' untuk mematikan.
+  pinDemo: '1234',
 
   // ---------------------------------------------------------
   //  MODE ONLINE (multiplayer) — pakai Firebase Realtime Database.
@@ -31,8 +36,8 @@ window.PT_CONFIG = {
 
   // Pengumuman di Mading HRD (baris terbaru di atas)
   mading: [
-    { judul: 'Selamat datang, karyawan baru!', isi: 'Kantor ini tidak punya gaji, tapi tunjangan harapan dibayar tiap hari.' },
-    { judul: 'Jam kerja', isi: 'Senin–Minggu, 24 jam. Lembur perasaan tidak dihitung.' },
-    { judul: 'Larangan', isi: 'Dilarang ghosting rekan kerja. Dilarang spam chat. Saling jaga sopan santun.' },
+    { judul: 'Selamat datang, tamu!', isi: 'Mau cari jodoh, cari teman, atau sekadar curhat, semua diterima di sini.' },
+    { judul: 'Jam buka', isi: 'Senin–Minggu, 24 jam. Resepsionis siap membantu.' },
+    { judul: 'Aturan kantor', isi: 'Sopan, tidak melecehkan, tidak spam, dan jangan sebar data pribadi orang lain. Pelanggar dikeluarkan Satpam.' },
   ],
 };

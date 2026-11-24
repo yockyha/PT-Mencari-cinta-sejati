@@ -3,10 +3,13 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, DIVISI, STATUS, LS, bersih, igBersih, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js';
-import { buatNet } from '../js/net.js';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LS, bersih, igBersih, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js';
+import { bukaDB } from '../js/db.js';
+import { buatLayanan } from '../js/layanan.js';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js';
+import * as Sosial from './sosial.js';
+import * as Direktur from './direktur.js';
 
-const $ = id => document.getElementById(id);
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const sudutLerp = (a, b, t) => { let d = ((b - a + Math.PI) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2) - Math.PI; return a + d * t; };
@@ -49,6 +52,7 @@ const KACA = new THREE.MeshLambertMaterial({ color: 0xbfe8ff, transparent: true,
 const tabrak = [];   // kotak tabrakan {x1,x2,z1,z2}
 const kursi = [];    // tempat duduk {x,z,r,y}
 const titikAksi = []; // {x,z,r,label,aksi}
+const MEJA = [];      // meja nongkrong {x,z,topik}
 
 function kotak(w, h, d, x, y, z, warna, { tab = false, mat = null, bayang = true } = {}) {
   const m = new THREE.Mesh(GEO, mat || M(warna));
@@ -161,7 +165,7 @@ function bangunDunia() {
   kotak(5.8, 0.08, 1.3, 0, 1.1, 13, '#fff6ef');
   kotak(0.5, 0.5, 0.05, 1.6, 1.18, 12.8, '#333a44');
   kursiKantor(0, 11.9, 0, '#2a1420', false);
-  orangDiam(0, 11.95, 0, { k: 1, b: 7, c: 0, r: 1, w: 0, a: 4 }, 'Mbak Resepsionis');
+  orangDiam(0, 11.95, 0, { k: 1, b: 7, c: 0, r: 1, w: 0, a: 4 }, '🛡 Mbak Ayu · Resepsionis');
   titikAksi.push({ x: 0, z: 14.3, r: 1.8, label: 'Tanya resepsionis', aksi: bukaResepsionis });
   sofa(-9, 16.5, 0); sofa(9, 16.5, 0);
   kotak(2.2, 0.4, 1, -9, 0, 14.6, '#c99a6b', { tab: true }); kotak(2.2, 0.4, 1, 9, 0, 14.6, '#c99a6b', { tab: true });
@@ -174,24 +178,24 @@ function bangunDunia() {
   titikAksi.push({ x: -18.3, z: 11.6, r: 1.8, label: 'Naik lift', aksi: () => toast('Lift sedang perbaikan… seperti hatimu. Pakai tangga perasaan dulu ya.') });
   // mading HRD
   madingHRD(10, 10.15, 0);
-  titikAksi.push({ x: 10, z: 11.5, r: 1.8, label: 'Baca mading HRD', aksi: bukaMading });
+  titikAksi.push({ x: 10, z: 11.5, r: 1.8, label: 'Baca mading', aksi: bukaMading });
 
-  // ---- AREA KERJA: 8 meja, tiap meja satu divisi
+  // ---- MEJA NONGKRONG: 8 meja, tiap meja satu topik (untuk cari teman)
   const kluster = [[-9.5, -2], [-3.5, -2], [3.5, -2], [9.5, -2], [-9.5, 5], [-3.5, 5], [3.5, 5], [9.5, 5]];
-  kluster.forEach(([x, z], i) => mejaDivisi(x, z, DIVISI[i], i));
+  kluster.forEach(([x, z], i) => { mejaDivisi(x, z, TOPIK[i], i); MEJA.push({ x, z, topik: TOPIK[i] }); });
   // printer
   kotak(1.1, 0.9, 0.8, 12.6, 0, 8.6, '#e9e4dd', { tab: true });
   kotak(0.8, 0.12, 0.5, 12.6, 0.9, 8.6, '#5b5f6a');
   kotak(0.5, 0.02, 0.36, 12.6, 1.02, 8.6, '#ffffff');
-  titikAksi.push({ x: 12.6, z: 7.5, r: 1.5, label: 'Cetak ID Card', aksi: () => { location.href = '../idcard/index.html'; } });
+  titikAksi.push({ x: 12.6, z: 7.5, r: 1.5, label: 'Cetak kartu tamu', aksi: () => { location.href = '../idcard/index.html'; } });
   for (const [x, z] of [[-13, 9], [13, -6], [-13, -6], [0, -6]]) pot(x, z);
   // dispenser
   kotak(0.5, 1.2, 0.5, -13, 0, -5.2, '#dfe7ef', { tab: true });
   kotak(0.36, 0.5, 0.36, -13, 1.2, -5.2, '#8fd3ff', { mat: new THREE.MeshLambertMaterial({ color: 0x8fd3ff, transparent: true, opacity: 0.7 }) });
 
-  // ---- DINDING KARYAWAN (koridor utara)
+  // ---- BUKU TAMU (koridor utara)
   dindingKaryawan();
-  titikAksi.push({ x: 3, z: -17.6, r: 3.2, label: 'Cari namamu di dinding', aksi: bukaDinding });
+  titikAksi.push({ x: 3, z: -17.6, r: 3.2, label: 'Lihat buku tamu', aksi: bukaBukuTamu });
   kotak(1.6, 0.45, 0.5, -2, 0, -14.5, '#c99a6b', { tab: true }); kursi.push({ x: -2, z: -14.5, r: Math.PI, y: 0.45 });
   kotak(1.6, 0.45, 0.5, 8, 0, -14.5, '#c99a6b', { tab: true }); kursi.push({ x: 8, z: -14.5, r: Math.PI, y: 0.45 });
 
@@ -216,7 +220,7 @@ function bangunDunia() {
   kotak(1.4, 1.0, 17, 23.1, 0, 2.5, '#fff6ef', { tab: true });
   kotak(1.5, 0.08, 17.1, 23.1, 1.0, 2.5, '#d35470');
   mesinKopi(23.1, 1.08, 1.0);
-  titikAksi.push({ x: 21.7, z: 1.0, r: 1.8, label: 'Bikin kopi', aksi: bukaKopi });
+  titikAksi.push({ x: 21.7, z: 1.0, r: 1.8, label: 'Mesin kopi jodoh', aksi: bukaKopi });
   kotak(1.3, 2.2, 1.2, 23.0, 0, 10.9, '#e8eef3', { tab: true });
   kotak(0.06, 0.6, 0.06, 22.32, 1.2, 10.5, '#9aa3ad');
   kotak(1.2, 0.7, 1.0, 23.1, 1.08, -4.5, '#f2f2f2'); // microwave
@@ -225,12 +229,14 @@ function bangunDunia() {
   pot(15, 11); pot(15, -6);
   bidangTeks(2.6, 0.5, 0, kanvas(512, 96, (x, w, h) => {
     x.fillStyle = '#d35470'; bulat(x, 0, 0, w, h, 18); x.fill();
-    x.fillStyle = '#fff'; x.font = FD(56); x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('☕ PANTRY', w / 2, h / 2 + 3);
+    x.fillStyle = '#fff'; x.font = FD(56); x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('💘 KAFE JODOH', w / 2, h / 2 + 3, w - 20);
   }), 14.15, 2.2, 2.5, Math.PI / 2);
 
   // ---- TAMAN CURHAT
   airMancur(19, -13.5);
   titikAksi.push({ x: 19, z: -11, r: 2.4, label: 'Lempar koin harapan', aksi: bukaKoin });
+  papanCurhat();
+  titikAksi.push({ x: 19, z: -17.9, r: 1.9, label: 'Buka papan curhat', aksi: () => Sosial.bukaCurhat() });
   for (const [x, z] of [[15.6, -19], [22.6, -19], [15.6, -8.6], [22.6, -8.6]]) pohon(x, z, 0.85);
   bangkuTaman(16.0, -13.5, Math.PI / 2); bangkuTaman(22.0, -13.5, -Math.PI / 2);
   bidangTeks(3, 0.55, 0, kanvas(512, 96, (x, w, h) => {
@@ -251,6 +257,28 @@ function bangunDunia() {
     x.fillStyle = '#5d9cc9'; bulat(x, 0, 0, w, h, 18); x.fill();
     x.fillStyle = '#fff'; x.font = FD(52); x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('👔 RUANG LOKER', w / 2, h / 2 + 3, w - 20);
   }), -14.85, 2.25, 5, Math.PI / 2);
+
+  // ---- RUANG DIREKTUR (sudut tenggara lobi)
+  lantai(14, 12, 24, 20, '#4a2f45', 0.034);
+  dinding(14, 12, 24, 12);
+  dinding(14, 12, 14, 15, { kaca: true }); dinding(14, 17, 14, 20, { kaca: true });
+  kotak(1.3, 0.76, 3.2, 20.6, 0, 16, '#5b3a2a', { tab: true });
+  kotak(1.45, 0.07, 3.35, 20.6, 0.76, 16, '#2a1420');
+  kotak(0.5, 0.34, 0.06, 20.9, 0.83, 15.1, '#333a44');
+  kotak(0.18, 0.3, 0.18, 20.4, 0.83, 17.2, '#f2b33d'); kotak(0.3, 0.06, 0.3, 20.4, 0.83, 17.2, '#5b3a2a'); // piala
+  kursiKantor(21.9, 16, -Math.PI / 2, '#f2b33d', false);
+  kursiKantor(19.2, 15.2, Math.PI / 2, '#2a1420'); kursiKantor(19.2, 16.8, Math.PI / 2, '#2a1420');
+  kotak(0.5, 2.0, 2.8, 23.6, 0, 16, '#6b4630', { tab: true }); // lemari arsip
+  bidangTeks(2.6, 0.62, 0, kanvas(512, 120, (x, w, h) => {
+    x.fillStyle = '#2a1420'; bulat(x, 0, 0, w, h, 20); x.fill();
+    x.fillStyle = '#f2b33d'; x.font = FD(46); x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillText('👑 DIREKTUR UTAMA', w / 2, h / 2 + 2, w - 24);
+  }), 23.3, 2.35, 16, -Math.PI / 2);
+  bidangTeks(2.4, 0.46, 0, kanvas(512, 96, (x, w, h) => {
+    x.fillStyle = '#f2b33d'; bulat(x, 0, 0, w, h, 18); x.fill();
+    x.fillStyle = '#2a1420'; x.font = FD(48); x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('RUANG DIREKTUR', w / 2, h / 2 + 3, w - 20);
+  }), 13.85, 2.35, 16, -Math.PI / 2);
+  titikAksi.push({ x: 18.6, z: 16, r: 2.8, label: 'Meja Direktur', aksi: () => Direktur.bukaMeja() });
 
   // ---- LUAR KANTOR
   patungHati(-14, 32); patungHati(14, 32);
@@ -384,16 +412,16 @@ function patungHati(x, z) {
 function orangDiam(x, z, r, look, nama) {
   const ch = buatKarakter(look); ch.position.set(x, 0, z); ch.rotation.y = r; scene.add(ch);
   pose(ch, 2, 0); ch.userData.tubuh.position.y = -0.3;
-  const l = labelNama(nama, true); l.position.y = 1.8; ch.add(l);
+  const l = labelNama(nama, 'staf'); l.position.y = 1.95; ch.add(l);
 }
 let teksMading = null;
 function madingHRD(x, z, r) {
   kotak(3.4, 2.0, 0.12, x, 0.35, z, '#b5703f');
   teksMading = kanvas(680, 380, (c, w, h) => {
     c.fillStyle = '#f3dfc1'; c.fillRect(0, 0, w, h);
-    c.fillStyle = '#ff4f7b'; c.font = FD(44); c.textAlign = 'center'; c.fillText('📌 MADING HRD', w / 2, 52);
+    c.fillStyle = '#ff4f7b'; c.font = FD(44); c.textAlign = 'center'; c.fillText('📌 MADING KANTOR', w / 2, 52);
     c.textAlign = 'left'; let y = 100;
-    for (const m of CFG.mading.slice(0, 3)) {
+    for (const m of (K.mading || CFG.mading).slice(0, 3)) {
       c.fillStyle = '#fff'; bulat(c, 18, y - 26, w - 36, 82, 10); c.fill();
       c.fillStyle = '#2a1420'; c.font = FB(24, 900); c.fillText(m.judul, 30, y + 2, w - 60);
       c.font = FB(19, 700); c.fillStyle = '#5b3a4a'; c.fillText(bungkus(c, m.isi, w - 60)[0] + (bungkus(c, m.isi, w - 60).length > 1 ? '…' : ''), 30, y + 34, w - 60);
@@ -426,28 +454,52 @@ function papanRapat() {
   bidangTeks(6.2, 2.0, 0, papanKV, -16, 1.4, -19.73);
 }
 
-// ---- dinding karyawan
-let dindingKV = null, daftarKaryawan = [];
+// ---- buku tamu (dinding utara)
+let dindingKV = null;
 function dindingKaryawan() {
   kotak(19.6, 2.5, 0.12, 3, 0.1, -19.8, '#2a1420');
   dindingKV = kanvas(2048, 262, (c, w, h) => {
+    const daftar = K.tamu || [];
     c.fillStyle = '#2a1420'; c.fillRect(0, 0, w, h);
     c.fillStyle = '#ffd23f'; c.font = FD(40); c.textAlign = 'center';
-    c.fillText(`DINDING KARYAWAN ANGKATAN 1 · ${fmt(daftarKaryawan.length)} KARYAWAN`, w / 2, 44);
-    const nama = daftarKaryawan.slice(-200).map(k => k.n);
+    c.fillText(`📖 BUKU TAMU · ${fmt(daftar.length)} TAMU SUDAH DATANG`, w / 2, 44);
+    const nama = daftar.slice(-200).map(k => (TUJUAN[k.tj]?.ikon || '') + ' ' + k.n);
     const px = nama.length < 30 ? 34 : nama.length < 80 ? 24 : 15;
     c.font = FB(px, 800); c.textAlign = 'left';
     let x = 16, y = 70 + px * 1.3;
     const pal = ['#ffb3c6', '#ffffff', '#8fd3ff', '#ffe08a', '#b9f3c9'];
-    nama.forEach((n, i) => {
-      const tw = c.measureText(n).width + 22;
+    nama.forEach(n => {
+      const tw = c.measureText(n).width + 30;
       if (x + tw > w - 10) { x = 16; y += px * 1.45; }
       if (y > h - 8) return;
-      c.fillStyle = pal[hash(n) % pal.length]; c.fillText(n + '  ♥', x, y); x += tw;
+      c.fillStyle = pal[hash(n) % pal.length]; c.fillText(n, x, y); x += tw;
     });
-    if (!nama.length) { c.fillStyle = '#ffb3c6'; c.font = FB(28, 800); c.textAlign = 'center'; c.fillText('Masih kosong — daftar & namamu langsung terpasang di sini', w / 2, 150); }
+    if (!nama.length) { c.fillStyle = '#ffb3c6'; c.font = FB(28, 800); c.textAlign = 'center'; c.fillText('Masih kosong. Isi buku tamu & namamu langsung terpasang di sini', w / 2, 150); }
   });
   bidangTeks(19.2, 2.3, 0, dindingKV, 3, 1.35, -19.72);
+}
+
+// ---- papan curhat (taman)
+let curhatKV = null;
+function papanCurhat() {
+  kotak(3.8, 2.3, 0.12, 19, 0.2, -19.8, '#2f6e4e');
+  curhatKV = kanvas(760, 460, (c, w, h) => {
+    c.fillStyle = '#eaf6ee'; c.fillRect(0, 0, w, h);
+    c.fillStyle = '#2f9e6e'; c.font = FD(44); c.textAlign = 'center'; c.fillText('💬 PAPAN CURHAT', w / 2, 56);
+    c.font = FB(20, 800); c.fillStyle = '#5b7a68'; c.fillText('anonim · saling peluk · jangan menghakimi', w / 2, 88);
+    const isi = (K.curhatList || []).slice(-3).reverse();
+    c.textAlign = 'left';
+    if (!isi.length) { c.fillStyle = '#5b7a68'; c.font = FB(26, 700); c.textAlign = 'center'; c.fillText('Belum ada curhat. Mulai duluan?', w / 2, 220); }
+    isi.forEach((p, i) => {
+      const Y = 116 + i * 112;
+      c.fillStyle = '#fff'; bulat(c, 20, Y, w - 40, 100, 14); c.fill();
+      c.fillStyle = '#2a1420'; c.font = FB(24, 800);
+      const b = bungkus(c, '“' + p.m + '”', w - 80);
+      c.fillText(b[0], 36, Y + 36, w - 72); if (b[1]) c.fillText(b[1] + (b.length > 2 ? '…' : ''), 36, Y + 66, w - 72);
+      c.font = FB(18, 800); c.fillStyle = '#2f9e6e'; c.fillText(`🤗 ${p.peluk ? Object.keys(p.peluk).length : 0} pelukan · 💬 ${p.balas ? Object.keys(p.balas).length : 0} balasan`, 36, Y + 92);
+    });
+  });
+  bidangTeks(3.6, 2.18, 0, curhatKV, 19, 1.3, -19.73);
 }
 
 // ---------------------------------------------------------------- KARAKTER
@@ -534,17 +586,17 @@ function pose(ch, a, dt, cepat = 1) {
   if (a === 0) { u.fase += dt; u.kepala.rotation.y = Math.sin(u.fase * 0.4) * 0.15; } else u.kepala.rotation.y = lerp(u.kepala.rotation.y, 0);
 }
 
-function labelNama(teks, npc = false) {
-  const kv = kanvas(320, 72, (x, w, h) => {
+function labelNama(teks, gaya = '') {
+  const kv = kanvas(360, 72, (x, w, h) => {
     x.font = FB(30, 900);
     const tw = Math.min(w - 6, x.measureText(teks).width + 30);
-    x.fillStyle = npc ? 'rgba(255,79,123,.9)' : 'rgba(42,20,32,.78)';
+    x.fillStyle = gaya === 'direktur' ? 'rgba(242,179,61,.96)' : gaya === 'staf' ? 'rgba(58,110,165,.94)' : gaya ? 'rgba(255,79,123,.9)' : 'rgba(42,20,32,.78)';
     bulat(x, (w - tw) / 2, 8, tw, 54, 27); x.fill();
-    x.fillStyle = '#fff'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillStyle = gaya === 'direktur' ? '#2a1420' : '#fff'; x.textAlign = 'center'; x.textBaseline = 'middle';
     x.fillText(teks, w / 2, 37, w - 30);
   });
   const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: kv.t, transparent: true, depthWrite: false }));
-  s.scale.set(1.75, 0.4, 1); s.position.y = 2.32; s.renderOrder = 5;
+  s.scale.set(1.97, 0.4, 1); s.position.y = 2.32; s.renderOrder = 5;
   return s;
 }
 function gelembung(teks) {
@@ -594,7 +646,7 @@ function pasangKarakterSaya() {
   const lama = saya.g;
   saya.look = cekLook(prof?.look || lookAcak(Math.floor(Math.random() * 1e6)));
   saya.g = buatKarakter(saya.look);
-  saya.label = labelNama(prof ? prof.n : 'Tamu');
+  saya.label = prof && prof.tj && L ? labelNama(teksLabel(prof.n, prof.tj, L.uid), gayaPeran(L.uid)) : labelNama(prof ? prof.n : 'Tamu');
   saya.g.add(saya.label);
   if (lama) { if (saya.gel) { lama.remove(saya.gel); saya.g.add(saya.gel); } scene.remove(lama); }
   scene.add(saya.g);
@@ -678,7 +730,7 @@ function ketuk(cx, cy) {
   if (!hit) return;
   let o = hit.object; while (o.parent && !semua.includes(o)) o = o.parent;
   const org = [...lain.values(), ...bot].find(p => p.g === o);
-  if (org) bukaProfilLain(org);
+  if (org) Sosial.bukaProfil(org);
 }
 
 // ---------------------------------------------------------------- BOT (mode lokal)
@@ -692,6 +744,7 @@ const NAV = {
   loker: [-12.8, 5], lokerD: [-18, 5.5],
   pantry: [16, 2.5], pantry2: [19.5, 2.5], pantryT: [21, -2.5], pantryU: [18.5, -5.2], pantryS: [20.5, 10],
   taman: [18.5, -9], taman2: [16.6, -10.6], taman3: [21.6, -10.6],
+  lobiT2: [12, 13.2], direkturPintu: [12.5, 16], direktur: [16.5, 16],
 };
 const SAMBUNG = [
   ['pintu', 'lobi'], ['lobi', 'lobiB'], ['lobi', 'lobiT'], ['lobi', 'aisle'], ['aisle', 'aisleB'], ['aisle', 'tengah'],
@@ -699,7 +752,7 @@ const SAMBUNG = [
   ['tengahT', 'aisleT'], ['tengahB', 'loker'], ['loker', 'lokerD'],
   ['tengah', 'utara'], ['utara', 'utaraB'], ['utara', 'utaraT'], ['utaraB', 'rapatLuar'], ['rapatLuar', 'rapat'], ['rapat', 'rapat2'], ['rapat2', 'rapat3'], ['rapat3', 'rapat4'], ['rapat4', 'rapat5'], ['rapat', 'rapat5'],
   ['utara', 'dinding'], ['dinding', 'dinding2'], ['tengahT', 'pantry'], ['pantry', 'pantry2'], ['pantry2', 'pantryT'], ['pantryT', 'pantryU'], ['pantry2', 'pantryS'],
-  ['pantryU', 'taman'], ['taman', 'taman2'], ['taman', 'taman3'], ['tengahB', 'utaraB2'], ['utaraB2', 'utaraB'], ['tengahT', 'utaraT'],
+  ['lobiT', 'lobiT2'], ['lobiT2', 'direkturPintu'], ['direkturPintu', 'direktur'], ['pantryU', 'taman'], ['taman', 'taman2'], ['taman', 'taman3'], ['tengahB', 'utaraB2'], ['utaraB2', 'utaraB'], ['tengahT', 'utaraT'],
 ];
 const TETANGGA = {};
 for (const [a, b] of SAMBUNG) { (TETANGGA[a] ||= []).push(b); (TETANGGA[b] ||= []).push(a); }
@@ -716,33 +769,32 @@ function simpulTerdekat(x, z) {
 }
 
 const NPC = [
-  { n: 'Bu Ratna · HRD', d: 'HRD (Hati Rindu Dia)', s: 'Rahasia Perusahaan', rumah: 'lobiT' },
-  { n: 'Pak Bambang · Satpam', d: 'Keamanan Hati', s: 'Bucin', rumah: 'pintu', diam: true },
-  { n: 'Dimas', d: 'Divisi Overthinking', s: 'Digantung', rumah: 'tengah' },
-  { n: 'Sinta', d: 'Marketing Perasaan', s: 'Lagi PDKT', rumah: 'pantry2' },
-  { n: 'Kevin', d: 'IT (Ingin Ditemani)', s: 'Jomblo', rumah: 'utara' },
-  { n: 'Nadia', d: 'Divisi PDKT', s: 'Jomblo', rumah: 'taman' },
-  { n: 'Joko', d: 'Keuangan Akhir Bulan', s: 'Baru Putus', rumah: 'rapat' },
+  { n: 'Bu Ratna', peran: 'staf', jabatan: 'Resepsionis Hati', tj: 'curhat', b: 'Siap mendengarkan curhatmu kapan saja.', rumah: 'lobiT' },
+  { n: 'Pak Bambang', peran: 'staf', jabatan: 'Satpam', tj: 'teman', b: 'Menjaga kantor dari tukang ghosting.', rumah: 'pintu', diam: true },
+  { n: 'Dimas', tj: 'teman', b: 'Suka main game & nonton bola. Ayo mabar!', rumah: 'tengah' },
+  { n: 'Sinta', tj: 'jodoh', s: 'Jomblo', b: 'Pecinta kopi susu dan senja. Cari yang serius 😌', rumah: 'pantry2' },
+  { n: 'Kevin', tj: 'jodoh', s: 'Lagi PDKT', b: 'Programmer, bisa benerin wifi tapi belum bisa benerin hati.', rumah: 'utara' },
+  { n: 'Nadia', tj: 'curhat', s: 'Baru Putus', b: 'Lagi butuh teman cerita.', rumah: 'taman' },
+  { n: 'Joko', tj: 'teman', b: 'Anak kuliner. Tahu warung enak se-Jakarta.', rumah: 'rapat' },
 ];
 const KALIMAT = [
-  'Rapat jam 3 dibatalkan, bos lagi galau.', 'Ada yang lihat charger-ku? Sama kayak hatiku, hilang.',
-  'Kopi pantry pahit, tapi masih kalah sama kenyataan.', 'Deadline-ku hari ini. Jodohku entah kapan.',
-  'Kata HRD, KPI bulan ini: berani chat duluan.', 'Siapa yang naruh gula di kopiku? Kok tiba-tiba manis.',
-  'Lembur lagi… minimal ditemani notifikasi darimu.', 'Aku resign dari berharap. Eh, ditolak HRD.',
-  'Divisi sebelah lagi ada yang PDKT, seru banget.', 'Selamat datang karyawan baru! Jangan lupa ambil ID card.',
-  'Kalau ada yang nanya status, bilang aja “sedang proses rekrutmen”.', 'Wifi kantor lancar, perasaanku yang buffering.',
+  'Ada yang mau mabar nanti malam?', 'Kafe Jodoh lagi rame, kopinya enak katanya.',
+  'Barusan curhat di taman, lega banget.', 'Meja Kuliner sepi nih, sini gabung!',
+  'Siapa yang naruh gula di kopiku? Kok tiba-tiba manis.', 'Wifi kantor lancar, perasaanku yang buffering.',
   'Udah coba lempar koin di Taman Curhat?', 'Papan rapat lagi rame, tulis juga dong!',
+  'Jangan lupa isi buku tamu ya.', 'Klik orang lain buat ngajak ngobrol, jangan malu.',
+  'Katanya kalau dua orang saling suka, langsung match lho.', 'Aku ke sini cuma mau cari teman ngobrol aja.',
 ];
-const BALASAN = ['Halo juga! 👋', 'Wah, karyawan baru ya?', 'Semangat kerjanya!', 'Sudah ngopi belum?', 'Hehe, iya iya.', 'Siap, laksanakan!', 'Jangan lupa istirahat ya.'];
-const bot = [];
+const BALASAN = ['Halo juga! 👋', 'Wah, baru datang ya?', 'Selamat datang di kantor!', 'Sudah ngopi belum?', 'Hehe, iya iya.', 'Sini gabung!', 'Jangan lupa isi buku tamu ya.'];
+const bot = K.bot;
 function buatBot() {
   NPC.forEach((d, i) => {
     const look = lookAcak(hash(d.n));
     if (d.diam) Object.assign(look, { b: 6, c: 0, a: 2 });
     const g = buatKarakter(look);
     const [x, z] = NAV[d.rumah];
-    const o = { ...d, npc: true, look, g, x: x + (d.diam ? 2.5 : 0), z, r: d.diam ? 0 : Math.random() * 6, a: 0, jalur: [], tunggu: 2 + i * 1.5, duduk: null, gel: null, gelT: 0, ngomong: 8 + Math.random() * 20 };
-    g.add(labelNama(d.n, true));
+    const o = { ...d, uid: 'bot:' + d.n, nama: d.n, npc: true, look, g, x: x + (d.diam ? 2.5 : 0), z, r: d.diam ? 0 : Math.random() * 6, a: 0, jalur: [], tunggu: 2 + i * 1.5, duduk: null, gel: null, gelT: 0, ngomong: 8 + Math.random() * 20 };
+    g.add(labelNama((d.peran ? '🛡 ' : TUJUAN[d.tj].ikon + ' ') + d.n, d.peran || 'npc'));
     scene.add(g); bot.push(o);
   });
 }
@@ -780,149 +832,160 @@ function updateBot(o, dt) {
 }
 
 // ---------------------------------------------------------------- JARINGAN
-let net = null;
-const lain = new Map(); // uid -> {g,label,...}
+let L = null;
+const lain = K.lain; // uid -> {g, nama, tj, ...}
 
-function sinkronLain(peta) {
-  for (const [uid, p] of peta) {
+const ikonPeran = uid => (K.peran[uid] === 'direktur' ? '👑 ' : K.peran[uid] === 'staf' ? '🛡 ' : '');
+const gayaPeran = uid => (K.peran[uid] === 'direktur' ? 'direktur' : K.peran[uid] === 'staf' ? 'staf' : '');
+const teksLabel = (n, tj, uid) => (ikonPeran(uid) || (TUJUAN[tj]?.ikon || '') + ' ') + n;
+
+function sinkronLain(obj) {
+  if (!L) return;
+  const kini = L.db.now(), ada = new Set();
+  for (const [uid, p] of Object.entries(obj || {})) {
+    if (!p || uid === L.uid || K.sembunyi.has(uid)) continue;
+    if (typeof p.t === 'number' && kini - p.t > 120000) continue;
+    ada.add(uid);
     let o = lain.get(uid);
-    const lookStr = JSON.stringify(p.l || {});
-    if (!o || o.lookStr !== lookStr || o.n !== p.n) {
-      if (o) scene.remove(o.g);
+    const nm = bersih(p.n || 'Tamu', 20), tj = tujuanAman(p.tj);
+    const kunci = JSON.stringify(p.l || {}) + '|' + nm + '|' + tj + '|' + (K.peran[uid] || '');
+    if (!o || o.kunci !== kunci) {
       const g = buatKarakter(p.l);
-      const nm = bersih(p.n || 'Karyawan', 20);
-      g.add(labelNama(nm));
-      const baru = { g, lookStr, n: p.n, nama: nm, x: p.x, z: p.z, r: p.r || 0, a: 0, gel: null, gelT: 0 };
-      if (o) Object.assign(baru, { x: o.x, z: o.z, r: o.r, gel: o.gel, gelT: o.gelT }), o.gel && g.add(o.gel);
+      g.add(labelNama(teksLabel(nm, tj, uid), gayaPeran(uid)));
+      const baru = { g, kunci, uid, x: +p.x || 0, z: +p.z || 0, r: +p.r || 0, gel: null, gelT: 0 };
+      if (o) { scene.remove(o.g); Object.assign(baru, { x: o.x, z: o.z, r: o.r, gel: o.gel, gelT: o.gelT }); if (o.gel) g.add(o.gel); }
       o = baru; scene.add(g); lain.set(uid, o);
     }
-    Object.assign(o, { tx: +p.x || 0, tz: +p.z || 0, tr: +p.r || 0, ta: p.a | 0, d: bersih(p.d, 40), s: bersih(p.s, 30), ig: igBersih(p.ig), uid });
+    Object.assign(o, {
+      nama: nm, tj, s: bersih(p.s, 20), b: bersih(p.b, 100), gd: GENDER[p.g] ? p.g : '', ig: igBersih(p.ig), mj: bersih(p.mj, 30),
+      tx: +p.x || 0, tz: +p.z || 0, tr: +p.r || 0, ta: p.a | 0,
+    });
   }
-  for (const [uid, o] of lain) if (!peta.has(uid)) { scene.remove(o.g); lain.delete(uid); }
+  for (const [uid, o] of lain) if (!ada.has(uid)) { scene.remove(o.g); lain.delete(uid); }
   hitungOnline();
 }
 function hitungOnline() {
-  const el = $('online');
-  const n = lain.size + 1;
-  const sempit = innerWidth < 480;
-  el.querySelector('span').textContent = net?.mode === 'lokal' ? (sempit ? `${n} · lokal` : `${n} di kantor · mode lokal`) : (sempit ? `${fmt(n)} online` : `${fmt(n)} karyawan online`);
-  el.classList.toggle('lokal', net?.mode === 'lokal');
-  el.title = net?.mode === 'lokal' ? 'Mode lokal: hanya tab di browser ini yang terlihat. Isi config.js untuk multiplayer.' : 'Karyawan yang sedang di kantor';
+  const el = $('online'), n = lain.size + 1 + (L?.mode === 'lokal' ? bot.length : 0);
+  el.querySelector('span').textContent = innerWidth < 480 ? `${fmt(n)} di kantor` : `${fmt(n)} orang di kantor${L?.mode === 'lokal' ? ' · mode lokal' : ''}`;
+  el.classList.toggle('lokal', L?.mode === 'lokal');
 }
+$('online').onclick = () => Sosial.bukaDaftarOnline();
 
 let posTerakhir = '', posWaktu = 0;
 function kirimPosisi(t) {
-  if (!net || !prof) return;
-  const p = { n: prof.n, d: prof.d, s: prof.s, ig: prof.ig || '', l: saya.look, x: +saya.x.toFixed(2), z: +saya.z.toFixed(2), r: +saya.r.toFixed(2), a: saya.a };
-  const k = `${p.x},${p.z},${p.r},${p.a}`;
-  if ((k !== posTerakhir && t - posWaktu > 120) || t - posWaktu > 4000) { posTerakhir = k; posWaktu = t; net.posisi(p); }
+  if (!L || !prof || !prof.tj || K.terkunci) return;
+  const p = {
+    n: prof.n, tj: prof.tj, s: prof.tj === 'jodoh' ? (prof.s || '') : '', b: prof.b || '', g: prof.g || '', ig: prof.ig || '',
+    l: saya.look, x: +saya.x.toFixed(2), z: +saya.z.toFixed(2), r: +saya.r.toFixed(2), a: saya.a, mj: saya.meja || '',
+  };
+  const k = `${p.x},${p.z},${p.r},${p.a},${p.mj}`;
+  const detak = L.mode === 'lokal' ? 4000 : 20000;
+  if ((k !== posTerakhir && t - posWaktu > (L.mode === 'lokal' ? 120 : 200)) || t - posWaktu > detak) { posTerakhir = k; posWaktu = t; L.hadir(p); }
 }
 
 // ---------------------------------------------------------------- CHAT
-const log = $('log');
-function tulisLog(nama, teks, sys = false) {
-  const p = document.createElement('p');
-  if (sys) p.className = 'sys';
-  p.innerHTML = sys ? esc(teks) : `<b>${esc(nama)}</b> ${esc(teks)}`;
-  log.appendChild(p);
-  while (log.children.length > 6) log.firstChild.remove();
-  setTimeout(() => p.classList.add('pudar'), 14000);
-  setTimeout(() => p.remove(), 15500);
-}
-let chatTerakhir = 0;
+let chatTerakhir = 0, mulaiChat = 0;
+const sudahChat = new Set();
 $('chatF').addEventListener('submit', e => {
   e.preventDefault();
   const i = $('chatI'), t = bersih(i.value, 120);
   if (!t) { i.blur(); return; }
-  if (!prof) { bukaDaftar(); return; }
+  if (!prof || !prof.tj) { bukaDaftar(); return; }
+  if (K.terkunci || !L) { toast('Kamu belum bisa chat sekarang.'); return; }
   if (Date.now() - chatTerakhir < 1500) { toast('Pelan-pelan, satu-satu ya 🙂'); return; }
   chatTerakhir = Date.now();
   i.value = '';
-  net.chat(t);
-  if (net.mode === 'online') return; // pesan sendiri kembali lewat langganan
-  if (/(halo|hai|hi|pagi|siang|sore|malam|permisi)/i.test(t)) {
-    const dekat = bot.filter(b => Math.hypot(b.x - saya.x, b.z - saya.z) < 6);
-    const b = acak(dekat);
+  L.chat(prof.n, t);
+  if (L.mode === 'lokal' && /(halo|hai|hi|pagi|siang|sore|malam|permisi|hello)/i.test(t)) {
+    const b = acak(bot.filter(b => Math.hypot(b.x - saya.x, b.z - saya.z) < 7));
     if (b) setTimeout(() => { const r = acak(BALASAN); bicara(b, r); tulisLog(b.n, r); }, 900);
   }
 });
-function terimaChat(c) {
-  if (!c || !c.m) return;
-  const nama = bersih(c.n, 20), teks = bersih(c.m, 120);
-  tulisLog(nama, teks);
-  const o = c.uid === net.uid ? saya : lain.get(c.uid);
-  if (o && o.g) bicara(o, teks);
+function terimaChat(obj) {
+  const item = Object.entries(obj || {}).sort((a, b) => (a[0] < b[0] ? -1 : 1));
+  K.chatList = item.map(([k, v]) => ({ ...v, k }));
+  for (const [k, c] of item) {
+    if (sudahChat.has(k)) continue;
+    sudahChat.add(k);
+    if (!c || !c.m || K.sembunyi.has(c.uid)) continue;
+    if (c.t && c.t < mulaiChat - 5 * 60000) continue;
+    const nama = bersih(c.n, 20), teks = bersih(c.m, 120);
+    tulisLog(ikonPeran(c.uid) + nama, teks);
+    const o = c.uid === L.uid ? saya : lain.get(c.uid);
+    if (o && o.g) bicara(o, teks);
+  }
 }
 
-// ---------------------------------------------------------------- UI: kartu, toast
-let toastT;
-function toast(t) { const el = $('toast'); el.textContent = t; el.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove('on'), 2600); }
-let saatTutup = null;
-function bukaKartu(html, { bawah = false, pasang, tutup } = {}) {
-  const k = $('kartu'), isi = k.querySelector('.isi');
-  if (saatTutup) { const f = saatTutup; saatTutup = null; f(); }
-  isi.innerHTML = `<button class="x" type="button" aria-label="Tutup">✕</button>` + html;
-  k.classList.toggle('bawah', bawah);
-  k.hidden = false;
-  isi.querySelector('.x').onclick = tutupKartu;
-  saatTutup = tutup || null;
-  pasang && pasang(isi);
-  const f = isi.querySelector('input,select,textarea'); if (f && !bawah && matchMedia('(hover:hover)').matches) setTimeout(() => f.focus(), 50);
-}
-function tutupKartu() {
-  $('kartu').hidden = true;
-  if (saatTutup) { const f = saatTutup; saatTutup = null; f(); }
-  canvas.focus();
-}
-$('kartu').addEventListener('pointerdown', e => { if (e.target === $('kartu')) tutupKartu(); });
-
-// ---- pendaftaran karyawan
+// ---------------------------------------------------------------- PENDAFTARAN TAMU
 function bukaDaftar() {
   const p = prof || {};
+  const tj = p.tj || '';
   bukaKartu(`
-    <h2>${prof ? 'Ubah Data Karyawan' : 'Selamat Bergabung! 💌'}</h2>
-    <p>${prof ? 'Perbarui data karyawanmu.' : `Isi data singkat untuk mulai bekerja di ${esc(CFG.namaPT)}. <b>Tidak perlu password.</b>`}</p>
+    <h2>${p.tj ? 'Ubah Data Tamu' : 'Selamat Datang! 💌'}</h2>
+    <p>${p.tj ? 'Perbarui data tamumu.' : `Kamu datang ke ${esc(CFG.namaPT)} sebagai tamu. Pilih tujuanmu, orang lain akan melihatnya di atas karaktermu. <b>Tidak perlu password.</b>`}</p>
     <form id="fD">
+      <label>Tujuan datang</label>
+      <div class="tjPilih" role="radiogroup">
+        ${Object.entries(TUJUAN).map(([k, v]) => `<label class="tjKartu" style="--w:${v.warna}"><input type="radio" name="tj" value="${k}" ${k === tj ? 'checked' : ''} required><span><b>${v.ikon}</b>${v.nama}</span></label>`).join('')}
+      </div>
       <label for="dN">Nama panggilan</label>
       <input id="dN" maxlength="20" required placeholder="contoh: Raka" value="${esc(p.n || '')}">
+      <div class="dua">
+        <div><label for="dG">Aku</label><select id="dG">${Object.entries(GENDER).map(([k, v]) => `<option value="${k}" ${k === (p.g || '') ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
+        <div id="bS"><label for="dS">Status hati</label><select id="dS">${STATUS.map(d => `<option ${d === p.s ? 'selected' : ''}>${esc(d)}</option>`).join('')}</select></div>
+      </div>
+      <label for="dB">Tentang aku (opsional)</label>
+      <textarea id="dB" maxlength="100" rows="2" placeholder="contoh: suka kopi, musik indie, dan jalan sore">${esc(p.b || '')}</textarea>
       <label for="dI">Username Instagram (opsional)</label>
       <input id="dI" maxlength="31" placeholder="@username" autocapitalize="none" autocorrect="off" value="${esc(p.ig ? '@' + p.ig : '')}">
-      <label for="dD">Divisi</label>
-      <select id="dD">${DIVISI.map(d => `<option ${d === p.d ? 'selected' : ''}>${esc(d)}</option>`).join('')}</select>
-      <label for="dS">Status hati</label>
-      <select id="dS">${STATUS.map(d => `<option ${d === p.s ? 'selected' : ''}>${esc(d)}</option>`).join('')}</select>
+      <label class="cek" id="b18"><input type="checkbox" id="d18" ${p.dewasa ? 'checked' : ''}> Aku sudah berusia 18 tahun ke atas</label>
+      <label class="cek"><input type="checkbox" id="dA" ${p.tj ? 'checked' : ''}> Aku akan sopan, tidak melecehkan, dan tidak menyebar data pribadi orang lain</label>
       <p class="err" id="dE"></p>
-      <div class="baris"><button class="btn" type="submit">${prof ? 'Simpan' : 'Masuk Kerja →'}</button>${prof ? '' : '<button class="btn putih" type="button" id="dL">Lihat-lihat dulu</button>'}</div>
-      <p class="kecil">Namamu akan tampil di atas karaktermu dan di Dinding Karyawan.</p>
+      <div class="baris"><button class="btn" type="submit">${p.tj ? 'Simpan' : 'Masuk Kantor →'}</button>${p.tj ? '' : '<button class="btn putih" type="button" id="dL">Lihat-lihat dulu</button>'}</div>
     </form>`, {
     pasang(isi) {
       const dL = isi.querySelector('#dL'); if (dL) dL.onclick = tutupKartu;
-      isi.querySelector('#fD').onsubmit = async e => {
+      const segar = () => {
+        const v = isi.querySelector('input[name=tj]:checked')?.value;
+        isi.querySelector('#bS').hidden = v !== 'jodoh';
+        isi.querySelector('#b18').hidden = v !== 'jodoh';
+      };
+      isi.querySelectorAll('input[name=tj]').forEach(r => r.onchange = segar); segar();
+      isi.querySelector('#fD').onsubmit = e => {
         e.preventDefault();
-        const n = bersih(isi.querySelector('#dN').value, 20), ig = igBersih(isi.querySelector('#dI').value);
         const E = isi.querySelector('#dE');
+        const tjBaru = isi.querySelector('input[name=tj]:checked')?.value;
+        const n = bersih(isi.querySelector('#dN').value, 20), ig = igBersih(isi.querySelector('#dI').value), b = bersih(isi.querySelector('#dB').value, 100);
+        if (!TUJUAN[tjBaru]) { E.textContent = 'Pilih tujuan datang dulu.'; return; }
         if (n.length < 2) { E.textContent = 'Nama minimal 2 huruf.'; return; }
-        if (kasar(n) || kasar(ig)) { E.textContent = 'Pakai nama yang lebih sopan ya.'; return; }
-        const baru = !prof;
-        prof = { ...(prof || {}), n, ig, d: isi.querySelector('#dD').value, s: isi.querySelector('#dS').value, look: saya.look };
+        if (kasar(n) || kasar(ig) || kasar(b)) { E.textContent = 'Pakai kata-kata yang lebih sopan ya.'; return; }
+        if (tjBaru === 'jodoh' && !isi.querySelector('#d18').checked) { E.textContent = 'Fitur Cari Jodoh khusus 18 tahun ke atas. Kamu bisa pilih Cari Teman atau Mau Curhat.'; return; }
+        if (!isi.querySelector('#dA').checked) { E.textContent = 'Centang janji sopan dulu ya.'; return; }
+        const baru = !prof || !prof.tj;
+        prof = { ...(prof || {}), n, ig, b, tj: tjBaru, g: isi.querySelector('#dG').value, s: isi.querySelector('#dS').value, dewasa: tjBaru === 'jodoh' || !!prof?.dewasa, look: saya.look };
         simpanProfil(prof);
-        net && net.daftar({ n, ig, d: prof.d });
+        L && L.daftarTamu(prof);
         pasangKarakterSaya(); perbaruiTombolProfil(); posWaktu = 0;
         tutupKartu();
         if (baru) {
-          tulisLog('', `Selamat datang, ${n}! Kamu resmi karyawan ${CFG.namaPT}.`, true);
-          setTimeout(() => toast('Mampir ke Ruang Loker untuk ganti penampilan 👔'), 1200);
+          tulisLog('', `Selamat datang, ${n}! Kamu tercatat sebagai tamu ${TUJUAN[tjBaru].ikon} ${TUJUAN[tjBaru].nama}.`, 'sys');
+          const saran = { jodoh: ['Kafe Jodoh', 19.5, 2.5, Math.PI / 2], teman: ['Meja Nongkrong', 0, 1.5, Math.PI], curhat: ['Taman Curhat', 18.5, -9.2, Math.PI] }[tjBaru];
+          setTimeout(() => bukaKartu(`<h2>${TUJUAN[tjBaru].ikon} Mau langsung ke ${saran[0]}?</h2>
+            <p>${{ jodoh: 'Di Kafe Jodoh kumpul tamu yang sedang cari pasangan. Ketuk orang lain untuk lihat profil, ajak ngobrol, atau kasih ❤.', teman: 'Duduk di meja topik yang kamu suka (Gaming, Musik, Kuliner, dll.) supaya orang dengan minat sama bisa nyapa.', curhat: 'Di Taman Curhat ada papan curhat anonim. Tulis ceritamu, orang lain bisa kasih pelukan 🤗 dan balasan.' }[tjBaru]}</p>
+            <div class="baris"><button class="btn" type="button" id="kS">Antar ke ${saran[0]}</button><button class="btn putih" type="button" id="kN">Nanti saja</button></div>`, {
+            pasang(i2) { i2.querySelector('#kS').onclick = () => { tutupKartu(); pindah(saran[1], saran[2], saran[3]); }; i2.querySelector('#kN').onclick = tutupKartu; },
+          }), 500);
         } else toast('Data tersimpan ✔');
       };
     },
   });
 }
-function perbaruiTombolProfil() { $('btnProfil').textContent = prof ? '👤 ' + prof.n : 'Daftar'; }
-$('btnProfil').onclick = () => bukaDaftar();
+function perbaruiTombolProfil() { $('btnProfil').textContent = prof && prof.tj ? (TUJUAN[prof.tj].ikon + ' ' + prof.n) : 'Isi buku tamu'; }
+$('btnProfil').onclick = () => (prof && prof.tj ? Sosial.bukaProfilSaya() : bukaDaftar());
 
 // ---- loker: ganti penampilan
 function bukaLoker() {
-  if (!prof) { bukaDaftar(); return; }
+  if (!prof || !prof.tj) { bukaDaftar(); return; }
   const lama = { ...saya.look };
   const kamLama = { yaw: kam.yaw, pitch: kam.pitch, jarak: kam.jarak };
   kam.yaw = saya.r + Math.PI; kam.pitch = 0.12; kam.jarak = 4.6; kam.y = innerWidth < 900 ? 0.6 : 1.1;
@@ -961,60 +1024,77 @@ function bukaLoker() {
 function bukaResepsionis() {
   const ig = CFG.instagram ? `<a class="btn putih" href="https://www.instagram.com/${encodeURIComponent(CFG.instagram)}/" target="_blank" rel="noopener">Instagram</a>` : '';
   const don = CFG.donasi ? `<a class="btn putih" href="${esc(CFG.donasi)}" target="_blank" rel="noopener">Traktir kopi ☕</a>` : '';
+  const tim = Object.entries(K.peran).map(([u, p]) => ({ p, n: (K.tamu.find(t => t.uid === u) || {}).n || (lain.get(u) || {}).nama || 'Tanpa nama' }));
+  const dir = tim.filter(t => t.p === 'direktur').map(t => esc(t.n)).join(', ') || '—';
+  const staf = tim.filter(t => t.p === 'staf').map(t => esc(t.n)).join(', ') || '—';
   bukaKartu(`<h2>Selamat datang di ${esc(CFG.namaPT)}!</h2>
-    <p>Kantor tanpa gaji. Bonusnya: siapa tahu ketemu jodoh. Jelajahi kantor, ngobrol dengan karyawan lain, dan pasang namamu di Dinding Karyawan.</p>
-    <p class="kecil"><b>Cara main:</b> WASD/panah untuk jalan (Shift lari) · seret layar untuk memutar kamera · scroll untuk zoom · <b>E</b> untuk aksi · <b>Enter</b> untuk chat. Di HP: geser sisi kiri bawah untuk jalan.</p>
-    <div class="baris">${prof ? '' : '<button class="btn" type="button" id="rD">Daftar jadi karyawan</button>'}<a class="btn putih" href="../idcard/index.html">Buat ID Card</a>${ig}${don}</div>`, {
+    <p>Kantor tempat orang datang untuk <b>💘 cari jodoh</b>, <b>🤝 cari teman</b>, atau sekadar <b>💬 curhat</b>.</p>
+    <div class="peta">
+      <div><b>💘 Kafe Jodoh</b><span>Pantry di timur. Mesin kopi bisa menyarankan teman ngopi.</span></div>
+      <div><b>🤝 Meja Nongkrong</b><span>Tengah kantor. Duduk di meja topik favoritmu.</span></div>
+      <div><b>💬 Taman Curhat</b><span>Timur laut. Papan curhat anonim + air mancur harapan.</span></div>
+      <div><b>👑 Ruang Direktur</b><span>Sebelah lobi. Kirim saran untuk Direktur di sini.</span></div>
+    </div>
+    <p class="kecil"><b>Cara berinteraksi:</b> ketuk orang lain → Sapa, 💌 Ajak ngobrol (pribadi, harus diterima), atau ❤ Suka (kalau saling suka jadi <i>match</i>). Ada tombol Laporkan dan Sembunyikan kalau ada yang mengganggu.</p>
+    <p class="kecil"><b>Cara main:</b> WASD/panah untuk jalan (Shift lari) · seret layar untuk putar kamera · <b>E</b> untuk aksi · <b>Enter</b> untuk chat. Di HP: geser sisi kiri bawah untuk jalan.</p>
+    <p class="kecil">👑 Direktur: ${dir}<br>🛡 Staf: ${staf}</p>
+    <div class="baris">${prof && prof.tj ? '' : '<button class="btn" type="button" id="rD">Isi buku tamu</button>'}<a class="btn putih" href="../idcard/index.html">Kartu Tamu</a>${ig}${don}</div>`, {
     pasang(isi) { const b = isi.querySelector('#rD'); if (b) b.onclick = bukaDaftar; },
   });
 }
 function bukaMading() {
-  bukaKartu(`<h2>📌 Mading HRD</h2>${CFG.mading.map(m => `<p><b>${esc(m.judul)}</b><br>${esc(m.isi)}</p>`).join('') || '<p>Belum ada pengumuman.</p>'}`);
+  const m = K.mading || CFG.mading;
+  bukaKartu(`<h2>📌 Mading Kantor</h2>${m.map(x => `<p><b>${esc(x.judul)}</b><br>${esc(x.isi)}</p>`).join('') || '<p>Belum ada pengumuman.</p>'}`);
 }
+const bisaModerasi = () => !!(L && K.peran[L.uid]);
 
 // ---- papan rapat
 function bukaPapan() {
+  const daftar = (K.papanList || []).slice(-10).reverse();
   bukaKartu(`<h2>Papan Rapat ✍</h2>
-    <p>Tulisanmu tampil di papan untuk semua karyawan (6 tulisan terbaru).</p>
+    <p>Tulisanmu tampil di papan untuk semua orang (6 tulisan terbaru).</p>
     <form id="fP"><label for="pI">Tulisanmu</label><textarea id="pI" maxlength="80" rows="2" placeholder="contoh: Agenda hari ini: berani nyapa duluan"></textarea>
-    <p class="err" id="pE"></p><div class="baris"><button class="btn" type="submit">Tulis</button></div></form>`, {
+    <p class="err" id="pE"></p><div class="baris"><button class="btn" type="submit">Tulis</button></div></form>
+    ${daftar.length ? `<div class="daftar">${daftar.map(p => `<div><span>“${esc(p.m)}” <small>— ${esc(p.n)}</small></span>${bisaModerasi() ? `<button type="button" class="mini merah" data-hapus="papan/${esc(p.k)}">Hapus</button>` : ''}</div>`).join('')}</div>` : ''}`, {
     pasang(isi) {
+      isi.querySelectorAll('[data-hapus]').forEach(b => b.onclick = async () => { try { await L.hapus(b.dataset.hapus); toast('Tulisan dihapus'); bukaPapan(); } catch (e) { toast('Gagal menghapus.'); } });
       isi.querySelector('#fP').onsubmit = e => {
         e.preventDefault();
-        if (!prof) { bukaDaftar(); return; }
+        if (!prof || !prof.tj) { bukaDaftar(); return; }
         const t = bersih(isi.querySelector('#pI').value, 80);
         if (t.length < 2) { isi.querySelector('#pE').textContent = 'Tulis sesuatu dulu.'; return; }
-        const terakhir = LS.get('papanT', 0);
-        if (Date.now() - terakhir < 30000) { isi.querySelector('#pE').textContent = 'Tunggu sebentar sebelum menulis lagi.'; return; }
+        if (Date.now() - LS.get('papanT', 0) < 30000) { isi.querySelector('#pE').textContent = 'Tunggu 30 detik sebelum menulis lagi.'; return; }
         LS.set('papanT', Date.now());
-        net.papan(t, prof.n); tutupKartu(); toast('Tulisanmu sudah di papan ✔');
+        L.papan(prof.n, t); tutupKartu(); toast('Tulisanmu sudah di papan ✔');
       };
     },
   });
 }
 
-// ---- dinding karyawan
-function bukaDinding() {
-  const urut = [...daftarKaryawan].sort((a, b) => (a.t || 0) - (b.t || 0));
-  const no = urut.findIndex(k => k.uid === net?.uid) + 1;
-  bukaKartu(`<h2>Dinding Karyawan</h2>
-    <p><b>${fmt(urut.length)}</b> karyawan sudah bergabung.${no ? ` Kamu karyawan ke-<b>${fmt(no)}</b> 🎉` : ''}</p>
-    ${no || !prof ? '' : '<p class="kecil">Namamu belum terpasang. Tekan Daftar di pojok kanan atas.</p>'}
+// ---- buku tamu
+function bukaBukuTamu() {
+  const urut = K.tamu || [];
+  const no = urut.findIndex(k => k.uid === L?.uid) + 1;
+  let filter = '';
+  bukaKartu(`<h2>📖 Buku Tamu</h2>
+    <p><b>${fmt(urut.length)}</b> tamu sudah datang.${no ? ` Kamu tamu ke-<b>${fmt(no)}</b> 🎉` : ''}</p>
+    <div class="sw teks tab" id="bF"><button type="button" data-f="" class="on">Semua</button>${Object.entries(TUJUAN).map(([k, v]) => `<button type="button" data-f="${k}">${v.ikon} ${v.nama}</button>`).join('')}</div>
     <label for="cI">Cari nama</label><input id="cI" placeholder="ketik nama…">
     <div class="daftarNama" id="cL"></div>`, {
     pasang(isi) {
-      const L = isi.querySelector('#cL');
-      const tampil = q => {
-        const h = urut.map((k, i) => ({ ...k, no: i + 1 })).filter(k => !q || k.n.toLowerCase().includes(q) || (k.ig || '').includes(q)).slice(-120).reverse();
-        L.innerHTML = h.length ? h.map(k => `<div>#${fmt(k.no)} ${esc(k.n)} ${k.ig ? `<small>@${esc(k.ig)}</small>` : ''} <small>· ${esc(k.d || '')}</small></div>`).join('') : '<div>Tidak ketemu.</div>';
+      const Lst = isi.querySelector('#cL'), q = () => isi.querySelector('#cI').value.trim().toLowerCase();
+      const tampil = () => {
+        const h = urut.map((k, i) => ({ ...k, no: i + 1 })).filter(k => (!filter || k.tj === filter) && (!q() || k.n.toLowerCase().includes(q()) || (k.ig || '').includes(q()))).slice(-120).reverse();
+        Lst.innerHTML = h.length ? h.map(k => `<div>#${fmt(k.no)} ${TUJUAN[k.tj]?.ikon || ''} ${esc(k.n)} ${k.ig ? `<small>@${esc(k.ig)}</small>` : ''}</div>`).join('') : '<div>Tidak ketemu.</div>';
       };
-      isi.querySelector('#cI').oninput = e => tampil(e.target.value.trim().toLowerCase());
-      tampil('');
+      isi.querySelector('#cI').oninput = tampil;
+      isi.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { filter = b.dataset.f; isi.querySelectorAll('[data-f]').forEach(x => x.classList.toggle('on', x === b)); tampil(); });
+      tampil();
     },
   });
 }
 
-// ---- mesin kopi
+// ---- mesin kopi jodoh
 const RAMALAN = [
   'Kopi susu: hari ini ada yang diam-diam memperhatikanmu.', 'Americano: pahit di awal, manis di akhir. Kayak kisahmu nanti.',
   'Latte: jangan cuma nunggu dia chat duluan.', 'Espresso: kecil tapi nendang. Berani sapa orang baru hari ini!',
@@ -1023,11 +1103,16 @@ const RAMALAN = [
 ];
 function bukaKopi() {
   const r = acak(RAMALAN);
-  const teman = [...lain.values(), ...(net?.mode === 'lokal' ? bot : [])];
-  const t = acak(teman);
+  const kandidat = [...lain.values(), ...(L?.mode === 'lokal' ? bot : [])].filter(o => o.tj === 'jodoh' && !K.sembunyi.has(o.uid));
+  const pilih = kandidat.sort(() => Math.random() - 0.5).slice(0, 3);
   bukaKartu(`<h2>☕ Mesin Kopi Jodoh</h2><p style="font-size:18px"><b>${esc(r)}</b></p>
-    ${t ? `<p>Ngopi bareng siapa? Mesin menyarankan: <b>${esc(t.nama || t.n)}</b>${t.d ? ` dari ${esc(t.d)}` : ''}.</p>` : ''}
-    <div class="baris"><button class="btn" type="button" id="kL">Bikin lagi</button></div>`, { pasang(isi) { isi.querySelector('#kL').onclick = bukaKopi; } });
+    ${pilih.length ? `<p>Tamu yang juga sedang 💘 cari jodoh:</p><div class="daftar">${pilih.map((o, i) => `<div><span>${esc(o.nama)} ${o.s ? `<small>· ${esc(o.s)}</small>` : ''}<br><small>${esc(o.b || '')}</small></span><button type="button" class="mini" data-i="${i}">Lihat</button></div>`).join('')}</div>` : '<p class="kecil">Belum ada tamu lain yang sedang cari jodoh. Coba lagi nanti!</p>'}
+    <div class="baris"><button class="btn" type="button" id="kL">Bikin lagi</button></div>`, {
+    pasang(isi) {
+      isi.querySelector('#kL').onclick = bukaKopi;
+      isi.querySelectorAll('[data-i]').forEach(b => b.onclick = () => Sosial.bukaProfil(pilih[+b.dataset.i]));
+    },
+  });
   if (prof) bicara(saya, '☕ ' + r.split(':')[0]);
 }
 
@@ -1044,24 +1129,11 @@ function bukaKoin() {
 }
 let airLompat = 0;
 
-// ---- profil orang lain
-function bukaProfilLain(o) {
-  const nama = o.nama || o.n;
-  bukaKartu(`<h2>${esc(nama)}</h2>
-    <p>${o.d ? `🏢 ${esc(o.d)}<br>` : ''}${o.s ? `💗 Status: <b>${esc(o.s)}</b><br>` : ''}${o.ig ? `📷 <a href="https://www.instagram.com/${encodeURIComponent(o.ig)}/" target="_blank" rel="noopener">@${esc(o.ig)}</a>` : ''}${o.npc ? '<br><span class="kecil">Karyawan NPC (mode lokal)</span>' : ''}</p>
-    <div class="baris"><button class="btn" type="button" id="sP">Sapa 👋</button><button class="btn putih" type="button" id="sD">Jalan ke sana</button></div>`, {
-    pasang(isi) {
-      isi.querySelector('#sP').onclick = () => { tutupKartu(); $('chatI').value = `Halo ${nama.split(' · ')[0]}! `; $('chatI').focus(); };
-      isi.querySelector('#sD').onclick = () => { tutupKartu(); pindah(o.x + 1.2, o.z + 1.2); };
-    },
-  });
-}
-
 // ---------------------------------------------------------------- LOKASI
 const TEMPAT = [
-  ['🚪 Lobi', 0, 17, Math.PI], ['💻 Area Kerja', 0, 1.5, Math.PI], ['☕ Pantry', 19.5, 2.5, Math.PI / 2],
-  ['📋 Ruang Rapat', -12, -10, -Math.PI / 2 - 0.4], ['🧱 Dinding Karyawan', 3, -14.5, Math.PI], ['🌷 Taman Curhat', 18.5, -9.2, Math.PI],
-  ['👔 Ruang Loker', -19, 7.5, -Math.PI / 2], ['🌳 Halaman', 0, 30, Math.PI],
+  ['🚪 Lobi', 0, 17, Math.PI], ['💘 Kafe Jodoh', 19.5, 2.5, Math.PI / 2], ['🤝 Meja Nongkrong', 0, 1.5, Math.PI],
+  ['💬 Taman Curhat', 18.5, -9.2, Math.PI], ['📋 Ruang Rapat', -12, -10, -Math.PI / 2 - 0.4], ['📖 Buku Tamu', 3, -14.5, Math.PI],
+  ['👔 Ruang Loker', -19, 7.5, -Math.PI / 2], ['👑 Ruang Direktur', 16.8, 16, Math.PI / 2], ['🌳 Halaman', 0, 30, Math.PI],
 ];
 TEMPAT.forEach(([n, x, z, r]) => {
   const b = document.createElement('button'); b.className = 'pill'; b.type = 'button'; b.textContent = n;
@@ -1077,23 +1149,31 @@ function pindah(x, z, r) {
 }
 
 // ---------------------------------------------------------------- DUDUK & AKSI
-function berdiri() { if (saya.duduk) { saya.duduk.oleh = null; saya.duduk = null; saya.a = 0; } }
+function berdiri() { if (saya.duduk) { saya.duduk.oleh = null; saya.duduk = null; saya.a = 0; saya.meja = ''; } }
 function kursiDekat() {
   let best = null, bd = 1.0;
   for (const k of kursi) {
     if (k.oleh && k.oleh !== saya) continue;
-    const terisi = [...lain.values()].some(o => o.ta === 2 && Math.hypot(o.tx - k.x, o.tz - k.z) < 0.3);
-    if (terisi) continue;
+    if ([...lain.values()].some(o => o.ta === 2 && Math.hypot(o.tx - k.x, o.tz - k.z) < 0.3)) continue;
     const d = Math.hypot(k.x - saya.x, k.z - saya.z);
     if (d < bd) { bd = d; best = k; }
   }
   return best;
 }
+function duduk(k) {
+  saya.duduk = k; k.oleh = saya; saya.x = k.x; saya.z = k.z; saya.r = k.r; saya.a = 2; posWaktu = 0;
+  const m = MEJA.find(m => Math.abs(m.x - k.x) < 1.6 && Math.abs(m.z - k.z) < 1.8);
+  saya.meja = m ? m.topik : '';
+  if (m) {
+    const teman = [...lain.values(), ...(L?.mode === 'lokal' ? bot : [])].filter(o => o.mj === m.topik).length;
+    toast(`Kamu nongkrong di meja ${m.topik}. ${teman ? teman + ' orang lain juga di sini, sapa yuk!' : 'Tunggu yang lain datang, atau ajak lewat chat.'}`, 3600);
+  }
+}
 let aksiSekarang = null;
 function perbaruiAksi() {
   let pilih = null, bd = 1e9;
   for (const t of titikAksi) { const d = Math.hypot(t.x - saya.x, t.z - saya.z); if (d < t.r && d < bd) { bd = d; pilih = t; } }
-  if (!pilih && !saya.duduk) { const k = kursiDekat(); if (k) pilih = { label: 'Duduk', aksi: () => { saya.duduk = k; k.oleh = saya; saya.x = k.x; saya.z = k.z; saya.r = k.r; saya.a = 2; posWaktu = 0; } }; }
+  if (!pilih && !saya.duduk) { const k = kursiDekat(); if (k) pilih = { label: 'Duduk', aksi: () => duduk(k) }; }
   if (!pilih && saya.duduk) pilih = { label: 'Berdiri', aksi: () => { berdiri(); posWaktu = 0; } };
   if (pilih?.label !== aksiSekarang?.label) {
     const b = $('aksi');
@@ -1102,6 +1182,31 @@ function perbaruiAksi() {
   aksiSekarang = pilih;
 }
 $('aksi').onclick = () => { if (aksiSekarang) aksiSekarang.aksi(); canvas.focus(); };
+
+// ---------------------------------------------------------------- PENGUMUMAN, TUTUP & USIR
+function tampilPengumuman(p) {
+  if (!p || !p.m || !L) return;
+  if (L.db.now() - (p.t || 0) > 6 * 3600e3) return;
+  if (LS.get('umumT', 0) >= p.t) return;
+  const el = $('umum');
+  el.querySelector('span').textContent = '📢 ' + p.m;
+  el.hidden = false;
+  el.querySelector('button').onclick = () => { el.hidden = true; LS.set('umumT', p.t); };
+  tulisLog('', '📢 Pengumuman Direktur: ' + p.m, 'sys');
+}
+function cekTirai() {
+  if (!L) return;
+  const t = $('tirai'), b = K.ban, s = K.setelan || {};
+  let pesan = '';
+  if (b && b.sampai > L.db.now()) pesan = `<h2>🚪 Kamu sedang dikeluarkan dari kantor</h2><p>${b.sampai > L.db.now() + 3650 * 86400e3 ? 'Akses kamu diblokir oleh pengelola.' : 'Kamu bisa masuk lagi setelah ' + esc(tanggalJam(b.sampai)) + ' WIB.'}</p>${b.alasan ? `<p class="kecil">Alasan: ${esc(b.alasan)}</p>` : ''}`;
+  else if (s.tutup && !K.peran[L.uid]) pesan = `<h2>🔒 Kantor sedang tutup</h2><p>${esc(s.pesan || 'Kantor sedang istirahat sebentar. Coba lagi nanti ya!')}</p>`;
+  K.terkunci = !!pesan;
+  t.hidden = !pesan;
+  $('undangan').hidden = !!pesan;
+  if (pesan && !$('kartu').hidden) tutupKartu();
+  if (pesan) { t.querySelector('.isi').innerHTML = pesan + '<p class="kecil"><a href="../index.html">← Kembali ke beranda</a></p>'; L.pergi(); }
+  else posWaktu = 0;
+}
 
 // ---------------------------------------------------------------- WAKTU (Asia/Jakarta)
 const LANGIT = [
@@ -1127,7 +1232,7 @@ let waktuLangit = -1e9;
 function langkah() {
   const dt = Math.min(jam.getDelta(), 0.05), t = performance.now();
   const mengetik = document.activeElement && document.activeElement.matches('input,textarea,select');
-  const modal = !$('kartu').hidden && !$('kartu').classList.contains('bawah');
+  const modal = modalTengah() || !$('tirai').hidden;
 
   // input gerak
   let maju = 0, samping = 0;
@@ -1167,7 +1272,7 @@ function langkah() {
     o.g.position.set(o.x, 0, o.z); o.g.rotation.y = o.r; pose(o.g, a, dt);
   }
   // bot
-  if (net?.mode === 'lokal') for (const o of bot) {
+  if (L?.mode === 'lokal') for (const o of bot) {
     updateBot(o, dt);
     o.g.position.set(o.x, 0, o.z); o.g.rotation.y = o.r; pose(o.g, o.a, dt);
   }
@@ -1202,16 +1307,41 @@ async function mulai() {
   renderer.setAnimationLoop(langkah);
   setTimeout(() => { $('loading').classList.add('hilang'); }, 150);
 
-  net = await buatNet();
-  window.__kantor = { net, saya, lain, bot, pindah }; // untuk debugging
-  net.on('pemain', sinkronLain);
-  net.on('chat', terimaChat);
-  net.on('papan', l => { isiPapan = l || []; papanKV.ulang(); });
-  net.on('karyawan', l => { daftarKaryawan = (l || []).filter(k => k && k.n).map(k => ({ ...k, n: bersih(k.n, 20), ig: igBersih(k.ig) })); dindingKV.ulang(); });
-  await net.mulai();
-  if (net.mode === 'lokal') buatBot();
+  const db = await bukaDB();
+  L = buatLayanan(db);
+  mulaiChat = db.now();
+  Object.assign(K, { L, saya, pindah, bicara, bukaDaftar, hitungOnline, berdiri, teksLabel, gayaPeran });
+  Object.defineProperty(K, 'prof', { get: () => prof, set: v => { prof = v; } });
+  K.segarkanOrang = () => { pasangKarakterSaya(); sinkronLain(K.onlineTerakhir); };
+  window.__kantor = { L, saya, lain, bot, pindah, K }; // untuk debugging
+  const urutKunci = o => Object.entries(o || {}).sort((a, b) => (a[0] < b[0] ? -1 : 1)).map(([k, v]) => ({ ...v, k }));
+  db.on('online', o => { K.onlineTerakhir = o; sinkronLain(o); });
+  db.on('chat', terimaChat, { limit: 30 });
+  db.on('papan', o => { K.papanList = urutKunci(o); isiPapan = K.papanList; papanKV.ulang(); }, { limit: 10 });
+  db.on('curhat', o => { K.curhatList = urutKunci(o); curhatKV.ulang(); Sosial.curhatBerubah(); }, { limit: 30 });
+  db.on('tamu', o => {
+    const l = Object.values(o || {}).filter(k => k && k.n).map(k => ({ ...k, n: bersih(k.n, 20), ig: igBersih(k.ig), tj: tujuanAman(k.tj) }));
+    K.tamu = l.sort((a, b) => (a.t || 0) - (b.t || 0)); dindingKV.ulang();
+  });
+  db.on('peran', o => { K.peran = o || {}; Direktur.perbaruiPeran(); K.segarkanOrang(); cekTirai(); });
+  db.on('mading', o => { const m = Array.isArray(o) ? o : (o ? Object.values(o) : null); K.mading = m && m.length ? m.filter(Boolean) : null; teksMading.ulang(); });
+  db.on('pengumuman', tampilPengumuman);
+  db.on('setelan', o => { K.setelan = o || {}; cekTirai(); });
+  db.on('ban/' + L.uid, o => { K.ban = o; cekTirai(); });
+  setInterval(cekTirai, 30000);
+  db.hapusSaatPutus('online/' + L.uid);
+  if (L.mode === 'lokal') buatBot();
+  Sosial.mulai(); Direktur.mulai();
   hitungOnline();
-  if (prof) { net.daftar({ n: prof.n, ig: prof.ig, d: prof.d }); tulisLog('', `Selamat datang kembali, ${prof.n}!`, true); }
+  if (L.mode === 'lokal' && prof && prof.tj) {
+    // mode lokal: tab kedua di browser yang sama dianggap tamu lain, supaya interaksi bisa dicoba
+    await new Promise(r => setTimeout(r, 500));
+    if (Object.entries(K.onlineTerakhir || {}).some(([u, p]) => u !== L.uid && p && p.n === prof.n)) {
+      prof = { look: prof.look }; pasangKarakterSaya(); perbaruiTombolProfil();
+      toast('Tab ini dianggap tamu lain (mode lokal). Isi buku tamu dengan nama berbeda.', 4000);
+    }
+  }
+  if (prof && prof.tj) { L.daftarTamu(prof); tulisLog('', `Selamat datang kembali, ${prof.n}!`, 'sys'); }
   else setTimeout(() => { if ($('kartu').hidden) bukaDaftar(); }, 900);
 }
 mulai().catch(e => {

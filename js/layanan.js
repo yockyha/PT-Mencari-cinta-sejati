@@ -1,0 +1,88 @@
+// =====================================================================
+//  Layanan kantor di atas lapisan data: tamu, chat, papan, curhat,
+//  ajakan ngobrol, obrolan pribadi, suka & match, laporan, dan
+//  alat Direktur/Staf. Struktur data ini sama dengan database.rules.json.
+// =====================================================================
+import { TS } from './db.js';
+import { bersih, sensor } from './common.js';
+
+export function buatLayanan(db) {
+  const uid = db.uid;
+  const ruang = (a, b) => [a, b].sort().join('_');
+  const lawan = r => r.split('_').find(u => u !== uid);
+
+  const L = {
+    db, uid, mode: db.mode, ruang, lawan,
+
+    // ---- kehadiran
+    hadir(p) { return db.set('online/' + uid, { ...p, t: TS }).catch(() => {}); },
+    pergi() { return db.set('online/' + uid, null).catch(() => {}); },
+
+    // ---- buku tamu
+    async daftarTamu(d) {
+      const lama = await db.get('tamu/' + uid).catch(() => null);
+      return db.set('tamu/' + uid, { uid, n: d.n, ig: d.ig || '', tj: d.tj, t: (lama && lama.t) || TS }).catch(() => {});
+    },
+
+    // ---- ruang publik
+    chat(n, m) { return db.push('chat', { uid, n, m: sensor(bersih(m, 120)), t: TS }); },
+    papan(n, m) { return db.push('papan', { uid, n, m: sensor(bersih(m, 80)), t: TS }); },
+    curhat(m) {
+      const k = db.push('curhat', { m: sensor(bersih(m, 300)), t: TS });
+      db.set('curhatPemilik/' + k, uid).catch(() => {});
+      return k;
+    },
+    peluk(id, nyala) { return db.set(`curhat/${id}/peluk/${uid}`, nyala ? true : null).catch(() => {}); },
+    balasCurhat(id, n, m) { return db.push(`curhat/${id}/balas`, { uid, n, m: sensor(bersih(m, 160)), t: TS }); },
+    saran(n, m) { return db.push('saran', { dari: uid, n, m: sensor(bersih(m, 300)), t: TS }); },
+    lapor(target, nTarget, alasan) { return db.push('laporan', { dari: uid, target, n: bersih(nTarget, 30), alasan: bersih(alasan, 120), t: TS }); },
+
+    // ---- ajakan ngobrol & obrolan pribadi
+    undang(ke, nSaya) { return db.set(`undangan/${ke}/${uid}`, { n: nSaya, t: TS }); },
+    tolak(dari) { return db.set(`undangan/${uid}/${dari}`, null).catch(() => {}); },
+    async terima(dari, nSaya, nDia) {
+      const r = ruang(uid, dari);
+      await db.set(`dm/${r}/ok`, true);
+      await db.set(`dmku/${uid}/${r}`, { n: nDia, u: dari, t: TS, baru: false });
+      await db.set(`dmku/${dari}/${r}`, { n: nSaya, u: uid, t: TS, baru: true });
+      await db.set(`undangan/${uid}/${dari}`, null);
+      return r;
+    },
+    kirimDm(r, n, m) {
+      const teks = sensor(bersih(m, 300));
+      db.push(`dm/${r}/pesan`, { uid, n, m: teks, t: TS });
+      db.update(`dmku/${uid}/${r}`, { t: TS, baru: false }).catch(() => {});
+      db.update(`dmku/${lawan(r)}/${r}`, { t: TS, baru: true }).catch(() => {});
+    },
+    bacaDm(r) { return db.update(`dmku/${uid}/${r}`, { baru: false }).catch(() => {}); },
+    tutupDm(r) { return db.set(`dmku/${uid}/${r}`, null).catch(() => {}); },
+
+    // ---- suka & match
+    async suka(target, nSaya, nDia) {
+      await db.set(`suka/${target}/${uid}`, TS);
+      const balik = await db.get(`suka/${uid}/${target}`).catch(() => null);
+      if (!balik) return false;
+      await db.set(`match/${uid}/${target}`, { n: nDia, t: TS });
+      await db.set(`match/${target}/${uid}`, { n: nSaya, t: TS });
+      const r = ruang(uid, target);
+      await db.set(`dm/${r}/ok`, true);
+      await db.set(`dmku/${uid}/${r}`, { n: nDia, u: target, t: TS, baru: false });
+      await db.set(`dmku/${target}/${r}`, { n: nSaya, u: uid, t: TS, baru: true });
+      return true;
+    },
+    batalSuka(target) { return db.set(`suka/${target}/${uid}`, null).catch(() => {}); },
+
+    // ---- alat Staf & Direktur (dijaga aturan server)
+    usir(target, menit, alasan, n) {
+      return db.set('ban/' + target, { sampai: db.now() + menit * 60000, alasan: bersih(alasan, 100), n: bersih(n, 30), oleh: uid, t: TS })
+        .then(() => db.set('online/' + target, null).catch(() => {}));
+    },
+    ampuni(target) { return db.set('ban/' + target, null); },
+    hapus(path) { return db.set(path, null); },
+    setPeran(target, peran) { return db.set('peran/' + target, peran || null); },
+    umumkan(m) { return db.set('pengumuman', { m: bersih(m, 200), t: TS, oleh: uid }); },
+    setelan(o) { return db.update('setelan', o); },
+    simpanMading(list) { return db.set('mading', list); },
+  };
+  return L;
+}

@@ -4,18 +4,20 @@ export const CFG = Object.assign({
   kuota: 10000, firebase: null, mading: [],
 }, window.PT_CONFIG || {});
 
-export const DIVISI = [
-  'Divisi PDKT',
-  'Divisi Gagal Move On',
-  'HRD (Hati Rindu Dia)',
-  'Divisi Overthinking',
-  'Pemulihan Pasca-Ghosting',
-  'Marketing Perasaan',
-  'Keuangan Akhir Bulan',
-  'IT (Ingin Ditemani)',
-];
+// Tujuan tamu datang ke kantor
+export const TUJUAN = {
+  jodoh: { ikon: '💘', nama: 'Cari Jodoh', warna: '#ff4f7b' },
+  teman: { ikon: '🤝', nama: 'Cari Teman', warna: '#3a8fd8' },
+  curhat: { ikon: '💬', nama: 'Mau Curhat', warna: '#2f9e6e' },
+};
+export const tujuanAman = t => (TUJUAN[t] ? t : 'teman');
 
-export const STATUS = ['Jomblo', 'Lagi PDKT', 'Digantung', 'Baru Putus', 'Bucin', 'Rahasia Perusahaan'];
+// Meja nongkrong per topik (area tengah kantor)
+export const TOPIK = ['🎮 Gaming', '🎵 Musik', '🎬 Drakor & Film', '⚽ Olahraga', '🍜 Kuliner', '📚 Buku & Nulis', '✈️ Jalan-jalan', '🐱 Random'];
+
+export const GENDER = { '': 'Rahasia', co: 'Cowok', ce: 'Cewek' };
+
+export const STATUS = ['Jomblo', 'Lagi PDKT', 'Digantung', 'Baru Putus', 'Rahasia'];
 
 // localStorage yang aman (tidak error di mode privat)
 export const LS = {

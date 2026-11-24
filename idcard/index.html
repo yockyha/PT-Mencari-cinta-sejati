@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ID Card Karyawan · PT Mencari Cinta Sejati</title>
+<title>Kartu Tamu · PT Mencari Cinta Sejati</title>
 <meta name="theme-color" content="#2a1420">
 <link rel="icon" href="../favicon.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -52,34 +52,34 @@ footer{margin-top:36px;text-align:center;color:var(--muted);font-weight:700;font
 <div class="wrap">
   <nav><a class="pill" href="../index.html">← Beranda</a><a class="pill" href="../kantor/index.html">Masuk Kantor →</a></nav>
 
-  <h1>Bikin <span>ID Card</span> karyawanmu</h1>
-  <p class="lead">Resmi jadi karyawan PT Mencari Cinta Sejati. Gaji tidak ada, tapi kartu ini bisa dipamerkan di story. Gratis, sekali isi langsung jadi.</p>
-  <div class="kuota"><div><span>Karyawan angkatan pertama</span><span id="kT">…</span></div><div class="bar"><i id="kB"></i></div></div>
+  <h1>Bikin <span>Kartu Tamu</span>-mu</h1>
+  <p class="lead">Tandai kedatanganmu di PT Mencari Cinta Sejati: mau cari jodoh, cari teman, atau curhat. Kartunya bisa dipamerkan di story biar temanmu ikut mampir.</p>
+  <div class="kuota"><div><span>Tamu angkatan pertama</span><span id="kT">…</span></div><div class="bar"><i id="kB"></i></div></div>
 
   <section class="panel">
     <form id="f" autocomplete="off">
-      <h2>Data karyawan</h2>
+      <h2>Data tamu</h2>
       <p class="hint">Foto hanya diproses di HP/laptopmu, tidak diunggah ke mana pun.</p>
       <label for="nama">Nama panggilan</label>
       <input id="nama" maxlength="20" required placeholder="contoh: Raka">
       <label for="ig">Username Instagram (opsional)</label>
       <input id="ig" maxlength="31" placeholder="@username" autocapitalize="none" autocorrect="off">
-      <label for="div">Divisi</label>
+      <label for="div">Tujuan datang</label>
       <select id="div"></select>
       <label for="st">Status hati</label>
       <select id="st"></select>
       <label for="foto">Foto (opsional)</label>
       <input type="file" id="foto" accept="image/*">
       <div class="baris">
-        <button class="btn" type="submit" id="buat">Cetak ID Card</button>
+        <button class="btn" type="submit" id="buat">Cetak Kartu Tamu</button>
         <button class="btn" type="button" id="unduh" disabled style="background:var(--yellow);color:var(--ink)">Unduh PNG</button>
         <button class="pill" type="button" id="bagi" hidden>Bagikan</button>
       </div>
       <p class="status" id="status" role="status"></p>
     </form>
     <div class="preview">
-      <canvas id="kartu" width="720" height="1120" aria-label="Pratinjau ID card"></canvas>
-      <small>Pratinjau. Tekan “Cetak ID Card” untuk mengambil nomor karyawan.</small>
+      <canvas id="kartu" width="720" height="1120" aria-label="Pratinjau kartu tamu"></canvas>
+      <small>Pratinjau. Tekan “Cetak Kartu Tamu” untuk mengambil nomor tamu.</small>
     </div>
   </section>
   <footer id="kaki"></footer>
