@@ -27,7 +27,24 @@ Kantor virtual 3D tempat orang datang sebagai **tamu** untuk **💘 cari jodoh**
 - **❤ Suka** (khusus sesama tamu Cari Jodoh, 18+) → rahasia; kalau saling suka jadi **match** dan obrolan langsung terbuka. Tamu bisa melihat *berapa* orang yang menyukainya, tapi bukan siapa
 - **🚩 Laporkan** & **🙈 Sembunyikan** untuk yang mengganggu
 
-Semua aturan ini dijaga di server lewat `database.rules.json`, bukan cuma di tampilan.
+### Tugas, EXP & level
+- **Tur Kantor** (sekali, untuk tamu baru): isi buku tamu, kunjungi ruangan sesuai tujuan, kirim chat pertama, lihat profil orang, ganti penampilan, cetak Kartu Tamu
+- **Tugas harian** (reset tengah malam WIB): bikin kopi, duduk di meja nongkrong, 3 chat, ajak ngobrol, peluk curhat, tulis papan, main Tangkap Hati, lempar koin
+- **Petunjuk arah** di kiri atas selalu menunjukkan langkah berikutnya (atau acara yang sedang LIVE) dan bisa diketuk untuk langsung ke sana
+- **🎮 Tangkap Hati**: mesin arcade di lobi, 30 detik, ada peringkat harian
+- **Level** membuka outfit (Hoodie, Jaket Denim, Jas & Dasi, Gaun Pesta, Jaket Kulit) dan aksesoris (kacamata hitam, bando kucing, mahkota bunga, sayap cupid, aura hati) di Ruang Loker
+
+### Acara terjadwal
+Direktur membuat acara di **Panel → Acara** (ada template: Speed Dating, Mabar, Sesi Curhat, Kuis Cinta, Turnamen Tangkap Hati, Malam Eksekutif). Tamu melihatnya di papan jadwal lobi dan tab Acara, bisa menekan **Ikut** untuk diingatkan 10 menit sebelumnya. Saat acara berlangsung muncul spanduk 🔴 LIVE; tamu yang datang ke ruangannya otomatis tercatat hadir (dicek waktu server) dan mendapat EXP.
+
+### Toko: jual EXP & Kartu Eksekutif
+- Paket diatur di `config.js` → `toko.paket` (bawaan: Kartu Eksekutif 30 hari Rp5.000, 100/300/1.000 EXP)
+- **Kartu Eksekutif** membuka: lihat *siapa* yang menyukaimu, Lounge Eksekutif (lewat lift lobi), Setelan Emas, Mahkota Emas, Halo, nama emas 💎, dan ajakan ngobrol yang menonjol
+- Alur bayar (manual, tanpa server): tamu menyalin **kode tamu** → bayar di `toko.linkBayar` (Saweria/Trakteer/dll.) dengan kode di pesan → tekan *Saya sudah bayar* → kamu mencocokkan di **Panel → Pesanan** → *Setujui* → EXP/VIP langsung aktif dan tamu dapat notifikasi
+- Toko tertutup selama `linkBayar` kosong
+- Kalau ramai, alur ini bisa diotomatiskan dengan webhook pembayaran + Cloudflare Worker/Cloud Function yang menulis ke Firebase
+
+Semua aturan di atas dijaga di server lewat `database.rules.json`, bukan cuma di tampilan. **Batasan yang perlu diketahui:** EXP dari tugas dicatat oleh browser tamu (dibatasi maksimal 60 EXP per 3 detik), jadi tamu yang paham teknis bisa mengakali EXP *tugas*. Ini hanya berpengaruh ke barang kosmetik. EXP yang **dibeli**, Kartu Eksekutif, dan daftar "siapa yang menyukaimu" sepenuhnya dikunci server dan hanya bisa diberikan Direktur.
 
 ## Struktur
 
@@ -36,7 +53,9 @@ index.html            beranda
 kantor/index.html     kantor 3D
 kantor/kantor.js      dunia 3D, karakter, gerak, chat, ruangan
 kantor/sosial.js      profil, ajak ngobrol, obrolan pribadi, suka & match, curhat
-kantor/direktur.js    Ruang & Panel Direktur
+kantor/direktur.js    Ruang & Panel Direktur (acara, pesanan, moderasi)
+kantor/progres.js     EXP, level, tugas, petunjuk arah, acara, peringkat, toko
+kantor/game.js        mini-game Tangkap Hati
 kantor/ui.js          alat UI bersama
 idcard/               generator Kartu Tamu
 js/db.js              lapisan data: Firebase (online) atau tiruan lokal
@@ -92,16 +111,24 @@ Selama `firebase: null` di `config.js`, situs berjalan dalam **mode lokal**:
 
 Setelah itu tombol **👑 Panel** muncul di pojok kanan atas. Staf diangkat dari Panel → Pengunjung → Tindak → *Angkat jadi Staf*.
 
-## Hosting
+Di mode lokal (tanpa Firebase), cukup ke Ruang Direktur → *Masuk sebagai Direktur* → PIN demo `1234`.
 
-Bisa di mana saja yang menyajikan file statis:
-- **Cloudflare Pages / Workers**: hubungkan repo ini, build command kosong, output directory `/`.
-- **GitHub Pages**: Settings → Pages → Deploy from branch.
-- **Netlify / Vercel**: drag-and-drop folder ini.
+## Membuka untuk publik
+
+1. **Aktifkan mode online** (bagian di atas). Tanpa ini, tiap pengunjung hanya melihat kantornya sendiri.
+2. **Hosting gratis**, pilih salah satu:
+   - **Cloudflare Pages**: Workers & Pages → Create → Pages → hubungkan repo GitHub ini (build command kosong, output `/`), atau *Upload assets* lalu unggah isi folder. Dapat alamat `namamu.pages.dev`.
+   - **Netlify**: <https://app.netlify.com/drop>, seret folder proyek.
+   - **GitHub Pages**: Settings → Pages → Deploy from branch.
+3. Tambahkan domain hosting ke Firebase → Authentication → Settings → **Authorized domains**.
+4. Isi `instagram`, `toko.linkBayar`, dan ganti/hapus `pinDemo` di `config.js`.
+5. (Opsional) Domain sendiri, misalnya `ptmencaricintasejati.id`, bisa disambungkan di Cloudflare/Netlify.
 
 ## Kustomisasi cepat
 
 - Nama PT, Instagram, link donasi, kuota, isi mading: `config.js`
-- Tujuan, topik meja, dan status hati: `js/common.js`
+- Tujuan, topik meja, status hati, level, outfit & aksesoris: `js/common.js`
+- Daftar tugas: `kantor/progres.js` (cari `TUR` dan `HARIAN`)
+- Paket toko & link pembayaran: `config.js` → `toko`
 - Kalimat NPC, ramalan kopi, harapan air mancur: `kantor/kantor.js` (cari `KALIMAT`, `RAMALAN`, `HARAPAN`)
 - Balasan NPC di obrolan pribadi: `kantor/sosial.js` (cari `BOT_KATA`)

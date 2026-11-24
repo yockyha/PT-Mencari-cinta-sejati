@@ -3,10 +3,11 @@
 //  Semua tindakan juga dijaga database.rules.json di server, jadi
 //  tamu biasa tidak bisa memakainya walau mengutak-atik browser.
 // =====================================================================
-import { CFG, TUJUAN, fmt, esc, bersih } from '../js/common.js';
+import { CFG, TUJUAN, LOKASI, fmt, esc, bersih, kodeTamu } from '../js/common.js';
+import * as Prog from './progres.js';
 import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js';
 
-let laporan = {}, saran = {}, larangan = {}, lepas = [], tabAktif = 'ringkas';
+let laporan = {}, saran = {}, larangan = {}, pesanan = {}, lepas = [], tabAktif = 'ringkas';
 const peranku = () => K.L && K.peran[K.L.uid];
 const direktur = () => peranku() === 'direktur';
 const namaDari = uid => (K.lain.get(uid) || {}).nama || (K.tamu.find(t => t.uid === uid) || {}).n || (K.bot.find(b => b.uid === uid) || {}).nama || uid.slice(0, 8);
@@ -28,8 +29,14 @@ export function perbaruiPeran() {
     lepas.push(db.on('laporan', o => { laporan = o || {}; segar(); }, { limit: 50 }));
     lepas.push(db.on('saran', o => { saran = o || {}; segar(); }, { limit: 50 }));
     lepas.push(db.on('ban', o => { larangan = o || {}; segar(); }));
+    if (p === 'direktur') lepas.push(db.on('pesanan', o => {
+      const baru = Object.keys(o || {}).filter(k => !pesanan[k]).length;
+      if (baru && Object.keys(pesanan).length) toast(`💳 ${baru} pesanan baru masuk`);
+      pesanan = o || {}; segar(); tandaPanel();
+    }));
   }
 }
+function tandaPanel() { const n = Object.keys(pesanan).length + Object.keys(laporan).length; const b = $('btnPanel'); b.textContent = (direktur() ? '👑 Panel' : '🛡 Panel') + (n ? ` (${n})` : ''); }
 const segar = () => { if (!$('kartu').hidden && document.querySelector('#kartu .panelDir')) bukaPanel(tabAktif); };
 
 // ---------------------------------------------------------------- MEJA DIREKTUR
@@ -68,14 +75,14 @@ export function bukaMeja() {
 }
 
 // ---------------------------------------------------------------- PANEL
-const TAB = [['ringkas', 'Ringkasan'], ['orang', 'Pengunjung'], ['laporan', 'Laporan'], ['konten', 'Konten'], ['siaran', 'Siaran', true], ['tim', 'Tim', true], ['akun', 'Akun']];
+const TAB = [['ringkas', 'Ringkasan'], ['acara', 'Acara', true], ['pesanan', 'Pesanan', true], ['orang', 'Pengunjung'], ['laporan', 'Laporan'], ['konten', 'Konten'], ['siaran', 'Siaran', true], ['tim', 'Tim', true], ['akun', 'Akun']];
 
 export function bukaPanel(tab = tabAktif) {
   if (!peranku()) { bukaMeja(); return; }
   tabAktif = tab;
-  const isiTab = { ringkas, orang, laporan: tabLaporan, konten, siaran, tim, akun }[tab]();
+  const isiTab = { ringkas, acara: tabAcara, pesanan: tabPesanan, orang, laporan: tabLaporan, konten, siaran, tim, akun }[tab]();
   bukaKartu(`<div class="panelDir"><h2>${direktur() ? '👑 Panel Direktur' : '🛡 Panel Staf'}</h2>
-    <div class="sw teks tab">${TAB.filter(t => !t[2] || direktur()).map(([k, n]) => `<button type="button" data-tab="${k}" class="${k === tab ? 'on' : ''}">${n}${k === 'laporan' && Object.keys(laporan).length ? ` (${Object.keys(laporan).length})` : ''}</button>`).join('')}</div>
+    <div class="sw teks tab">${TAB.filter(t => !t[2] || direktur()).map(([k, n]) => `<button type="button" data-tab="${k}" class="${k === tab ? 'on' : ''}">${n}${k === 'laporan' && Object.keys(laporan).length ? ` (${Object.keys(laporan).length})` : ''}${k === 'pesanan' && Object.keys(pesanan).length ? ` (${Object.keys(pesanan).length})` : ''}</button>`).join('')}</div>
     <div id="pIsi">${isiTab.html}</div></div>`, {
     pasang(isi) {
       isi.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => bukaPanel(b.dataset.tab));
@@ -100,6 +107,8 @@ function ringkas() {
         <div class="angka"><b>${fmt(Object.keys(laporan).length)}</b><span>laporan</span></div>
         <div class="angka"><b>${fmt(Object.keys(saran).length)}</b><span>saran</span></div>
         <div class="angka"><b>${fmt(Object.values(larangan).filter(b => b && b.sampai > K.L.db.now()).length)}</b><span>sedang diusir</span></div>
+        <div class="angka"><b>${fmt(Prog.daftarAcara().nanti.length)}</b><span>acara mendatang</span></div>
+        ${direktur() ? `<div class="angka"><b>${fmt(Object.keys(pesanan).length)}</b><span>pesanan menunggu</span></div>` : ''}
       </div>
       <p>Status kantor: <b>${tutup ? '🔒 Tutup' : '🟢 Buka'}</b>${K.L.mode === 'lokal' ? ' · <span class="kecil">mode lokal (demo)</span>' : ''}</p>
       ${direktur() ? `<div class="baris"><button class="btn ${tutup ? '' : 'putih'}" type="button" id="tT">${tutup ? 'Buka kantor' : 'Tutup kantor sementara'}</button></div>` : ''}`,
@@ -143,6 +152,8 @@ export function bukaModerasiOrang(o) {
       <button class="btn putih" type="button" data-m="1440">Usir 1 hari</button>
       <button class="btn" type="button" data-m="blokir">Blokir permanen</button>
     </div>
+    ${direktur() && !o.npc ? `<h3>Hadiah</h3><div class="baris"><button class="btn putih" type="button" data-exp="50">🎁 +50 EXP</button><button class="btn putih" type="button" data-vip="30">💎 Eksekutif 30 hari</button></div>
+    <p class="kecil">Kode tamu: <code>${esc(kodeTamu(o.uid))}</code></p>` : ''}
     ${direktur() && !o.npc ? `<h3>Jabatan</h3><div class="baris"><button class="btn putih" type="button" id="mS">${staf ? 'Cabut jabatan staf' : 'Angkat jadi Staf 🛡'}</button></div><p class="kecil">Staf bisa mengusir tamu, menghapus pesan, dan membaca laporan. Hanya Direktur yang bisa membuat pengumuman, mengubah mading, menutup kantor, dan mengatur tim.</p>` : ''}
     <div class="baris"><button class="btn putih" type="button" id="mK">← Kembali ke panel</button></div>`, {
     pasang(isi) {
@@ -153,6 +164,8 @@ export function bukaModerasiOrang(o) {
         if (o.npc) { K.L.db.set('ban/' + o.uid, { sampai: K.L.db.now() + menit * 60000, alasan, n: nama, oleh: K.L.uid }); o.diusir = true; o.g.visible = false; if (o.duduk) o.duduk.oleh = null; K.hitungOnline(); selesai(); return; }
         K.L.usir(o.uid, menit, alasan, nama).then(selesai).catch(gagal);
       });
+      isi.querySelectorAll('[data-exp]').forEach(b => b.onclick = () => K.L.beriExp(o.uid, +b.dataset.exp).then(() => K.L.kirimNotif(o.uid, `Kamu dapat hadiah ${b.dataset.exp} EXP dari Direktur! 🎁`)).then(() => toast('Hadiah terkirim 🎁')).catch(gagal));
+      isi.querySelectorAll('[data-vip]').forEach(b => b.onclick = () => K.L.beriVip(o.uid, +b.dataset.vip).then(() => K.L.kirimNotif(o.uid, `Kartu Eksekutif kamu aktif ${b.dataset.vip} hari. Selamat menikmati Lounge Eksekutif! 💎`)).then(() => toast('Kartu Eksekutif diaktifkan 💎')).catch(gagal));
       const s = isi.querySelector('#mS');
       if (s) s.onclick = () => K.L.setPeran(o.uid, staf ? null : 'staf').then(() => { toast(staf ? 'Jabatan staf dicabut.' : `${nama} sekarang Staf 🛡`); bukaPanel('tim'); }).catch(gagal);
       isi.querySelector('#mK').onclick = () => bukaPanel('orang');
@@ -239,5 +252,97 @@ function akun() {
       <p class="kecil">Mode: ${db.mode === 'lokal' ? 'lokal (demo, hanya di browser ini)' : 'online (Firebase)'}${db.email ? `<br>Email: ${esc(db.email)}` : ''}<br>UID: <code>${esc(db.uid)}</code></p>
       ${db.mode === 'lokal' || !db.anon ? `<div class="baris"><button class="btn putih" type="button" id="aK">Keluar dari akun Direktur</button></div>` : ''}`,
     pasang(isi) { const b = isi.querySelector('#aK'); if (b) b.onclick = () => db.keluarDirektur().then(() => { tutupKartu(); toast('Kamu kembali sebagai tamu biasa.'); }).catch(gagal); },
+  };
+}
+
+// ---------------------------------------------------------------- ACARA
+const TEMPLAT = [
+  { judul: 'Speed Dating Malam Minggu', isi: 'Kenalan cepat 5 menit per orang. Datang ke Kafe Jodoh, duduk, dan sapa yang di sebelahmu!', lokasi: 'kafe', durasi: 60, exp: 50 },
+  { judul: 'Mabar Bareng', isi: 'Cari teman main game. Kumpul di meja Gaming, bagikan ID game kalian.', lokasi: 'meja', durasi: 90, exp: 40 },
+  { judul: 'Sesi Curhat Bareng', isi: 'Ruang aman untuk cerita. Tulis di papan curhat, saling peluk dan kuatkan.', lokasi: 'taman', durasi: 60, exp: 40 },
+  { judul: 'Kuis Cinta', isi: 'Direktur kasih pertanyaan di chat, yang jawab paling cepat menang hadiah EXP.', lokasi: 'rapat', durasi: 45, exp: 50 },
+  { judul: 'Turnamen Tangkap Hati', isi: 'Skor tertinggi hari ini dapat hadiah dari Direktur!', lokasi: 'lobi', durasi: 60, exp: 30 },
+  { judul: 'Malam Eksekutif', isi: 'Nongkrong santai khusus pemegang Kartu Eksekutif.', lokasi: 'lounge', durasi: 90, exp: 40 },
+];
+function keWib(ms) { const d = new Date(ms + 7 * 3600e3); return d.toISOString().slice(0, 16); }
+function dariWib(v) { const [t, j] = v.split('T'); const [y, m, d] = t.split('-').map(Number); const [h, mi] = j.split(':').map(Number); return Date.UTC(y, m - 1, d, h - 7, mi); }
+
+function tabAcara() {
+  const now = K.L.db.now();
+  const awal = keWib(Math.ceil((now + 30 * 60000) / 3600e3) * 3600e3);
+  const daftar = Prog.semuaAcara().filter(([, a]) => a.mulai + a.durasi * 60000 > now - 86400e3).slice(0, 12);
+  return {
+    html: `<h3>➕ Buat acara</h3>
+      <p class="kecil">Template cepat:</p>
+      <div class="sw teks">${TEMPLAT.map((t, i) => `<button type="button" data-t="${i}">${esc(t.judul)}</button>`).join('')}</div>
+      <form id="aF">
+        <label for="aJ">Judul</label><input id="aJ" maxlength="60" required placeholder="contoh: Speed Dating Malam Minggu">
+        <label for="aI">Keterangan</label><textarea id="aI" maxlength="200" rows="2"></textarea>
+        <div class="dua">
+          <div><label for="aL">Tempat</label><select id="aL">${Object.entries(LOKASI).map(([k, l]) => `<option value="${k}">${esc(l.nama)}</option>`).join('')}</select></div>
+          <div><label for="aW">Mulai (WIB)</label><input id="aW" type="datetime-local" value="${awal}" required></div>
+          <div><label for="aD">Durasi</label><select id="aD">${[15, 30, 45, 60, 90, 120, 180].map(m => `<option value="${m}" ${m === 60 ? 'selected' : ''}>${m} menit</option>`).join('')}</select></div>
+          <div><label for="aE">Hadiah EXP hadir</label><input id="aE" type="number" min="0" max="200" step="5" value="40"></div>
+        </div>
+        <p class="err" id="aX"></p>
+        <div class="baris"><button class="btn" type="submit">Jadwalkan acara</button></div>
+      </form>
+      <h3>📅 Acara</h3>
+      ${daftar.length ? `<div class="daftar">${daftar.map(([id, a]) => {
+        const st = Prog.statAcara(id), live = now >= a.mulai && now <= a.mulai + a.durasi * 60000, lewat = now > a.mulai + a.durasi * 60000;
+        return `<div><span>${live ? '🔴 ' : lewat ? '✔️ ' : '📅 '}<b>${esc(a.judul)}</b><br><small>${esc(LOKASI[a.lokasi]?.nama || '')} · ${esc(new Date(a.mulai).toLocaleString('id-ID', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' }))} · ${a.durasi}m · 🎁${a.exp} · 👥 ${st.ikut} ikut · ✅ ${st.hadir} hadir</small></span><button type="button" class="mini merah" data-hapus="${esc(id)}">Hapus</button></div>`;
+      }).join('')}</div>` : '<p class="kecil">Belum ada acara.</p>'}`,
+    pasang(isi) {
+      isi.querySelectorAll('[data-t]').forEach(b => b.onclick = () => {
+        const t = TEMPLAT[+b.dataset.t];
+        isi.querySelector('#aJ').value = t.judul; isi.querySelector('#aI').value = t.isi; isi.querySelector('#aL').value = t.lokasi;
+        isi.querySelector('#aD').value = t.durasi; isi.querySelector('#aE').value = t.exp;
+      });
+      isi.querySelectorAll('[data-hapus]').forEach(b => b.onclick = () => K.L.hapus('acara/' + b.dataset.hapus).then(() => { toast('Acara dihapus'); bukaPanel('acara'); }).catch(gagal));
+      isi.querySelector('#aF').onsubmit = e => {
+        e.preventDefault();
+        const X = isi.querySelector('#aX');
+        const judul = bersih(isi.querySelector('#aJ').value, 60), mulai = dariWib(isi.querySelector('#aW').value);
+        const durasi = +isi.querySelector('#aD').value, exp = Math.max(0, Math.min(200, Math.round(+isi.querySelector('#aE').value || 0)));
+        if (judul.length < 3) { X.textContent = 'Judul minimal 3 huruf.'; return; }
+        if (!isFinite(mulai)) { X.textContent = 'Isi waktu mulai.'; return; }
+        if (mulai + durasi * 60000 < K.L.db.now()) { X.textContent = 'Waktu acara sudah lewat.'; return; }
+        K.L.buatAcara({ judul, isi: bersih(isi.querySelector('#aI').value, 200), lokasi: isi.querySelector('#aL').value, mulai, durasi, exp });
+        toast('Acara dijadwalkan 📅 Semua tamu bisa melihatnya.');
+        setTimeout(() => bukaPanel('acara'), 400);
+      };
+    },
+  };
+}
+
+// ---------------------------------------------------------------- PESANAN (toko)
+const rp = n => 'Rp' + Number(n).toLocaleString('id-ID');
+function tabPesanan() {
+  const pk = id => (CFG.toko?.paket || []).find(p => p.id === id);
+  const list = Object.entries(pesanan).filter(([, v]) => v).sort((a, b) => a[1].t - b[1].t);
+  return {
+    html: `<p class="kecil">Cocokkan <b>kode tamu</b> dengan catatan pembayaran di halaman pembayaranmu${CFG.toko?.linkBayar ? '' : ' (link pembayaran belum diisi di <code>config.js</code>)'}. Setujui hanya jika uangnya sudah masuk.</p>
+      ${list.length ? `<div class="daftar">${list.map(([id, v]) => { const p = pk(v.paket) || { nama: v.paket, harga: 0 }; return `<div><span><b>${esc(p.nama)}</b> · ${rp(p.harga)}<br><small>${esc(bersih(v.n, 20))} · <code>${esc(v.kode || '')}</code> · ${esc(new Date(v.t).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }))}</small></span>
+        <span class="tombolKecil"><button type="button" class="mini" data-ok="${esc(id)}">Setujui</button><button type="button" class="mini putih" data-no="${esc(id)}">Tolak</button></span></div>`; }).join('')}</div>` : '<p>Tidak ada pesanan yang menunggu.</p>'}`,
+    pasang(isi) {
+      isi.querySelectorAll('[data-ok]').forEach(b => b.onclick = async () => {
+        const v = pesanan[b.dataset.ok], p = pk(v?.paket); if (!v || !p) return;
+        b.disabled = true;
+        try {
+          if (p.exp) await K.L.beriExp(v.uid, p.exp);
+          if (p.vipHari) await K.L.beriVip(v.uid, p.vipHari);
+          await K.L.kirimNotif(v.uid, `Pembelian ${p.nama} disetujui. Terima kasih sudah mendukung ${CFG.namaPT}! 💖`);
+          await K.L.hapus('pesanan/' + b.dataset.ok);
+          toast('Pesanan disetujui ✔');
+        } catch (e) { gagal(e); b.disabled = false; }
+      });
+      isi.querySelectorAll('[data-no]').forEach(b => b.onclick = async () => {
+        const v = pesanan[b.dataset.no]; if (!v) return;
+        try {
+          await K.L.kirimNotif(v.uid, `Pembayaran untuk pesananmu belum kami temukan. Pastikan kode tamu ${v.kode} tertulis di pesan pembayaran, lalu hubungi Direktur.`);
+          await K.L.hapus('pesanan/' + b.dataset.no); toast('Pesanan ditolak.');
+        } catch (e) { gagal(e); }
+      });
+    },
   };
 }

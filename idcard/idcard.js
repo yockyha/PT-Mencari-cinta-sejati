@@ -127,6 +127,7 @@ $('f').addEventListener('submit', async e => {
   } catch (err) { console.warn(err); }
   $('buat').disabled = false;
   gambar(); siap = true;
+  try { localStorage.setItem('ptmcs_kartuDicetak', 'true'); } catch (e) {}
   $('unduh').disabled = false;
   $('bagi').hidden = !navigator.canShare;
   st.className = 'status ok';

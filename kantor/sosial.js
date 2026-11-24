@@ -5,6 +5,7 @@
 import { TUJUAN, GENDER, LS, bersih, esc, fmt, kasar } from '../js/common.js';
 import { TS } from '../js/db.js';
 import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js';
+import * as Prog from './progres.js';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const siap = () => { if (!K.prof || !K.prof.tj) { K.bukaDaftar(); return false; } if (K.terkunci) { toast('Kamu belum bisa berinteraksi sekarang.'); return false; } return true; };
@@ -42,8 +43,8 @@ export function mulai() {
     }
   });
   let disukaiLama = null;
-  db.on('suka/' + L.uid, o => {
-    const n = Object.keys(o || {}).length;
+  db.on('jumlahSuka/' + L.uid, o => {
+    const n = Math.max(0, o || 0);
     if (disukaiLama !== null && n > disukaiLama) toast('💘 Seseorang diam-diam menyukaimu!', 3200);
     disukaiLama = n; K.disukai = n;
   });
@@ -63,7 +64,7 @@ function gambarUndangan() {
   const daftar = Object.entries(undangan).filter(([u, v]) => v && !K.sembunyi.has(u) && L.db.now() - (v.t || 0) < 3600e3).slice(-3);
   el.innerHTML = daftar.map(([u, v]) => {
     const o = orangDariUid(u);
-    return `<div class="ajak" data-u="${esc(u)}"><span>💌 <b>${esc(bersih(v.n, 20))}</b>${o && o.tj ? ` <small>${TUJUAN[o.tj].ikon} ${TUJUAN[o.tj].nama}</small>` : ''}<br>ngajak kamu ngobrol</span>
+    return `<div class="ajak ${Prog.isVip(u) ? 'vip' : ''}" data-u="${esc(u)}">${Prog.isVip(u) ? '<b class="vipTag">💎 Tamu Eksekutif</b>' : ''}<span>💌 <b>${esc(bersih(v.n, 20))}</b>${o && o.tj ? ` <small>${TUJUAN[o.tj].ikon} ${TUJUAN[o.tj].nama}</small>` : ''}<br>ngajak kamu ngobrol</span>
       <button type="button" class="mini" data-a="ya">Terima</button><button type="button" class="mini putih" data-a="tidak">Tolak</button></div>`;
   }).join('');
   el.querySelectorAll('.ajak').forEach(d => {
@@ -88,6 +89,7 @@ export function bukaProfil(o) {
   const r = L.ruang(L.uid, uid), adaRuang = !!rooms[r];
   const sukaKu = new Set(LS.get('sukaKu', []));
   const bisaSuka = o.tj === 'jodoh' && K.prof?.tj === 'jodoh';
+  Prog.lapor('tur_profil');
   bukaKartu(`<h2>${peran === 'direktur' ? '👑 ' : peran === 'staf' ? '🛡 ' : ''}${esc(nama)}</h2>
     <p>${pillTujuan(o.tj)} ${peran ? `<span class="pillTj" style="--w:${peran === 'direktur' ? '#c8901a' : '#3a6ea5'}">${peran === 'direktur' ? 'Direktur Utama' : (o.jabatan || 'Staf kantor')}</span>` : ''}</p>
     <p>${o.gd ? `${GENDER[o.gd]}<br>` : ''}${o.s && o.tj === 'jodoh' ? `💗 Status: <b>${esc(o.s)}</b><br>` : ''}${o.mj ? `🪑 Lagi nongkrong di meja <b>${esc(o.mj)}</b><br>` : ''}${o.b ? `“${esc(o.b)}”<br>` : ''}${o.ig ? `📷 <a href="https://www.instagram.com/${encodeURIComponent(o.ig)}/" target="_blank" rel="noopener">@${esc(o.ig)}</a>` : ''}
@@ -110,7 +112,7 @@ export function bukaProfil(o) {
         if (Date.now() - (kapan[uid] || 0) < 120000) { toast('Ajakanmu sudah terkirim, tunggu dijawab ya.'); return; }
         kapan[uid] = Date.now(); LS.set('ajakT', kapan);
         L.undang(uid, K.prof.n).then(() => {
-          toast(`💌 Ajakan ngobrol terkirim ke ${nama}`); tutupKartu();
+          toast(`💌 Ajakan ngobrol terkirim ke ${nama}`); tutupKartu(); Prog.lapor('ajak');
           if (o.npc) setTimeout(() => botTerima(o), 1600);
         }).catch(() => toast('Ajakan gagal terkirim.'));
       };
@@ -121,7 +123,7 @@ export function bukaProfil(o) {
         if (set.has(uid)) { set.delete(uid); LS.set('sukaKu', [...set]); L.batalSuka(uid); toast('Suka dibatalkan.'); tutupKartu(); return; }
         set.add(uid); LS.set('sukaKu', [...set]);
         try {
-          if (o.npc && Math.random() < 0.6) await L.db.set(`suka/${L.uid}/${uid}`, TS);
+          if (o.npc && Math.random() < 0.6) await L.db.update('', { [`suka/${L.uid}/${uid}`]: TS, [`jumlahSuka/${L.uid}`]: (K.disukai || 0) + 1 });
           const cocok = await L.suka(uid, K.prof.n, nama);
           tutupKartu();
           if (!cocok) toast(`❤ Kamu menyukai ${nama}. Dia tidak tahu, kecuali dia juga menyukaimu.`, 3600);
@@ -164,11 +166,19 @@ export function bukaProfilSaya() {
   bukaKartu(`<h2>${TUJUAN[p.tj].ikon} ${esc(p.n)}</h2>
     <p>${pillTujuan(p.tj)} ${K.peran[L.uid] ? `<span class="pillTj" style="--w:${K.peran[L.uid] === 'direktur' ? '#c8901a' : '#3a6ea5'}">${K.peran[L.uid] === 'direktur' ? '👑 Direktur Utama' : '🛡 Staf'}</span>` : ''}</p>
     ${p.b ? `<p>“${esc(p.b)}”</p>` : ''}
-    ${p.tj === 'jodoh' ? `<p>💘 <b>${fmt(K.disukai || 0)}</b> orang diam-diam menyukaimu.</p>` : ''}
+    <p>⭐ Level <b>${Prog.level()}</b> · ${fmt(Prog.totalExp())} EXP ${Prog.vipSaya() ? '· <span class="pillTj" style="--w:#b8860b">💎 Eksekutif</span>' : ''}</p>
+    ${p.tj === 'jodoh' ? `<p>💘 <b>${fmt(K.disukai || 0)}</b> orang diam-diam menyukaimu.</p><div id="mPenyuka">${Prog.vipSaya() ? '<p class="kecil">Memuat…</p>' : '<p class="kecil">Mau tahu siapa saja? <button type="button" class="mini" id="mV">💎 Lihat dengan Kartu Eksekutif</button></p>'}</div>` : ''}
     <div class="baris"><button class="btn" type="button" id="mU">Ubah data</button><button class="btn putih" type="button" id="mO">💬 Obrolan</button><a class="btn putih" href="../idcard/index.html">Kartu Tamu</a></div>
     ${K.sembunyi.size ? `<p class="kecil tautan">${K.sembunyi.size} orang kamu sembunyikan. <button type="button" id="mS">Tampilkan lagi</button></p>` : ''}`, {
     pasang(isi) {
       isi.querySelector('#mU').onclick = () => K.bukaDaftar();
+      const mv = isi.querySelector('#mV'); if (mv) mv.onclick = () => Prog.bukaHub('toko');
+      const box = isi.querySelector('#mPenyuka');
+      if (box && Prog.vipSaya()) L.db.get('suka/' + L.uid).then(o => {
+        const u = Object.keys(o || {});
+        box.innerHTML = u.length ? `<div class="daftar">${u.map(x => { const t = K.tamu.find(t => t.uid === x) || K.bot.find(b => b.uid === x) || {}; return `<div><span>💘 ${esc(t.n || t.nama || 'Tamu')}</span><button type="button" class="mini" data-lihat="${esc(x)}">Lihat</button></div>`; }).join('')}</div>` : '<p class="kecil">Belum ada. Sering-sering mampir ke Kafe Jodoh ya!</p>';
+        box.querySelectorAll('[data-lihat]').forEach(b => b.onclick = () => { const o = orangDariUid(b.dataset.lihat); if (o) bukaProfil(o); else toast('Orangnya sedang tidak di kantor.'); });
+      }).catch(() => { box.innerHTML = '<p class="kecil">Gagal memuat.</p>'; });
       isi.querySelector('#mO').onclick = () => bukaObrolan();
       const s = isi.querySelector('#mS');
       if (s) s.onclick = () => { K.sembunyi.clear(); LS.set('sembunyi', []); K.bot.forEach(b => { if (!b.diusir) b.g.visible = true; }); K.segarkanOrang(); tutupKartu(); toast('Semua orang ditampilkan lagi.'); };
@@ -301,7 +311,7 @@ function gambarCurhat() {
   if (draf) { const bi = el.querySelector('.balasIn'); if (bi) bi.value = draf; }
   el.querySelectorAll('.curhat').forEach(d => {
     const k = d.dataset.k, c = list.find(x => x.k === k);
-    d.querySelector('[data-a=peluk]').onclick = () => { if (!siap()) return; L.peluk(k, !(c.peluk && c.peluk[L.uid])); };
+    d.querySelector('[data-a=peluk]').onclick = () => { if (!siap()) return; const ya = !(c.peluk && c.peluk[L.uid]); L.peluk(k, ya); if (ya) Prog.lapor('peluk'); };
     d.querySelector('[data-a=balas]').onclick = () => { curhatBuka = curhatBuka === k ? null : k; gambarCurhat(); };
     const h = d.querySelector('[data-a=hapus]'); if (h) h.onclick = () => L.hapus('curhat/' + k).then(() => toast('Curhat dihapus')).catch(() => toast('Gagal menghapus.'));
     d.querySelectorAll('[data-hb]').forEach(b => b.onclick = () => L.hapus(`curhat/${k}/balas/${b.dataset.hb}`).catch(() => toast('Gagal menghapus.')));

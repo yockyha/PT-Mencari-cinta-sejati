@@ -64,3 +64,50 @@ export function jamJakarta() {
   const d = new Date();
   return ((d.getUTCHours() + 7) % 24) + d.getUTCMinutes() / 60;
 }
+
+// ---------------------------------------------------------------- LEVEL & EXP
+const AMBANG = [0, 40, 100, 200, 350, 550, 800, 1100, 1500, 2000];
+export function levelDari(exp) {
+  exp = Math.max(0, exp || 0);
+  let lv = 1;
+  for (let i = 0; i < AMBANG.length; i++) if (exp >= AMBANG[i]) lv = i + 1;
+  if (exp >= AMBANG[AMBANG.length - 1]) lv = AMBANG.length + Math.floor((exp - AMBANG[AMBANG.length - 1]) / 600);
+  return lv;
+}
+export function ambangLevel(lv) { return lv <= AMBANG.length ? AMBANG[lv - 1] : AMBANG[AMBANG.length - 1] + (lv - AMBANG.length) * 600; }
+
+// Tanggal hari ini di WIB, contoh "20261124" (untuk tugas harian & peringkat)
+export function hariIni() {
+  const d = new Date(Date.now() + 7 * 3600e3);
+  return d.getUTCFullYear() + String(d.getUTCMonth() + 1).padStart(2, '0') + String(d.getUTCDate()).padStart(2, '0');
+}
+
+// Ruangan kantor: posisi tujuan + area (untuk acara & tugas kunjungan)
+export const LOKASI = {
+  lobi: { nama: '🚪 Lobi', x: 0, z: 17, r: Math.PI, area: [-14, 10, 14, 20] },
+  kafe: { nama: '💘 Kafe Jodoh', x: 19.5, z: 2.5, r: Math.PI / 2, area: [14, -7, 24, 12] },
+  meja: { nama: '🤝 Meja Nongkrong', x: 0, z: 1.5, r: Math.PI, area: [-15, -7, 14, 10] },
+  taman: { nama: '💬 Taman Curhat', x: 18.5, z: -9.2, r: Math.PI, area: [14, -20, 24, -7] },
+  rapat: { nama: '📋 Ruang Rapat', x: -12, z: -10, r: -Math.PI / 2 - 0.4, area: [-24, -20, -8, -7] },
+  bukutamu: { nama: '📖 Buku Tamu', x: 3, z: -14.5, r: Math.PI, area: [-8, -20, 14, -7] },
+  loker: { nama: '👔 Ruang Loker', x: -19, z: 7.5, r: -Math.PI / 2, area: [-24, 0, -15, 10] },
+  direktur: { nama: '👑 Ruang Direktur', x: 16.8, z: 16, r: Math.PI / 2, area: [14, 12, 24, 20] },
+  halaman: { nama: '🌳 Halaman', x: 0, z: 30, r: Math.PI, area: [-40, 20, 40, 50] },
+  lounge: { nama: '💎 Lounge Eksekutif', x: 0, z: -62.5, r: Math.PI, area: [-12, -70, 12, -54], vip: true },
+};
+export function lokasiDi(x, z) {
+  for (const [k, l] of Object.entries(LOKASI)) { const [x1, z1, x2, z2] = l.area; if (x >= x1 && x <= x2 && z >= z1 && z <= z2) return k; }
+  return '';
+}
+
+// Barang yang terbuka sesuai level (lv) atau khusus Kartu Eksekutif (vip)
+export const OUTFIT = [
+  { nama: 'Kemeja', lv: 1 }, { nama: 'Hoodie', lv: 2 }, { nama: 'Jaket Denim', lv: 3 }, { nama: 'Jas & Dasi', lv: 4 },
+  { nama: 'Gaun Pesta', lv: 5 }, { nama: 'Jaket Kulit', lv: 6 }, { nama: 'Setelan Emas', vip: true },
+];
+export const AKSESORIS = [
+  { nama: 'tidak ada', lv: 1 }, { nama: 'kacamata', lv: 1 }, { nama: 'topi', lv: 1 }, { nama: 'pita', lv: 1 }, { nama: 'headset', lv: 1 },
+  { nama: 'kacamata hitam', lv: 2 }, { nama: 'bando kucing', lv: 3 }, { nama: 'mahkota bunga', lv: 5 }, { nama: 'sayap cupid', lv: 7 },
+  { nama: 'aura hati', lv: 9 }, { nama: 'mahkota emas', vip: true }, { nama: 'halo', vip: true },
+];
+export const kodeTamu = uid => 'MCS-' + String(uid).replace(/[^a-z0-9]/gi, '').slice(-6).toUpperCase();

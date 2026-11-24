@@ -59,7 +59,8 @@ export function buatLayanan(db) {
 
     // ---- suka & match
     async suka(target, nSaya, nDia) {
-      await db.set(`suka/${target}/${uid}`, TS);
+      const jml = (await db.get('jumlahSuka/' + target).catch(() => 0)) || 0;
+      await db.update('', { [`suka/${target}/${uid}`]: TS, [`jumlahSuka/${target}`]: jml + 1 });
       const balik = await db.get(`suka/${uid}/${target}`).catch(() => null);
       if (!balik) return false;
       await db.set(`match/${uid}/${target}`, { n: nDia, t: TS });
@@ -70,7 +71,10 @@ export function buatLayanan(db) {
       await db.set(`dmku/${target}/${r}`, { n: nSaya, u: uid, t: TS, baru: true });
       return true;
     },
-    batalSuka(target) { return db.set(`suka/${target}/${uid}`, null).catch(() => {}); },
+    async batalSuka(target) {
+      const jml = (await db.get('jumlahSuka/' + target).catch(() => 0)) || 0;
+      return db.update('', { [`suka/${target}/${uid}`]: null, [`jumlahSuka/${target}`]: Math.max(0, jml - 1) }).catch(() => {});
+    },
 
     // ---- alat Staf & Direktur (dijaga aturan server)
     usir(target, menit, alasan, n) {
@@ -83,6 +87,34 @@ export function buatLayanan(db) {
     umumkan(m) { return db.set('pengumuman', { m: bersih(m, 200), t: TS, oleh: uid }); },
     setelan(o) { return db.update('setelan', o); },
     simpanMading(list) { return db.set('mading', list); },
+
+    // ---- EXP & tugas (EXP dari tugas dicatat sendiri, dibatasi aturan server)
+    async tambahExp(jumlah, kunciTugas) {
+      const lama = (await db.get('exp/' + uid).catch(() => null)) || { n: 0 };
+      const upd = { [`exp/${uid}`]: { n: (lama.n || 0) + Math.min(60, Math.max(0, jumlah | 0)), t: TS } };
+      if (kunciTugas) upd[`tugas/${uid}/${kunciTugas}`] = true;
+      return db.update('', upd);
+    },
+    skor(hari, n, s) { return db.set(`skor/${hari}/${uid}`, { n, s, t: TS }); },
+
+    // ---- acara
+    ikutAcara(id, ya) { return db.set(`ikutAcara/${id}/${uid}`, ya ? true : null); },
+    hadirAcara(id) { return db.set(`hadirAcara/${id}/${uid}`, TS); },
+    buatAcara(a) { return db.push('acara', { ...a, oleh: uid, t: TS }); },
+
+    // ---- toko & notifikasi
+    pesan(paket, n, kode) { return db.push('pesanan', { uid, n, paket, kode, t: TS }); },
+    async beriExp(target, jumlah) {
+      const lama = (await db.get('expBeli/' + target).catch(() => 0)) || 0;
+      return db.set('expBeli/' + target, lama + jumlah);
+    },
+    async beriVip(target, hari) {
+      const lama = (await db.get('vip/' + target).catch(() => null)) || {};
+      const dari = Math.max(db.now(), lama.sampai || 0);
+      return db.set('vip/' + target, { sampai: dari + hari * 86400e3 });
+    },
+    kirimNotif(target, m) { return db.push(`notif/${target}`, { m: bersih(m, 200), t: TS }); },
+    hapusNotif(id) { return db.set(`notif/${uid}/${id}`, null).catch(() => {}); },
   };
   return L;
 }

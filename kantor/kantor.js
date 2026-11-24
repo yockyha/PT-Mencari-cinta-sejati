@@ -3,12 +3,14 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LS, bersih, igBersih, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, OUTFIT, AKSESORIS, LOKASI, lokasiDi, LS, bersih, igBersih, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js';
 import { bukaDB } from '../js/db.js';
 import { buatLayanan } from '../js/layanan.js';
 import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js';
 import * as Sosial from './sosial.js';
 import * as Direktur from './direktur.js';
+import * as Prog from './progres.js';
+import * as Game from './game.js';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
@@ -175,7 +177,37 @@ function bangunDunia() {
     kotak(2.4, 2.5, 0.2, x, 0, 10.2, '#aeb6c2', { tab: true });
     kotak(0.04, 2.3, 0.22, x, 0.05, 10.2, '#6c7480');
   }
-  titikAksi.push({ x: -18.3, z: 11.6, r: 1.8, label: 'Naik lift', aksi: () => toast('Lift sedang perbaikan… seperti hatimu. Pakai tangga perasaan dulu ya.') });
+  titikAksi.push({ x: -18.3, z: 11.6, r: 1.8, label: 'Naik lift ke Lounge 💎', aksi: () => Prog.pergiKe('lounge') });
+  // mesin arcade Tangkap Hati
+  kotak(1.2, 1.9, 0.8, -11.5, 0, 19.2, '#8e5cc9', { tab: true });
+  kotak(1.3, 0.25, 0.9, -11.5, 1.9, 19.2, '#ff4f7b');
+  kotak(1.0, 0.12, 0.35, -11.5, 0.95, 18.75, '#2a1420');
+  bidangTeks(0.95, 0.72, 0, kanvas(256, 196, (x, w, h) => {
+    x.fillStyle = '#2a1420'; x.fillRect(0, 0, w, h);
+    x.font = '64px system-ui, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('💗', w / 2, 72);
+    x.fillStyle = '#ffd23f'; x.font = FD(30); x.fillText('TANGKAP HATI', w / 2, 150, w - 16);
+  }), -11.5, 1.45, 18.79, Math.PI);
+  titikAksi.push({ x: -11.5, z: 17.7, r: 1.6, label: 'Main Tangkap Hati 🎮', aksi: () => Game.bukaArcade() });
+  // papan jadwal acara
+  kotak(3.4, 2.0, 0.12, -10, 0.35, 10.15, '#2a1420');
+  const jadwal = kanvas(680, 400, (c, w, h) => {
+    c.fillStyle = '#2a1420'; c.fillRect(0, 0, w, h);
+    c.fillStyle = '#ffd23f'; c.font = FD(44); c.textAlign = 'center'; c.fillText('📅 JADWAL ACARA', w / 2, 56);
+    const { live, nanti } = Prog.daftarAcara();
+    const isi = [...live.map(x => [x, true]), ...nanti.map(x => [x, false])].slice(0, 3);
+    c.textAlign = 'left';
+    if (!isi.length) { c.fillStyle = '#ffb3c6'; c.font = FB(26, 800); c.textAlign = 'center'; c.fillText('Belum ada acara. Pantau terus!', w / 2, 200); }
+    isi.forEach(([[, a], live], i) => {
+      const Y = 86 + i * 102;
+      c.fillStyle = live ? '#ff4f7b' : '#3d2433'; bulat(c, 18, Y, w - 36, 90, 12); c.fill();
+      c.fillStyle = '#fff'; c.font = FB(27, 900); c.fillText((live ? '🔴 LIVE · ' : '') + a.judul, 32, Y + 36, w - 64);
+      c.fillStyle = live ? '#fff6ef' : '#ffb3c6'; c.font = FB(20, 800); c.fillText(`${tanggalJam(a.mulai)} · ${LOKASI[a.lokasi]?.nama || ''}`, 32, Y + 70, w - 64);
+    });
+  });
+  bidangTeks(3.2, 1.88, 0, jadwal, -10, 1.35, 10.22);
+  K.gambarJadwal = () => jadwal.ulang();
+  setInterval(() => jadwal.ulang(), 60000);
+  titikAksi.push({ x: -10, z: 11.6, r: 1.8, label: 'Lihat jadwal acara', aksi: () => Prog.bukaHub('acara') });
   // mading HRD
   madingHRD(10, 10.15, 0);
   titikAksi.push({ x: 10, z: 11.5, r: 1.8, label: 'Baca mading', aksi: bukaMading });
@@ -279,6 +311,32 @@ function bangunDunia() {
     x.fillStyle = '#2a1420'; x.font = FD(48); x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('RUANG DIREKTUR', w / 2, h / 2 + 3, w - 20);
   }), 13.85, 2.35, 16, -Math.PI / 2);
   titikAksi.push({ x: 18.6, z: 16, r: 2.8, label: 'Meja Direktur', aksi: () => Direktur.bukaMeja() });
+
+  // ---- LOUNGE EKSEKUTIF (taman belakang, khusus Kartu Eksekutif)
+  lantai(-12, -70, 12, -54, '#3b2b3f', 0.03);
+  lantai(-9, -68, 9, -57, '#5a3d55', 0.035);
+  const pagar = '#d4a017';
+  kotak(24.4, 1.2, 0.2, 0, 0, -70, pagar, { tab: true });
+  kotak(0.2, 1.2, 16, -12, 0, -62, pagar, { tab: true }); kotak(0.2, 1.2, 16, 12, 0, -62, pagar, { tab: true });
+  kotak(10.8, 1.2, 0.2, -6.6, 0, -54, pagar, { tab: true }); kotak(10.8, 1.2, 0.2, 6.6, 0, -54, pagar, { tab: true });
+  kotak(2.4, 0.2, 0.2, 0, 2.6, -54, pagar, { tab: false }); kotak(0.25, 2.8, 0.25, -1.2, 0, -54, '#2a1420', { tab: true }); kotak(0.25, 2.8, 0.25, 1.2, 0, -54, '#2a1420', { tab: true });
+  tabrak.push({ x1: -1.1, x2: 1.1, z1: -54.1, z2: -53.9 }); // gerbang terkunci; masuk lewat tombol
+  bidangTeks(3.4, 0.6, 0, kanvas(512, 90, (x, w, h) => {
+    x.fillStyle = '#2a1420'; bulat(x, 0, 0, w, h, 18); x.fill();
+    x.fillStyle = '#ffd23f'; x.font = FD(46); x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('💎 LOUNGE EKSEKUTIF', w / 2, h / 2 + 2, w - 20);
+  }), 0, 3.15, -53.85);
+  for (let i = 0; i < 26; i++) { // lampu gantung
+    const b = new THREE.Mesh(new THREE.SphereGeometry(0.09, 8, 6), new THREE.MeshBasicMaterial({ color: ['#ffd23f', '#ff8fab', '#ffffff'][i % 3] }));
+    const t = i / 25; b.position.set(-12 + t * 24, 1.35 + Math.sin(t * Math.PI * 4) * 0.08, -70 + 0.05); scene.add(b);
+  }
+  sofa(-6, -60.5, 0); sofa(6, -60.5, 0);
+  mejaBundar(-6.5, -65); mejaBundar(6.5, -65);
+  kotak(6, 1.05, 1, 0, 0, -68, '#5b3a2a', { tab: true }); kotak(6.2, 0.08, 1.2, 0, 1.05, -68, '#d4a017');
+  for (let i = 0; i < 5; i++) kotak(0.14, 0.4, 0.14, -2 + i, 1.13, -68.2, ['#2f9e6e', '#c0392b', '#3a6ea5', '#f2b33d', '#8e5cc9'][i]);
+  const hl = bentukHati(1.1, '#ff4f7b'); hl.position.set(0, 3.3, -69.2); scene.add(hl); hatiBesar.push(hl);
+  for (const [x, z] of [[-11, -55], [11, -55], [-11, -69], [11, -69]]) pot(x, z);
+  titikAksi.push({ x: 0, z: -52.6, r: 1.8, label: 'Masuk Lounge 💎', aksi: () => Prog.pergiKe('lounge') });
+  titikAksi.push({ x: 0, z: -55.4, r: 1.3, label: 'Keluar lounge', aksi: () => pindah(0, -51.8, 0) });
 
   // ---- LUAR KANTOR
   patungHati(-14, 32); patungHati(14, 32);
@@ -508,8 +566,9 @@ const BAJU = ['#ff4f7b', '#ffffff', '#3a6ea5', '#2f9e6e', '#f2b33d', '#8e5cc9', 
 const CELANA = ['#2b2d42', '#4a4e69', '#6b4f3a', '#1d3557', '#cfc6b8'];
 const RAMBUT = ['pendek', 'panjang', 'kuncir', 'botak', 'keriting'];
 const WRAMBUT = ['#1b1b1b', '#4a2f1f', '#8a5a2b', '#d9a441', '#c0392b', '#ff8fab'];
-const AKS = ['tidak ada', 'kacamata', 'topi', 'pita', 'headset'];
-const PILIHAN = { k: KULIT, b: BAJU, c: CELANA, r: RAMBUT, w: WRAMBUT, a: AKS };
+const AKS = AKSESORIS.map(a => a.nama);
+const OUT = OUTFIT.map(o => o.nama);
+const PILIHAN = { o: OUT, k: KULIT, b: BAJU, c: CELANA, r: RAMBUT, w: WRAMBUT, a: AKS };
 
 function cekLook(l) {
   const o = {};
@@ -519,6 +578,7 @@ function cekLook(l) {
 function lookAcak(seed) {
   const o = {}; let s = seed;
   for (const k in PILIHAN) { o[k] = s % PILIHAN[k].length; s = Math.floor(s / 7) + 13; }
+  o.o %= 2; o.a %= 5; // acak hanya dari barang gratis
   return o;
 }
 
@@ -528,22 +588,31 @@ function buatKarakter(look) {
   const tubuh = new THREE.Group(); g.add(tubuh);
   const part = (w, h, d, x, y, z, m, p) => { const me = new THREE.Mesh(GEO, m); me.scale.set(w, h, d); me.position.set(x, y, z); me.castShadow = true; p.add(me); return me; };
   const kulit = M(KULIT[L.k]), baju = M(BAJU[L.b]), cel = M(CELANA[L.c]), rmb = M(WRAMBUT[L.w]);
+  const ot = L.o;
+  const badan = ot === 2 ? M('#4a6fa5') : ot === 3 ? M('#2b2d42') : ot === 5 ? M('#1f1f24') : ot === 6 ? M('#d4a017', { emissive: 0x3a2800 }) : baju;
+  const celana = ot === 6 ? M('#9c7412') : ot === 3 ? M('#23253a') : cel;
   const kaki = [];
   for (const sx of [-0.13, 0.13]) {
     const k = new THREE.Group(); k.position.set(sx, 0.78, 0); tubuh.add(k);
-    part(0.23, 0.72, 0.25, 0, -0.36, 0, cel, k);
+    part(0.23, 0.72, 0.25, 0, -0.36, 0, celana, k);
     part(0.25, 0.1, 0.34, 0, -0.74, 0.04, M('#2a2a2a'), k);
     kaki.push(k);
   }
-  part(0.58, 0.68, 0.33, 0, 1.12, 0, baju, tubuh);
-  part(0.6, 0.1, 0.35, 0, 0.8, 0, cel, tubuh); // ikat pinggang
+  part(0.58, 0.68, 0.33, 0, 1.12, 0, badan, tubuh);
+  part(0.6, 0.1, 0.35, 0, 0.8, 0, celana, tubuh); // ikat pinggang
+  if (ot === 0) { part(0.14, 0.07, 0.05, -0.08, 1.43, 0.15, M('#ffffff'), tubuh); part(0.14, 0.07, 0.05, 0.08, 1.43, 0.15, M('#ffffff'), tubuh); }
+  if (ot === 1) { part(0.5, 0.34, 0.16, 0, 1.52, -0.22, baju, tubuh); part(0.36, 0.15, 0.02, 0, 0.98, 0.168, M('#2a1420', { transparent: true, opacity: 0.25 }), tubuh); }
+  if (ot === 2 || ot === 5) { part(0.2, 0.64, 0.02, 0, 1.12, 0.168, baju, tubuh); if (ot === 5) part(0.02, 0.6, 0.025, 0.11, 1.12, 0.172, M('#c0c4cc'), tubuh); }
+  if (ot === 3) { part(0.16, 0.42, 0.02, 0, 1.24, 0.168, M('#ffffff'), tubuh); part(0.07, 0.36, 0.025, 0, 1.2, 0.18, baju, tubuh); }
+  if (ot === 4) { part(0.72, 0.44, 0.48, 0, 0.6, 0, baju, tubuh); part(0.6, 0.08, 0.36, 0, 0.84, 0, M('#ffffff'), tubuh); }
+  if (ot === 6) { part(0.16, 0.42, 0.02, 0, 1.24, 0.168, M('#fff6ef'), tubuh); part(0.12, 0.08, 0.03, 0, 1.38, 0.18, M('#ff4f7b'), tubuh); }
   part(0.04, 0.3, 0.02, -0.09, 1.3, 0.172, M('#ff4f7b'), tubuh); part(0.04, 0.3, 0.02, 0.09, 1.3, 0.172, M('#ff4f7b'), tubuh); // tali ID
   part(0.17, 0.21, 0.03, 0, 1.1, 0.178, M('#ffffff'), tubuh); // kartu ID
   part(0.11, 0.06, 0.035, 0, 1.15, 0.18, M('#ff4f7b'), tubuh);
   const lengan = [];
   for (const sx of [-0.38, 0.38]) {
     const a = new THREE.Group(); a.position.set(sx, 1.42, 0); tubuh.add(a);
-    part(0.17, 0.6, 0.2, 0, -0.28, 0, baju, a);
+    part(0.17, 0.6, 0.2, 0, -0.28, 0, badan, a);
     part(0.15, 0.12, 0.17, 0, -0.63, 0, kulit, a);
     lengan.push(a);
   }
@@ -569,7 +638,25 @@ function buatKarakter(look) {
   if (aks === 'topi') { part(0.52, 0.16, 0.5, 0, 0.6, 0, M('#ff4f7b'), kepala); part(0.48, 0.04, 0.24, 0, 0.53, 0.32, M('#ff4f7b'), kepala); }
   if (aks === 'pita') { part(0.14, 0.12, 0.06, -0.1, 0.62, 0.1, M('#ff4f7b'), kepala); part(0.14, 0.12, 0.06, 0.1, 0.62, 0.1, M('#ff4f7b'), kepala); part(0.06, 0.08, 0.08, 0, 0.62, 0.1, M('#d35470'), kepala); }
   if (aks === 'headset') { part(0.56, 0.05, 0.08, 0, 0.6, 0, M('#2b2d42'), kepala); part(0.08, 0.16, 0.16, -0.27, 0.3, 0, M('#2b2d42'), kepala); part(0.08, 0.16, 0.16, 0.27, 0.3, 0, M('#2b2d42'), kepala); part(0.03, 0.03, 0.2, -0.27, 0.18, 0.15, M('#2b2d42'), kepala); }
-  g.userData = { kaki, lengan, tubuh, kepala, fase: Math.random() * 6 };
+  let sayap = null, aura = null;
+  if (aks === 'kacamata hitam') { part(0.4, 0.11, 0.03, 0, 0.27, 0.24, M('#111111'), kepala); }
+  if (aks === 'bando kucing') { part(0.46, 0.04, 0.06, 0, 0.56, 0.02, M('#2a1420'), kepala); for (const sx of [-1, 1]) { const e = part(0.13, 0.16, 0.06, sx * 0.17, 0.66, 0.02, M('#ff8fab'), kepala); e.rotation.z = -sx * 0.35; } }
+  if (aks === 'mahkota bunga') for (let i = 0; i < 9; i++) { const a = i / 9 * Math.PI * 2; part(0.1, 0.1, 0.1, Math.sin(a) * 0.25, 0.56, Math.cos(a) * 0.24, M(['#ff4f7b', '#ffd23f', '#ffffff'][i % 3]), kepala); }
+  if (aks === 'mahkota emas' ) { const emas = M('#ffd23f', { emissive: 0x4a3500 }); part(0.5, 0.1, 0.48, 0, 0.6, 0, emas, kepala); for (const [x, z] of [[-0.18, 0.18], [0.18, 0.18], [0, 0.2], [-0.18, -0.18], [0.18, -0.18]]) part(0.08, 0.16, 0.08, x, 0.72, z, emas, kepala); part(0.07, 0.07, 0.03, 0, 0.62, 0.25, M('#ff4f7b'), kepala); }
+  if (aks === 'halo') { const h = new THREE.Mesh(new THREE.TorusGeometry(0.22, 0.03, 8, 28), M('#ffe066', { emissive: 0x806000 })); h.rotation.x = Math.PI / 2; h.position.y = 0.82; kepala.add(h); }
+  if (aks === 'sayap cupid') {
+    sayap = [];
+    for (const sx of [-1, 1]) {
+      const w = new THREE.Group(); w.position.set(sx * 0.12, 1.3, -0.18); tubuh.add(w);
+      part(0.05, 0.4, 0.5, 0, 0, -0.25, M('#ffffff'), w); part(0.05, 0.26, 0.3, 0, -0.22, -0.3, M('#ffe1e9'), w);
+      w.rotation.y = sx * 0.5; sayap.push(w);
+    }
+  }
+  if (aks === 'aura hati') {
+    aura = new THREE.Group(); aura.position.y = 1.2; g.add(aura);
+    for (let i = 0; i < 3; i++) { const h = bentukHati(0.13, '#ff4f7b'); const a = i / 3 * Math.PI * 2; h.position.set(Math.sin(a) * 0.62, Math.sin(a * 2) * 0.15, Math.cos(a) * 0.62); h.castShadow = false; aura.add(h); }
+  }
+  g.userData = { kaki, lengan, tubuh, kepala, sayap, aura, fase: Math.random() * 6 };
   return g;
 }
 // a: 0 diam, 1 jalan, 2 duduk
@@ -584,19 +671,21 @@ function pose(ch, a, dt, cepat = 1) {
   u.lengan[1].rotation.x = lerp(u.lengan[1].rotation.x, a === 2 ? -0.5 : s * 0.8);
   u.tubuh.position.y = lerp(u.tubuh.position.y, a === 2 ? -0.31 : (a === 1 ? Math.abs(Math.cos(u.fase)) * 0.05 : 0));
   if (a === 0) { u.fase += dt; u.kepala.rotation.y = Math.sin(u.fase * 0.4) * 0.15; } else u.kepala.rotation.y = lerp(u.kepala.rotation.y, 0);
+  if (u.sayap) { const f = Math.sin(performance.now() / 170) * 0.3; u.sayap[0].rotation.y = -0.5 - f; u.sayap[1].rotation.y = 0.5 + f; }
+  if (u.aura) u.aura.rotation.y += (dt || 0.016) * 1.6;
 }
 
 function labelNama(teks, gaya = '') {
   const kv = kanvas(360, 72, (x, w, h) => {
     x.font = FB(30, 900);
     const tw = Math.min(w - 6, x.measureText(teks).width + 30);
-    x.fillStyle = gaya === 'direktur' ? 'rgba(242,179,61,.96)' : gaya === 'staf' ? 'rgba(58,110,165,.94)' : gaya ? 'rgba(255,79,123,.9)' : 'rgba(42,20,32,.78)';
+    x.fillStyle = gaya === 'direktur' ? 'rgba(242,179,61,.96)' : gaya === 'staf' ? 'rgba(58,110,165,.94)' : gaya === 'vip' ? 'rgba(160,110,10,.95)' : gaya ? 'rgba(255,79,123,.9)' : 'rgba(42,20,32,.78)';
     bulat(x, (w - tw) / 2, 8, tw, 54, 27); x.fill();
     x.fillStyle = gaya === 'direktur' ? '#2a1420' : '#fff'; x.textAlign = 'center'; x.textBaseline = 'middle';
     x.fillText(teks, w / 2, 37, w - 30);
   });
   const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: kv.t, transparent: true, depthWrite: false }));
-  s.scale.set(1.97, 0.4, 1); s.position.y = 2.32; s.renderOrder = 5;
+  s.scale.set(1.97, 0.4, 1); s.position.y = 2.5; s.renderOrder = 5;
   return s;
 }
 function gelembung(teks) {
@@ -614,7 +703,7 @@ function gelembung(teks) {
     b.forEach((s, i) => x.fillText(s, w / 2, Y + 13 + lh / 2 + i * lh));
   });
   const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: kv.t, transparent: true, depthWrite: false, depthTest: false }));
-  s.scale.set(2.8, 0.98, 1); s.position.y = 2.85; s.renderOrder = 10;
+  s.scale.set(2.8, 0.98, 1); s.position.y = 3.05; s.renderOrder = 10;
   return s;
 }
 function bicara(o, teks) {
@@ -646,7 +735,7 @@ function pasangKarakterSaya() {
   const lama = saya.g;
   saya.look = cekLook(prof?.look || lookAcak(Math.floor(Math.random() * 1e6)));
   saya.g = buatKarakter(saya.look);
-  saya.label = prof && prof.tj && L ? labelNama(teksLabel(prof.n, prof.tj, L.uid), gayaPeran(L.uid)) : labelNama(prof ? prof.n : 'Tamu');
+  saya.label = prof && prof.tj && L ? labelNama(teksLabel(prof.n, prof.tj, L.uid, Prog.level()), gayaPeran(L.uid)) : labelNama(prof ? prof.n : 'Tamu');
   saya.g.add(saya.label);
   if (lama) { if (saya.gel) { lama.remove(saya.gel); saya.g.add(saya.gel); } scene.remove(lama); }
   scene.add(saya.g);
@@ -836,8 +925,8 @@ let L = null;
 const lain = K.lain; // uid -> {g, nama, tj, ...}
 
 const ikonPeran = uid => (K.peran[uid] === 'direktur' ? '👑 ' : K.peran[uid] === 'staf' ? '🛡 ' : '');
-const gayaPeran = uid => (K.peran[uid] === 'direktur' ? 'direktur' : K.peran[uid] === 'staf' ? 'staf' : '');
-const teksLabel = (n, tj, uid) => (ikonPeran(uid) || (TUJUAN[tj]?.ikon || '') + ' ') + n;
+const gayaPeran = uid => (K.peran[uid] === 'direktur' ? 'direktur' : K.peran[uid] === 'staf' ? 'staf' : Prog.isVip(uid) ? 'vip' : '');
+const teksLabel = (n, tj, uid, lv = 1) => (ikonPeran(uid) || (Prog.isVip(uid) ? '💎 ' : (TUJUAN[tj]?.ikon || '') + ' ')) + n + (lv > 1 ? ' ⭐' + lv : '');
 
 function sinkronLain(obj) {
   if (!L) return;
@@ -847,17 +936,17 @@ function sinkronLain(obj) {
     if (typeof p.t === 'number' && kini - p.t > 120000) continue;
     ada.add(uid);
     let o = lain.get(uid);
-    const nm = bersih(p.n || 'Tamu', 20), tj = tujuanAman(p.tj);
-    const kunci = JSON.stringify(p.l || {}) + '|' + nm + '|' + tj + '|' + (K.peran[uid] || '');
+    const nm = bersih(p.n || 'Tamu', 20), tj = tujuanAman(p.tj), lv = clamp(p.lv | 0, 1, 99);
+    const kunci = JSON.stringify(p.l || {}) + '|' + nm + '|' + tj + '|' + (K.peran[uid] || '') + '|' + lv + '|' + Prog.isVip(uid);
     if (!o || o.kunci !== kunci) {
       const g = buatKarakter(p.l);
-      g.add(labelNama(teksLabel(nm, tj, uid), gayaPeran(uid)));
+      g.add(labelNama(teksLabel(nm, tj, uid, lv), gayaPeran(uid)));
       const baru = { g, kunci, uid, x: +p.x || 0, z: +p.z || 0, r: +p.r || 0, gel: null, gelT: 0 };
       if (o) { scene.remove(o.g); Object.assign(baru, { x: o.x, z: o.z, r: o.r, gel: o.gel, gelT: o.gelT }); if (o.gel) g.add(o.gel); }
       o = baru; scene.add(g); lain.set(uid, o);
     }
     Object.assign(o, {
-      nama: nm, tj, s: bersih(p.s, 20), b: bersih(p.b, 100), gd: GENDER[p.g] ? p.g : '', ig: igBersih(p.ig), mj: bersih(p.mj, 30),
+      nama: nm, tj, lv, s: bersih(p.s, 20), b: bersih(p.b, 100), gd: GENDER[p.g] ? p.g : '', ig: igBersih(p.ig), mj: bersih(p.mj, 30),
       tx: +p.x || 0, tz: +p.z || 0, tr: +p.r || 0, ta: p.a | 0,
     });
   }
@@ -866,7 +955,7 @@ function sinkronLain(obj) {
 }
 function hitungOnline() {
   const el = $('online'), n = lain.size + 1 + (L?.mode === 'lokal' ? bot.length : 0);
-  el.querySelector('span').textContent = innerWidth < 480 ? `${fmt(n)} di kantor` : `${fmt(n)} orang di kantor${L?.mode === 'lokal' ? ' · mode lokal' : ''}`;
+  el.querySelector('span').textContent = innerWidth < 480 ? `👥 ${fmt(n)}` : `${fmt(n)} orang di kantor${L?.mode === 'lokal' ? ' · mode lokal' : ''}`;
   el.classList.toggle('lokal', L?.mode === 'lokal');
 }
 $('online').onclick = () => Sosial.bukaDaftarOnline();
@@ -876,7 +965,7 @@ function kirimPosisi(t) {
   if (!L || !prof || !prof.tj || K.terkunci) return;
   const p = {
     n: prof.n, tj: prof.tj, s: prof.tj === 'jodoh' ? (prof.s || '') : '', b: prof.b || '', g: prof.g || '', ig: prof.ig || '',
-    l: saya.look, x: +saya.x.toFixed(2), z: +saya.z.toFixed(2), r: +saya.r.toFixed(2), a: saya.a, mj: saya.meja || '',
+    l: { ...saya.look, o: Prog.bolehOutfit(saya.look.o) ? saya.look.o : 0, a: Prog.bolehAks(saya.look.a) ? saya.look.a : 0 }, lv: Prog.level(), x: +saya.x.toFixed(2), z: +saya.z.toFixed(2), r: +saya.r.toFixed(2), a: saya.a, mj: saya.meja || '',
   };
   const k = `${p.x},${p.z},${p.r},${p.a},${p.mj}`;
   const detak = L.mode === 'lokal' ? 4000 : 20000;
@@ -896,6 +985,7 @@ $('chatF').addEventListener('submit', e => {
   chatTerakhir = Date.now();
   i.value = '';
   L.chat(prof.n, t);
+  Prog.lapor('tur_sapa'); Prog.lapor('chat');
   if (L.mode === 'lokal' && /(halo|hai|hi|pagi|siang|sore|malam|permisi|hello)/i.test(t)) {
     const b = acak(bot.filter(b => Math.hypot(b.x - saya.x, b.z - saya.z) < 7));
     if (b) setTimeout(() => { const r = acak(BALASAN); bicara(b, r); tulisLog(b.n, r); }, 900);
@@ -967,6 +1057,7 @@ function bukaDaftar() {
         L && L.daftarTamu(prof);
         pasangKarakterSaya(); perbaruiTombolProfil(); posWaktu = 0;
         tutupKartu();
+        Prog.lapor('tur_daftar');
         if (baru) {
           tulisLog('', `Selamat datang, ${n}! Kamu tercatat sebagai tamu ${TUJUAN[tjBaru].ikon} ${TUJUAN[tjBaru].nama}.`, 'sys');
           const saran = { jodoh: ['Kafe Jodoh', 19.5, 2.5, Math.PI / 2], teman: ['Meja Nongkrong', 0, 1.5, Math.PI], curhat: ['Taman Curhat', 18.5, -9.2, Math.PI] }[tjBaru];
@@ -989,12 +1080,15 @@ function bukaLoker() {
   const lama = { ...saya.look };
   const kamLama = { yaw: kam.yaw, pitch: kam.pitch, jarak: kam.jarak };
   kam.yaw = saya.r + Math.PI; kam.pitch = 0.12; kam.jarak = 4.6; kam.y = innerWidth < 900 ? 0.6 : 1.1;
-  const nama = { k: 'Kulit', b: 'Baju', c: 'Celana', r: 'Rambut', w: 'Warna rambut', a: 'Aksesoris' };
-  const isiSw = k => PILIHAN[k].map((v, i) => k === 'r' || k === 'a'
-    ? `<button type="button" data-k="${k}" data-i="${i}" class="${saya.look[k] === i ? 'on' : ''}">${esc(v)}</button>`
+  const nama = { o: 'Outfit', a: 'Aksesoris', b: 'Warna baju', c: 'Celana', r: 'Rambut', w: 'Warna rambut', k: 'Kulit' };
+  const teks = k => k === 'r' || k === 'a' || k === 'o';
+  const terkunci = (k, i) => (k === 'o' ? !Prog.bolehOutfit(i) : k === 'a' ? !Prog.bolehAks(i) : false);
+  const syarat = (k, i) => { const it = (k === 'o' ? OUTFIT : AKSESORIS)[i]; return it.vip ? '💎' : '🔒 Lv' + it.lv; };
+  const isiSw = k => PILIHAN[k].map((v, i) => teks(k)
+    ? `<button type="button" data-k="${k}" data-i="${i}" class="${saya.look[k] === i ? 'on' : ''} ${terkunci(k, i) ? 'kunci' : ''}">${esc(v)}${terkunci(k, i) ? ' ' + syarat(k, i) : ''}</button>`
     : `<button type="button" data-k="${k}" data-i="${i}" class="${saya.look[k] === i ? 'on' : ''}" style="background:${v}" aria-label="${nama[k]} ${i + 1}"></button>`).join('');
-  let tab = 'b';
-  bukaKartu(`<h2>Ruang Loker 👔</h2>
+  let tab = 'o';
+  bukaKartu(`<h2>Ruang Loker 👔 <small class="kecil">Level ${Prog.level()}</small></h2>
     <div class="sw teks tab">${Object.keys(nama).map(k => `<button type="button" data-tab="${k}" class="${k === tab ? 'on' : ''}">${nama[k]}</button>`).join('')}</div>
     <div class="sw pilih" id="lP"></div>
     <div class="baris"><button class="btn" type="button" id="lS">Simpan</button><button class="btn putih" type="button" id="lA">Acak 🎲</button></div>`, {
@@ -1003,14 +1097,22 @@ function bukaLoker() {
       const P = isi.querySelector('#lP');
       const pasangUlang = () => { prof.look = { ...saya.look }; pasangKarakterSaya(); saya.g.position.set(saya.x, 0, saya.z); saya.g.rotation.y = saya.r; };
       const isiTab = () => {
-        P.className = 'sw pilih' + (tab === 'r' || tab === 'a' ? ' teks' : '');
+        P.className = 'sw pilih' + (teks(tab) ? ' teks' : '');
         P.innerHTML = isiSw(tab);
-        P.querySelectorAll('button').forEach(b => b.onclick = () => { saya.look[tab] = +b.dataset.i; pasangUlang(); isiTab(); });
+        P.querySelectorAll('button').forEach(b => b.onclick = () => {
+          const i = +b.dataset.i;
+          if (terkunci(tab, i)) {
+            const it = (tab === 'o' ? OUTFIT : AKSESORIS)[i];
+            toast(it.vip ? `${it.nama} khusus pemegang Kartu Eksekutif 💎` : `${it.nama} terbuka di Level ${it.lv}. Kumpulkan EXP dari tugas & acara, atau beli EXP di Toko.`, 3600);
+            return;
+          }
+          saya.look[tab] = i; pasangUlang(); isiTab();
+        });
         isi.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === tab));
       };
       isi.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { tab = b.dataset.tab; isiTab(); });
-      isi.querySelector('#lA').onclick = () => { saya.look = lookAcak(Math.floor(Math.random() * 1e7)); pasangUlang(); isiTab(); };
-      isi.querySelector('#lS').onclick = () => { simpanProfil(prof); lama.simpan = true; posWaktu = 0; tutupKartu(); toast('Penampilan baru tersimpan ✨'); };
+      isi.querySelector('#lA').onclick = () => { const o = saya.look.o, a = saya.look.a; saya.look = { ...lookAcak(Math.floor(Math.random() * 1e7)), o, a }; pasangUlang(); isiTab(); };
+      isi.querySelector('#lS').onclick = () => { simpanProfil(prof); lama.simpan = true; posWaktu = 0; tutupKartu(); toast('Penampilan baru tersimpan ✨'); Prog.lapor('tur_loker'); };
       isiTab();
     },
     tutup() {
@@ -1065,7 +1167,7 @@ function bukaPapan() {
         if (t.length < 2) { isi.querySelector('#pE').textContent = 'Tulis sesuatu dulu.'; return; }
         if (Date.now() - LS.get('papanT', 0) < 30000) { isi.querySelector('#pE').textContent = 'Tunggu 30 detik sebelum menulis lagi.'; return; }
         LS.set('papanT', Date.now());
-        L.papan(prof.n, t); tutupKartu(); toast('Tulisanmu sudah di papan ✔');
+        L.papan(prof.n, t); tutupKartu(); toast('Tulisanmu sudah di papan ✔'); Prog.lapor('papan');
       };
     },
   });
@@ -1114,6 +1216,7 @@ function bukaKopi() {
     },
   });
   if (prof) bicara(saya, '☕ ' + r.split(':')[0]);
+  Prog.lapor('kopi');
 }
 
 // ---- air mancur
@@ -1123,6 +1226,7 @@ const HARAPAN = [
   'Koin mendarat di tengah hati. Pertanda baik!', 'Harapan diterima. Estimasi pengiriman: rahasia perusahaan.',
 ];
 function bukaKoin() {
+  Prog.lapor('koin');
   const n = (LS.get('koin', 0) || 0) + 1; LS.set('koin', n);
   airLompat = 1;
   bukaKartu(`<h2>🪙 Air Mancur Harapan</h2><p style="font-size:18px"><b>${esc(acak(HARAPAN))}</b></p><p class="kecil">Kamu sudah melempar ${fmt(n)} koin.</p>`);
@@ -1130,14 +1234,9 @@ function bukaKoin() {
 let airLompat = 0;
 
 // ---------------------------------------------------------------- LOKASI
-const TEMPAT = [
-  ['🚪 Lobi', 0, 17, Math.PI], ['💘 Kafe Jodoh', 19.5, 2.5, Math.PI / 2], ['🤝 Meja Nongkrong', 0, 1.5, Math.PI],
-  ['💬 Taman Curhat', 18.5, -9.2, Math.PI], ['📋 Ruang Rapat', -12, -10, -Math.PI / 2 - 0.4], ['📖 Buku Tamu', 3, -14.5, Math.PI],
-  ['👔 Ruang Loker', -19, 7.5, -Math.PI / 2], ['👑 Ruang Direktur', 16.8, 16, Math.PI / 2], ['🌳 Halaman', 0, 30, Math.PI],
-];
-TEMPAT.forEach(([n, x, z, r]) => {
-  const b = document.createElement('button'); b.className = 'pill'; b.type = 'button'; b.textContent = n;
-  b.onclick = () => { pindah(x, z, r); b.blur(); };
+Object.entries(LOKASI).forEach(([k, l]) => {
+  const b = document.createElement('button'); b.className = 'pill' + (l.vip ? ' emas' : ''); b.type = 'button'; b.textContent = l.nama;
+  b.onclick = () => { Prog.pergiKe(k); b.blur(); };
   $('tempat').appendChild(b);
 });
 function pindah(x, z, r) {
@@ -1165,6 +1264,7 @@ function duduk(k) {
   const m = MEJA.find(m => Math.abs(m.x - k.x) < 1.6 && Math.abs(m.z - k.z) < 1.8);
   saya.meja = m ? m.topik : '';
   if (m) {
+    Prog.lapor('meja');
     const teman = [...lain.values(), ...(L?.mode === 'lokal' ? bot : [])].filter(o => o.mj === m.topik).length;
     toast(`Kamu nongkrong di meja ${m.topik}. ${teman ? teman + ' orang lain juga di sini, sapa yuk!' : 'Tunggu yang lain datang, atau ajak lewat chat.'}`, 3600);
   }
@@ -1228,7 +1328,7 @@ function aturWaktu() {
 // ---------------------------------------------------------------- LOOP
 const jam = new THREE.Clock();
 const _dir = new THREE.Vector3();
-let waktuLangit = -1e9;
+let waktuLangit = -1e9, cekT = 0;
 function langkah() {
   const dt = Math.min(jam.getDelta(), 0.05), t = performance.now();
   const mengetik = document.activeElement && document.activeElement.matches('input,textarea,select');
@@ -1292,6 +1392,11 @@ function langkah() {
   matahari.position.set(kam.x + 28, 46, kam.z + 22); matahari.target.position.set(kam.x, 0, kam.z);
 
   if (t - waktuLangit > 30000) { waktuLangit = t; aturWaktu(); }
+  if (t - cekT > 1000) {
+    cekT = t;
+    Prog.cekPosisi(saya.x, saya.z);
+    if (L && lokasiDi(saya.x, saya.z) === 'lounge' && !Prog.vipSaya() && !K.peran[L.uid]) { pindah(0, -51.8, 0); toast('Kartu Eksekutifmu sudah tidak aktif.'); }
+  }
   perbaruiAksi();
   kirimPosisi(t);
   renderer.render(scene, camera);
@@ -1331,7 +1436,7 @@ async function mulai() {
   setInterval(cekTirai, 30000);
   db.hapusSaatPutus('online/' + L.uid);
   if (L.mode === 'lokal') buatBot();
-  Sosial.mulai(); Direktur.mulai();
+  Sosial.mulai(); Direktur.mulai(); Prog.mulai();
   hitungOnline();
   if (L.mode === 'lokal' && prof && prof.tj) {
     // mode lokal: tab kedua di browser yang sama dianggap tamu lain, supaya interaksi bisa dicoba
@@ -1341,7 +1446,7 @@ async function mulai() {
       toast('Tab ini dianggap tamu lain (mode lokal). Isi buku tamu dengan nama berbeda.', 4000);
     }
   }
-  if (prof && prof.tj) { L.daftarTamu(prof); tulisLog('', `Selamat datang kembali, ${prof.n}!`, 'sys'); }
+  if (prof && prof.tj) { L.daftarTamu(prof); tulisLog('', `Selamat datang kembali, ${prof.n}!`, 'sys'); Prog.lapor('tur_daftar'); }
   else setTimeout(() => { if ($('kartu').hidden) bukaDaftar(); }, 900);
 }
 mulai().catch(e => {
