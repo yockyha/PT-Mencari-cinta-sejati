@@ -1,23 +1,24 @@
-import { CFG, DIVISI, STATUS, bersih, igBersih, kasar, hash, fmt, esc, profil, simpanProfil } from '../js/common.js';
-import { buatNet } from '../js/net.js';
+import { CFG, TUJUAN, STATUS, bersih, igBersih, kasar, hash, fmt, esc, profil, simpanProfil } from '../js/common.js';
+import { bukaDB } from '../js/db.js';
+import { buatLayanan } from '../js/layanan.js';
 
 const $ = id => document.getElementById(id);
 const cv = $('kartu'), x = cv.getContext('2d');
 const W = cv.width, H = cv.height;
-let foto = null, nomor = null, siap = false, net = null, daftar = [];
+let foto = null, nomor = null, siap = false, L = null, daftar = [];
 
-$('div').innerHTML = DIVISI.map(d => `<option>${esc(d)}</option>`).join('');
+$('div').innerHTML = Object.entries(TUJUAN).map(([k, v]) => `<option value="${k}">${v.ikon} ${esc(v.nama)}</option>`).join('');
 $('st').innerHTML = STATUS.map(d => `<option>${esc(d)}</option>`).join('');
 $('kaki').innerHTML = `${esc(CFG.namaPT)} · perusahaan fiktif untuk seru-seruan` + (CFG.instagram ? ` · <a href="https://www.instagram.com/${encodeURIComponent(CFG.instagram)}/" target="_blank" rel="noopener">@${esc(CFG.instagram)}</a>` : '');
 
 const p = profil();
 if (p) {
   $('nama').value = p.n || ''; $('ig').value = p.ig ? '@' + p.ig : '';
-  if (p.d) $('div').value = p.d; if (p.s) $('st').value = p.s;
+  if (p.tj) $('div').value = p.tj; if (p.s) $('st').value = p.s;
 }
 
 function data() {
-  return { n: bersih($('nama').value, 20), ig: igBersih($('ig').value), d: $('div').value, s: $('st').value };
+  return { n: bersih($('nama').value, 20), ig: igBersih($('ig').value), tj: $('div').value, s: $('st').value };
 }
 function nik(d) {
   const h = hash((d.n + '|' + d.ig).toLowerCase()).toString(16).toUpperCase().padStart(8, '0');
@@ -44,8 +45,8 @@ function gambar() {
   x.fillStyle = '#fff6ef'; bulat(W / 2 - 70, 34, 140, 26, 13); x.fill(); // lubang lanyard
   x.fillStyle = '#fff'; x.textAlign = 'center';
   x.font = '700 50px Fredoka, Nunito, sans-serif'; x.fillText('❤ ' + CFG.namaPT.toUpperCase(), W / 2, 130, W - 60);
-  x.font = '900 24px Nunito, sans-serif'; x.fillStyle = '#ffe1e9'; x.fillText('KARTU IDENTITAS KARYAWAN', W / 2, 180);
-  x.font = '800 20px Nunito, sans-serif'; x.fillText('Kantor tanpa gaji · bonusnya jodoh', W / 2, 214);
+  x.font = '900 24px Nunito, sans-serif'; x.fillStyle = '#ffe1e9'; x.fillText('KARTU TAMU RESMI', W / 2, 180);
+  x.font = '800 20px Nunito, sans-serif'; x.fillText('Cari jodoh · cari teman · curhat', W / 2, 214);
 
   // foto
   const fx = W / 2 - 150, fy = 300, fw = 300, fh = 340;
@@ -68,18 +69,19 @@ function gambar() {
 
   // divisi & status
   x.font = '900 28px Nunito, sans-serif';
-  const dv = d.d, dw = Math.min(W - 80, x.measureText(dv).width + 44);
-  x.fillStyle = '#2a1420'; bulat((W - dw) / 2, 790, dw, 54, 27); x.fill();
-  x.fillStyle = '#ffd23f'; x.fillText(dv, W / 2, 827, W - 110);
-  x.font = '800 24px Nunito, sans-serif'; x.fillStyle = '#ff4f7b';
-  x.fillText('Status hati: ' + d.s, W / 2, 884, W - 80);
+  const T = TUJUAN[d.tj] || TUJUAN.teman;
+  const dv = T.ikon + ' Tujuan: ' + T.nama, dw = Math.min(W - 80, x.measureText(dv).width + 44);
+  x.fillStyle = T.warna; bulat((W - dw) / 2, 790, dw, 54, 27); x.fill();
+  x.fillStyle = '#fff'; x.fillText(dv, W / 2, 827, W - 110);
+  x.font = '800 24px Nunito, sans-serif'; x.fillStyle = '#8a6b77';
+  x.fillText(d.tj === 'jodoh' ? 'Status hati: ' + d.s : d.tj === 'curhat' ? 'Siap didengar, siap mendengar' : 'Terbuka untuk teman baru', W / 2, 884, W - 80);
 
   // garis info
   x.textAlign = 'left'; x.fillStyle = '#2a1420';
   x.font = '700 22px "JetBrains Mono", ui-monospace, monospace';
   x.fillText('NIK      ' + nik(d), 60, 950);
-  x.fillText('NO.      ' + (nomor ? 'Karyawan ke-' + fmt(nomor) : '—'), 60, 984);
-  x.fillText('BERLAKU  Sampai ketemu jodoh', 60, 1018);
+  x.fillText('NO.      ' + (nomor ? 'Tamu ke-' + fmt(nomor) : '—'), 60, 984);
+  x.fillText('BERLAKU  ' + (d.tj === 'jodoh' ? 'Sampai ketemu jodoh' : d.tj === 'curhat' ? 'Sampai hati lega' : 'Selamanya, namanya juga teman'), 60, 1018);
 
   // barcode
   let h = hash(nik(d)), bx = 60;
@@ -87,7 +89,7 @@ function gambar() {
   // tanda tangan HRD
   x.strokeStyle = '#3a6ea5'; x.lineWidth = 3; x.beginPath();
   x.moveTo(W - 200, 1070); x.bezierCurveTo(W - 180, 1020, W - 160, 1090, W - 140, 1050); x.bezierCurveTo(W - 120, 1020, W - 100, 1080, W - 70, 1040); x.stroke();
-  x.fillStyle = '#8a6b77'; x.font = '800 14px Nunito, sans-serif'; x.textAlign = 'center'; x.fillText('HRD (Hati Rindu Dia)', W - 135, 1100);
+  x.fillStyle = '#8a6b77'; x.font = '800 14px Nunito, sans-serif'; x.textAlign = 'center'; x.fillText('Direktur Utama', W - 135, 1100);
 }
 
 function tampilKuota() {
@@ -115,24 +117,25 @@ $('f').addEventListener('submit', async e => {
   const lama = profil() || {};
   simpanProfil({ ...lama, ...d });
   try {
-    if (net) {
-      await net.daftar(d);
+    if (L) {
+      await L.daftarTamu({ ...(profil() || {}), ...d });
       await new Promise(r => setTimeout(r, 600));
       const urut = [...daftar].sort((a, b) => (a.t || 0) - (b.t || 0));
-      const i = urut.findIndex(k => k.uid === net.uid);
+      const i = urut.findIndex(k => k.uid === L.uid);
       nomor = i >= 0 ? i + 1 : null;
     }
   } catch (err) { console.warn(err); }
   $('buat').disabled = false;
   gambar(); siap = true;
+  try { localStorage.setItem('ptmcs_kartuDicetak', 'true'); } catch (e) {}
   $('unduh').disabled = false;
   $('bagi').hidden = !navigator.canShare;
   st.className = 'status ok';
-  st.textContent = nomor ? `Selamat! Kamu karyawan ke-${fmt(nomor)}. Namamu sudah terpasang di Dinding Karyawan.` : 'ID Card siap diunduh.';
+  st.textContent = nomor ? `Selamat! Kamu tamu ke-${fmt(nomor)}. Namamu sudah tercatat di Buku Tamu.` : 'Kartu tamu siap diunduh.';
 });
 
 function blob() { return new Promise(r => cv.toBlob(r, 'image/png')); }
-const namaFile = () => `idcard-${(data().n || 'karyawan').replace(/[^a-z0-9]+/gi, '-').toLowerCase()}.png`;
+const namaFile = () => `kartu-tamu-${(data().n || 'karyawan').replace(/[^a-z0-9]+/gi, '-').toLowerCase()}.png`;
 $('unduh').addEventListener('click', async () => {
   const b = await blob(); const a = document.createElement('a');
   a.href = URL.createObjectURL(b); a.download = namaFile(); a.click();
@@ -140,7 +143,7 @@ $('unduh').addEventListener('click', async () => {
 });
 $('bagi').addEventListener('click', async () => {
   const f = new File([await blob()], namaFile(), { type: 'image/png' });
-  const isi = { files: [f], title: 'ID Card ' + CFG.namaPT, text: `Aku resmi karyawan ${CFG.namaPT}! ❤` };
+  const isi = { files: [f], title: 'Kartu Tamu ' + CFG.namaPT, text: `Aku resmi tamu ${CFG.namaPT}! ${(TUJUAN[data().tj] || TUJUAN.teman).ikon} Yuk mampir ke kantornya.` };
   if (navigator.canShare && navigator.canShare(isi)) navigator.share(isi).catch(() => {});
   else $('unduh').click();
 });
@@ -151,8 +154,17 @@ $('bagi').addEventListener('click', async () => {
   gambar();
   tampilKuota();
   try {
-    net = await buatNet({ kehadiran: false });
-    net.on('karyawan', l => { daftar = (l || []).filter(k => k && k.n); tampilKuota(); });
-    await net.mulai();
+    L = buatLayanan(await bukaDB());
+    L.db.on('tamu', o => { daftar = Object.values(o || {}).filter(k => k && k.n); tampilKuota(); });
+    let ang = null, peran = null;
+    const cek = () => {
+      const ok = !!(ang || peran);
+      $('buat').disabled = !ok;
+      if (ok && ang) { $('nama').value = ang.n; $('div').value = ang.tj; $('nama').readOnly = true; $('div').disabled = true; gambar(); }
+      $('status').className = ok ? 'status' : 'status no';
+      $('status').innerHTML = ok ? '' : 'Kartu Tamu hanya untuk tamu resmi. <a href="../kantor/index.html#daftar">Daftar dulu di kantor →</a> lalu tunggu persetujuan Direktur.';
+    };
+    L.db.on('anggota/' + L.uid, o => { ang = o; cek(); });
+    L.db.on('peran/' + L.uid, o => { peran = o; cek(); });
   } catch (e) { console.warn(e); }
 })();

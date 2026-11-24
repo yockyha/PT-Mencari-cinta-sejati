@@ -4,9 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>PT Mencari Cinta Sejati</title>
-<meta name="description" content="Kantor virtual 3D untuk para pencari cinta. Kantor tanpa gaji, bonusnya jodoh.">
+<meta name="description" content="Kantor virtual 3D tempat orang datang untuk cari jodoh, cari teman, atau sekadar curhat.">
 <meta property="og:title" content="PT Mencari Cinta Sejati">
-<meta property="og:description" content="Kantor tanpa gaji. Bonusnya jodoh. Masuk kantor virtual & bikin ID card karyawanmu.">
+<meta property="og:description" content="Datang sebagai tamu: cari jodoh, cari teman, atau curhat. Masuk kantor virtualnya sekarang.">
 <meta property="og:image" content="kantor.jpg">
 <meta name="theme-color" content="#2a1420">
 <link rel="icon" href="favicon.svg" type="image/svg+xml">
@@ -17,7 +17,13 @@
 :root{--ink:#2a1420;--pink:#ff4f7b;--cream:#fff6ef;--yellow:#ffd23f}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:#2a1420;color:#fff;font-family:"Nunito",system-ui,sans-serif}
-.hero{position:relative;isolation:isolate;overflow:hidden;min-height:100vh;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 16px}
+.cara{background:#fff6ef;color:#2a1420;padding:48px max(16px,env(safe-area-inset-left)) 56px;text-align:center}
+.cara h2{font-family:"Fredoka",system-ui,sans-serif;font-size:clamp(28px,5vw,40px);margin:0 0 20px}
+.cara ol{list-style:none;counter-reset:l;margin:0 auto 28px;padding:0;max-width:880px;display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;text-align:left}
+.cara li{counter-increment:l;background:#fff;border:3px solid #2a1420;border-radius:16px;box-shadow:0 5px 0 #2a1420;padding:16px;line-height:1.45}
+.cara li::before{content:counter(l);display:grid;place-items:center;width:32px;height:32px;border-radius:50%;background:#ff4f7b;color:#fff;font:700 16px "Fredoka",sans-serif;margin-bottom:8px}
+.cara b{display:block;margin-bottom:4px}
+.hero{position:relative;isolation:isolate;overflow:hidden;min-height:92vh;min-height:92svh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px 16px}
 .latar{position:absolute;inset:-24px;z-index:-2;background:#ff8fab url("kantor.jpg") center/cover no-repeat;filter:blur(4px) saturate(1.1)}
 .hero::after{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(circle at 50% 45%,rgba(255,79,123,.25),transparent 60%),linear-gradient(rgba(42,20,32,.35),rgba(42,20,32,.85))}
 .label{background:var(--pink);font-weight:900;font-size:13px;letter-spacing:2px;padding:6px 14px;border-radius:6px;border:3px solid var(--ink);box-shadow:0 4px 0 var(--ink)}
@@ -39,18 +45,28 @@ footer a{color:inherit}
 <body>
   <header class="hero">
     <div class="latar" aria-hidden="true"></div>
-    <p class="label">LOWONGAN DIBUKA · TANPA SYARAT</p>
+    <p class="label">PINTU TERBUKA 24 JAM · TANPA SYARAT</p>
     <h1>PT MENCARI<br><span>CINTA SEJATI</span></h1>
-    <p class="slogan">Kantor tanpa gaji. Bonusnya jodoh. Dibangun bersama para jomblo se-Indonesia.</p>
+    <p class="slogan">Kantor virtual tempat orang datang untuk cari jodoh, cari teman, atau sekadar curhat.</p>
     <div class="tombol-grup">
-      <a href="kantor/" class="tombol utama">Masuk Kantor Virtual</a>
-      <a href="idcard/" class="tombol">Buat ID Card Karyawan</a>
+      <a href="kantor/index.html#daftar" class="tombol utama">Daftar Jadi Tamu</a>
+      <a href="kantor/index.html" class="tombol">Lihat-lihat Dulu</a>
     </div>
     <div class="fitur" aria-label="Fitur">
-      <span>☕ Mesin Kopi Jodoh</span><span>📋 Papan Rapat Bersama</span><span>🧱 Dinding Karyawan</span><span>🌷 Taman Curhat</span>
+      <span>💘 Kafe Jodoh</span><span>🤝 Meja Nongkrong</span><span>💬 Taman Curhat</span><span>💌 Obrolan Pribadi</span>
     </div>
-    <footer id="kaki">Perusahaan fiktif untuk seru-seruan.</footer>
+    <footer id="kaki">Perusahaan fiktif untuk seru-seruan. · <a href="dashboard/index.html">Masuk Direktur</a></footer>
   </header>
+  <section class="cara" aria-labelledby="caraJ">
+    <h2 id="caraJ">Cara bergabung</h2>
+    <ol>
+      <li><b>Masuk kantor.</b> Siapa saja boleh lihat-lihat: jalan keliling, lihat papan, jadwal acara, dan buku tamu.</li>
+      <li><b>Isi formulir pendaftaran.</b> Tujuan (💘 jodoh, 🤝 teman, 💬 curhat), nama panggilan, umur, kota, tentang kamu, dan alasan bergabung. Tanpa password.</li>
+      <li><b>Tunggu persetujuan Direktur.</b> Kamu dapat kabar langsung di layar begitu diterima.</li>
+      <li><b>Resmi jadi tamu!</b> Ngobrol, ajak orang ngobrol pribadi, ikut acara, kumpulkan EXP, dan bikin Kartu Tamu.</li>
+    </ol>
+    <a href="kantor/index.html#daftar" class="tombol utama">Daftar sekarang</a>
+  </section>
 <script>
   (function () {
     var c = window.PT_CONFIG || {};
