@@ -156,5 +156,15 @@ $('bagi').addEventListener('click', async () => {
   try {
     L = buatLayanan(await bukaDB());
     L.db.on('tamu', o => { daftar = Object.values(o || {}).filter(k => k && k.n); tampilKuota(); });
+    let ang = null, peran = null;
+    const cek = () => {
+      const ok = !!(ang || peran);
+      $('buat').disabled = !ok;
+      if (ok && ang) { $('nama').value = ang.n; $('div').value = ang.tj; $('nama').readOnly = true; $('div').disabled = true; gambar(); }
+      $('status').className = ok ? 'status' : 'status no';
+      $('status').innerHTML = ok ? '' : 'Kartu Tamu hanya untuk tamu resmi. <a href="../kantor/index.html#daftar">Daftar dulu di kantor →</a> lalu tunggu persetujuan Direktur.';
+    };
+    L.db.on('anggota/' + L.uid, o => { ang = o; cek(); });
+    L.db.on('peran/' + L.uid, o => { peran = o; cek(); });
   } catch (e) { console.warn(e); }
 })();

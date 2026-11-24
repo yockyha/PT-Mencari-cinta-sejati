@@ -8,7 +8,7 @@ import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from '.
 import * as Prog from './progres.js';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
-const siap = () => { if (!K.prof || !K.prof.tj) { K.bukaDaftar(); return false; } if (K.terkunci) { toast('Kamu belum bisa berinteraksi sekarang.'); return false; } return true; };
+const siap = () => { if (!K.resmi()) { toast('👀 Kamu masih pengunjung. Daftar dulu untuk berinteraksi.'); K.bukaDaftar(); return false; } if (K.terkunci) { toast('Kamu belum bisa berinteraksi sekarang.'); return false; } return true; };
 const orangDariUid = uid => K.lain.get(uid) || K.bot.find(b => b.uid === uid);
 const pillTujuan = tj => TUJUAN[tj] ? `<span class="pillTj" style="--w:${TUJUAN[tj].warna}">${TUJUAN[tj].ikon} ${TUJUAN[tj].nama}</span>` : '';
 
@@ -51,7 +51,7 @@ export function mulai() {
 
   // mode lokal: salah satu NPC mengajak ngobrol supaya fiturnya bisa dicoba
   if (L.mode === 'lokal') setTimeout(function ajak() {
-    if (!K.prof || !K.prof.tj || K.terkunci) { setTimeout(ajak, 15000); return; }
+    if (!K.resmi() || !K.prof || K.terkunci) { setTimeout(ajak, 15000); return; }
     const kandidat = K.bot.filter(b => !b.peran && b.tj === K.prof.tj && !rooms[L.ruang(L.uid, b.uid)]);
     const b = acak(kandidat.length ? kandidat : K.bot.filter(b => !b.peran));
     if (b) L.db.set(`undangan/${L.uid}/${b.uid}`, { n: b.nama, t: TS });
@@ -198,7 +198,7 @@ function rayakanMatch(uid, nama) {
 
 // ---------------------------------------------------------------- OBROLAN PRIBADI
 export function bukaObrolan(r) {
-  if (!K.prof || !K.prof.tj) { K.bukaDaftar(); return; }
+  if (!K.resmi()) { K.bukaDaftar(); return; }
   if (r) return bukaRuang(r);
   const L = K.L;
   const daftar = Object.entries(rooms).filter(([, v]) => v && !K.sembunyi.has(v.u)).sort((a, b) => (b[1].t || 0) - (a[1].t || 0));

@@ -1,7 +1,8 @@
 // Utilitas bersama untuk semua halaman.
 export const CFG = Object.assign({
   namaPT: 'PT Mencari Cinta Sejati', singkatan: 'PT MCS', instagram: '', donasi: '',
-  kuota: 10000, firebase: null, mading: [],
+  kuota: 10000, firebase: null, mading: [], domainLogin: 'ptmcs.id', direkturDemo: null,
+  pendaftaran: { umurMin: 13, umurMinJodoh: 18 }, toko: { paket: [] },
 }, window.PT_CONFIG || {});
 
 // Tujuan tamu datang ke kantor
@@ -111,3 +112,6 @@ export const AKSESORIS = [
   { nama: 'aura hati', lv: 9 }, { nama: 'mahkota emas', vip: true }, { nama: 'halo', vip: true },
 ];
 export const kodeTamu = uid => 'MCS-' + String(uid).replace(/[^a-z0-9]/gi, '').slice(-6).toUpperCase();
+
+// Username dashboard → email Firebase (yocky → yocky@ptmcs.id)
+export const emailDari = u => { u = String(u || '').trim().toLowerCase(); return u.includes('@') ? u : `${u}@${CFG.domainLogin || 'ptmcs.id'}`; };

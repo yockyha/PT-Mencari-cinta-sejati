@@ -12,10 +12,22 @@ window.PT_CONFIG = {
   // Target tamu angkatan pertama (untuk bar di halaman Kartu Tamu)
   kuota: 10000,
 
-  // PIN "Direktur demo" — HANYA untuk mode lokal (firebase: null) supaya kamu bisa
-  // mencoba Panel Direktur. Di mode online, Direktur masuk dengan email & password
-  // Firebase (lihat README). Kosongkan '' untuk mematikan.
-  pinDemo: '1234',
+  // ---------------------------------------------------------
+  //  LOGIN DASHBOARD DIREKTUR (/dashboard/)
+  //  Mode online: buat akun di Firebase Authentication dengan email
+  //  <username>@<domainLogin>, contoh: yocky@ptmcs.id. Di dashboard
+  //  cukup ketik username "yocky" (atau email lengkap) + kata sandi.
+  //  direkturDemo HANYA berlaku di mode lokal (firebase: null) untuk mencoba.
+  //  Hapus/ganti sebelum dipublikasikan.
+  // ---------------------------------------------------------
+  domainLogin: 'ptmcs.id',
+  direkturDemo: { username: 'direktur', password: 'cintasejati' },
+
+  // Pendaftaran tamu
+  pendaftaran: {
+    umurMin: 13,        // umur minimal untuk Cari Teman / Mau Curhat
+    umurMinJodoh: 18,   // umur minimal untuk Cari Jodoh
+  },
 
   // ---------------------------------------------------------
   //  MODE ONLINE (multiplayer) — pakai Firebase Realtime Database.

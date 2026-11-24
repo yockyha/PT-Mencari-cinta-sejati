@@ -5,7 +5,7 @@
 //     tab-tab di browser yang sama saling tersambung lewat BroadcastChannel.
 //  Antarmuka: uid, mode, now(), set(), update(), push(), get(), on(), hapusSaatPutus()
 // =====================================================================
-import { CFG, LS } from './common.js';
+import { CFG, LS, emailDari } from './common.js';
 
 export const TS = { '.sv': 'timestamp' };
 const FBV = '10.14.1';
@@ -31,13 +31,25 @@ export function kunciBaru() {
 
 // ---------------------------------------------------------------- LOKAL
 class DBLokal {
-  constructor() {
+  constructor({ kantor = false } = {}) {
     this.mode = 'lokal';
-    // tiap tab = satu tamu, supaya interaksi antar-user bisa dicoba dengan dua tab
-    let uid = null;
-    try { uid = sessionStorage.getItem('ptmcs_uid'); } catch (e) {}
-    if (!uid) { uid = 'u' + Math.random().toString(36).slice(2, 12); try { sessionStorage.setItem('ptmcs_uid', uid); } catch (e) {} }
+    // Satu browser = satu orang (uid utama di localStorage), dipakai dashboard & kartu tamu.
+    // Khusus halaman kantor: tab kantor KEDUA yang dibuka bersamaan dianggap tamu lain,
+    // supaya interaksi antar-user bisa dicoba dengan dua tab.
+    let utama = LS.get('uid_utama');
+    if (!utama) { utama = 'u' + Math.random().toString(36).slice(2, 12); LS.set('uid_utama', utama); }
+    let uid = utama;
+    if (kantor) {
+      let sesi = null;
+      try { sesi = sessionStorage.getItem('ptmcs_uid'); } catch (e) {}
+      const aktif = LS.get('kantorAktif');
+      if (!sesi) sesi = aktif && aktif.uid === utama && Date.now() - aktif.t < 6000 ? 'u' + Math.random().toString(36).slice(2, 12) : utama;
+      try { sessionStorage.setItem('ptmcs_uid', sesi); } catch (e) {}
+      uid = sesi;
+      if (uid === utama) { const detak = () => LS.set('kantorAktif', { uid, t: Date.now() }); detak(); setInterval(detak, 2000); addEventListener('pagehide', () => LS.set('kantorAktif', null)); }
+    }
     this.uid = uid;
+    this.utama = uid === utama;
     this.anon = true;
     this.root = LS.get('db', {}) || {};
     delete this.root.online;
@@ -112,24 +124,29 @@ class DBLokal {
     return () => this.pendengar.delete(l);
   }
   hapusSaatPutus(p) { this.putus.push(p); }
-  // mode lokal tidak punya akun: Direktur demo pakai PIN dari config.js
-  async masukDirektur(email, pin) {
-    if (!CFG.pinDemo || String(pin) !== String(CFG.pinDemo)) throw new Error('PIN demo salah.');
+  // Mode lokal tidak punya server akun: Direktur demo memakai username & sandi dari config.js
+  async masuk(username, sandi) {
+    const d = CFG.direkturDemo;
+    if (!d || String(username).trim().toLowerCase() !== String(d.username).toLowerCase() || String(sandi) !== String(d.password)) throw new Error('salah');
     await this.set('peran/' + this.uid, 'direktur');
+    if (!this._ambil('anggota/' + this.uid)) await this.set('anggota/' + this.uid, { n: 'Direktur', tj: 'teman', sejak: Date.now(), oleh: this.uid });
+    LS.set('dashMasuk', true);
+    return this.uid;
   }
-  async keluarDirektur() { await this.set('peran/' + this.uid, null); }
+  async keluar() { LS.set('dashMasuk', false); await this.set('peran/' + this.uid, null); }
+  get masukDashboard() { return !!LS.get('dashMasuk', false) && this._ambil('peran/' + this.uid) === 'direktur'; }
 }
 
 // ---------------------------------------------------------------- FIREBASE
 class DBFirebase {
-  static async buat(cfg) {
+  static async buat(cfg, { anonim = true } = {}) {
     const [{ initializeApp }, A, D] = await Promise.all([import(fbUrl('app')), import(fbUrl('auth')), import(fbUrl('database'))]);
     const app = initializeApp(cfg);
     const auth = A.getAuth(app);
     let user = await new Promise(r => { const un = A.onAuthStateChanged(auth, u => { un(); r(u); }); });
-    if (!user) user = (await A.signInAnonymously(auth)).user;
+    if (!user && anonim) user = (await A.signInAnonymously(auth)).user;
     const db = new DBFirebase();
-    Object.assign(db, { A, D, auth, rdb: D.getDatabase(app), uid: user.uid, anon: user.isAnonymous, email: user.email || '', mode: 'online', offset: 0 });
+    Object.assign(db, { A, D, auth, rdb: D.getDatabase(app), uid: user ? user.uid : null, anon: user ? user.isAnonymous : true, email: (user && user.email) || '', mode: 'online', offset: 0 });
     D.onValue(D.ref(db.rdb, '.info/serverTimeOffset'), s => { db.offset = s.val() || 0; });
     return db;
   }
@@ -144,17 +161,21 @@ class DBFirebase {
     return this.D.onValue(q, s => cb(s.val()), e => { console.warn('baca', p, e.message); cb(null); });
   }
   hapusSaatPutus(p) { this.D.onDisconnect(this.r(p)).remove(); }
-  async masukDirektur(email, sandi) {
-    await this.A.signInWithEmailAndPassword(this.auth, email, sandi);
-    location.reload();
+  async masuk(username, sandi) {
+    const c = await this.A.signInWithEmailAndPassword(this.auth, emailDari(username), sandi);
+    Object.assign(this, { uid: c.user.uid, anon: false, email: c.user.email || '' });
+    return this.uid;
   }
-  async keluarDirektur() { await this.A.signOut(this.auth); location.reload(); }
+  async keluar() { await this.A.signOut(this.auth); }
+  get masukDashboard() { return !this.anon; }
 }
 
-export async function bukaDB() {
+// opsi.kantor: halaman kantor (tab kedua = tamu lain di mode lokal)
+// opsi.anonim: masuk anonim otomatis bila belum login (false untuk dashboard)
+export async function bukaDB(opsi = {}) {
   if (CFG.firebase && CFG.firebase.databaseURL) {
-    try { return await DBFirebase.buat(CFG.firebase); }
+    try { return await DBFirebase.buat(CFG.firebase, opsi); }
     catch (e) { console.warn('Firebase gagal, pindah ke mode lokal:', e); }
   }
-  return new DBLokal();
+  return new DBLokal(opsi);
 }

@@ -6,9 +6,33 @@ Kantor virtual 3D tempat orang datang sebagai **tamu** untuk **💘 cari jodoh**
 
 | Siapa | Bisa apa |
 |---|---|
-| **Tamu** | Isi buku tamu (nama, tujuan, status, bio; tanpa password), jalan-jalan, chat umum, ajak ngobrol pribadi, kasih ❤, curhat anonim, lapor & sembunyikan orang |
-| **🛡 Staf** (diangkat Direktur) | Semua yang tamu bisa + usir/blokir tamu, hapus chat/papan/curhat, baca laporan & saran |
-| **👑 Direktur** (pemilik) | Semua yang staf bisa + pengumuman ke semua orang, ubah mading, buka/tutup kantor, angkat/cabut staf |
+| **👀 Pengunjung** (belum disetujui) | Hanya lihat-lihat: jalan keliling, lihat papan, jadwal, buku tamu. Tidak terlihat orang lain, tidak bisa chat/interaksi/EXP (dikunci server). Bisa mengisi **formulir pendaftaran** |
+| **Tamu resmi** (disetujui Direktur) | Chat, ajak ngobrol pribadi, ❤ suka & match, curhat, ikut acara, tugas & EXP, toko, Kartu Tamu |
+| **🛡 Staf** (diangkat Direktur) | Semua yang tamu bisa + usir/blokir tamu, hapus konten, baca laporan & saran |
+| **👑 Direktur** (pemilik) | Semuanya, lewat **Dashboard Direktur** + di dalam kantor: EXP tak terbatas, semua outfit & aksesoris, semua fitur Eksekutif |
+
+### Alur pendaftaran
+1. Pengunjung masuk kantor (atau tautan `kantor/index.html#daftar`) → formulir muncul
+2. Isi: tujuan (💘 jodoh / 🤝 teman / 💬 curhat), nama panggilan, umur, jenis kelamin (opsional), kota, status hati (khusus jodoh), Instagram (opsional), tentang aku, alasan bergabung, centang pernyataan
+3. Umur minimal diatur di `config.js` → `pendaftaran` (bawaan 13, Cari Jodoh 18)
+4. Status "⏳ sedang ditinjau" tampil di layar pengunjung
+5. Direktur menerima (sebagai Tamu atau Staf) atau menolak dengan catatan di Dashboard → pengunjung langsung dapat kabar di layar
+
+### Dashboard Direktur (`/dashboard/`)
+Login username + kata sandi. Isinya:
+- **Ringkasan**: angka utama, anggota per tujuan, aktivitas langsung, buka/tutup kantor & pendaftaran, tautan pendaftaran
+- **Pendaftaran**: kartu tiap pendaftar → Terima sebagai Tamu / Staf, Tolak + catatan, Terima semua
+- **Anggota**: cari & filter; per orang: ubah nama/tujuan, beri/atur EXP, Kartu Eksekutif, angkat staf, usir/blokir/ampuni, cabut keanggotaan, kirim pesan
+- **Online**: siapa di kantor sekarang dan di ruangan mana
+- **Aktivitas**: semua kejadian, chat, papan, curhat (lengkap dengan penulisnya) + hapus
+- **Acara**: jadwalkan (dengan template), lihat siapa ikut & hadir
+- **Toko & Pesanan**: setujui/tolak pembelian, riwayat & pendapatan
+- **Laporan & Saran**
+- **Siaran & Pengaturan**: pengumuman, mading, pesan tutup kantor/pendaftaran
+- **Data**: lihat & ubah langsung isi database (JSON) + unduh cadangan
+- Tombol **🏢 Masuk kantor** untuk masuk ke dunia 3D sebagai Direktur
+
+🔒 Isi obrolan pribadi antar-tamu sengaja tidak bisa dibaca siapa pun selain dua orang di dalamnya, termasuk Direktur.
 
 ### Ruangan
 - **Lobi**: resepsionis (info & aturan), mading kantor, sofa
@@ -57,6 +81,7 @@ kantor/direktur.js    Ruang & Panel Direktur (acara, pesanan, moderasi)
 kantor/progres.js     EXP, level, tugas, petunjuk arah, acara, peringkat, toko
 kantor/game.js        mini-game Tangkap Hati
 kantor/ui.js          alat UI bersama
+dashboard/            Dashboard Direktur (login, persetujuan, kendali penuh)
 idcard/               generator Kartu Tamu
 js/db.js              lapisan data: Firebase (online) atau tiruan lokal
 js/layanan.js         semua operasi data (chat, undangan, usir, dll.)
@@ -80,7 +105,7 @@ Selama `firebase: null` di `config.js`, situs berjalan dalam **mode lokal**:
 - kantor diisi 7 tamu NPC yang berkeliling, duduk, bicara, bisa diajak ngobrol, dan bisa *match*
 - **buka dua tab** di browser yang sama untuk mencoba interaksi antar-tamu (tab kedua dianggap tamu lain)
 - data disimpan di browser masing-masing
-- Panel Direktur bisa dicoba dengan **PIN demo** (`pinDemo` di `config.js`, bawaan `1234`) di Ruang Direktur → *Masuk sebagai Direktur*
+- Dashboard Direktur bisa dicoba dengan akun demo (`direkturDemo` di `config.js`); tab kantor pertama di browser yang sama otomatis menjadi Direktur, tab kantor kedua menjadi pengunjung baru
 
 ### Mengaktifkan mode online (multiplayer)
 
@@ -104,14 +129,14 @@ Selama `firebase: null` di `config.js`, situs berjalan dalam **mode lokal**:
 
 ### Menjadikan dirimu Direktur (sekali saja)
 
-1. Firebase Console → **Authentication → Users → Add user**: isi email & kata sandi untukmu.
+1. Firebase Console → **Authentication → Users → Add user**: email `<username>@ptmcs.id` (domain sesuai `domainLogin` di `config.js`, contoh `yocky@ptmcs.id`) dan kata sandi.
 2. Salin **User UID** akun itu.
 3. **Realtime Database → Data**: tambahkan node `peran`, lalu di dalamnya kunci `<User UID>` dengan nilai `"direktur"` (pakai tanda kutip).
-4. Buka kantor → **👑 Ruang Direktur** → *Masuk sebagai Direktur* → isi email & kata sandi tadi.
+4. Buka `/dashboard/` → login dengan username `yocky` + kata sandi tadi. Dari dashboard, tekan **🏢 Masuk kantor** untuk masuk sebagai Direktur.
 
-Setelah itu tombol **👑 Panel** muncul di pojok kanan atas. Staf diangkat dari Panel → Pengunjung → Tindak → *Angkat jadi Staf*.
+Di dalam kantor, tombol **👑 Panel** juga tersedia untuk kendali cepat. Staf diangkat dari Panel → Pengunjung → Tindak → *Angkat jadi Staf*.
 
-Di mode lokal (tanpa Firebase), cukup ke Ruang Direktur → *Masuk sebagai Direktur* → PIN demo `1234`.
+Di mode lokal (tanpa Firebase), buka `/dashboard/` dan login dengan `direkturDemo` di `config.js` (bawaan username `direktur`, sandi `cintasejati`).
 
 ## Membuka untuk publik
 
@@ -121,7 +146,7 @@ Di mode lokal (tanpa Firebase), cukup ke Ruang Direktur → *Masuk sebagai Direk
    - **Netlify**: <https://app.netlify.com/drop>, seret folder proyek.
    - **GitHub Pages**: Settings → Pages → Deploy from branch.
 3. Tambahkan domain hosting ke Firebase → Authentication → Settings → **Authorized domains**.
-4. Isi `instagram`, `toko.linkBayar`, dan ganti/hapus `pinDemo` di `config.js`.
+4. Isi `instagram`, `toko.linkBayar`, dan **hapus `direkturDemo`** di `config.js`.
 5. (Opsional) Domain sendiri, misalnya `ptmencaricintasejati.id`, bisa disambungkan di Cloudflare/Netlify.
 
 ## Kustomisasi cepat

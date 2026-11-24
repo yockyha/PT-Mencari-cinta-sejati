@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Dashboard Direktur · PT Mencari Cinta Sejati</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#2a1420">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Nunito:wght@600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Tata letak: sidebar gelap (navigasi) + area kerja terang. Di HP sidebar menjadi bilah tab di atas. */
+:root{
+  --ink:#2a1420;--ink2:#3d2433;--pink:#ff4f7b;--pink-lembut:#ffe4ea;--emas:#f2b33d;--hijau:#2f9e6e;--merah:#c0392b;--biru:#3a6ea5;
+  --bg:#fbf6f2;--kartu:#ffffff;--garis:#eadfe3;--teks:#2a1420;--redup:#8a6b77;
+  --display:"Fredoka",system-ui,sans-serif;--body:"Nunito",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--teks);font:600 15px/1.45 var(--body)}
+[hidden]{display:none!important}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--emas);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.2;text-wrap:balance}
+code{font-family:var(--mono);font-size:12px;background:var(--pink-lembut);padding:1px 6px;border-radius:6px;overflow-wrap:anywhere}
+
+/* ---- tombol ---- */
+.btn{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--ink);border-radius:10px;background:var(--pink);color:#fff;font:800 14px var(--body);padding:7px 14px;cursor:pointer;text-decoration:none;white-space:nowrap;box-shadow:0 2px 0 var(--ink)}
+.btn:active{transform:translateY(2px);box-shadow:none}
+.btn.putih{background:#fff;color:var(--ink)}
+.btn.hijau{background:var(--hijau)}
+.btn.merah{background:var(--merah)}
+.btn.emas{background:var(--emas);color:var(--ink)}
+.btn.kecil{padding:4px 10px;font-size:13px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.baris{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+/* ---- login ---- */
+#login{min-height:100vh;display:grid;place-items:center;padding:24px max(16px,env(safe-area-inset-left))}
+.kotakLogin{background:var(--kartu);border:3px solid var(--ink);border-radius:20px;box-shadow:0 8px 0 var(--ink);padding:28px;width:min(400px,100%)}
+.kotakLogin .logo{width:52px;height:52px;border-radius:14px;background:var(--pink);display:grid;place-items:center;font-size:28px;color:#fff;border:3px solid var(--ink);margin-bottom:14px}
+.kotakLogin h1{font-size:26px}
+.kotakLogin p{color:var(--redup);margin:6px 0 18px}
+label{display:block;font:900 12px var(--body);letter-spacing:.6px;text-transform:uppercase;color:var(--redup);margin:12px 0 5px}
+input,select,textarea{width:100%;border:2px solid var(--ink);border-radius:10px;background:#fff;padding:8px 11px;font-size:15px}
+textarea{resize:vertical}
+.err{color:var(--merah);font-weight:800;min-height:1.3em;margin:10px 0 0}
+.catatan{background:var(--pink-lembut);border-radius:10px;padding:10px 12px;font-size:13px;margin-top:16px}
+
+/* ---- aplikasi ---- */
+#app{display:grid;grid-template-columns:240px 1fr;min-height:100vh}
+#samping{background:var(--ink);color:#fff6ef;padding:18px 12px;position:sticky;top:0;height:100vh;overflow-y:auto;display:flex;flex-direction:column;gap:4px}
+#samping .merek{display:flex;gap:10px;align-items:center;padding:4px 8px 14px;border-bottom:1px solid rgba(255,255,255,.12);margin-bottom:8px}
+#samping .merek b{font:700 16px var(--display);line-height:1.15}
+#samping .merek small{display:block;color:#ffb3c6;font-size:12px}
+#samping .merek i{font-style:normal;width:36px;height:36px;border-radius:10px;background:var(--pink);display:grid;place-items:center;flex:none}
+.nav{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;color:#fff6ef;padding:9px 10px;border-radius:10px;cursor:pointer;text-align:left;font-weight:800}
+.nav:hover{background:rgba(255,255,255,.08)}
+.nav.on{background:var(--pink);color:#fff}
+.nav .jml{margin-left:auto;background:var(--emas);color:var(--ink);border-radius:999px;font-size:12px;padding:0 8px;min-width:22px;text-align:center}
+#samping .bawah{margin-top:auto;display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid rgba(255,255,255,.12)}
+#samping .bawah .btn{justify-content:center}
+#utama{padding:22px max(16px,env(safe-area-inset-right)) 60px max(22px,env(safe-area-inset-left));min-width:0}
+.kepala{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:18px}
+.kepala h2{font-size:26px}
+.langsung{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--redup);font-weight:800}
+.langsung i{width:9px;height:9px;border-radius:50%;background:var(--hijau);display:inline-block;animation:kedip 2s infinite}
+@keyframes kedip{50%{opacity:.35}}
+@media (prefers-reduced-motion:reduce){.langsung i{animation:none}}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.angka{background:var(--kartu);border:2px solid var(--garis);border-radius:14px;padding:14px}
+.angka b{display:block;font:700 30px var(--display);font-variant-numeric:tabular-nums}
+.angka span{color:var(--redup);font-size:13px;font-weight:800}
+.angka.sorot{border-color:var(--pink);background:#fff5f7}
+.angka.tombol{cursor:pointer}
+.panel{background:var(--kartu);border:2px solid var(--garis);border-radius:16px;padding:16px;margin-top:16px;min-width:0}
+.panel>h3{font-size:18px;margin-bottom:10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.panel>h3 small{font:800 13px var(--body);color:var(--redup)}
+.dua{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.tiga{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media (max-width:1100px){.dua{grid-template-columns:1fr}}
+@media (max-width:640px){.tiga{grid-template-columns:1fr}}
+.kecil:not(.btn){font-size:13px;color:var(--redup)}
+.tab{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.tab button{border:2px solid var(--ink);background:#fff;border-radius:999px;padding:4px 12px;font-weight:800;cursor:pointer}
+.tab button.on{background:var(--ink);color:#fff}
+
+.feed{list-style:none;margin:0;padding:0}
+.feed li{display:flex;gap:10px;padding:8px 0;border-bottom:1px dashed var(--garis);align-items:flex-start}
+.feed li:last-child{border:0}
+.feed .ik{width:28px;flex:none;text-align:center;font-size:18px}
+.feed .isi{flex:1;min-width:0;overflow-wrap:anywhere}
+.feed time{color:var(--redup);font-size:12px;white-space:nowrap;font-variant-numeric:tabular-nums}
+
+.daftarKartu{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:12px}
+@media (max-width:420px){.daftarKartu{grid-template-columns:1fr}}
+.pendaftar{background:var(--kartu);border:2px solid var(--garis);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.pendaftar.baru{border-color:var(--pink)}
+.pendaftar h4{margin:0;font:700 19px var(--display)}
+.pendaftar dl{display:grid;grid-template-columns:auto 1fr;gap:3px 12px;margin:0;font-size:14px}
+.pendaftar dt{color:var(--redup);font-weight:800}
+.pendaftar dd{margin:0;overflow-wrap:anywhere}
+.pendaftar blockquote{margin:0;background:var(--bg);border-left:4px solid var(--pink);padding:6px 10px;border-radius:6px;font-size:14px;overflow-wrap:anywhere}
+.pill{display:inline-block;border-radius:999px;padding:1px 9px;font:900 12px var(--body);color:#fff;background:var(--w,var(--ink));white-space:nowrap}
+
+.tabelWrap{overflow-x:auto;border:2px solid var(--garis);border-radius:14px;background:var(--kartu)}
+table{border-collapse:collapse;width:100%;min-width:720px;font-size:14px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--garis);vertical-align:middle}
+th{font:900 12px var(--body);text-transform:uppercase;letter-spacing:.5px;color:var(--redup);background:#fdf9f7;position:sticky;top:0}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:#fff7f9}
+tbody tr.pilih{background:var(--pink-lembut)}
+td.angkaK{font-variant-numeric:tabular-nums;text-align:right}
+.alat{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+.alat input,.alat select{width:auto;flex:1 1 180px}
+
+.detail{border:2px solid var(--pink);background:#fff;border-radius:16px;padding:16px;margin-top:14px}
+.detail .seksi{border-top:1px dashed var(--garis);padding-top:12px;margin-top:12px}
+.detail h4{margin:0 0 8px;font:700 16px var(--display)}
+
+.json{width:100%;min-height:360px;font:500 13px/1.5 var(--mono);white-space:pre;tab-size:2}
+.kosong{color:var(--redup);padding:14px 0}
+
+/* ---- HP: sidebar menjadi bilah atas ---- */
+@media (max-width:860px){
+  #app{grid-template-columns:1fr}
+  #samping{position:sticky;top:0;height:auto;flex-direction:row;overflow-x:auto;padding:8px max(10px,env(safe-area-inset-left));gap:6px;z-index:5;scrollbar-width:none}
+  #samping::-webkit-scrollbar{display:none}
+  #samping .merek{display:none}
+  .nav{width:auto;white-space:nowrap;padding:7px 10px}
+  #samping .bawah{margin:0;flex-direction:row;border:0;padding:0}
+  #utama{padding:16px max(16px,env(safe-area-inset-right)) 60px max(16px,env(safe-area-inset-left))}
+}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:12px;font-weight:800;opacity:0;transition:.25s;pointer-events:none;z-index:50;max-width:calc(100% - 32px);text-align:center}
+#toast.on{opacity:1;transform:translateX(-50%)}
+</style>
+<script src="../config.js"></script>
+</head>
+<body>
+<section id="login" hidden>
+  <form class="kotakLogin" id="fLogin" autocomplete="on">
+    <div class="logo" aria-hidden="true">👑</div>
+    <h1>Dashboard Direktur</h1>
+    <p>Kendali penuh PT Mencari Cinta Sejati.</p>
+    <label for="lU">Username</label>
+    <input id="lU" autocomplete="username" autocapitalize="none" autocorrect="off" required>
+    <label for="lP">Kata sandi</label>
+    <input id="lP" type="password" autocomplete="current-password" required>
+    <p class="err" id="lE" role="alert"></p>
+    <button class="btn" type="submit" style="width:100%;justify-content:center;margin-top:4px">Masuk</button>
+    <div class="catatan" id="lInfo"></div>
+  </form>
+</section>
+
+<div id="app" hidden>
+  <nav id="samping" aria-label="Menu dashboard"></nav>
+  <main id="utama"><div class="kepala"><h2 id="judul">…</h2><span class="langsung"><i></i><span id="mode">langsung</span></span></div><div id="isi"></div></main>
+</div>
+<div id="toast" role="status"></div>
+<script type="module" src="dashboard.js"></script>
+</body>
+</html>

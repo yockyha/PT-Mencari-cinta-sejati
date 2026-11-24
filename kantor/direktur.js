@@ -43,32 +43,18 @@ const segar = () => { if (!$('kartu').hidden && document.querySelector('#kartu .
 export function bukaMeja() {
   if (peranku()) { bukaPanel(); return; }
   const dir = Object.entries(K.peran).filter(([, p]) => p === 'direktur').map(([u]) => namaDari(u));
-  const lokal = K.L?.mode === 'lokal';
   bukaKartu(`<h2>👑 Ruang Direktur</h2>
     <p>Direktur Utama: <b>${esc(dir.join(', ') || 'belum ada')}</b>. Punya saran, kritik, atau ide acara untuk kantor? Tulis di sini, langsung dibaca Direktur.</p>
     <form id="sF"><label for="sT">Saran untuk Direktur</label><textarea id="sT" maxlength="300" rows="3" placeholder="contoh: Bikin acara speed dating Jumat malam dong!"></textarea>
     <p class="err" id="sE"></p><div class="baris"><button class="btn" type="submit">Kirim saran</button></div></form>
-    <details class="masukDir"><summary>Masuk sebagai Direktur</summary>
-      <form id="mF">${lokal
-        ? `<p class="kecil">Mode lokal: pakai PIN demo dari <code>config.js</code> untuk mencoba panel.</p><label for="mP">PIN demo</label><input id="mP" type="password" inputmode="numeric" autocomplete="off">`
-        : `<label for="mE">Email</label><input id="mE" type="email" autocomplete="username"><label for="mP">Kata sandi</label><input id="mP" type="password" autocomplete="current-password">`}
-      <p class="err" id="mX"></p><div class="baris"><button class="btn putih" type="submit">Masuk</button></div></form>
-    </details>`, {
+    <p class="kecil masukDir">Kamu Direktur? <a href="../dashboard/index.html">Masuk lewat Dashboard Direktur →</a></p>`, {
     pasang(isi) {
       isi.querySelector('#sF').onsubmit = e => {
         e.preventDefault();
-        if (!K.prof || !K.prof.tj) { K.bukaDaftar(); return; }
+        if (!K.resmi()) { K.bukaDaftar(); return; }
         const t = bersih(isi.querySelector('#sT').value, 300);
         if (t.length < 5) { isi.querySelector('#sE').textContent = 'Tulis sedikit lebih panjang ya.'; return; }
         K.L.saran(K.prof.n, t); tutupKartu(); toast('Saranmu sudah sampai di meja Direktur 🙏');
-      };
-      isi.querySelector('#mF').onsubmit = async e => {
-        e.preventDefault();
-        const X = isi.querySelector('#mX');
-        try {
-          await K.L.db.masukDirektur(isi.querySelector('#mE')?.value.trim() || '', isi.querySelector('#mP').value);
-          tutupKartu(); toast('Selamat datang, Direktur 👑');
-        } catch (err) { X.textContent = lokal ? 'PIN demo salah.' : 'Email atau kata sandi salah.'; }
       };
     },
   });
@@ -250,8 +236,7 @@ function akun() {
   return {
     html: `<p>Jabatan: <b>${direktur() ? '👑 Direktur Utama' : '🛡 Staf'}</b></p>
       <p class="kecil">Mode: ${db.mode === 'lokal' ? 'lokal (demo, hanya di browser ini)' : 'online (Firebase)'}${db.email ? `<br>Email: ${esc(db.email)}` : ''}<br>UID: <code>${esc(db.uid)}</code></p>
-      ${db.mode === 'lokal' || !db.anon ? `<div class="baris"><button class="btn putih" type="button" id="aK">Keluar dari akun Direktur</button></div>` : ''}`,
-    pasang(isi) { const b = isi.querySelector('#aK'); if (b) b.onclick = () => db.keluarDirektur().then(() => { tutupKartu(); toast('Kamu kembali sebagai tamu biasa.'); }).catch(gagal); },
+      ${direktur() ? `<div class="baris"><a class="btn" href="../dashboard/index.html">Buka Dashboard Direktur</a></div>` : ''}`,
   };
 }
 

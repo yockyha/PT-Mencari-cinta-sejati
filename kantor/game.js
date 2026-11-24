@@ -10,7 +10,7 @@ const DURASI = 30;
 let main = false;
 
 export function bukaArcade() {
-  if (!K.prof || !K.prof.tj) { K.bukaDaftar(); return; }
+  if (!K.resmi()) { toast('👀 Daftar jadi tamu dulu untuk main.'); K.bukaDaftar(); return; }
   const kali = LS.get('game_' + hariIni(), 0) || 0;
   bukaKartu(`<h2>🎮 Tangkap Hati</h2>
     <p>Tangkap hati yang jatuh selama ${DURASI} detik. <b>💗 +1</b>, <b>💖 +3</b>, hindari <b>💔 −2</b>.</p>

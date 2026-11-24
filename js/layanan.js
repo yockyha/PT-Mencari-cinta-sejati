@@ -24,6 +24,27 @@ export function buatLayanan(db) {
       return db.set('tamu/' + uid, { uid, n: d.n, ig: d.ig || '', tj: d.tj, t: (lama && lama.t) || TS }).catch(() => {});
     },
 
+    // ---- pendaftaran & keanggotaan
+    daftarAkses(d) { return db.set('pendaftaran/' + uid, { ...d, uid, status: 'menunggu', t: TS }); },
+    batalDaftar() { return db.set('pendaftaran/' + uid, null); },
+    async terimaPendaftar(target, d, peran = 'tamu') {
+      const upd = {
+        [`anggota/${target}`]: { n: d.n, tj: d.tj, sejak: TS, oleh: uid },
+        [`tamu/${target}`]: { uid: target, n: d.n, ig: d.ig || '', tj: d.tj, t: TS },
+        [`pendaftaran/${target}`]: null,
+      };
+      if (peran === 'staf') upd[`peran/${target}`] = 'staf';
+      await db.update('', upd);
+      return L.kirimNotif(target, peran === 'staf'
+        ? `Selamat ${d.n}! Pendaftaranmu diterima dan kamu diangkat menjadi Staf 🛡`
+        : `Selamat ${d.n}! Pendaftaranmu diterima. Kamu resmi menjadi tamu. Selamat bersenang-senang 💖`);
+    },
+    tolakPendaftar(target, alasan) { return db.update('pendaftaran/' + target, { status: 'ditolak', alasanTolak: bersih(alasan, 160) }); },
+    cabutAnggota(target) { return db.update('', { [`anggota/${target}`]: null, [`peran/${target}`]: null, [`online/${target}`]: null }); },
+    ubahAnggota(target, o) { return db.update('', { [`anggota/${target}/n`]: o.n, [`anggota/${target}/tj`]: o.tj, [`tamu/${target}/n`]: o.n, [`tamu/${target}/tj`]: o.tj }); },
+    setExpBeli(target, n) { return db.set('expBeli/' + target, Math.max(0, n | 0)); },
+    catatRiwayat(d) { return db.push('riwayat', { ...d, oleh: uid, t: TS }); },
+
     // ---- ruang publik
     chat(n, m) { return db.push('chat', { uid, n, m: sensor(bersih(m, 120)), t: TS }); },
     papan(n, m) { return db.push('papan', { uid, n, m: sensor(bersih(m, 80)), t: TS }); },

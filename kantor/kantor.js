@@ -735,7 +735,7 @@ function pasangKarakterSaya() {
   const lama = saya.g;
   saya.look = cekLook(prof?.look || lookAcak(Math.floor(Math.random() * 1e6)));
   saya.g = buatKarakter(saya.look);
-  saya.label = prof && prof.tj && L ? labelNama(teksLabel(prof.n, prof.tj, L.uid, Prog.level()), gayaPeran(L.uid)) : labelNama(prof ? prof.n : 'Tamu');
+  saya.label = prof && prof.tj && resmi() ? labelNama(teksLabel(prof.n, prof.tj, L.uid, Prog.level()), gayaPeran(L.uid)) : labelNama('👀 Pengunjung');
   saya.g.add(saya.label);
   if (lama) { if (saya.gel) { lama.remove(saya.gel); saya.g.add(saya.gel); } scene.remove(lama); }
   scene.add(saya.g);
@@ -926,7 +926,7 @@ const lain = K.lain; // uid -> {g, nama, tj, ...}
 
 const ikonPeran = uid => (K.peran[uid] === 'direktur' ? '👑 ' : K.peran[uid] === 'staf' ? '🛡 ' : '');
 const gayaPeran = uid => (K.peran[uid] === 'direktur' ? 'direktur' : K.peran[uid] === 'staf' ? 'staf' : Prog.isVip(uid) ? 'vip' : '');
-const teksLabel = (n, tj, uid, lv = 1) => (ikonPeran(uid) || (Prog.isVip(uid) ? '💎 ' : (TUJUAN[tj]?.ikon || '') + ' ')) + n + (lv > 1 ? ' ⭐' + lv : '');
+const teksLabel = (n, tj, uid, lv = 1) => (ikonPeran(uid) || (Prog.isVip(uid) ? '💎 ' : (TUJUAN[tj]?.ikon || '') + ' ')) + n + (lv > 1 && K.peran[uid] !== 'direktur' ? ' ⭐' + lv : '');
 
 function sinkronLain(obj) {
   if (!L) return;
@@ -962,7 +962,7 @@ $('online').onclick = () => Sosial.bukaDaftarOnline();
 
 let posTerakhir = '', posWaktu = 0;
 function kirimPosisi(t) {
-  if (!L || !prof || !prof.tj || K.terkunci) return;
+  if (!L || !prof || !prof.tj || K.terkunci || !resmi()) return;
   const p = {
     n: prof.n, tj: prof.tj, s: prof.tj === 'jodoh' ? (prof.s || '') : '', b: prof.b || '', g: prof.g || '', ig: prof.ig || '',
     l: { ...saya.look, o: Prog.bolehOutfit(saya.look.o) ? saya.look.o : 0, a: Prog.bolehAks(saya.look.a) ? saya.look.a : 0 }, lv: Prog.level(), x: +saya.x.toFixed(2), z: +saya.z.toFixed(2), r: +saya.r.toFixed(2), a: saya.a, mj: saya.meja || '',
@@ -979,7 +979,7 @@ $('chatF').addEventListener('submit', e => {
   e.preventDefault();
   const i = $('chatI'), t = bersih(i.value, 120);
   if (!t) { i.blur(); return; }
-  if (!prof || !prof.tj) { bukaDaftar(); return; }
+  if (!resmi()) { bukaDaftar(); return; }
   if (K.terkunci || !L) { toast('Kamu belum bisa chat sekarang.'); return; }
   if (Date.now() - chatTerakhir < 1500) { toast('Pelan-pelan, satu-satu ya 🙂'); return; }
   chatTerakhir = Date.now();
@@ -1006,77 +1006,154 @@ function terimaChat(obj) {
   }
 }
 
-// ---------------------------------------------------------------- PENDAFTARAN TAMU
+// ---------------------------------------------------------------- PENDAFTARAN & AKSES
+// Pengunjung = lihat-lihat saja. Setelah mengisi formulir dan DITERIMA Direktur,
+// baru resmi menjadi tamu (bisa chat, ngobrol, ikut acara, dst.).
+const resmi = () => !!(L && (K.anggotaSaya || K.peran[L.uid]));
+const SARAN_RUANG = { jodoh: ['Kafe Jodoh', 19.5, 2.5, Math.PI / 2], teman: ['Meja Nongkrong', 0, 1.5, Math.PI], curhat: ['Taman Curhat', 18.5, -9.2, Math.PI] };
+
 function bukaDaftar() {
-  const p = prof || {};
-  const tj = p.tj || '';
+  if (resmi()) return bukaUbahData();
+  const d = K.daftarku;
+  if (d && d.status === 'menunggu') {
+    return bukaKartu(`<h2>⏳ Pendaftaran sedang ditinjau</h2>
+      <p>Halo <b>${esc(bersih(d.n, 20))}</b>! Formulirmu sudah sampai di meja Direktur. Begitu disetujui, kamu langsung resmi menjadi tamu ${TUJUAN[d.tj]?.ikon || ''} dan bisa ngobrol, ikut acara, serta kumpulkan EXP.</p>
+      <p class="kecil">Sambil menunggu, kamu tetap bisa jalan-jalan melihat kantor. Halaman ini otomatis berubah saat ada keputusan.</p>
+      <div class="baris"><button class="btn putih" type="button" id="dU">Ubah formulir</button><button class="btn putih" type="button" id="dB">Batalkan pendaftaran</button></div>`, {
+      pasang(i) { i.querySelector('#dU').onclick = () => formulir(d); i.querySelector('#dB').onclick = () => L.batalDaftar().then(() => { toast('Pendaftaran dibatalkan.'); tutupKartu(); }).catch(() => toast('Gagal. Coba lagi.')); },
+    });
+  }
+  if (d && d.status === 'ditolak') {
+    return bukaKartu(`<h2>Pendaftaran belum diterima</h2>
+      <p>${d.alasanTolak ? `Catatan dari Direktur: <b>${esc(bersih(d.alasanTolak, 160))}</b>` : 'Direktur belum bisa menerima pendaftaranmu.'}</p>
+      <p class="kecil">Kamu bisa memperbaiki formulir lalu mengirimnya lagi.</p>
+      <div class="baris"><button class="btn" type="button" id="dU">Perbaiki & kirim ulang</button></div>`, { pasang(i) { i.querySelector('#dU').onclick = () => formulir(d); } });
+  }
+  formulir(prof || {});
+}
+
+function formulir(p) {
+  if (K.setelan?.daftarTutup) {
+    return bukaKartu(`<h2>Pendaftaran sedang ditutup</h2><p>${esc(K.setelan.pesanDaftar || 'Direktur sedang tidak menerima tamu baru. Coba lagi nanti ya!')}</p><p class="kecil">Kamu tetap bisa jalan-jalan melihat kantor.</p>`);
+  }
+  const UM = CFG.pendaftaran || {}, tj = p.tj || '';
   bukaKartu(`
-    <h2>${p.tj ? 'Ubah Data Tamu' : 'Selamat Datang! 💌'}</h2>
-    <p>${p.tj ? 'Perbarui data tamumu.' : `Kamu datang ke ${esc(CFG.namaPT)} sebagai tamu. Pilih tujuanmu, orang lain akan melihatnya di atas karaktermu. <b>Tidak perlu password.</b>`}</p>
-    <form id="fD">
-      <label>Tujuan datang</label>
+    <h2>📝 Formulir Pendaftaran Tamu</h2>
+    <p>Saat ini kamu <b>pengunjung</b> dan hanya bisa melihat-lihat. Isi formulir ini; setelah <b>disetujui Direktur</b>, kamu resmi menjadi tamu dan bisa ngobrol, ikut acara, dan kumpulkan EXP. Tidak perlu password.</p>
+    <form id="fD" novalidate>
+      <label>Tujuan datang *</label>
       <div class="tjPilih" role="radiogroup">
-        ${Object.entries(TUJUAN).map(([k, v]) => `<label class="tjKartu" style="--w:${v.warna}"><input type="radio" name="tj" value="${k}" ${k === tj ? 'checked' : ''} required><span><b>${v.ikon}</b>${v.nama}</span></label>`).join('')}
+        ${Object.entries(TUJUAN).map(([k, v]) => `<label class="tjKartu" style="--w:${v.warna}"><input type="radio" name="tj" value="${k}" ${k === tj ? 'checked' : ''}><span><b>${v.ikon}</b>${v.nama}</span></label>`).join('')}
       </div>
-      <label for="dN">Nama panggilan</label>
-      <input id="dN" maxlength="20" required placeholder="contoh: Raka" value="${esc(p.n || '')}">
+      <label for="dN">Nama panggilan *</label>
+      <input id="dN" maxlength="20" placeholder="contoh: Raka" value="${esc(p.n || '')}">
       <div class="dua">
-        <div><label for="dG">Aku</label><select id="dG">${Object.entries(GENDER).map(([k, v]) => `<option value="${k}" ${k === (p.g || '') ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
-        <div id="bS"><label for="dS">Status hati</label><select id="dS">${STATUS.map(d => `<option ${d === p.s ? 'selected' : ''}>${esc(d)}</option>`).join('')}</select></div>
+        <div><label for="dU">Umur *</label><input id="dU" type="number" inputmode="numeric" min="${UM.umurMin || 13}" max="99" value="${p.umur || ''}"></div>
+        <div><label for="dG">Jenis kelamin</label><select id="dG">${Object.entries(GENDER).map(([k, v]) => `<option value="${k}" ${k === (p.g || '') ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
+        <div><label for="dK">Kota *</label><input id="dK" maxlength="40" placeholder="contoh: Bandung" value="${esc(p.kota || '')}"></div>
+        <div id="bS"><label for="dS">Status hati</label><select id="dS">${STATUS.map(x => `<option ${x === p.s ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></div>
       </div>
-      <label for="dB">Tentang aku (opsional)</label>
-      <textarea id="dB" maxlength="100" rows="2" placeholder="contoh: suka kopi, musik indie, dan jalan sore">${esc(p.b || '')}</textarea>
-      <label for="dI">Username Instagram (opsional)</label>
+      <label for="dI">Username Instagram (opsional, membantu verifikasi)</label>
       <input id="dI" maxlength="31" placeholder="@username" autocapitalize="none" autocorrect="off" value="${esc(p.ig ? '@' + p.ig : '')}">
-      <label class="cek" id="b18"><input type="checkbox" id="d18" ${p.dewasa ? 'checked' : ''}> Aku sudah berusia 18 tahun ke atas</label>
-      <label class="cek"><input type="checkbox" id="dA" ${p.tj ? 'checked' : ''}> Aku akan sopan, tidak melecehkan, dan tidak menyebar data pribadi orang lain</label>
+      <label for="dB">Tentang aku *</label>
+      <textarea id="dB" maxlength="100" rows="2" placeholder="contoh: suka kopi, musik indie, dan jalan sore">${esc(p.b || '')}</textarea>
+      <label for="dA2">Kenapa ingin bergabung? *</label>
+      <textarea id="dA2" maxlength="200" rows="2" placeholder="contoh: pengen nambah teman ngobrol di malam hari">${esc(p.alasan || '')}</textarea>
+      <label class="cek"><input type="checkbox" id="dA"> Data di atas benar, dan aku akan sopan, tidak melecehkan, tidak spam, serta tidak menyebar data pribadi orang lain</label>
       <p class="err" id="dE"></p>
-      <div class="baris"><button class="btn" type="submit">${p.tj ? 'Simpan' : 'Masuk Kantor →'}</button>${p.tj ? '' : '<button class="btn putih" type="button" id="dL">Lihat-lihat dulu</button>'}</div>
+      <div class="baris"><button class="btn" type="submit">Kirim pendaftaran</button><button class="btn putih" type="button" id="dL">Lihat-lihat dulu</button></div>
+      <p class="kecil">* wajib. Umur minimal ${UM.umurMin || 13} tahun; khusus Cari Jodoh minimal ${UM.umurMinJodoh || 18} tahun.</p>
     </form>`, {
     pasang(isi) {
-      const dL = isi.querySelector('#dL'); if (dL) dL.onclick = tutupKartu;
-      const segar = () => {
-        const v = isi.querySelector('input[name=tj]:checked')?.value;
-        isi.querySelector('#bS').hidden = v !== 'jodoh';
-        isi.querySelector('#b18').hidden = v !== 'jodoh';
-      };
+      isi.querySelector('#dL').onclick = tutupKartu;
+      const segar = () => { isi.querySelector('#bS').hidden = isi.querySelector('input[name=tj]:checked')?.value !== 'jodoh'; };
       isi.querySelectorAll('input[name=tj]').forEach(r => r.onchange = segar); segar();
-      isi.querySelector('#fD').onsubmit = e => {
+      isi.querySelector('#fD').onsubmit = async e => {
         e.preventDefault();
-        const E = isi.querySelector('#dE');
+        const E = isi.querySelector('#dE'), v = id => isi.querySelector(id).value;
         const tjBaru = isi.querySelector('input[name=tj]:checked')?.value;
-        const n = bersih(isi.querySelector('#dN').value, 20), ig = igBersih(isi.querySelector('#dI').value), b = bersih(isi.querySelector('#dB').value, 100);
-        if (!TUJUAN[tjBaru]) { E.textContent = 'Pilih tujuan datang dulu.'; return; }
-        if (n.length < 2) { E.textContent = 'Nama minimal 2 huruf.'; return; }
-        if (kasar(n) || kasar(ig) || kasar(b)) { E.textContent = 'Pakai kata-kata yang lebih sopan ya.'; return; }
-        if (tjBaru === 'jodoh' && !isi.querySelector('#d18').checked) { E.textContent = 'Fitur Cari Jodoh khusus 18 tahun ke atas. Kamu bisa pilih Cari Teman atau Mau Curhat.'; return; }
-        if (!isi.querySelector('#dA').checked) { E.textContent = 'Centang janji sopan dulu ya.'; return; }
-        const baru = !prof || !prof.tj;
-        prof = { ...(prof || {}), n, ig, b, tj: tjBaru, g: isi.querySelector('#dG').value, s: isi.querySelector('#dS').value, dewasa: tjBaru === 'jodoh' || !!prof?.dewasa, look: saya.look };
-        simpanProfil(prof);
-        L && L.daftarTamu(prof);
-        pasangKarakterSaya(); perbaruiTombolProfil(); posWaktu = 0;
-        tutupKartu();
-        Prog.lapor('tur_daftar');
-        if (baru) {
-          tulisLog('', `Selamat datang, ${n}! Kamu tercatat sebagai tamu ${TUJUAN[tjBaru].ikon} ${TUJUAN[tjBaru].nama}.`, 'sys');
-          const saran = { jodoh: ['Kafe Jodoh', 19.5, 2.5, Math.PI / 2], teman: ['Meja Nongkrong', 0, 1.5, Math.PI], curhat: ['Taman Curhat', 18.5, -9.2, Math.PI] }[tjBaru];
-          setTimeout(() => bukaKartu(`<h2>${TUJUAN[tjBaru].ikon} Mau langsung ke ${saran[0]}?</h2>
-            <p>${{ jodoh: 'Di Kafe Jodoh kumpul tamu yang sedang cari pasangan. Ketuk orang lain untuk lihat profil, ajak ngobrol, atau kasih ❤.', teman: 'Duduk di meja topik yang kamu suka (Gaming, Musik, Kuliner, dll.) supaya orang dengan minat sama bisa nyapa.', curhat: 'Di Taman Curhat ada papan curhat anonim. Tulis ceritamu, orang lain bisa kasih pelukan 🤗 dan balasan.' }[tjBaru]}</p>
-            <div class="baris"><button class="btn" type="button" id="kS">Antar ke ${saran[0]}</button><button class="btn putih" type="button" id="kN">Nanti saja</button></div>`, {
-            pasang(i2) { i2.querySelector('#kS').onclick = () => { tutupKartu(); pindah(saran[1], saran[2], saran[3]); }; i2.querySelector('#kN').onclick = tutupKartu; },
-          }), 500);
-        } else toast('Data tersimpan ✔');
+        const d = { n: bersih(v('#dN'), 20), tj: tjBaru, umur: Math.round(+v('#dU')), g: v('#dG'), kota: bersih(v('#dK'), 40), s: tjBaru === 'jodoh' ? v('#dS') : '', ig: igBersih(v('#dI')), b: bersih(v('#dB'), 100), alasan: bersih(v('#dA2'), 200) };
+        const salah = !TUJUAN[d.tj] ? 'Pilih tujuan datang dulu.'
+          : d.n.length < 2 ? 'Nama panggilan minimal 2 huruf.'
+          : !(d.umur >= (UM.umurMin || 13) && d.umur <= 99) ? `Umur minimal ${UM.umurMin || 13} tahun.`
+          : d.tj === 'jodoh' && d.umur < (UM.umurMinJodoh || 18) ? `Cari Jodoh khusus ${UM.umurMinJodoh || 18} tahun ke atas. Kamu bisa pilih Cari Teman atau Mau Curhat.`
+          : d.kota.length < 2 ? 'Isi kota tempat tinggalmu.'
+          : d.b.length < 10 ? 'Ceritakan sedikit tentang dirimu (minimal 10 huruf).'
+          : d.alasan.length < 10 ? 'Tulis alasan bergabung (minimal 10 huruf).'
+          : [d.n, d.ig, d.b, d.alasan, d.kota].some(kasar) ? 'Pakai kata-kata yang lebih sopan ya.'
+          : !isi.querySelector('#dA').checked ? 'Centang pernyataan di bawah dulu ya.' : '';
+        if (salah) { E.textContent = salah; return; }
+        E.textContent = 'Mengirim…';
+        try {
+          await L.daftarAkses(d);
+          prof = { ...(prof || {}), ...d, look: saya.look }; simpanProfil(prof);
+          perbaruiTombolProfil();
+          tutupKartu();
+          bukaKartu(`<div class="match"><div class="hatiBesar">📨</div><h2>Pendaftaran terkirim!</h2><p>Direktur akan meninjau formulirmu. Kamu akan dapat kabar di sini begitu disetujui. Sambil menunggu, silakan jalan-jalan melihat kantor.</p><div class="baris"><button class="btn" type="button" id="kO">Oke</button></div></div>`, { pasang(i) { i.querySelector('#kO').onclick = tutupKartu; } });
+        } catch (err) { E.textContent = 'Gagal mengirim. Coba lagi sebentar.'; }
       };
     },
   });
 }
-function perbaruiTombolProfil() { $('btnProfil').textContent = prof && prof.tj ? (TUJUAN[prof.tj].ikon + ' ' + prof.n) : 'Isi buku tamu'; }
-$('btnProfil').onclick = () => (prof && prof.tj ? Sosial.bukaProfilSaya() : bukaDaftar());
+
+// Tamu resmi: nama & tujuan dikunci (diatur Direktur); sisanya bebas diubah
+function bukaUbahData() {
+  const p = prof || {};
+  bukaKartu(`<h2>Ubah data tamu</h2>
+    <p>${TUJUAN[p.tj]?.ikon || ''} <b>${esc(p.n || '')}</b> · ${esc(TUJUAN[p.tj]?.nama || '')}<br><span class="kecil">Nama & tujuan diatur Direktur. Hubungi Direktur lewat kotak saran di Ruang Direktur bila ingin menggantinya.</span></p>
+    <form id="fU">
+      <div class="dua">
+        <div><label for="uG">Jenis kelamin</label><select id="uG">${Object.entries(GENDER).map(([k, v]) => `<option value="${k}" ${k === (p.g || '') ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
+        ${p.tj === 'jodoh' ? `<div><label for="uS">Status hati</label><select id="uS">${STATUS.map(x => `<option ${x === p.s ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></div>` : ''}
+      </div>
+      <label for="uB">Tentang aku</label><textarea id="uB" maxlength="100" rows="2">${esc(p.b || '')}</textarea>
+      <label for="uI">Username Instagram</label><input id="uI" maxlength="31" value="${esc(p.ig ? '@' + p.ig : '')}" autocapitalize="none">
+      <p class="err" id="uE"></p>
+      <div class="baris"><button class="btn" type="submit">Simpan</button></div>
+    </form>`, {
+    pasang(isi) {
+      isi.querySelector('#fU').onsubmit = e => {
+        e.preventDefault();
+        const b = bersih(isi.querySelector('#uB').value, 100), ig = igBersih(isi.querySelector('#uI').value);
+        if (kasar(b) || kasar(ig)) { isi.querySelector('#uE').textContent = 'Pakai kata-kata yang lebih sopan ya.'; return; }
+        prof = { ...prof, b, ig, g: isi.querySelector('#uG').value, s: isi.querySelector('#uS')?.value || prof.s };
+        simpanProfil(prof); posWaktu = 0; tutupKartu(); toast('Data tersimpan ✔');
+      };
+    },
+  });
+}
+
+// Dipanggil saat data keanggotaan / pendaftaran berubah
+function terapkanAkses() {
+  if (!L || K.anggotaSaya === undefined) return; // tunggu data keanggotaan termuat
+  const a = K.anggotaSaya, dir = K.peran[L.uid] === 'direktur';
+  const lama = K._resmiLama;
+  if (a || dir) {
+    const n = a ? a.n : (prof?.n || 'Direktur'), tj = a ? a.tj : (prof?.tj || 'teman');
+    if (!prof || prof.n !== n || prof.tj !== tj) { prof = { ...(prof || {}), n, tj, look: prof?.look || saya.look }; simpanProfil(prof); }
+    if (lama === false) {
+      tulisLog('', `🎉 Selamat ${n}! Kamu resmi menjadi tamu ${TUJUAN[tj].ikon} ${TUJUAN[tj].nama}.`, 'sys');
+      const s = SARAN_RUANG[tj];
+      setTimeout(() => { if (!$('kartu').hidden) return; bukaKartu(`<div class="match"><div class="hatiBesar">🎉</div><h2>Kamu resmi jadi tamu!</h2><p>Sekarang kamu bisa ngobrol, ajak orang ngobrol pribadi, ikut acara, dan kumpulkan EXP. Mau langsung ke ${s[0]}?</p>
+        <div class="baris"><button class="btn" type="button" id="kS">Antar ke ${s[0]}</button><button class="btn putih" type="button" id="kN">Nanti</button></div></div>`, {
+        pasang(i) { i.querySelector('#kS').onclick = () => { tutupKartu(); pindah(s[1], s[2], s[3]); }; i.querySelector('#kN').onclick = tutupKartu; } }); }, 600);
+    }
+    Prog.lapor('tur_daftar');
+  }
+  K._resmiLama = !!(a || dir);
+  $('chatI').placeholder = resmi() ? 'Tulis pesan… (Enter)' : '👀 Daftar dulu untuk ikut ngobrol';
+  pasangKarakterSaya(); perbaruiTombolProfil(); posWaktu = 0; Prog.segarArah();
+  if (!resmi()) L.pergi();
+}
+function perbaruiTombolProfil() {
+  const d = K.daftarku;
+  $('btnProfil').textContent = resmi() ? (TUJUAN[prof?.tj]?.ikon || '👤') + ' ' + (prof?.n || '') : d && d.status === 'menunggu' ? '⏳ Ditinjau' : '📝 Daftar';
+}
+$('btnProfil').onclick = () => (resmi() ? Sosial.bukaProfilSaya() : bukaDaftar());
 
 // ---- loker: ganti penampilan
 function bukaLoker() {
-  if (!prof || !prof.tj) { bukaDaftar(); return; }
+  if (!resmi()) { bukaDaftar(); return; }
   const lama = { ...saya.look };
   const kamLama = { yaw: kam.yaw, pitch: kam.pitch, jarak: kam.jarak };
   kam.yaw = saya.r + Math.PI; kam.pitch = 0.12; kam.jarak = 4.6; kam.y = innerWidth < 900 ? 0.6 : 1.1;
@@ -1140,7 +1217,7 @@ function bukaResepsionis() {
     <p class="kecil"><b>Cara berinteraksi:</b> ketuk orang lain → Sapa, 💌 Ajak ngobrol (pribadi, harus diterima), atau ❤ Suka (kalau saling suka jadi <i>match</i>). Ada tombol Laporkan dan Sembunyikan kalau ada yang mengganggu.</p>
     <p class="kecil"><b>Cara main:</b> WASD/panah untuk jalan (Shift lari) · seret layar untuk putar kamera · <b>E</b> untuk aksi · <b>Enter</b> untuk chat. Di HP: geser sisi kiri bawah untuk jalan.</p>
     <p class="kecil">👑 Direktur: ${dir}<br>🛡 Staf: ${staf}</p>
-    <div class="baris">${prof && prof.tj ? '' : '<button class="btn" type="button" id="rD">Isi buku tamu</button>'}<a class="btn putih" href="../idcard/index.html">Kartu Tamu</a>${ig}${don}</div>`, {
+    <div class="baris">${resmi() ? '' : '<button class="btn" type="button" id="rD">📝 Daftar jadi tamu</button>'}<a class="btn putih" href="../idcard/index.html">Kartu Tamu</a>${ig}${don}</div>`, {
     pasang(isi) { const b = isi.querySelector('#rD'); if (b) b.onclick = bukaDaftar; },
   });
 }
@@ -1162,7 +1239,7 @@ function bukaPapan() {
       isi.querySelectorAll('[data-hapus]').forEach(b => b.onclick = async () => { try { await L.hapus(b.dataset.hapus); toast('Tulisan dihapus'); bukaPapan(); } catch (e) { toast('Gagal menghapus.'); } });
       isi.querySelector('#fP').onsubmit = e => {
         e.preventDefault();
-        if (!prof || !prof.tj) { bukaDaftar(); return; }
+        if (!resmi()) { bukaDaftar(); return; }
         const t = bersih(isi.querySelector('#pI').value, 80);
         if (t.length < 2) { isi.querySelector('#pE').textContent = 'Tulis sesuatu dulu.'; return; }
         if (Date.now() - LS.get('papanT', 0) < 30000) { isi.querySelector('#pE').textContent = 'Tunggu 30 detik sebelum menulis lagi.'; return; }
@@ -1412,10 +1489,10 @@ async function mulai() {
   renderer.setAnimationLoop(langkah);
   setTimeout(() => { $('loading').classList.add('hilang'); }, 150);
 
-  const db = await bukaDB();
+  const db = await bukaDB({ kantor: true });
   L = buatLayanan(db);
   mulaiChat = db.now();
-  Object.assign(K, { L, saya, pindah, bicara, bukaDaftar, hitungOnline, berdiri, teksLabel, gayaPeran });
+  Object.assign(K, { L, saya, pindah, bicara, bukaDaftar, hitungOnline, berdiri, teksLabel, gayaPeran, resmi });
   Object.defineProperty(K, 'prof', { get: () => prof, set: v => { prof = v; } });
   K.segarkanOrang = () => { pasangKarakterSaya(); sinkronLain(K.onlineTerakhir); };
   window.__kantor = { L, saya, lain, bot, pindah, K }; // untuk debugging
@@ -1428,7 +1505,9 @@ async function mulai() {
     const l = Object.values(o || {}).filter(k => k && k.n).map(k => ({ ...k, n: bersih(k.n, 20), ig: igBersih(k.ig), tj: tujuanAman(k.tj) }));
     K.tamu = l.sort((a, b) => (a.t || 0) - (b.t || 0)); dindingKV.ulang();
   });
-  db.on('peran', o => { K.peran = o || {}; Direktur.perbaruiPeran(); K.segarkanOrang(); cekTirai(); });
+  db.on('peran', o => { K.peran = o || {}; Direktur.perbaruiPeran(); terapkanAkses(); K.segarkanOrang(); cekTirai(); });
+  db.on('anggota/' + L.uid, o => { K.anggotaSaya = o; terapkanAkses(); });
+  db.on('pendaftaran/' + L.uid, o => { K.daftarku = o; perbaruiTombolProfil(); Prog.segarArah(); });
   db.on('mading', o => { const m = Array.isArray(o) ? o : (o ? Object.values(o) : null); K.mading = m && m.length ? m.filter(Boolean) : null; teksMading.ulang(); });
   db.on('pengumuman', tampilPengumuman);
   db.on('setelan', o => { K.setelan = o || {}; cekTirai(); });
@@ -1438,16 +1517,11 @@ async function mulai() {
   if (L.mode === 'lokal') buatBot();
   Sosial.mulai(); Direktur.mulai(); Prog.mulai();
   hitungOnline();
-  if (L.mode === 'lokal' && prof && prof.tj) {
-    // mode lokal: tab kedua di browser yang sama dianggap tamu lain, supaya interaksi bisa dicoba
-    await new Promise(r => setTimeout(r, 500));
-    if (Object.entries(K.onlineTerakhir || {}).some(([u, p]) => u !== L.uid && p && p.n === prof.n)) {
-      prof = { look: prof.look }; pasangKarakterSaya(); perbaruiTombolProfil();
-      toast('Tab ini dianggap tamu lain (mode lokal). Isi buku tamu dengan nama berbeda.', 4000);
-    }
-  }
-  if (prof && prof.tj) { L.daftarTamu(prof); tulisLog('', `Selamat datang kembali, ${prof.n}!`, 'sys'); Prog.lapor('tur_daftar'); }
-  else setTimeout(() => { if ($('kartu').hidden) bukaDaftar(); }, 900);
+  setTimeout(() => {
+    if (resmi()) tulisLog('', `Selamat datang kembali, ${prof?.n || ''}!`, 'sys');
+    else if (location.hash === '#daftar' || !K.daftarku) { if ($('kartu').hidden) bukaDaftar(); }
+    else tulisLog('', K.daftarku.status === 'menunggu' ? '⏳ Pendaftaranmu sedang ditinjau Direktur.' : 'Pendaftaranmu belum diterima. Ketuk tombol di kanan atas untuk melihat catatan.', 'sys');
+  }, 1200);
 }
 mulai().catch(e => {
   console.error(e);

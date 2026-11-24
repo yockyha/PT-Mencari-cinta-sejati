@@ -30,12 +30,15 @@ const kunciHarian = id => `h${hariIni()}_${id}`;
 
 // ---------------------------------------------------------------- STATUS
 const P = { exp: 0, beli: 0, selesai: new Set(), acara: {}, ikut: {}, hadir: {}, skorHari: {}, expSemua: {}, beliSemua: {} };
-export const totalExp = () => (P.exp || 0) + (P.beli || 0);
-export const level = () => levelDari(totalExp());
-export const isVip = uid => !!(K.vip && K.vip[uid] && K.vip[uid].sampai > (K.L ? K.L.db.now() : Date.now()));
+// Direktur: EXP tak terbatas, semua barang terbuka, otomatis Eksekutif
+export const direkturSaya = () => !!(K.L && K.peran[K.L.uid] === 'direktur');
+export const totalExp = () => (direkturSaya() ? Infinity : (P.exp || 0) + (P.beli || 0));
+export const level = () => (direkturSaya() ? 99 : levelDari(totalExp()));
+export const isVip = uid => !!(K.peran && K.peran[uid] === 'direktur') || !!(K.vip && K.vip[uid] && K.vip[uid].sampai > (K.L ? K.L.db.now() : Date.now()));
 export const vipSaya = () => K.L && isVip(K.L.uid);
-export const bolehOutfit = i => { const o = OUTFIT[i]; return !!o && (o.vip ? vipSaya() : level() >= o.lv); };
-export const bolehAks = i => { const o = AKSESORIS[i]; return !!o && (o.vip ? vipSaya() : level() >= o.lv); };
+export const bolehOutfit = i => { const o = OUTFIT[i]; return !!o && (direkturSaya() || (o.vip ? vipSaya() : level() >= o.lv)); };
+export const bolehAks = i => { const o = AKSESORIS[i]; return !!o && (direkturSaya() || (o.vip ? vipSaya() : level() >= o.lv)); };
+const resmi = () => !!(K.resmi && K.resmi());
 const menunggu = new Set(); // tugas yang EXP-nya sedang dikirim
 const sudah = k => P.selesai.has(k) || menunggu.has(k);
 export const selesai = id => sudah(id.startsWith('tur_') ? id : kunciHarian(id));
@@ -71,8 +74,8 @@ export function mulai() {
 
 function segarLevel() {
   const lv = level();
-  $('btnLv').textContent = `⭐ Lv ${lv}`;
-  if (levelLama !== null && lv > levelLama) naikLevel(lv);
+  $('btnLv').textContent = direkturSaya() ? '👑 Lv ∞' : `⭐ Lv ${lv}`;
+  if (levelLama !== null && lv > levelLama && !direkturSaya()) naikLevel(lv);
   levelLama = lv;
   K.segarkanOrang && K.segarkanOrang();
 }
@@ -123,7 +126,7 @@ export function hadiah(n, label) { if (K.L && n > 0) tambah(n, null, label); }
 
 // Laporkan aktivitas: otomatis memberi EXP bila tugas terkait belum selesai
 export function lapor(id, n = 1) {
-  if (!K.L || !K.prof || !K.prof.tj || K.terkunci) return;
+  if (!K.L || !K.prof || !K.prof.tj || K.terkunci || !resmi() || direkturSaya()) return;
   const tur = TUR.find(t => t.id === id);
   if (tur) { if (!sudah(id)) { menunggu.add(id); tambah(tur.exp, id, '✅ ' + tur.nama); segarArah(); } return; }
   const h = HARIAN.find(t => t.id === id);
@@ -136,7 +139,7 @@ export function lapor(id, n = 1) {
 
 // ---------------------------------------------------------------- POSISI: kunjungan ruangan & absen acara
 export function cekPosisi(x, z) {
-  if (!K.L || !K.prof || !K.prof.tj || K.terkunci) return;
+  if (!K.L || !K.prof || !K.prof.tj || K.terkunci || !resmi()) return;
   const lok = lokasiDi(x, z);
   if (lok && lok === RUANG_TUJUAN[K.prof.tj]) lapor('tur_ruang');
   for (const [id, a] of acaraLive()) {
@@ -180,7 +183,12 @@ export function segarArah() {
   const el = $('arah'); if (!el || !K.L) return;
   let a = null;
   const live = acaraLive().find(([id]) => !(P.hadir[id] && P.hadir[id][K.L.uid]));
-  if (!K.prof || !K.prof.tj) a = { t: '👉 Langkah pertama: isi buku tamu', aksi: () => K.bukaDaftar() };
+  if (!resmi()) a = K.daftarku && K.daftarku.status === 'menunggu'
+    ? { t: '⏳ Pendaftaranmu sedang ditinjau Direktur. Sambil menunggu, silakan lihat-lihat.', aksi: () => K.bukaDaftar() }
+    : K.daftarku && K.daftarku.status === 'ditolak'
+      ? { t: '📝 Pendaftaranmu belum diterima. Ketuk untuk melihat catatan & kirim ulang →', aksi: () => K.bukaDaftar() }
+      : { t: '👀 Kamu sedang lihat-lihat. Daftar jadi tamu untuk ngobrol & ikut acara →', aksi: () => K.bukaDaftar() };
+  else if (direkturSaya()) a = { t: '👑 Mode Direktur · buka Dashboard untuk kendali penuh →', aksi: () => { location.href = '../dashboard/index.html'; } };
   else if (live) a = { t: `🔴 LIVE: ${bersih(live[1].judul, 40)} di ${LOKASI[live[1].lokasi]?.nama || ''} · Datang →`, aksi: () => pergiKe(live[1].lokasi), live: true };
   else {
     const tur = TUR.find(t => !sudah(t.id));
@@ -197,7 +205,7 @@ export function segarArah() {
   el.textContent = a.t; el.hidden = false; el.classList.toggle('live', !!a.live);
 }
 function aksiTugas(t) {
-  if (t.id === 'tur_ruang') return pergiKe(RUANG_TUJUAN[K.prof.tj]);
+  if (t.id === 'tur_ruang') return pergiKe(RUANG_TUJUAN[K.prof?.tj] || 'lobi');
   if (t.id === 'tur_kartu') { location.href = '../idcard/index.html'; return; }
   if (t.id === 'tur_sapa') { $('chatI').focus(); toast('Ketik pesan lalu tekan Enter 👋'); return; }
   if (t.id === 'tur_profil') { toast('Ketuk karakter tamu lain di sekitarmu 👆'); return; }
@@ -209,15 +217,19 @@ function aksiTugas(t) {
 // ---------------------------------------------------------------- PUSAT TAMU (hub)
 const TAB = [['tugas', '📋 Tugas'], ['acara', '📅 Acara'], ['peringkat', '🏆 Peringkat'], ['toko', '💎 Toko']];
 export function bukaHub(tab = 'tugas') {
-  if (!K.prof || !K.prof.tj) { K.bukaDaftar(); return; }
   const lv = level(), ex = totalExp(), a = ambangLevel(lv), b = ambangLevel(lv + 1);
   const isi = { tugas: tabTugas, acara: tabAcara, peringkat: tabPeringkat, toko: tabToko }[tab]();
-  bukaKartu(`<div class="hub"><h2>⭐ Level ${lv}${vipSaya() ? ' <span class="pillTj" style="--w:#b8860b">💎 Eksekutif</span>' : ''}</h2>
+  const atas = direkturSaya()
+    ? `<h2>👑 Level ∞ <span class="pillTj" style="--w:#b8860b">Direktur</span></h2><div class="bilah"><i style="width:100%"></i></div><p class="kecil">EXP tak terbatas · semua outfit & aksesoris terbuka</p>`
+    : !resmi()
+      ? `<h2>👀 Pengunjung</h2><p class="kecil">Lihat-lihat dulu. <button type="button" class="mini" id="hD">📝 Daftar jadi tamu</button> untuk mengerjakan tugas, ikut acara, dan kumpulkan EXP.</p>`
+      : `<h2>⭐ Level ${lv}${vipSaya() ? ' <span class="pillTj" style="--w:#b8860b">💎 Eksekutif</span>' : ''}</h2>
     <div class="bilah" role="progressbar" aria-valuemin="${a}" aria-valuemax="${b}" aria-valuenow="${ex}"><i style="width:${Math.min(100, (ex - a) / (b - a) * 100).toFixed(1)}%"></i></div>
-    <p class="kecil">${fmt(ex)} EXP · ${fmt(b - ex)} EXP lagi ke Level ${lv + 1}</p>
+    <p class="kecil">${fmt(ex)} EXP · ${fmt(b - ex)} EXP lagi ke Level ${lv + 1}</p>`;
+  bukaKartu(`<div class="hub">${atas}
     <div class="sw teks tab">${TAB.map(([k, n]) => `<button type="button" data-tab="${k}" class="${k === tab ? 'on' : ''}">${n}</button>`).join('')}</div>
     <div>${isi.html}</div></div>`, {
-    pasang(el) { el.querySelectorAll('[data-tab]').forEach(x => x.onclick = () => bukaHub(x.dataset.tab)); isi.pasang && isi.pasang(el); },
+    pasang(el) { el.querySelectorAll('[data-tab]').forEach(x => x.onclick = () => bukaHub(x.dataset.tab)); const hd = el.querySelector('#hD'); if (hd) hd.onclick = () => K.bukaDaftar(); isi.pasang && isi.pasang(el); },
   });
 }
 
@@ -248,7 +260,7 @@ function tabAcara() {
       ${nanti.length ? `<h3>Akan datang</h3>${nanti.slice(0, 8).map(x => kartu(x, false)).join('')}` : (live.length ? '' : '<p>Belum ada acara terjadwal. Pantau terus, Direktur sering bikin acara seru!</p>')}
       <p class="kecil">Tekan <b>Ikut</b> untuk diingatkan 10 menit sebelum mulai. Datang ke ruangannya saat acara berlangsung untuk absen otomatis & dapat EXP.</p>`,
     pasang(el) {
-      el.querySelectorAll('[data-ikut]').forEach(b => b.onclick = () => { const id = b.dataset.ikut, ya = !(P.ikut[id] && P.ikut[id][uid]); K.L.ikutAcara(id, ya).then(() => { (P.ikut[id] ||= {})[uid] = ya || undefined; if (!ya) delete P.ikut[id][uid]; toast(ya ? 'Kamu akan diingatkan sebelum acara mulai ⏰' : 'Batal ikut.'); bukaHub('acara'); }).catch(() => toast('Gagal. Coba lagi.')); });
+      el.querySelectorAll('[data-ikut]').forEach(b => b.onclick = () => { if (!resmi()) { K.bukaDaftar(); return; } const id = b.dataset.ikut, ya = !(P.ikut[id] && P.ikut[id][uid]); K.L.ikutAcara(id, ya).then(() => { (P.ikut[id] ||= {})[uid] = ya || undefined; if (!ya) delete P.ikut[id][uid]; toast(ya ? 'Kamu akan diingatkan sebelum acara mulai ⏰' : 'Batal ikut.'); bukaHub('acara'); }).catch(() => toast('Gagal. Coba lagi.')); });
       el.querySelectorAll('[data-datang]').forEach(b => b.onclick = () => { tutupKartu(); pergiKe(b.dataset.datang); });
     },
   };
@@ -279,7 +291,7 @@ function tabToko() {
       <div class="daftar">${(T.paket || []).map(p => `<div><span><b>${esc(p.nama)}</b> · ${rp(p.harga)}<br><small>${esc(p.ket || '')}</small></span><button type="button" class="mini" data-beli="${esc(p.id)}" ${buka ? '' : 'disabled'}>Beli</button></div>`).join('')}</div>
       ${buka ? '' : `<p class="kecil">Toko belum dibuka. ${CFG.instagram ? `Pantau info di <a href="https://www.instagram.com/${encodeURIComponent(CFG.instagram)}/" target="_blank" rel="noopener">@${esc(CFG.instagram)}</a>.` : ''}</p>`}
       <p class="kecil">Kode tamu kamu: <code>${esc(kodeTamu(uid))}</code></p>`,
-    pasang(el) { el.querySelectorAll('[data-beli]').forEach(b => b.onclick = () => bukaBeli((T.paket || []).find(p => p.id === b.dataset.beli))); },
+    pasang(el) { el.querySelectorAll('[data-beli]').forEach(b => b.onclick = () => !resmi() ? K.bukaDaftar() : bukaBeli((T.paket || []).find(p => p.id === b.dataset.beli))); },
   };
 }
 
