@@ -183,7 +183,7 @@ function bangunDunia() {
   kotak(1.1, 0.9, 0.8, 12.6, 0, 8.6, '#e9e4dd', { tab: true });
   kotak(0.8, 0.12, 0.5, 12.6, 0.9, 8.6, '#5b5f6a');
   kotak(0.5, 0.02, 0.36, 12.6, 1.02, 8.6, '#ffffff');
-  titikAksi.push({ x: 12.6, z: 7.5, r: 1.5, label: 'Cetak ID Card', aksi: () => { location.href = '../idcard/'; } });
+  titikAksi.push({ x: 12.6, z: 7.5, r: 1.5, label: 'Cetak ID Card', aksi: () => { location.href = '../idcard/index.html'; } });
   for (const [x, z] of [[-13, 9], [13, -6], [-13, -6], [0, -6]]) pot(x, z);
   // dispenser
   kotak(0.5, 1.2, 0.5, -13, 0, -5.2, '#dfe7ef', { tab: true });
@@ -964,7 +964,7 @@ function bukaResepsionis() {
   bukaKartu(`<h2>Selamat datang di ${esc(CFG.namaPT)}!</h2>
     <p>Kantor tanpa gaji. Bonusnya: siapa tahu ketemu jodoh. Jelajahi kantor, ngobrol dengan karyawan lain, dan pasang namamu di Dinding Karyawan.</p>
     <p class="kecil"><b>Cara main:</b> WASD/panah untuk jalan (Shift lari) · seret layar untuk memutar kamera · scroll untuk zoom · <b>E</b> untuk aksi · <b>Enter</b> untuk chat. Di HP: geser sisi kiri bawah untuk jalan.</p>
-    <div class="baris">${prof ? '' : '<button class="btn" type="button" id="rD">Daftar jadi karyawan</button>'}<a class="btn putih" href="../idcard/">Buat ID Card</a>${ig}${don}</div>`, {
+    <div class="baris">${prof ? '' : '<button class="btn" type="button" id="rD">Daftar jadi karyawan</button>'}<a class="btn putih" href="../idcard/index.html">Buat ID Card</a>${ig}${don}</div>`, {
     pasang(isi) { const b = isi.querySelector('#rD'); if (b) b.onclick = bukaDaftar; },
   });
 }
