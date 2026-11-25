@@ -40,7 +40,7 @@ h1 span{color:var(--pink)}
 footer{position:absolute;bottom:14px;left:0;right:0;font-size:13px;opacity:.75;font-weight:700}
 footer a{color:inherit}
 </style>
-<script src="config.js?v=202611251335"></script>
+<script src="config.js?v=202611251502"></script>
 </head>
 <body>
   <header class="hero">
@@ -74,7 +74,7 @@ footer a{color:inherit}
     if (c.instagram) {
       var a = document.createElement('a');
       a.href = 'https://www.instagram.com/' + encodeURIComponent(c.instagram) + '/';
-      a.target = '_blank'; a.rel = 'noopener'; a.textContent = '@' + c.instagram;
+      a.target = '_blank'; a.rel = 'noopener'; a.textContent = '@' + (c.instagramNama || c.instagram);
       var f = document.getElementById('kaki'); f.appendChild(document.createTextNode(' · ')); f.appendChild(a);
     }
   })();
