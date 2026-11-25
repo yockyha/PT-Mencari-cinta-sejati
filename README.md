@@ -98,6 +98,11 @@ Keamanan: harga dihitung server dari `paket.js` (bukan dari browser), notifikasi
 
 **Jangan pernah** menaruh Server Key atau Database secret di `config.js` / GitHub. Keduanya hanya di variabel Cloudflare. Pembayaran otomatis hanya jalan di situs online (bukan mode offline).
 
+### 🎙️ Pesan suara & 📞 telepon
+- **Pesan suara** di obrolan pribadi: tombol 🎤, maks. 30 detik. Audio disimpan terpisah (`suaraDm`) dan baru diunduh saat diputar; dihapus otomatis setelah 7 hari.
+- **Telepon suara** khusus pasangan yang **saling match** (tombol 📞 di profil & obrolan). WebRTC langsung antar-perangkat, tidak direkam, maks. 30 menit.
+- **Server TURN** (agar telepon tetap tersambung di data seluler): Cloudflare → **Realtime → TURN Server → Create**, lalu isi di Cloudflare Pages → Settings → Variables and Secrets: `TURN_KEY_ID` dan `TURN_KEY_API_TOKEN` (tipe Secret). Tanpa itu, telepon tetap jalan lewat STUN (umumnya lancar di WiFi).
+
 ### 💠 Diamond & Lemari Diamond
 - Paket Diamond diatur di `paket.js` → `diamond` (bawaan 50/110/300/650 Diamond, Rp5rb–50rb)
 - Barang khusus Diamond (outfit: Jas Pengantin, Hoodie Hati, Jaket Varsity; aksesoris: kacamata hati, balon hati, topi pesta) diatur di `js/common.js` (`dm` = harga)

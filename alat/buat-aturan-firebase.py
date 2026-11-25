@@ -42,7 +42,19 @@ r["undangan"] = {"$ke": {".read": f"{A} && auth.uid === $ke", "$dari": {
 # OBROLAN PRIBADI: sengaja TIDAK bisa dibaca siapa pun selain dua orang di dalamnya (termasuk Direktur)
 r["dm"] = {"$room": {".read": f"{A} && {IKUT}",
   "ok": {".write": f"{A} && {IKUT} && newData.val() === true && (root.child('undangan/' + auth.uid + '/' + {LAIN}).exists() || root.child('match/' + auth.uid + '/' + {LAIN}).exists())"},
-  "pesan": {"$id": {".write": f"{A} && {IKUT} && !data.exists() && root.child('dm/' + $room + '/ok').val() === true && {BEBAS}", ".validate": pesan(300)}}}}
+  "pesan": {"$id": {".write": f"{A} && {IKUT} && !data.exists() && root.child('dm/' + $room + '/ok').val() === true && {BEBAS}",
+    ".validate": pesan(300) + " && (!newData.child('sv').exists() || (newData.child('sv/id').isString() && newData.child('sv/dur').isNumber() && newData.child('sv/dur').val() <= 31))"}}}}
+# PESAN SUARA: audio terpisah dari teks, hanya peserta obrolan; boleh dihapus peserta setelah 7 hari
+r["suaraDm"] = {"$room": {".read": f"{A} && {IKUT}", "$id": {
+  ".write": f"{A} && {IKUT} && ((!data.exists() && newData.exists() && root.child('dm/' + $room + '/ok').val() === true && {BEBAS}) || (data.exists() && !newData.exists() && data.child('t').val() < now - 604800000))",
+  ".validate": "newData.child('uid').val() === auth.uid && newData.child('d').isString() && newData.child('d').val().length <= 160000 && newData.child('tp').isString() && newData.child('tp').val().matches(/^audio\\/(webm|mp4|ogg|mpeg|aac|x-m4a)$/) && newData.child('t').val() === now"}}}
+# TELEPON (WebRTC): hanya pasangan yang saling match. sinyal = offer/answer/ICE, telepon/<penerima> = panggilan masuk
+MATCH_LAIN = f"root.child('match/' + auth.uid + '/' + {LAIN}).exists()"
+r["sinyal"] = {"$room": {".read": f"{A} && {IKUT}", ".write": f"{A} && {IKUT} && (!newData.exists() || ({MATCH_LAIN} && {BEBAS}))"}}
+r["telepon"] = {"$ke": {
+  ".read": f"{A} && (auth.uid === $ke || data.child('dari').val() === auth.uid)",
+  ".write": f"{A} && (auth.uid === $ke || (newData.exists() && newData.child('dari').val() === auth.uid && root.child('match/' + auth.uid + '/' + $ke).exists() && {BEBAS} && (!data.exists() || data.child('dari').val() === auth.uid || data.child('t').val() < now - 60000)) || (!newData.exists() && data.child('dari').val() === auth.uid))",
+  ".validate": "newData.child('dari').isString() && newData.child('r').isString() && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('st').val().matches(/^(dering|angkat|tolak)$/) && newData.child('t').isNumber()"}}
 r["dmku"] = {"$uid": {".read": f"{A} && auth.uid === $uid", "$room": {
   ".write": f"{A} && {IKUT} && ($room.beginsWith($uid + '_') || $room.endsWith('_' + $uid))",
   ".validate": "newData.child('n').isString() && newData.child('u').isString()"}}}
