@@ -77,7 +77,15 @@ function masukApp() {
   $('mode').textContent = db.mode === 'lokal' ? 'langsung · mode lokal (demo)' : 'langsung · online';
   const node = ['pendaftaran', 'anggota', 'tamu', 'online', 'peran', 'ban', 'exp', 'expBeli', 'vip', 'papan', 'curhatPemilik', 'laporan', 'saran',
     'pesanan', 'riwayat', 'acara', 'ikutAcara', 'hadirAcara', 'setelan', 'mading', 'pengumuman', 'diamond', 'milik', 'donatur', 'katalog'];
-  for (const n of node) db.on(n, v => { S[n] = v || {}; jadwalGambar(); });
+  let onlineT = 0, onlineTunda = null;
+  for (const n of node) db.on(n, v => {
+    S[n] = v || {};
+    if (n !== 'online') return jadwalGambar();
+    if (!['online', 'ringkas'].includes(bagian)) { navigasi(); return; }
+    const sisa = 3000 - (Date.now() - onlineT);
+    if (sisa <= 0) { onlineT = Date.now(); jadwalGambar(); }
+    else if (!onlineTunda) onlineTunda = setTimeout(() => { onlineTunda = null; onlineT = Date.now(); jadwalGambar(); }, sisa);
+  });
   db.on('chat', v => { S.chat = v || {}; jadwalGambar(); }, { limit: 200 });
   db.on('curhat', v => { S.curhat = v || {}; jadwalGambar(); }, { limit: 100 });
   db.on('skor/' + hariIni(), v => { S.skor = v || {}; jadwalGambar(); });
@@ -88,12 +96,15 @@ function masukApp() {
 }
 
 // ---------------------------------------------------------------- RENDER
-let antre = false, kotor = false;
+let antre = false, kotor = false, ditekan = false;
+// Selama tombol mouse/jari ditekan, tunda gambar ulang supaya klik tidak hilang karena tombol diganti
+addEventListener('pointerdown', () => { ditekan = true; }, true);
+for (const ev of ['pointerup', 'pointercancel']) addEventListener(ev, () => { ditekan = false; if (kotor) setTimeout(() => { if (kotor && !ditekan && !sibukMengetik()) gambar(); }, 120); }, true);
 function jadwalGambar() { if (antre) return; antre = true; setTimeout(() => { antre = false; gambar(); }, 250); }
 function sibukMengetik() { const a = document.activeElement; return a && $('isi').contains(a) && a.matches('input,textarea,select'); }
 function gambar(paksa = false) {
   navigasi();
-  if (!paksa && sibukMengetik()) { kotor = true; return; }
+  if (!paksa && (sibukMengetik() || ditekan)) { kotor = true; return; }
   kotor = false;
   const m = MENU.find(x => x[0] === bagian);
   $('judul').textContent = m[1] + ' ' + m[2];
