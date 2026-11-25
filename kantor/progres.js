@@ -3,9 +3,10 @@
 //  arah, acara terjadwal, peringkat, toko (EXP & Kartu Eksekutif),
 //  dan notifikasi dari Direktur.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, OUTFIT, AKSESORIS, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611251651';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611251651';
-import * as Bayar from './bayar.js?v=202611251651';
+import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611251741';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611251741';
+import * as Bayar from './bayar.js?v=202611251741';
+import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611251741';
 
 // ---------------------------------------------------------------- DATA TUGAS
 const RUANG_TUJUAN = { jodoh: 'kafe', teman: 'meja', curhat: 'taman' };
@@ -41,9 +42,17 @@ export const vipSaya = () => K.L && isVip(K.L.uid);
 export const punyaBarang = id => direkturSaya() || !!P.milik[id];
 export const saldoDiamond = () => P.diamond || 0;
 export const daftarDonatur = () => P.donatur || {};
-const boleh = o => !!o && (direkturSaya() || (o.dm ? punyaBarang(o.id) : o.vip ? vipSaya() : level() >= o.lv));
-export const bolehOutfit = i => boleh(OUTFIT[i]);
-export const bolehAks = i => boleh(AKSESORIS[i]);
+// Seragam (khusus) hanya untuk perannya: 'staf' → staf & Direktur, 'direktur' → Direktur, 'npc' → karyawan NPC saja
+const bolehKhusus = o => o.khusus === 'staf' ? !!(K.L && K.peran[K.L.uid]) : o.khusus === 'direktur' ? direkturSaya() : false;
+const boleh = o => !!o && (o.khusus ? bolehKhusus(o) : direkturSaya() || (o.dm ? punyaBarang(o.id) : o.vip ? vipSaya() : level() >= o.lv));
+export const bolehBarang = id => !id || boleh(BARANG[id]);
+// penampilan yang boleh dikirim ke orang lain: barang terkunci diganti bawaan
+export function lookAman(look) {
+  const l = lookV2(look);
+  const awal = { at: 'kaos', bw: 'chino', sp: 'sneakers' };
+  for (const s of Object.keys(SLOT)) if (l[s] && !boleh(BARANG[l[s]])) l[s] = awal[s] || '';
+  return l;
+}
 const resmi = () => !!(K.resmi && K.resmi());
 const menunggu = new Set(); // tugas yang EXP-nya sedang dikirim
 const sudah = k => P.selesai.has(k) || menunggu.has(k);
@@ -91,7 +100,7 @@ function segarLevel() {
 }
 
 function naikLevel(lv) {
-  const buka = [...OUTFIT.filter(o => o.lv === lv).map(o => '👕 ' + o.nama), ...AKSESORIS.filter(o => o.lv === lv).map(o => '✨ ' + o.nama)];
+  const buka = PAKAIAN.filter(o => o.lv === lv && !o.khusus).map(o => SLOT[o.slot].ikon + ' ' + o.nama);
   tulisLog('', `⭐ Naik ke Level ${lv}!`, 'sys');
   if (kartuTerbuka()) { toast(`⭐ Naik ke Level ${lv}!${buka.length ? ' Barang baru terbuka di Ruang Loker.' : ''}`, 4000); return; }
   bukaKartu(`<div class="match"><div class="hatiBesar">⭐</div><h2>Naik ke Level ${lv}!</h2>

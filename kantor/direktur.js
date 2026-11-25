@@ -3,9 +3,9 @@
 //  Semua tindakan juga dijaga database.rules.json di server, jadi
 //  tamu biasa tidak bisa memakainya walau mengutak-atik browser.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, fmt, esc, bersih, kodeTamu } from '../js/common.js?v=202611251651';
-import * as Prog from './progres.js?v=202611251651';
-import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611251651';
+import { CFG, TUJUAN, LOKASI, fmt, esc, bersih, kodeTamu } from '../js/common.js?v=202611251741';
+import * as Prog from './progres.js?v=202611251741';
+import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611251741';
 
 let laporan = {}, saran = {}, larangan = {}, pesanan = {}, lepas = [], tabAktif = 'ringkas';
 const peranku = () => K.L && K.peran[K.L.uid];
@@ -120,7 +120,7 @@ function orang() {
       <h3>Sedang dikeluarkan</h3>
       ${diusir.length ? `<div class="daftar">${diusir.map(([u, b]) => `<div><span>${esc(b.n || namaDari(u))}<br><small>${b.sampai > now + 3650 * 86400e3 ? 'diblokir' : 'sampai ' + esc(tanggalJam(b.sampai))} · ${esc(b.alasan || '')}</small></span><button type="button" class="mini putih" data-ampun="${esc(u)}">Ampuni</button></div>`).join('')}</div>` : '<p class="kecil">Tidak ada.</p>'}`,
     pasang(isi) {
-      isi.querySelectorAll('[data-lihat]').forEach(b => b.onclick = () => import('./sosial.js?v=202611251651').then(S => S.bukaProfil(o.find(x => x.uid === b.dataset.lihat))));
+      isi.querySelectorAll('[data-lihat]').forEach(b => b.onclick = () => import('./sosial.js?v=202611251741').then(S => S.bukaProfil(o.find(x => x.uid === b.dataset.lihat))));
       isi.querySelectorAll('[data-mod]').forEach(b => b.onclick = () => bukaModerasiOrang(o.find(x => x.uid === b.dataset.mod)));
       isi.querySelectorAll('[data-ampun]').forEach(b => b.onclick = () => {
         const u = b.dataset.ampun;

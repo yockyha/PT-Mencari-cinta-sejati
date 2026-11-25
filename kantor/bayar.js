@@ -5,9 +5,10 @@
 //  atau manual: QRIS/transfer BCA/BRI dengan NOMINAL UNIK, lalu
 //  diverifikasi Direktur di Dashboard (Toko & Pesanan).
 // =====================================================================
-import { CFG, OUTFIT, AKSESORIS, LS, esc, fmt, bersih, rupiah, IKON_DM, kodeTamu, hash } from '../js/common.js?v=202611251651';
-import { K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611251651';
-import * as P from './progres.js?v=202611251651';
+import { PAKAIAN, SLOT } from '../js/pakaian.js?v=202611251741';
+import { CFG, LS, esc, fmt, bersih, rupiah, IKON_DM, kodeTamu, hash } from '../js/common.js?v=202611251741';
+import { K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611251741';
+import * as P from './progres.js?v=202611251741';
 
 const BAYAR = () => CFG.pembayaran || {};
 const resmi = () => !!(K.resmi && K.resmi());
@@ -34,7 +35,7 @@ const pesananKu = () => (LS.get('pesananKu', []) || []).slice(-20);
 // ---------------------------------------------------------------- TAB TOKO
 export function tabToko() {
   const dir = P.direkturSaya(), saldo = P.saldoDiamond();
-  const barang = [...OUTFIT.map((o, i) => ({ ...o, i, jenis: 'o' })), ...AKSESORIS.map((a, i) => ({ ...a, i, jenis: 'a' }))].filter(x => x.dm);
+  const barang = PAKAIAN.filter(x => x.dm);
   const dp = (CFG.diamond && CFG.diamond.paket) || [], pk = (CFG.toko && CFG.toko.paket) || [];
   const donatur = Object.entries(P.daftarDonatur()).filter(([, d]) => d && d.tampil !== false).sort((a, b) => (b[1].total || 0) - (a[1].total || 0)).slice(0, 10);
   const buka = tokoBuka();
@@ -44,9 +45,9 @@ export function tabToko() {
       <h3>${IKON_DM} Top up Diamond</h3>
       <div class="gridPaket">${dp.map(p => `<button type="button" class="paketDm" data-dm="${esc(p.id)}" ${buka ? '' : 'disabled'}><b>${IKON_DM} ${fmt(p.diamond)}</b><span>${rupiah(p.harga)}</span>${p.ket ? `<small>${esc(p.ket)}</small>` : ''}</button>`).join('')}</div>
       <h3>👗 Lemari Diamond</h3>
-      <div class="daftar">${barang.map(x => { const punya = P.punyaBarang(x.id); return `<div><span><b>${esc(x.nama)}</b> <small>${x.jenis === 'o' ? 'Outfit' : 'Aksesoris'}</small><br><small>${punya ? '✅ sudah kamu miliki · pakai di Ruang Loker' : `${IKON_DM} ${fmt(x.dm)}`}</small></span>${punya ? '' : `<button type="button" class="mini" data-barang="${esc(x.id)}">Beli</button>`}</div>`; }).join('')}</div>
+      <div class="daftar">${barang.map(x => { const punya = P.punyaBarang(x.id); return `<div><span><b>${esc(x.nama)}</b> <small>${SLOT[x.slot].ikon} ${esc(x.jenis)}</small><br><small>${punya ? '✅ sudah kamu miliki · pakai di Ruang Loker' : `${IKON_DM} ${fmt(x.dm)}`}</small></span>${punya ? '' : `<button type="button" class="mini" data-barang="${esc(x.id)}">Beli</button>`}</div>`; }).join('')}</div>
       <div class="vipKartu"><b>💎 Kartu Eksekutif & EXP</b>
-        <ul><li>💘 Lihat <b>siapa</b> yang diam-diam menyukaimu</li><li>🍸 Akses <b>Lounge Eksekutif</b> lewat lift lobi</li><li>👔 Setelan Emas, Mahkota Emas & Halo</li></ul>
+        <ul><li>💘 Lihat <b>siapa</b> yang diam-diam menyukaimu</li><li>🍸 Akses <b>Lounge Eksekutif</b> lewat lift lobi</li><li>👔 Setelan Emas, Sepatu Emas, Mahkota Emas & Halo</li></ul>
         ${P.vipSaya() && !dir ? `<p>Aktif sampai <b>${esc(tanggalJam(K.vip[K.L.uid].sampai))}</b> WIB</p>` : ''}</div>
       <div class="daftar">${pk.map(p => `<div><span><b>${esc(p.nama)}</b> · ${rupiah(p.harga)}<br><small>${esc(p.ket || '')}</small></span><button type="button" class="mini" data-paket="${esc(p.id)}" ${buka ? '' : 'disabled'}>Beli</button></div>`).join('')}</div>
       <h3>🎁 Donasi</h3>
@@ -188,7 +189,7 @@ export function bukaDonasi() {
 // ---------------------------------------------------------------- BELI BARANG DENGAN DIAMOND
 export function bukaBeliBarang(id) {
   if (!resmi()) { K.bukaDaftar(); return; }
-  const x = [...OUTFIT, ...AKSESORIS].find(b => b.id === id); if (!x) return;
+  const x = PAKAIAN.find(b => b.id === id && b.dm); if (!x) return;
   if (P.punyaBarang(id)) { toast(`${x.nama} sudah kamu miliki. Pakai di Ruang Loker 👔`); return; }
   const saldo = P.saldoDiamond(), cukup = saldo >= x.dm;
   bukaKartu(`<h2>👗 ${esc(x.nama)}</h2>
