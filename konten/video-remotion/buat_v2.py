@@ -37,7 +37,7 @@ def sfx(nama, src, frame, dur, vol):
 
 ATAS, BAWAH = 330, 1330
 bio = 'Kantor virtual buat cari jodoh, cari teman & curhat\nDaftar → di-ACC Direktur 👑'
-prof = dict(akun='jodohonline.id', nama='PT Mencari Cinta Sejati 💘', bio=bio, tautan='jodohonline.company/daftar', postingan='2', pengikut=0, mengikuti='0', sensor=True)
+prof = dict(akun='jodohonline.company', nama='PT Mencari Cinta Sejati 💘', bio=bio, tautan='jodohonline.company/daftar', postingan='2', pengikut=0, mengikuti='0', sensor=True)
 TANYA = ['cara daftarnya gimana kak? 🙏', 'linknya mana min??', 'harus bayar gak sih? 😅', 'aku mau join tapi bingung 😭', 'ACC-nya lama gak?']
 
 # 0 intro: komentar penonton
@@ -54,7 +54,7 @@ sfx('Whoosh judul', 'whoosh', waktu(0, 0.64, 1)[0] - 3, 18, 0.3)
 # 1 follow
 e('profil', 1, 0, 1, dict(prof, ketukDetik=round(DURASI[1] * 0.45, 2)), masuk='geser-atas', nama='Profil IG: Ikuti')
 t('chips', 'LANGKAH 1 · FOLLOW', 1, 0.05, 1, nyala='0', y=1190, masuk='pop')
-t('sub', '*Satu.* Follow @jodohonline.id', 1, 0, 1, y=BAWAH)
+t('sub', '*Satu.* Follow @jodohonline.company', 1, 0, 1, y=BAWAH)
 sfx('Geser profil', 'geser', det(1, 0), 18, 0.8); sfx('Ketuk Ikuti', 'ketuk', det(1, DURASI[1] * 0.45) - 2, 12, 0.45); sfx('Notif mengikuti', 'notif', det(1, DURASI[1] * 0.45) + 2, 22, 0.3)
 
 # 2 komen DAFTAR
@@ -119,7 +119,7 @@ e('profil', 8, 0, 1, dict(prof, ketukDetik=round(DURASI[8] * 0.3, 2)), masuk='ge
 t('sub', 'Gampang kan?', 8, 0, 0.23, y=BAWAH)
 t('sub', '*Follow,* komen *DAFTAR,* daftar *sekarang!*', 8, 0.23, 1, y=BAWAH)
 sfx('Geser profil penutup', 'geser', det(8, 0), 18, 0.8); sfx('Ketuk Ikuti penutup', 'ketuk', det(8, DURASI[8] * 0.3) - 2, 12, 0.45); sfx('Notif penutup', 'notif', det(8, DURASI[8] * 0.3) + 2, 25, 0.3)
-t('akun', '@jodohonline.id', 0, 0, 1, masuk='none', y=150, x=130)
+t('akun', '@jodohonline.company', 0, 0, 1, masuk='none', y=150, x=130)
 
 total = f(sum(DURASI))
 T = dict(versi=1, fps=FPS, lebar=1080, tinggi=1920, durasi=total, vo=dict(src='vo2.mp3', volume=1), lapis=L, sfx=S)

@@ -78,7 +78,7 @@
    "mulai": 172,
    "durasi": 102,
    "props": {
-    "akun": "jodohonline.id",
+    "akun": "jodohonline.company",
     "nama": "PT Mencari Cinta Sejati 💘",
     "bio": "Kantor virtual buat cari jodoh, cari teman & curhat\nDaftar → di-ACC Direktur 👑",
     "tautan": "jodohonline.company/daftar",
@@ -106,7 +106,7 @@
    "id": "t9",
    "track": "teks",
    "jenis": "sub",
-   "teks": "*Satu.* Follow @jodohonline.id",
+   "teks": "*Satu.* Follow @jodohonline.company",
    "mulai": 172,
    "durasi": 102,
    "y": 1330
@@ -166,7 +166,7 @@
    "mulai": 363,
    "durasi": 63,
    "props": {
-    "akun": "jodohonline.id",
+    "akun": "jodohonline.company",
     "nama": "PT Mencari Cinta Sejati 💘",
     "bio": "Kantor virtual buat cari jodoh, cari teman & curhat\nDaftar → di-ACC Direktur 👑",
     "tautan": "jodohonline.company/daftar",
@@ -411,7 +411,7 @@
    "mulai": 1359,
    "durasi": 141,
    "props": {
-    "akun": "jodohonline.id",
+    "akun": "jodohonline.company",
     "nama": "PT Mencari Cinta Sejati 💘",
     "bio": "Kantor virtual buat cari jodoh, cari teman & curhat\nDaftar → di-ACC Direktur 👑",
     "tautan": "jodohonline.company/daftar",
@@ -446,7 +446,7 @@
    "id": "t41",
    "track": "teks",
    "jenis": "akun",
-   "teks": "@jodohonline.id",
+   "teks": "@jodohonline.company",
    "mulai": 0,
    "durasi": 172,
    "masuk": "none",

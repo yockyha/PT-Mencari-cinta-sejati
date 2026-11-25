@@ -1,6 +1,6 @@
 # Video promosi jodohonline (Remotion)
 
-Video vertikal 1080×1920 untuk IG Reels & TikTok @jodohonline.id.
+Video vertikal 1080×1920 untuk IG Reels & TikTok @jodohonline.company.
 
 ## Alur kerja konten
 

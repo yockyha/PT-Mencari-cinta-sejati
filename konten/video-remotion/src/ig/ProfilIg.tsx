@@ -58,7 +58,7 @@ export const ProfilIg = Interactive.create({
   Component: ProfilIgInner,
   layout: 'none',
   schema: {
-    akun: {type: 'string', default: 'jodohonline.id', description: 'Username'},
+    akun: {type: 'string', default: 'jodohonline.company', description: 'Username'},
     nama: {type: 'string', default: 'jodohonline 💘', description: 'Nama'},
     bio: {type: 'string', default: 'Kantor virtual buat cari jodoh, cari teman & curhat\nDaftar → di-ACC Direktur 👑', description: 'Bio'},
     tautan: {type: 'string', default: 'jodohonline.company', description: 'Tautan bio'},
