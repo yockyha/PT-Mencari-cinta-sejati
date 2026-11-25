@@ -1,0 +1,179 @@
+{
+ "klip": [
+  {
+   "src": "klip/chat.mp4",
+   "nama": "Ngetik chat",
+   "detik": 4.0
+  },
+  {
+   "src": "klip/direktur.mp4",
+   "nama": "Direktur di ruangannya",
+   "detik": 3.5
+  },
+  {
+   "src": "klip/drone.mp4",
+   "nama": "Kamera drone masuk kantor",
+   "detik": 4.5
+  },
+  {
+   "src": "klip/formulir.mp4",
+   "nama": "Isi formulir daftar",
+   "detik": 9.5
+  },
+  {
+   "src": "klip/game.mp4",
+   "nama": "Main Tangkap Hati",
+   "detik": 4.0
+  },
+  {
+   "src": "klip/jalan.mp4",
+   "nama": "Karakter jalan",
+   "detik": 3.5
+  },
+  {
+   "src": "klip/loker.mp4",
+   "nama": "Ganti outfit di loker",
+   "detik": 4.5
+  },
+  {
+   "src": "klip/r_kafe.mp4",
+   "nama": "Kafe Jodoh",
+   "detik": 1.5
+  },
+  {
+   "src": "klip/r_lounge.mp4",
+   "nama": "Lounge Eksekutif",
+   "detik": 1.5
+  },
+  {
+   "src": "klip/r_meja.mp4",
+   "nama": "Meja Nongkrong",
+   "detik": 1.5
+  },
+  {
+   "src": "klip/r_taman.mp4",
+   "nama": "Taman Curhat",
+   "detik": 1.5
+  },
+  {
+   "src": "klip/dash_acc.mp4",
+   "nama": "Dashboard: Direktur ACC",
+   "detik": 4.5
+  },
+  {
+   "src": "klip/diterima.mp4",
+   "nama": "Popup resmi jadi tamu",
+   "detik": 4.5
+  }
+ ],
+ "foto": [
+  {
+   "src": "foto/airmancur.png",
+   "nama": "Air mancur"
+  },
+  {
+   "src": "foto/beranda.png",
+   "nama": "Beranda situs"
+  },
+  {
+   "src": "foto/direktur.png",
+   "nama": "Direktur (transparan)"
+  },
+  {
+   "src": "foto/halaman.png",
+   "nama": "Halaman kantor"
+  },
+  {
+   "src": "foto/karakter.png",
+   "nama": "Karakter"
+  },
+  {
+   "src": "foto/levelup.png",
+   "nama": "Naik level"
+  },
+  {
+   "src": "foto/meja.png",
+   "nama": "Meja nongkrong"
+  },
+  {
+   "src": "foto/rapat.png",
+   "nama": "Ruang rapat"
+  },
+  {
+   "src": "foto/toko.png",
+   "nama": "Toko diamond"
+  },
+  {
+   "src": "foto/tugas.png",
+   "nama": "Daftar tugas"
+  },
+  {
+   "src": "foto/formulir.png",
+   "nama": "Formulir daftar (atas)"
+  }
+ ],
+ "sfx": [
+  {
+   "src": "sfx/cap.mp3",
+   "nama": "Cap dibanting",
+   "detik": 0.63
+  },
+  {
+   "src": "sfx/geser.mp3",
+   "nama": "Panel geser",
+   "detik": 0.63
+  },
+  {
+   "src": "sfx/ketik.mp3",
+   "nama": "Ketik keyboard",
+   "detik": 1.52
+  },
+  {
+   "src": "sfx/ketuk.mp3",
+   "nama": "Ketuk layar",
+   "detik": 0.52
+  },
+  {
+   "src": "sfx/levelup.mp3",
+   "nama": "Level up",
+   "detik": 1.23
+  },
+  {
+   "src": "sfx/match.mp3",
+   "nama": "Kilau match",
+   "detik": 1.04
+  },
+  {
+   "src": "sfx/notif.mp3",
+   "nama": "Notifikasi",
+   "detik": 0.84
+  },
+  {
+   "src": "sfx/pop.mp3",
+   "nama": "Pop",
+   "detik": 0.52
+  },
+  {
+   "src": "sfx/rem.mp3",
+   "nama": "Rem / jeda",
+   "detik": 0.84
+  },
+  {
+   "src": "sfx/whoosh.mp3",
+   "nama": "Whoosh",
+   "detik": 0.63
+  }
+ ],
+ "vo": [
+  {
+   "src": "vo.mp3",
+   "nama": "Voice-over video 1",
+   "detik": 54.99
+  },
+  {
+   "src": "vo2.mp3",
+   "nama": "Voice-over video 2",
+   "detik": 49.71
+  }
+ ]
+}
