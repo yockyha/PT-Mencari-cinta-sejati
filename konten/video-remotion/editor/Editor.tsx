@@ -29,8 +29,8 @@ const uid = (p: string) => p + Math.random().toString(36).slice(2, 8);
 const detik = (f: number, fps: number) => (f / fps).toFixed(1).replace('.', ',') + ' d';
 const jam = (f: number, fps: number) => { const s = f / fps; return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}.${String(Math.floor((s % 1) * 10))}`; };
 
-const LABEL: Record<string, string> = {video: '🎬', foto: '🖼', balas: '💬', profil: '👤', komentar: '🗨', browser: '🌐', sub: 'Aa', judul: 'T', cap: '🔖', stiker: '⭐', chips: '🏷', akun: '@'};
-const NAMA_JENIS: Record<string, string> = {video: 'Klip video', foto: 'Foto', balas: 'Balasan komentar', profil: 'Profil Instagram', komentar: 'Kolom komentar', browser: 'Browser HP', sub: 'Subtitle', judul: 'Judul', cap: 'Cap', stiker: 'Stiker', chips: 'Chip', akun: 'Nama akun'};
+const LABEL: Record<string, string> = {video: '🎬', foto: '🖼', tanya: '🙋', balas: '💬', profil: '👤', komentar: '🗨', browser: '🌐', sub: 'Aa', judul: 'T', cap: '🔖', stiker: '⭐', chips: '🏷', akun: '@'};
+const NAMA_JENIS: Record<string, string> = {video: 'Klip video', foto: 'Foto', tanya: 'Tumpukan komentar', balas: 'Balasan komentar', profil: 'Profil Instagram', komentar: 'Kolom komentar', browser: 'Browser HP', sub: 'Subtitle', judul: 'Judul', cap: 'Cap', stiker: 'Stiker', chips: 'Chip', akun: 'Nama akun'};
 const labelLapis = (l: Lapis) => (l.track === 'teks' ? (l as LapisTeks).teks.replace(/\*/g, '') : l.nama || NAMA_JENIS[l.jenis]);
 
 function ujung(tl: Timeline) {
@@ -185,7 +185,7 @@ function App({videoId, judul, db, assets, downloads, tutup}: {videoId: string; j
       const {getBlob} = await renderMediaOnWeb({
         composition: {component: Komposisi as any, id: 'VideoData', width: tl.lebar, height: tl.tinggi, fps: tl.fps, durationInFrames: tl.durasi},
         inputProps: {timeline: tl} as any, container, videoCodec, videoBitrate: 'medium', licenseKey: 'free-license', signal: ctrl.signal,
-        onProgress: (p) => setEkspor({p: p.progress, teks: `Merender ${Math.round(p.progress * 100)}%`}),
+        onProgress: (p: any) => setEkspor({p: p.progress, teks: `Merender ${Math.round(p.progress * 100)}%`}),
       } as any);
       const blob = await getBlob();
       setEkspor({p: 1, teks: 'Menyimpan hasil…'});
@@ -275,7 +275,7 @@ function Pratinjau({tl, player, pilih, ubah}: {tl: Timeline; player: React.RefOb
   useEffect(() => { const el = wadah.current; if (!el) return; const ro = new ResizeObserver(() => setLebar(el.clientWidth)); ro.observe(el); return () => ro.disconnect(); }, []);
   const s = lebar / tl.lebar;
   const l = pilih?.jenis === 'lapis' ? (tl.lapis.find((x) => x.id === pilih.id) as LapisTeks | undefined) : undefined;
-  const teks = l && l.track === 'teks' ? l : null;
+  const teks = l && (l as any).track === 'teks' ? l : null;
   const y = teks ? teks.y ?? BAWAAN[teks.jenis].y : 0;
   const tinggi = teks ? (teks.ukuran ?? BAWAAN[teks.jenis].ukuran) * (teks.jenis === 'judul' && teks.kecil ? 2.1 : 1.35) + 30 : 0;
   const seret = (e: React.PointerEvent) => {
@@ -311,6 +311,7 @@ function PanelPustaka({pustaka, tl, frame, tambahLapis, tambahSfx, pasangVo, ung
   ];
   const bio = 'Kantor virtual buat cari jodoh, cari teman & curhat\nDaftar → di-ACC Direktur 👑';
   const ELEMEN: [string, any][] = [
+    ['Tumpukan komentar penonton', {track: 'elemen', jenis: 'tanya', durasi: 150, masuk: 'none', props: {komentar: 'penonton1|cara daftarnya gimana kak? 🙏\npenonton2|linknya mana min??\npenonton3|harus bayar gak sih?', jeda: 0.7, sensor: true}}],
     ['Balasan komentar', {track: 'elemen', jenis: 'balas', durasi: 90, masuk: 'none', props: {pengguna: 'penonton', komentar: 'tulis pertanyaan penonton', sensor: true}}],
     ['Profil Instagram + Ikuti', {track: 'elemen', jenis: 'profil', durasi: 75, masuk: 'geser-atas', props: {akun: 'jodohonline.id', nama: 'jodohonline 💘', bio, tautan: 'jodohonline.company', postingan: '1', pengikut: 0, mengikuti: '0', ketukDetik: 1.2, sensor: true}}],
     ['Kolom komentar + ketik', {track: 'elemen', jenis: 'komentar', durasi: 75, props: {komentar: 'akun1|DAFTAR|1m|2\nakun2|DAFTAR|3m|1', ketik: 'DAFTAR', ketikDetik: 0.3, akunSaya: 'kamu', sensor: true}}],
@@ -424,9 +425,9 @@ function Inspektur({tl, pilih, item, ubah, pustaka, hapus, duplikat, potong, fra
     </>;
   } else {
     isi = <>{Object.entries(item.props as Record<string, unknown>).map(([k, v]) => typeof v === 'boolean'
-      ? <label key={k} className="je-cek" htmlFor={'je-p-' + k}><input id={'je-p-' + k} type="checkbox" checked={v} onChange={(e) => set('props.' + k, e.target.checked)} /> {k === 'sensor' ? 'Sensor (buramkan nama & angka)' : k}</label>
-      : typeof v === 'number' ? <Angka key={k} id={'je-p-' + k} label={k === 'ketukDetik' ? 'Detik tombol diketuk' : k === 'ketikDetik' ? 'Mulai mengetik (detik)' : k} nilai={v} step={k.endsWith('Detik') ? 0.1 : 1} set={(n) => set('props.' + k, n)} />
-      : <label key={k} className="je-f" htmlFor={'je-p-' + k}><span>{k === 'komentar' && item.jenis === 'komentar' ? 'Komentar (user|teks|waktu|suka per baris)' : k}</span>{String(v).includes('\n') || String(v).length > 40 ? <textarea id={'je-p-' + k} rows={4} value={String(v)} onChange={(e) => set('props.' + k, e.target.value)} /> : <input id={'je-p-' + k} value={String(v)} onChange={(e) => set('props.' + k, e.target.value)} />}</label>)}</>;
+      ? <label key={k} className="je-cek" htmlFor={'je-p-' + k}><input id={'je-p-' + k} type="checkbox" checked={v} onChange={(e) => set('props.' + k, e.target.checked)} /> {k === 'sensor' ? 'Sensor (buramkan nama & angka)' : k === 'sudahIkut' ? 'Sudah mengikuti sejak awal' : k}</label>
+      : typeof v === 'number' ? <Angka key={k} id={'je-p-' + k} label={k === 'ketukDetik' ? 'Detik diketuk' : k === 'ketikDetik' ? 'Mulai mengetik (detik)' : k === 'jeda' ? 'Jeda antar komentar (detik)' : k} nilai={v} step={k.endsWith('Detik') ? 0.1 : 1} set={(n) => set('props.' + k, n)} />
+      : <label key={k} className="je-f" htmlFor={'je-p-' + k}><span>{k === 'komentar' ? (item.jenis === 'komentar' ? 'Komentar (user|teks|waktu|suka per baris)' : 'Komentar (user|teks per baris)') : k === 'target' ? 'Yang diketuk (ikuti / tautan)' : k}</span>{String(v).includes('\n') || String(v).length > 40 ? <textarea id={'je-p-' + k} rows={4} value={String(v)} onChange={(e) => set('props.' + k, e.target.value)} /> : <input id={'je-p-' + k} value={String(v)} onChange={(e) => set('props.' + k, e.target.value)} />}</label>)}</>;
   }
   return (
     <aside className="je-inspektur" aria-label="Properti">

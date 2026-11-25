@@ -5,14 +5,15 @@ import {useAset} from '../data/aset';
 import {Avatar, Ketuk, Sensor} from './Ikon';
 
 // Halaman profil gaya Instagram (tema terang). Tombol Ikuti diketuk pada detik `ketukDetik`.
-const ProfilIgInner = ({akun, nama, bio, tautan, postingan, pengikut, mengikuti, ketukDetik, sensor, style}: {
+const ProfilIgInner = ({akun, nama, bio, tautan, postingan, pengikut, mengikuti, ketukDetik, sensor, target = 'ikuti', sudahIkut = false, style}: {
   readonly akun: string; readonly nama: string; readonly bio: string; readonly tautan: string;
-  readonly postingan: string; readonly pengikut: number; readonly mengikuti: string; readonly ketukDetik: number; readonly sensor: boolean; readonly style?: CSSProperties;
+  readonly postingan: string; readonly pengikut: number; readonly mengikuti: string; readonly ketukDetik: number; readonly sensor: boolean; readonly target?: string; readonly sudahIkut?: boolean; readonly style?: CSSProperties;
 }) => {
   const aset = useAset();
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
-  const sudah = frame >= ketukDetik * fps;
+  const keTautan = target === 'tautan', diketuk = frame >= ketukDetik * fps;
+  const sudah = sudahIkut || (!keTautan && diketuk);
   const stat = (n: string | number, l: string) => (
     <div style={{textAlign: 'center'}}><div style={{fontSize: 44, fontWeight: 700}}><Sensor aktif={sensor}>{n}</Sensor></div><div style={{fontSize: 34}}>{l}</div></div>
   );
@@ -34,13 +35,13 @@ const ProfilIgInner = ({akun, nama, bio, tautan, postingan, pengikut, mengikuti,
           <div style={{padding: 6, borderRadius: '50%', background: 'white'}}><Avatar nama={akun} ukuran={190} warna="#ff4f7b" /></div>
         </div>
         <div style={{flex: 1, display: 'flex', justifyContent: 'space-around'}}>
-          {stat(postingan, 'postingan')}{stat((pengikut + (sudah ? 1 : 0)).toLocaleString('id-ID'), 'pengikut')}{stat(mengikuti, 'mengikuti')}
+          {stat(postingan, 'postingan')}{stat((pengikut + (sudah && !sudahIkut ? 1 : 0)).toLocaleString('id-ID'), 'pengikut')}{stat(mengikuti, 'mengikuti')}
         </div>
       </div>
       <div style={{padding: '0 40px', fontSize: 38, lineHeight: 1.35}}>
         <div style={{fontWeight: 700}}>{nama}</div>
         <div style={{whiteSpace: 'pre-line'}}>{bio}</div>
-        <div style={{color: '#00376b', fontWeight: 500}}>🔗 {tautan}</div>
+        <div style={{color: '#00376b', fontWeight: 500, background: keTautan && diketuk ? 'rgba(0,55,107,0.12)' : 'transparent', borderRadius: 8, display: 'inline-block', padding: '0 6px', marginLeft: -6}}>🔗 {tautan}</div>
       </div>
       <div style={{display: 'flex', gap: 18, padding: '34px 40px'}}>
         <div style={{flex: 1, textAlign: 'center', borderRadius: 18, padding: '22px 0', fontSize: 38, fontWeight: 700, background: sudah ? '#efefef' : '#0095f6', color: sudah ? '#000' : 'white'}}>{sudah ? 'Mengikuti ⌄' : 'Ikuti'}</div>
@@ -49,7 +50,7 @@ const ProfilIgInner = ({akun, nama, bio, tautan, postingan, pengikut, mengikuti,
       <div style={{display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 4, marginTop: 20}}>
         {kisi.map(k => <Img key={k} src={aset(k)} style={{width: '100%', aspectRatio: '3/4', objectFit: 'cover'}} />)}
       </div>
-      <Ketuk x={290} y={735} kemajuan={(frame - ketukDetik * fps + 4) / (0.4 * fps)} />
+      <Ketuk x={keTautan ? 250 : 290} y={keTautan ? 655 : 735} kemajuan={(frame - ketukDetik * fps + 4) / (0.4 * fps)} />
     </AbsoluteFill>
   );
 };
@@ -65,6 +66,8 @@ export const ProfilIg = Interactive.create({
     pengikut: {type: 'number', hiddenFromList: false, default: 0, min: 0, integer: true, description: 'Jumlah pengikut (isi angka asli)'},
     mengikuti: {type: 'string', default: '0', description: 'Jumlah mengikuti (isi angka asli)'},
     sensor: {type: 'boolean', default: true, description: 'Sensor angka'},
+    target: {type: 'string', default: 'ikuti', description: 'Yang diketuk: ikuti / tautan'},
+    sudahIkut: {type: 'boolean', default: false, description: 'Sudah mengikuti sejak awal'},
     ketukDetik: {type: 'number', hiddenFromList: false, default: 1.1, min: 0, step: 0.1, description: 'Detik tombol Ikuti diketuk'},
   },
 });

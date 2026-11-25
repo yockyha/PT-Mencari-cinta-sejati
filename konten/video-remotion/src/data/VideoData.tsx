@@ -6,6 +6,7 @@ import {BalasKomentar} from '../ig/BalasKomentar';
 import {Browser} from '../ig/Browser';
 import {KomentarIg} from '../ig/KomentarIg';
 import {ProfilIg} from '../ig/ProfilIg';
+import {TumpukanKomentar} from '../ig/TumpukanKomentar';
 import {useAset} from './aset';
 import type {Lapis, LapisGambar, LapisTeks, Masuk, Keluar, Timeline} from './jenis';
 
@@ -81,6 +82,7 @@ const Elemen = ({l}: {readonly l: Extract<Lapis, {track: 'elemen'}>}) => {
   if (l.jenis === 'balas') return <BalasKomentar {...p} />;
   if (l.jenis === 'profil') return <ProfilIg {...p} />;
   if (l.jenis === 'komentar') return <KomentarIg {...p} />;
+  if (l.jenis === 'tanya') return <TumpukanKomentar {...p} />;
   return <Browser {...p} />;
 };
 

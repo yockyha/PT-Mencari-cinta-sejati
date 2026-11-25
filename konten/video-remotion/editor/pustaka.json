@@ -54,6 +54,16 @@
    "src": "klip/r_taman.mp4",
    "nama": "Taman Curhat",
    "detik": 1.5
+  },
+  {
+   "src": "klip/dash_acc.mp4",
+   "nama": "Dashboard: Direktur ACC",
+   "detik": 4.5
+  },
+  {
+   "src": "klip/diterima.mp4",
+   "nama": "Popup resmi jadi tamu",
+   "detik": 4.5
   }
  ],
  "foto": [
@@ -96,6 +106,10 @@
   {
    "src": "foto/tugas.png",
    "nama": "Daftar tugas"
+  },
+  {
+   "src": "foto/formulir.png",
+   "nama": "Formulir daftar (atas)"
   }
  ],
  "sfx": [
