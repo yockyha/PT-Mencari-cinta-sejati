@@ -60,9 +60,40 @@ window.PT_CONFIG = {
   //  linkBayar: halaman tempat tamu membayar (Saweria, Trakteer, dll.).
   //  Kosongkan linkBayar untuk menutup toko sementara.
   // ---------------------------------------------------------
+  // ---------------------------------------------------------
+  //  PEMBAYARAN (dipakai untuk Diamond, Kartu Eksekutif/EXP, dan donasi)
+  //  Pembeli membayar ke rekening/QRIS kamu dengan NOMINAL UNIK,
+  //  lalu kamu cocokkan di mutasi rekening dan klik Setujui di Dashboard.
+  //  Metode yang dikosongkan otomatis disembunyikan.
+  // ---------------------------------------------------------
+  pembayaran: {
+    // QRIS: unggah gambar QR kamu ke folder pembayaran/ (mis. pembayaran/qris.png) lalu isi path-nya.
+    qris: '',
+    qrisNama: '',           // nama merchant yang tertulis di QRIS
+    bank: [
+      { bank: 'BCA', nomor: '', atasNama: '' },
+      { bank: 'BRI', nomor: '', atasNama: '' },
+    ],
+    kodeUnik: true,         // tambah Rp1–Rp499 unik supaya transfer mudah dikenali
+  },
+
+  // Paket Diamond (💠) untuk membeli outfit & aksesoris khusus
+  diamond: {
+    paket: [
+      { id: 'dm50', diamond: 50, harga: 5000 },
+      { id: 'dm110', diamond: 110, harga: 10000, ket: 'Bonus 10 💠' },
+      { id: 'dm300', diamond: 300, harga: 25000, ket: 'Bonus 50 💠' },
+      { id: 'dm650', diamond: 650, harga: 50000, ket: 'Bonus 150 💠' },
+    ],
+  },
+
+  // Donasi untuk mendukung kantor
+  donasi: { min: 5000, saran: [10000, 25000, 50000, 100000] },
+
   toko: {
-    linkBayar: '',
+    linkBayar: '',          // opsional: link Saweria/Trakteer sebagai metode "Lainnya"
     caraBayar: 'Bayar lewat link di bawah, lalu tulis KODE TAMU kamu di kolom pesan supaya Direktur bisa mencocokkan pembayaranmu.',
+    // Paket yang dibayar dengan uang (selain Diamond):
     paket: [
       { id: 'vip30', nama: 'Kartu Eksekutif 30 hari', harga: 5000, vipHari: 30, ket: 'Lihat siapa yang menyukaimu, Lounge Eksekutif, outfit & nama emas' },
       { id: 'exp100', nama: '100 EXP', harga: 5000, exp: 100, ket: 'Langsung naik ±2 level untuk pemula' },

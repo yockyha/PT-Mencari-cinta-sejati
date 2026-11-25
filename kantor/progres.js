@@ -5,6 +5,7 @@
 // =====================================================================
 import { CFG, TUJUAN, LOKASI, OUTFIT, AKSESORIS, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js';
 import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js';
+import * as Bayar from './bayar.js';
 
 // ---------------------------------------------------------------- DATA TUGAS
 const RUANG_TUJUAN = { jodoh: 'kafe', teman: 'meja', curhat: 'taman' };
@@ -29,15 +30,19 @@ export const HARIAN = [
 const kunciHarian = id => `h${hariIni()}_${id}`;
 
 // ---------------------------------------------------------------- STATUS
-const P = { exp: 0, beli: 0, selesai: new Set(), acara: {}, ikut: {}, hadir: {}, skorHari: {}, expSemua: {}, beliSemua: {} };
+const P = { diamond: 0, milik: {}, donatur: {}, exp: 0, beli: 0, selesai: new Set(), acara: {}, ikut: {}, hadir: {}, skorHari: {}, expSemua: {}, beliSemua: {} };
 // Direktur: EXP tak terbatas, semua barang terbuka, otomatis Eksekutif
 export const direkturSaya = () => !!(K.L && K.peran[K.L.uid] === 'direktur');
 export const totalExp = () => (direkturSaya() ? Infinity : (P.exp || 0) + (P.beli || 0));
 export const level = () => (direkturSaya() ? 99 : levelDari(totalExp()));
 export const isVip = uid => !!(K.peran && K.peran[uid] === 'direktur') || !!(K.vip && K.vip[uid] && K.vip[uid].sampai > (K.L ? K.L.db.now() : Date.now()));
 export const vipSaya = () => K.L && isVip(K.L.uid);
-export const bolehOutfit = i => { const o = OUTFIT[i]; return !!o && (direkturSaya() || (o.vip ? vipSaya() : level() >= o.lv)); };
-export const bolehAks = i => { const o = AKSESORIS[i]; return !!o && (direkturSaya() || (o.vip ? vipSaya() : level() >= o.lv)); };
+export const punyaBarang = id => direkturSaya() || !!P.milik[id];
+export const saldoDiamond = () => P.diamond || 0;
+export const daftarDonatur = () => P.donatur || {};
+const boleh = o => !!o && (direkturSaya() || (o.dm ? punyaBarang(o.id) : o.vip ? vipSaya() : level() >= o.lv));
+export const bolehOutfit = i => boleh(OUTFIT[i]);
+export const bolehAks = i => boleh(AKSESORIS[i]);
 const resmi = () => !!(K.resmi && K.resmi());
 const menunggu = new Set(); // tugas yang EXP-nya sedang dikirim
 const sudah = k => P.selesai.has(k) || menunggu.has(k);
@@ -49,6 +54,10 @@ let levelLama = null;
 export function mulai() {
   const L = K.L, db = L.db;
   db.on('exp/' + L.uid, v => { P.exp = (v && v.n) || 0; segarLevel(); });
+  let dmLama = null;
+  db.on('diamond/' + L.uid, v => { P.diamond = v || 0; if (dmLama !== null && P.diamond > dmLama) toast(`💠 +${fmt(P.diamond - dmLama)} Diamond masuk!`, 3600); dmLama = P.diamond; });
+  db.on('milik/' + L.uid, v => { P.milik = v || {}; K.segarkanOrang && K.segarkanOrang(); });
+  db.on('donatur', v => { P.donatur = v || {}; });
   db.on('expBeli/' + L.uid, v => { const lama = P.beli; P.beli = v || 0; if (lama && P.beli > lama) toast(`🎁 +${fmt(P.beli - lama)} EXP dari Direktur!`, 3600); segarLevel(); });
   db.on('tugas/' + L.uid, v => { P.selesai = new Set(Object.keys(v || {})); segarArah(); });
   db.on('vip', v => { const lama = vipSaya(); K.vip = v || {}; if (!lama && vipSaya() && levelLama !== null) rayakanVip(); K.segarkanOrang && K.segarkanOrang(); segarArah(); });
@@ -280,40 +289,4 @@ function tabPeringkat() {
   };
 }
 
-function tabToko() {
-  const T = CFG.toko || { paket: [] }, buka = !!T.linkBayar, uid = K.L.uid;
-  const v = K.vip && K.vip[uid];
-  return {
-    html: `<div class="vipKartu"><b>💎 Kartu Eksekutif</b>
-        <ul><li>💘 Lihat <b>siapa</b> yang diam-diam menyukaimu</li><li>🍸 Akses <b>Lounge Eksekutif</b> lewat lift lobi</li><li>👔 Setelan Emas, Mahkota Emas & Halo</li><li>✨ Nama emas 💎 dan ajakan ngobrol yang menonjol</li></ul>
-        ${vipSaya() ? `<p>Aktif sampai <b>${esc(tanggalJam(v.sampai))}</b> WIB</p>` : ''}</div>
-      <h3>Paket</h3>
-      <div class="daftar">${(T.paket || []).map(p => `<div><span><b>${esc(p.nama)}</b> · ${rp(p.harga)}<br><small>${esc(p.ket || '')}</small></span><button type="button" class="mini" data-beli="${esc(p.id)}" ${buka ? '' : 'disabled'}>Beli</button></div>`).join('')}</div>
-      ${buka ? '' : `<p class="kecil">Toko belum dibuka. ${CFG.instagram ? `Pantau info di <a href="https://www.instagram.com/${encodeURIComponent(CFG.instagram)}/" target="_blank" rel="noopener">@${esc(CFG.instagram)}</a>.` : ''}</p>`}
-      <p class="kecil">Kode tamu kamu: <code>${esc(kodeTamu(uid))}</code></p>`,
-    pasang(el) { el.querySelectorAll('[data-beli]').forEach(b => b.onclick = () => !resmi() ? K.bukaDaftar() : bukaBeli((T.paket || []).find(p => p.id === b.dataset.beli))); },
-  };
-}
-
-function bukaBeli(p) {
-  if (!p) return;
-  const T = CFG.toko, kode = kodeTamu(K.L.uid);
-  bukaKartu(`<h2>💳 ${esc(p.nama)} · ${rp(p.harga)}</h2>
-    <ol class="langkah">
-      <li>Salin kode tamu kamu: <code id="bK">${esc(kode)}</code> <button type="button" class="mini putih" id="bS">Salin</button></li>
-      <li>${esc(T.caraBayar || 'Bayar lewat link berikut dan tulis kode tamu di pesan.')}<br><a class="btn putih" href="${esc(T.linkBayar)}" target="_blank" rel="noopener">Buka halaman pembayaran ↗</a></li>
-      <li>Setelah bayar, tekan tombol di bawah. Direktur akan mengecek dan mengaktifkan paketmu (biasanya beberapa menit sampai beberapa jam).</li>
-    </ol>
-    <div class="baris"><button class="btn" type="button" id="bB">Saya sudah bayar</button></div>
-    <p class="kecil">Paket aktif otomatis di akunmu begitu disetujui. Akun tamu terikat ke browser ini, jadi jangan hapus data browser sebelum paket aktif.</p>`, {
-    pasang(el) {
-      el.querySelector('#bS').onclick = () => { navigator.clipboard?.writeText(kode).then(() => toast('Kode tamu disalin ✔')).catch(() => { const r = document.createRange(); r.selectNode(el.querySelector('#bK')); getSelection().removeAllRanges(); getSelection().addRange(r); toast('Tekan salin di HP-mu'); }); };
-      el.querySelector('#bB').onclick = () => {
-        if (Date.now() - LS.get('pesanT', 0) < 60000) { toast('Pesananmu sudah terkirim, tunggu dicek Direktur ya.'); return; }
-        LS.set('pesanT', Date.now());
-        K.L.pesan(p.id, K.prof.n, kode);
-        tutupKartu(); toast('Pesanan terkirim ke Direktur 🙏 Kamu akan dapat kabar di sini.', 4000);
-      };
-    },
-  });
-}
+const tabToko = () => Bayar.tabToko();

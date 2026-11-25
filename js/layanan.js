@@ -4,7 +4,7 @@
 //  alat Direktur/Staf. Struktur data ini sama dengan database.rules.json.
 // =====================================================================
 import { TS } from './db.js';
-import { bersih, sensor } from './common.js';
+import { CFG, bersih, sensor, rupiah } from './common.js';
 
 export function buatLayanan(db) {
   const uid = db.uid;
@@ -124,7 +124,52 @@ export function buatLayanan(db) {
     buatAcara(a) { return db.push('acara', { ...a, oleh: uid, t: TS }); },
 
     // ---- toko & notifikasi
-    pesan(paket, n, kode) { return db.push('pesanan', { uid, n, paket, kode, t: TS }); },
+    // d: { paket, jenis: 'diamond'|'paket'|'donasi', metode: 'qris'|'bca'|'bri'|'lain', nominal, kode, n, pesan?, tampil? }
+    pesan(d) { return db.push('pesanan', { ...d, uid, t: TS }); },
+
+    // ---- Diamond: beli barang (diamond terpotong & barang tercatat dalam satu transaksi)
+    async beliBarang(id, harga) {
+      const saldo = (await db.get('diamond/' + uid).catch(() => 0)) || 0;
+      if (saldo < harga) return { ok: false, alasan: 'kurang', saldo };
+      await db.update('', { [`diamond/${uid}`]: saldo - harga, [`milik/${uid}/${id}`]: true });
+      return { ok: true, saldo: saldo - harga };
+    },
+    async beriDiamond(target, n) {
+      const lama = (await db.get('diamond/' + target).catch(() => 0)) || 0;
+      return db.set('diamond/' + target, Math.max(0, lama + n));
+    },
+    setDiamond(target, n) { return db.set('diamond/' + target, Math.max(0, n | 0)); },
+    beriBarang(target, id) { return db.set(`milik/${target}/${id}`, true); },
+    async catatDonatur(target, n, nominal, tampil) {
+      const lama = (await db.get('donatur/' + target).catch(() => null)) || {};
+      return db.set('donatur/' + target, { n: bersih(n, 20), total: (lama.total || 0) + nominal, kali: (lama.kali || 0) + 1, tampil: tampil !== false, t: TS });
+    },
+    // ---- proses pesanan (dipakai Dashboard & panel di kantor)
+    cariPaket(v) {
+      if (v.jenis === 'donasi') return { id: 'donasi', nama: 'Donasi', harga: v.nominal };
+      if (v.jenis === 'diamond') return ((CFG.diamond && CFG.diamond.paket) || []).find(p => p.id === v.paket) || null;
+      return ((CFG.toko && CFG.toko.paket) || []).find(p => p.id === v.paket) || null;
+    },
+    async setujuiPesanan(id, v) {
+      const p = L.cariPaket(v);
+      if (!p) throw new Error('Paket ' + v.paket + ' tidak ada di config.js');
+      let pesan;
+      if (v.jenis === 'diamond') { await L.beriDiamond(v.uid, p.diamond); pesan = `💠 ${p.diamond} Diamond sudah masuk ke akunmu. Selamat belanja di Lemari Diamond!`; }
+      else if (v.jenis === 'donasi') { await L.catatDonatur(v.uid, v.n, v.nominal, v.tampil); pesan = `Terima kasih atas donasi ${rupiah(v.nominal)}! 💖 Dukunganmu sangat berarti untuk kantor.`; }
+      else {
+        if (p.exp) await L.beriExp(v.uid, p.exp);
+        if (p.vipHari) await L.beriVip(v.uid, p.vipHari);
+        pesan = `Pembelian ${p.nama} disetujui. Terima kasih sudah mendukung ${CFG.namaPT}! 💖`;
+      }
+      await L.catatRiwayat({ uid: v.uid, n: v.n, paket: v.paket, jenis: v.jenis || 'paket', nama: v.nama || p.nama, harga: v.nominal || p.harga, metode: v.metode || '', kode: v.kode || '' });
+      await L.kirimNotif(v.uid, pesan);
+      await L.hapus('pesanan/' + id);
+    },
+    async tolakPesanan(id, v, alasan) {
+      await L.kirimNotif(v.uid, alasan || `Pembayaran ${rupiah(v.nominal || 0)} untuk ${v.nama || v.paket} belum kami temukan. Pastikan nominalnya persis, lalu hubungi Direktur.`);
+      await L.hapus('pesanan/' + id);
+    },
+    terbitkanKatalog(daftar) { return db.set('katalog', Object.fromEntries(daftar.map(x => [x.id, { nama: x.nama, harga: x.harga }]))); },
     async beriExp(target, jumlah) {
       const lama = (await db.get('expBeli/' + target).catch(() => 0)) || 0;
       return db.set('expBeli/' + target, lama + jumlah);

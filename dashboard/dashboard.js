@@ -3,7 +3,7 @@
 //  Login username + kata sandi → ringkasan, persetujuan pendaftar,
 //  anggota, online, aktivitas, acara, toko, laporan, siaran & data.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, GENDER, esc, fmt, bersih, levelDari, hariIni, lokasiDi, kodeTamu } from '../js/common.js';
+import { CFG, TUJUAN, LOKASI, GENDER, BARANG_DIAMOND, IKON_DM, esc, fmt, bersih, levelDari, hariIni, lokasiDi, kodeTamu } from '../js/common.js';
 import { bukaDB } from '../js/db.js';
 import { buatLayanan } from '../js/layanan.js';
 
@@ -39,7 +39,8 @@ const vipAktif = uid => (S.vip?.[uid]?.sampai || 0) > kini();
 const diusir = uid => (S.ban?.[uid]?.sampai || 0) > kini();
 const onlineAktif = () => ent(S.online).filter(([, p]) => !p.t || kini() - p.t < 120000);
 const gagal = e => { console.warn(e); toast('Gagal: ' + (e && e.message ? e.message.replace(/^.*PERMISSION_DENIED.*$/, 'izin ditolak server') : 'coba lagi')); };
-const paket = id => (CFG.toko?.paket || []).find(p => p.id === id);
+const paket = id => [...(CFG.toko?.paket || []), ...(CFG.diamond?.paket || []).map(p => ({ ...p, nama: `${p.diamond} Diamond` }))].find(p => p.id === id) || (id === 'donasi' ? { id, nama: 'Donasi', harga: 0 } : null);
+const METODE = { qris: 'QRIS', bca: 'BCA', bri: 'BRI', lain: 'Lainnya' };
 
 // ---------------------------------------------------------------- MULAI
 (async function mulai() {
@@ -75,7 +76,7 @@ function masukApp() {
   $('login').hidden = true; $('app').hidden = false;
   $('mode').textContent = db.mode === 'lokal' ? 'langsung · mode lokal (demo)' : 'langsung · online';
   const node = ['pendaftaran', 'anggota', 'tamu', 'online', 'peran', 'ban', 'exp', 'expBeli', 'vip', 'papan', 'curhatPemilik', 'laporan', 'saran',
-    'pesanan', 'riwayat', 'acara', 'ikutAcara', 'hadirAcara', 'setelan', 'mading', 'pengumuman'];
+    'pesanan', 'riwayat', 'acara', 'ikutAcara', 'hadirAcara', 'setelan', 'mading', 'pengumuman', 'diamond', 'milik', 'donatur', 'katalog'];
   for (const n of node) db.on(n, v => { S[n] = v || {}; jadwalGambar(); });
   db.on('chat', v => { S.chat = v || {}; jadwalGambar(); }, { limit: 200 });
   db.on('curhat', v => { S.curhat = v || {}; jadwalGambar(); }, { limit: 100 });
@@ -122,7 +123,7 @@ function aktivitasTerbaru(maks = 40) {
   for (const [k, c] of ent(S.curhat)) f.push({ t: c.t, ik: '🤗', h: `Curhat baru${S.curhatPemilik?.[k] ? ` dari <b>${esc(nama(S.curhatPemilik[k]))}</b>` : ''}: “${esc(c.m)}”` });
   for (const [, l] of ent(S.laporan)) f.push({ t: l.t, ik: '🚩', h: `<b>${esc(nama(l.dari))}</b> melaporkan <b>${esc(l.n)}</b>: ${esc(l.alasan)}` });
   for (const [, s] of ent(S.saran)) f.push({ t: s.t, ik: '💡', h: `Saran dari <b>${esc(s.n || nama(s.dari))}</b>: ${esc(s.m)}` });
-  for (const [, p] of ent(S.pesanan)) f.push({ t: p.t, ik: '💳', h: `<b>${esc(p.n)}</b> memesan ${esc(paket(p.paket)?.nama || p.paket)}` });
+  for (const [, p] of ent(S.pesanan)) f.push({ t: p.t, ik: p.jenis === 'donasi' ? '🎁' : '💳', h: `<b>${esc(p.n)}</b> ${p.jenis === 'donasi' ? 'berdonasi' : 'memesan ' + esc(p.nama || paket(p.paket)?.nama || p.paket)} · ${rp(p.nominal || 0)} via ${esc(METODE[p.metode] || '-')}` });
   for (const [, r] of ent(S.riwayat)) f.push({ t: r.t, ik: '💰', h: `Pembelian <b>${esc(r.nama || r.paket)}</b> oleh ${esc(r.n)} disetujui (${rp(r.harga)})` });
   for (const [id, h] of ent(S.hadirAcara)) for (const [u, t] of ent(h)) f.push({ t, ik: '🎉', h: `<b>${esc(nama(u))}</b> hadir di ${esc(S.acara?.[id]?.judul || 'acara')}` });
   return f.filter(x => x.t).sort((a, b) => b.t - a.t).slice(0, maks);
@@ -266,6 +267,10 @@ function detailAnggota(u) {
       <p class="kecil">Dari tugas: ${fmt(S.exp?.[u]?.n || 0)} · Dibeli/hadiah: ${fmt(S.expBeli?.[u] || 0)}</p>
       <div class="baris"><button class="btn putih kecil" type="button" data-exp="50">+50</button><button class="btn putih kecil" type="button" data-exp="100">+100</button><button class="btn putih kecil" type="button" data-exp="500">+500</button>
       <input data-i="expSet" type="number" min="0" placeholder="Atur EXP bonus" style="width:150px" aria-label="Atur EXP bonus"><button class="btn kecil" type="button" data-d="expSet">Atur</button></div></div>
+    <div class="seksi"><h4>${IKON_DM} Diamond · saldo ${fmt(S.diamond?.[u] || 0)}</h4>
+      <p class="kecil">Barang dimiliki: ${esc(Object.keys(S.milik?.[u] || {}).map(id => (BARANG_DIAMOND.find(x => x.id === id) || {}).nama || id).join(', ') || '—')}</p>
+      <div class="baris"><button class="btn putih kecil" type="button" data-dm="50">+50</button><button class="btn putih kecil" type="button" data-dm="100">+100</button><button class="btn putih kecil" type="button" data-dm="500">+500</button>
+      <input data-i="dmSet" type="number" min="0" placeholder="Atur saldo" style="width:130px" aria-label="Atur saldo diamond"><button class="btn kecil" type="button" data-d="dmSet">Atur</button></div></div>
     <div class="seksi"><h4>Kartu Eksekutif ${vipAktif(u) ? `· aktif s/d ${esc(tgl(S.vip[u].sampai))}` : ''}</h4>
       <div class="baris"><button class="btn putih kecil" type="button" data-vip="7">+7 hari</button><button class="btn putih kecil" type="button" data-vip="30">+30 hari</button><button class="btn putih kecil" type="button" data-vip="365">+1 tahun</button>${vipAktif(u) ? '<button class="btn merah kecil" type="button" data-d="vipCabut">Cabut</button>' : ''}</div></div>
     <div class="seksi"><h4>Jabatan</h4><div class="baris"><button class="btn ${peran === 'staf' ? 'putih' : ''} kecil" type="button" data-d="${peran === 'staf' ? 'jadiTamu' : 'jadiStaf'}">${peran === 'staf' ? 'Jadikan tamu biasa' : 'Angkat jadi Staf 🛡'}</button></div></div>
@@ -282,6 +287,7 @@ function pasangDetail(el) {
   const u = d.dataset.du, a = S.anggota?.[u] || { n: nama(u) }, i = k => d.querySelector(`[data-i="${k}"]`);
   const jalankan = (p, pesan) => p.then(() => { kotor = false; toast(pesan); }).catch(gagal);
   d.querySelectorAll('[data-exp]').forEach(b => b.onclick = () => jalankan(L.beriExp(u, +b.dataset.exp).then(() => L.kirimNotif(u, `Kamu dapat ${b.dataset.exp} EXP dari Direktur 🎁`)), `+${b.dataset.exp} EXP ✔`));
+  d.querySelectorAll('[data-dm]').forEach(b => b.onclick = () => jalankan(L.beriDiamond(u, +b.dataset.dm).then(() => L.kirimNotif(u, `Kamu dapat ${b.dataset.dm} Diamond dari Direktur 🎁`)), `+${b.dataset.dm} Diamond ✔`));
   d.querySelectorAll('[data-vip]').forEach(b => b.onclick = () => jalankan(L.beriVip(u, +b.dataset.vip).then(() => L.kirimNotif(u, `Kartu Eksekutif kamu diperpanjang ${b.dataset.vip} hari 💎`)), 'Kartu Eksekutif diperpanjang 💎'));
   d.querySelectorAll('[data-usir]').forEach(b => b.onclick = () => {
     const m = b.dataset.usir === 'blokir' ? 60 * 24 * 365 * 100 : +b.dataset.usir;
@@ -291,6 +297,7 @@ function pasangDetail(el) {
     const k = b.dataset.d;
     if (k === 'tutup') { pilihAnggota = null; gambar(true); }
     if (k === 'simpan') { const n = bersih(i('n').value, 20); if (n.length < 2) return toast('Nama minimal 2 huruf'); jalankan(L.ubahAnggota(u, { n, tj: i('tj').value }), 'Data anggota disimpan ✔'); }
+    if (k === 'dmSet') { const n = +i('dmSet').value; if (!(n >= 0)) return toast('Isi angka diamond'); jalankan(L.setDiamond(u, n), 'Saldo diamond diatur ✔'); }
     if (k === 'expSet') { const n = +i('expSet').value; if (!(n >= 0)) return toast('Isi angka EXP'); jalankan(L.setExpBeli(u, n), 'EXP bonus diatur ✔'); }
     if (k === 'vipCabut') jalankan(db.set('vip/' + u, { sampai: kini() }), 'Kartu Eksekutif dicabut');
     if (k === 'jadiStaf') jalankan(L.setPeran(u, 'staf').then(() => L.kirimNotif(u, 'Kamu diangkat menjadi Staf 🛡')), `${a.n} sekarang Staf 🛡`);
@@ -396,35 +403,37 @@ function vToko() {
   const ps = ent(S.pesanan).sort((a, b) => a[1].t - b[1].t);
   const rw = ent(S.riwayat).sort((a, b) => b[1].t - a[1].t);
   const total = rw.reduce((a, [, r]) => a + (r.harga || 0), 0);
-  const bulanIni = rw.filter(([, r]) => new Date(r.t + 7 * 3600e3).getUTCMonth() === new Date(kini() + 7 * 3600e3).getUTCMonth()).reduce((a, [, r]) => a + (r.harga || 0), 0);
+  const bln = t => new Date(t + 7 * 3600e3).toISOString().slice(0, 7);
+  const bulanIni = rw.filter(([, r]) => bln(r.t) === bln(kini())).reduce((a, [, r]) => a + (r.harga || 0), 0);
+  const perMetode = Object.keys(METODE).map(m => [m, rw.filter(([, r]) => r.metode === m).reduce((a, [, r]) => a + (r.harga || 0), 0)]).filter(([, v]) => v);
+  const donasi = rw.filter(([, r]) => r.jenis === 'donasi').reduce((a, [, r]) => a + (r.harga || 0), 0);
+  const B = CFG.pembayaran || {}, metode = [B.qris ? 'QRIS' : null, ...(B.bank || []).filter(x => x && x.nomor).map(x => x.bank), CFG.toko?.linkBayar ? 'Lainnya' : null].filter(Boolean);
+  const kat = S.katalog || {}, katBeda = BARANG_DIAMOND.filter(x => !kat[x.id] || kat[x.id].harga !== x.harga);
+  const donatur = ent(S.donatur).sort((a, b) => (b[1].total || 0) - (a[1].total || 0));
+  const dmBeredar = ent(S.diamond).reduce((a, [, v]) => a + (+v || 0), 0);
   return {
-    html: `<div class="grid"><div class="angka sorot"><b>${fmt(ps.length)}</b><span>pesanan menunggu</span></div><div class="angka"><b>${rp(bulanIni)}</b><span>pendapatan bulan ini</span></div><div class="angka"><b>${rp(total)}</b><span>total pendapatan</span></div><div class="angka"><b>${fmt(rw.length)}</b><span>transaksi disetujui</span></div></div>
+    html: `<div class="grid"><div class="angka sorot"><b>${fmt(ps.length)}</b><span>pesanan menunggu</span></div><div class="angka"><b>${rp(bulanIni)}</b><span>pendapatan bulan ini</span></div><div class="angka"><b>${rp(total)}</b><span>total pendapatan</span></div><div class="angka"><b>${rp(donasi)}</b><span>🎁 total donasi</span></div><div class="angka"><b>${fmt(dmBeredar)}</b><span>${IKON_DM} diamond beredar</span></div></div>
+      <div class="panel"><h3>Metode pembayaran aktif <small>${metode.length ? esc(metode.join(' · ')) : 'belum ada'}</small></h3>
+        ${metode.length ? '<p class="kecil">Atur QRIS & rekening di <code>config.js</code> → <code>pembayaran</code>.</p>' : '<p><b>⚠️ Toko masih tertutup.</b> Isi <code>pembayaran.qris</code> dan/atau nomor rekening BCA/BRI di <code>config.js</code>, lalu merge ke <code>main</code>.</p>'}
+        ${katBeda.length ? `<p><b>⚠️ Harga barang Diamond belum diterbitkan</b> (${katBeda.length} barang). Tanpa ini, tamu tidak bisa membeli barang dengan Diamond.</p><button class="btn" type="button" id="kT">Terbitkan harga barang Diamond</button>` : `<p class="kecil">✅ Harga ${BARANG_DIAMOND.length} barang Diamond sudah terbit.</p>`}
+      </div>
       <div class="panel"><h3>Pesanan menunggu</h3>
-        <p class="kecil">Cocokkan <b>kode tamu</b> dengan catatan di halaman pembayaranmu${CFG.toko?.linkBayar ? ` (<a href="${esc(CFG.toko.linkBayar)}" target="_blank" rel="noopener">buka</a>)` : ' · <b>link pembayaran belum diisi di config.js, toko masih tertutup</b>'}. Setujui hanya jika uangnya sudah masuk.</p>
-        ${ps.length ? `<ul class="feed">${ps.map(([id, v]) => { const p = paket(v.paket) || { nama: v.paket, harga: 0 }; return `<li><span class="isi"><b>${esc(p.nama)}</b> · ${rp(p.harga)}<br><span class="kecil">${esc(bersih(v.n, 20))} · <code>${esc(v.kode || kodeTamu(v.uid))}</code> · ${esc(tgl(v.t))}</span></span>
-          <span class="baris"><button class="btn hijau kecil" type="button" data-ok="${esc(id)}">Setujui</button><button class="btn putih kecil" type="button" data-no="${esc(id)}">Tolak</button></span></li>`; }).join('')}</ul>` : '<p class="kosong">Tidak ada pesanan yang menunggu.</p>'}
+        <p class="kecil">Buka mutasi rekening / riwayat QRIS, cari <b>nominal unik</b> di bawah (sampai 3 digit terakhir), lalu Setujui. Diamond/paket masuk otomatis ke akun pembeli.</p>
+        ${ps.length ? `<ul class="feed">${ps.map(([id, v]) => `<li><span class="isi"><b>${esc(v.nama || paket(v.paket)?.nama || v.paket)}</b> ${v.jenis === 'donasi' ? '🎁' : ''}<br><span class="kecil">${esc(bersih(v.n, 20))} · <code>${esc(v.kode || kodeTamu(v.uid))}</code> · ${esc(tgl(v.t))}${v.pesan ? ` · “${esc(v.pesan)}”` : ''}</span></span>
+          <span class="nominal"><b>${rp(v.nominal || paket(v.paket)?.harga || 0)}</b><small>${esc(METODE[v.metode] || '-')}</small></span>
+          <span class="baris"><button class="btn hijau kecil" type="button" data-ok="${esc(id)}">Setujui</button><button class="btn putih kecil" type="button" data-no="${esc(id)}">Tolak</button></span></li>`).join('')}</ul>` : '<p class="kosong">Tidak ada pesanan yang menunggu.</p>'}
       </div>
       <div class="dua">
-        <div class="panel"><h3>Riwayat penjualan</h3>${rw.length ? `<ul class="feed">${rw.slice(0, 50).map(([, r]) => `<li><span class="isi"><b>${esc(r.nama || r.paket)}</b> · ${rp(r.harga)}<br><span class="kecil">${esc(r.n)}</span></span><time>${esc(tgl(r.t))}</time></li>`).join('')}</ul>` : '<p class="kosong">Belum ada penjualan.</p>'}</div>
-        <div class="panel"><h3>Paket yang dijual</h3><ul class="feed">${(CFG.toko?.paket || []).map(p => `<li><span class="isi"><b>${esc(p.nama)}</b> · ${rp(p.harga)}<br><span class="kecil">${esc(p.ket || '')}</span></span></li>`).join('')}</ul><p class="kecil">Ubah paket & harga di <code>config.js</code> → <code>toko.paket</code>.</p></div>
+        <div class="panel"><h3>Riwayat penjualan ${perMetode.length ? `<small>${perMetode.map(([m, v]) => `${METODE[m]} ${rp(v)}`).join(' · ')}</small>` : ''}</h3>${rw.length ? `<ul class="feed">${rw.slice(0, 60).map(([, r]) => `<li><span class="isi"><b>${esc(r.nama || r.paket)}</b> · ${rp(r.harga)}<br><span class="kecil">${esc(r.n)} · ${esc(METODE[r.metode] || '-')}</span></span><time>${esc(tgl(r.t))}</time></li>`).join('')}</ul>` : '<p class="kosong">Belum ada penjualan.</p>'}</div>
+        <div class="panel"><h3>🏅 Donatur</h3>${donatur.length ? `<ul class="feed">${donatur.map(([, d]) => `<li><span class="isi"><b>${esc(d.n)}</b> ${d.tampil === false ? '<span class="kecil">(anonim di papan)</span>' : ''}<br><span class="kecil">${fmt(d.kali || 1)}× donasi</span></span><b>${rp(d.total)}</b></li>`).join('')}</ul>` : '<p class="kosong">Belum ada donatur.</p>'}
+          <h3 style="margin-top:14px">Paket yang dijual</h3><ul class="feed">${[...(CFG.diamond?.paket || []).map(p => ({ nama: `${IKON_DM} ${p.diamond} Diamond`, harga: p.harga, ket: p.ket })), ...(CFG.toko?.paket || [])].map(p => `<li><span class="isi"><b>${esc(p.nama)}</b> · ${rp(p.harga)}<br><span class="kecil">${esc(p.ket || '')}</span></span></li>`).join('')}</ul>
+          <h3 style="margin-top:14px">Barang Diamond</h3><ul class="feed">${BARANG_DIAMOND.map(x => `<li><span class="isi"><b>${esc(x.nama)}</b> <span class="kecil">${esc(x.jenis)}</span></span><b>${IKON_DM} ${fmt(x.harga)}</b></li>`).join('')}</ul>
+          <p class="kecil">Ubah paket & harga di <code>config.js</code> (paket) dan <code>js/common.js</code> (barang). Setelah mengubah harga barang, tekan "Terbitkan harga" lagi.</p></div>
       </div>`,
     pasang(el) {
-      el.querySelectorAll('[data-ok]').forEach(b => b.onclick = async () => {
-        const id = b.dataset.ok, v = S.pesanan[id], p = paket(v?.paket); if (!v || !p) return;
-        b.disabled = true;
-        try {
-          if (p.exp) await L.beriExp(v.uid, p.exp);
-          if (p.vipHari) await L.beriVip(v.uid, p.vipHari);
-          await L.catatRiwayat({ uid: v.uid, n: v.n, paket: p.id, nama: p.nama, harga: p.harga, kode: v.kode || '' });
-          await L.kirimNotif(v.uid, `Pembelian ${p.nama} disetujui. Terima kasih sudah mendukung ${CFG.namaPT}! 💖`);
-          await L.hapus('pesanan/' + id);
-          toast('Pesanan disetujui ✔');
-        } catch (e) { gagal(e); b.disabled = false; }
-      });
-      el.querySelectorAll('[data-no]').forEach(b => b.onclick = async () => {
-        const id = b.dataset.no, v = S.pesanan[id]; if (!v) return;
-        try { await L.kirimNotif(v.uid, `Pembayaran untuk pesananmu belum kami temukan. Pastikan kode tamu ${v.kode} tertulis di pesan pembayaran, lalu hubungi Direktur.`); await L.hapus('pesanan/' + id); toast('Pesanan ditolak'); } catch (e) { gagal(e); }
-      });
+      const kt = el.querySelector('#kT'); if (kt) kt.onclick = () => L.terbitkanKatalog(BARANG_DIAMOND).then(() => toast('Harga barang Diamond terbit ✔')).catch(gagal);
+      el.querySelectorAll('[data-ok]').forEach(b => b.onclick = async () => { const v = S.pesanan[b.dataset.ok]; if (!v) return; b.disabled = true; try { await L.setujuiPesanan(b.dataset.ok, v); toast('Pesanan disetujui ✔'); } catch (e) { gagal(e); b.disabled = false; } });
+      el.querySelectorAll('[data-no]').forEach(b => b.onclick = async () => { const v = S.pesanan[b.dataset.no]; if (!v) return; try { await L.tolakPesanan(b.dataset.no, v); toast('Pesanan ditolak'); } catch (e) { gagal(e); } });
     },
   };
 }
@@ -484,7 +493,7 @@ function vSiaran() {
 }
 
 // ---------------------------------------------------------------- 🗂 DATA (lihat & ubah langsung)
-const NODE_DATA = ['anggota', 'pendaftaran', 'tamu', 'peran', 'exp', 'expBeli', 'vip', 'ban', 'acara', 'ikutAcara', 'hadirAcara', 'chat', 'papan', 'curhat', 'laporan', 'saran', 'pesanan', 'riwayat', 'setelan', 'mading', 'pengumuman'];
+const NODE_DATA = ['anggota', 'pendaftaran', 'tamu', 'peran', 'exp', 'expBeli', 'diamond', 'milik', 'donatur', 'katalog', 'vip', 'ban', 'acara', 'ikutAcara', 'hadirAcara', 'chat', 'papan', 'curhat', 'laporan', 'saran', 'pesanan', 'riwayat', 'setelan', 'mading', 'pengumuman'];
 function vData() {
   const nilai = S[nodeData] ?? {};
   return {

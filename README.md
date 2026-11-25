@@ -61,12 +61,26 @@ Login username + kata sandi. Isinya:
 ### Acara terjadwal
 Direktur membuat acara di **Panel → Acara** (ada template: Speed Dating, Mabar, Sesi Curhat, Kuis Cinta, Turnamen Tangkap Hati, Malam Eksekutif). Tamu melihatnya di papan jadwal lobi dan tab Acara, bisa menekan **Ikut** untuk diingatkan 10 menit sebelumnya. Saat acara berlangsung muncul spanduk 🔴 LIVE; tamu yang datang ke ruangannya otomatis tercatat hadir (dicek waktu server) dan mendapat EXP.
 
-### Toko: jual EXP & Kartu Eksekutif
+### Pembayaran: QRIS & transfer BCA/BRI
+Dipakai untuk **💠 Diamond**, **Kartu Eksekutif/EXP**, dan **🎁 donasi**. Uang masuk langsung ke QRIS/rekeningmu, tanpa potongan.
+
+1. Isi di `config.js` → `pembayaran`:
+   - `qris`: path gambar QRIS (unggah ke folder `pembayaran/`, lihat `pembayaran/README.md`)
+   - `bank`: nomor rekening & atas nama **BCA** dan **BRI** (kosongkan yang tidak dipakai)
+2. Pembeli memilih paket → memilih **QRIS / BCA / BRI** → membayar **nominal unik** (harga + Rp1–499, mis. Rp10.330) → menekan *Saya sudah bayar*
+3. Di **Dashboard → Toko & Pesanan**, cocokkan nominal unik dengan mutasi rekening/QRIS → **Setujui**. Diamond/paket langsung masuk, pembeli dapat notifikasi; donasi tercatat di **Papan Donatur**
+
+Verifikasi masih manual (klik Setujui). Verifikasi otomatis butuh akun *payment gateway* (Midtrans/Xendit/Tripay) atas namamu; strukturnya sudah siap disambungkan lewat Cloudflare Pages Functions.
+
+### 💠 Diamond & Lemari Diamond
+- Paket Diamond diatur di `config.js` → `diamond.paket` (bawaan 50/110/300/650 Diamond, Rp5rb–50rb)
+- Barang khusus Diamond (outfit: Jas Pengantin, Hoodie Hati, Jaket Varsity; aksesoris: kacamata hati, balon hati, topi pesta) diatur di `js/common.js` (`dm` = harga)
+- **Sekali saja (dan setiap mengubah harga):** Dashboard → Toko & Pesanan → **Terbitkan harga barang Diamond**. Harga di database inilah yang dipakai server untuk memotong diamond
+- Membeli barang dikunci server: diamond terpotong persis sebesar harga dan barang tercatat dalam satu transaksi. Saldo diamond hanya bisa ditambah Direktur
+
+### Kartu Eksekutif & EXP (dibayar dengan uang)
 - Paket diatur di `config.js` → `toko.paket` (bawaan: Kartu Eksekutif 30 hari Rp5.000, 100/300/1.000 EXP)
 - **Kartu Eksekutif** membuka: lihat *siapa* yang menyukaimu, Lounge Eksekutif (lewat lift lobi), Setelan Emas, Mahkota Emas, Halo, nama emas 💎, dan ajakan ngobrol yang menonjol
-- Alur bayar (manual, tanpa server): tamu menyalin **kode tamu** → bayar di `toko.linkBayar` (Saweria/Trakteer/dll.) dengan kode di pesan → tekan *Saya sudah bayar* → kamu mencocokkan di **Panel → Pesanan** → *Setujui* → EXP/VIP langsung aktif dan tamu dapat notifikasi
-- Toko tertutup selama `linkBayar` kosong
-- Kalau ramai, alur ini bisa diotomatiskan dengan webhook pembayaran + Cloudflare Worker/Cloud Function yang menulis ke Firebase
 
 Semua aturan di atas dijaga di server lewat `database.rules.json`, bukan cuma di tampilan. **Batasan yang perlu diketahui:** EXP dari tugas dicatat oleh browser tamu (dibatasi maksimal 60 EXP per 3 detik), jadi tamu yang paham teknis bisa mengakali EXP *tugas*. Ini hanya berpengaruh ke barang kosmetik. EXP yang **dibeli**, Kartu Eksekutif, dan daftar "siapa yang menyukaimu" sepenuhnya dikunci server dan hanya bisa diberikan Direktur.
 

@@ -3,6 +3,7 @@ export const CFG = Object.assign({
   namaPT: 'PT Mencari Cinta Sejati', singkatan: 'PT MCS', instagram: '', donasi: '',
   kuota: 10000, firebase: null, mading: [], domainLogin: 'ptmcs.id', direkturDemo: null,
   pendaftaran: { umurMin: 13, umurMinJodoh: 18 }, toko: { paket: [] },
+  pembayaran: { qris: '', bank: [], kodeUnik: true }, diamond: { paket: [] }, donasi: { min: 5000, saran: [] },
 }, window.PT_CONFIG || {});
 
 // Tujuan tamu datang ke kantor
@@ -105,12 +106,19 @@ export function lokasiDi(x, z) {
 export const OUTFIT = [
   { nama: 'Kemeja', lv: 1 }, { nama: 'Hoodie', lv: 2 }, { nama: 'Jaket Denim', lv: 3 }, { nama: 'Jas & Dasi', lv: 4 },
   { nama: 'Gaun Pesta', lv: 5 }, { nama: 'Jaket Kulit', lv: 6 }, { nama: 'Setelan Emas', vip: true },
+  // dibeli dengan Diamond (dm = harga, id = kunci di katalog & daftar milik)
+  { nama: 'Jas Pengantin', dm: 120, id: 'o7' }, { nama: 'Hoodie Hati', dm: 80, id: 'o8' }, { nama: 'Jaket Varsity', dm: 100, id: 'o9' },
 ];
 export const AKSESORIS = [
   { nama: 'tidak ada', lv: 1 }, { nama: 'kacamata', lv: 1 }, { nama: 'topi', lv: 1 }, { nama: 'pita', lv: 1 }, { nama: 'headset', lv: 1 },
   { nama: 'kacamata hitam', lv: 2 }, { nama: 'bando kucing', lv: 3 }, { nama: 'mahkota bunga', lv: 5 }, { nama: 'sayap cupid', lv: 7 },
   { nama: 'aura hati', lv: 9 }, { nama: 'mahkota emas', vip: true }, { nama: 'halo', vip: true },
+  { nama: 'kacamata hati', dm: 60, id: 'a12' }, { nama: 'balon hati', dm: 90, id: 'a13' }, { nama: 'topi pesta', dm: 40, id: 'a14' },
 ];
+// Semua barang Diamond, untuk katalog harga di database
+export const BARANG_DIAMOND = [...OUTFIT, ...AKSESORIS].filter(x => x.dm).map(x => ({ id: x.id, nama: x.nama, harga: x.dm, jenis: x.id[0] === 'o' ? 'Outfit' : 'Aksesoris' }));
+export const rupiah = n => 'Rp' + Number(n || 0).toLocaleString('id-ID');
+export const IKON_DM = '💠';
 export const kodeTamu = uid => 'MCS-' + String(uid).replace(/[^a-z0-9]/gi, '').slice(-6).toUpperCase();
 
 // Username dashboard → email Firebase (yocky → yocky@ptmcs.id)

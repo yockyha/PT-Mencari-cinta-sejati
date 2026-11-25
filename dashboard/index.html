@@ -123,6 +123,11 @@ td.angkaK{font-variant-numeric:tabular-nums;text-align:right}
 
 .json{width:100%;min-height:360px;font:500 13px/1.5 var(--mono);white-space:pre;tab-size:2}
 .kosong{color:var(--redup);padding:14px 0}
+.nominal{display:flex;flex-direction:column;align-items:flex-end;white-space:nowrap}
+.nominal b{font:700 18px var(--display);font-variant-numeric:tabular-nums}
+.nominal small{color:var(--redup);font-weight:800}
+.feed li .baris{flex-wrap:nowrap}
+@media (max-width:640px){.feed li{flex-wrap:wrap}}
 
 /* ---- HP: sidebar menjadi bilah atas ---- */
 @media (max-width:860px){
