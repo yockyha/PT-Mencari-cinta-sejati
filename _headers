@@ -1,0 +1,3 @@
+# Aturan header Cloudflare Pages: browser selalu mengecek versi terbaru
+/*
+  Cache-Control: no-cache

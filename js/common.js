@@ -1,5 +1,5 @@
 // Utilitas bersama untuk semua halaman.
-import PAKET from '../paket.js';
+import PAKET from '../paket.js?v=202611251250';
 export const CFG = Object.assign({
   namaPT: 'PT Mencari Cinta Sejati', singkatan: 'PT MCS', instagram: '', tiktok: '', wajibFollow: null,
   kuota: 10000, firebase: null, mading: [], domainLogin: 'ptmcs.id', direkturDemo: null,
