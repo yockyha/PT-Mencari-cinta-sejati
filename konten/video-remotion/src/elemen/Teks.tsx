@@ -138,4 +138,4 @@ export const Stiker = Interactive.create({
 const AkunInner = ({teks, style}: {readonly teks: string; readonly style?: CSSProperties}) => (
   <div style={{position: 'absolute', top: 150, left: 130, background: 'rgba(17,17,17,0.72)', color: 'white', fontFamily: TEKS, fontWeight: 900, fontSize: 36, padding: '10px 28px', borderRadius: 999, ...style}}>{teks}</div>
 );
-export const Akun = Interactive.create({Component: AkunInner, layout: 'none', schema: {teks: {type: 'string', default: '@jodohonline.company', description: 'Akun'}}});
+export const Akun = Interactive.create({Component: AkunInner, layout: 'none', schema: {teks: {type: 'string', default: '@jodohonline.id', description: 'Akun'}}});

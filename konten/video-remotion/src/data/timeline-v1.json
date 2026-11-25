@@ -534,7 +534,7 @@
    "mulai": 1227,
    "durasi": 66,
    "props": {
-    "akun": "jodohonline.company",
+    "akun": "jodohonline.id",
     "nama": "jodohonline 💘",
     "bio": "Kantor virtual buat cari jodoh, cari teman & curhat\nDaftar → di-ACC Direktur 👑",
     "tautan": "jodohonline.company",
@@ -596,7 +596,7 @@
    "id": "t63",
    "track": "teks",
    "jenis": "sub",
-   "teks": "*Follow* @jodohonline.company,",
+   "teks": "*Follow* @jodohonline.id,",
    "mulai": 1227,
    "durasi": 66,
    "y": 1330
@@ -665,7 +665,7 @@
    "mulai": 1528,
    "durasi": 137,
    "props": {
-    "akun": "jodohonline.company",
+    "akun": "jodohonline.id",
     "nama": "jodohonline 💘",
     "bio": "Kantor virtual buat cari jodoh, cari teman & curhat\nDaftar → di-ACC Direktur 👑",
     "tautan": "jodohonline.company",
@@ -700,7 +700,7 @@
    "id": "t73",
    "track": "teks",
    "jenis": "akun",
-   "teks": "@jodohonline.company",
+   "teks": "@jodohonline.id",
    "mulai": 0,
    "durasi": 120,
    "masuk": "none"
@@ -709,7 +709,7 @@
    "id": "t74",
    "track": "teks",
    "jenis": "akun",
-   "teks": "@jodohonline.company",
+   "teks": "@jodohonline.id",
    "mulai": 186,
    "durasi": 1041,
    "masuk": "none"
@@ -718,7 +718,7 @@
    "id": "t75",
    "track": "teks",
    "jenis": "akun",
-   "teks": "@jodohonline.company",
+   "teks": "@jodohonline.id",
    "mulai": 1359,
    "durasi": 169,
    "masuk": "none"

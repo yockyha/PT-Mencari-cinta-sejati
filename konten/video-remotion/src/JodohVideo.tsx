@@ -95,12 +95,12 @@ export const JodohVideo = () => {
         <Sequence name="11 Syarat: follow, komen, formulir" from={1194} durationInFrames={258}>
           <Foto name="Air mancur" from={0} durationInFrames={33} src="foto/airmancur.png" zoom={1.1} />
           <Judul name="Judul syarat" from={0} durationInFrames={33} teks="Syarat wajib" kecil="" />
-          <ProfilIg name="Profil IG (follow)" from={33} durationInFrames={66} akun="jodohonline.company" nama="jodohonline 💘" bio={'Kantor virtual buat cari jodoh, cari teman & curhat\nDaftar → di-ACC Direktur 👑'} tautan="jodohonline.company" postingan="1" pengikut={0} mengikuti="0" ketukDetik={1.1} sensor />
+          <ProfilIg name="Profil IG (follow)" from={33} durationInFrames={66} akun="jodohonline.id" nama="jodohonline 💘" bio={'Kantor virtual buat cari jodoh, cari teman & curhat\nDaftar → di-ACC Direktur 👑'} tautan="jodohonline.company" postingan="1" pengikut={0} mengikuti="0" ketukDetik={1.1} sensor />
           <Rekaman name="Reels di balik komentar" from={99} durationInFrames={66} src="klip/drone.mp4" mulai={2.5} kecepatan={0.6} style={{filter: 'brightness(0.55)'}} />
           <KomentarIg name="Komentar IG (DAFTAR)" from={99} durationInFrames={66} komentar={'dimas.p|DAFTAR|1m|2\nnadia.r|DAFTAR 🙋‍♀️|3m|5\nayu.ln|daftar kak, cari teman curhat|5m|1\nraka|DAFTAR|8m|0'} ketik="DAFTAR" ketikDetik={0.3} akunSaya="kamu" sensor />
           <Rekaman name="Rekaman isi formulir" from={165} durationInFrames={93} src="klip/formulir.mp4" mulai={3.3} kecepatan={1} />
           <Sub name="Sub 11a" from={0} durationInFrames={33} teks="*Syaratnya:*" />
-          <Sub name="Sub 11b" from={33} durationInFrames={66} teks="*Follow* @jodohonline.company," style={BAWAH} />
+          <Sub name="Sub 11b" from={33} durationInFrames={66} teks="*Follow* @jodohonline.id," style={BAWAH} />
           <Sub name="Sub 11c" from={99} durationInFrames={66} teks={'komen *"DAFTAR"* di video ini,'} style={ATAS} />
           <Sub name="Sub 11d" from={165} durationInFrames={93} teks="isi formulir di *jodohonline.company*" style={BAWAH} />
         </Sequence>
@@ -111,15 +111,15 @@ export const JodohVideo = () => {
           <Sub name="Sub 12b" from={48} durationInFrames={28} teks="*Di-ACC!*" style={BAWAH} />
         </Sequence>
         <Sequence name="13 Penutup: follow" from={1528} durationInFrames={137}>
-          <ProfilIg name="Profil IG (penutup)" akun="jodohonline.company" nama="jodohonline 💘" bio={'Kantor virtual buat cari jodoh, cari teman & curhat\nDaftar → di-ACC Direktur 👑'} tautan="jodohonline.company" postingan="1" pengikut={0} mengikuti="0" ketukDetik={3.05} sensor />
+          <ProfilIg name="Profil IG (penutup)" akun="jodohonline.id" nama="jodohonline 💘" bio={'Kantor virtual buat cari jodoh, cari teman & curhat\nDaftar → di-ACC Direktur 👑'} tautan="jodohonline.company" postingan="1" pengikut={0} mengikuti="0" ketukDetik={3.05} sensor />
           <Sub name="Sub 13a" from={0} durationInFrames={92} teks="Gak follow, gak komen, *gak di-ACC.*" style={BAWAH} />
           <Sub name="Sub 13b" from={92} durationInFrames={45} teks="*Follow sekarang!*" style={BAWAH} />
         </Sequence>
       </Track>
       <Track name="Nama akun">
-        <Akun name="Nama akun (awal)" from={0} durationInFrames={120} teks="@jodohonline.company" />
-        <Akun name="Nama akun (kantor)" from={186} durationInFrames={1041} teks="@jodohonline.company" />
-        <Akun name="Nama akun (formulir)" from={1359} durationInFrames={169} teks="@jodohonline.company" />
+        <Akun name="Nama akun (awal)" from={0} durationInFrames={120} teks="@jodohonline.id" />
+        <Akun name="Nama akun (kantor)" from={186} durationInFrames={1041} teks="@jodohonline.id" />
+        <Akun name="Nama akun (formulir)" from={1359} durationInFrames={169} teks="@jodohonline.id" />
       </Track>
       <Audio name="Voice-over" src={staticFile('vo.mp3')} />
       <Track name="Efek suara">

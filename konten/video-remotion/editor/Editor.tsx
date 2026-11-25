@@ -307,13 +307,13 @@ function PanelPustaka({pustaka, tl, frame, tambahLapis, tambahSfx, pasangVo, ung
     ['Cap DI-ACC ✓', {track: 'teks', jenis: 'cap', teks: 'DI-ACC ✓', warna: '#1f9d55', durasi: 45}],
     ['Stiker', {track: 'teks', jenis: 'stiker', teks: "IT'S A MATCH 💘", durasi: 40}],
     ['Chip pilihan', {track: 'teks', jenis: 'chips', teks: 'PILIHAN A|PILIHAN B', nyala: '0', durasi: 60}],
-    ['Nama akun', {track: 'teks', jenis: 'akun', teks: '@jodohonline.company', durasi: 150, masuk: 'none'}],
+    ['Nama akun', {track: 'teks', jenis: 'akun', teks: '@jodohonline.id', durasi: 150, masuk: 'none'}],
   ];
   const bio = 'Kantor virtual buat cari jodoh, cari teman & curhat\nDaftar → di-ACC Direktur 👑';
   const ELEMEN: [string, any][] = [
     ['Tumpukan komentar penonton', {track: 'elemen', jenis: 'tanya', durasi: 150, masuk: 'none', props: {komentar: 'penonton1|cara daftarnya gimana kak? 🙏\npenonton2|linknya mana min??\npenonton3|harus bayar gak sih?', jeda: 0.7, sensor: true}}],
     ['Balasan komentar', {track: 'elemen', jenis: 'balas', durasi: 90, masuk: 'none', props: {pengguna: 'penonton', komentar: 'tulis pertanyaan penonton', sensor: true}}],
-    ['Profil Instagram + Ikuti', {track: 'elemen', jenis: 'profil', durasi: 75, masuk: 'geser-atas', props: {akun: 'jodohonline.company', nama: 'jodohonline 💘', bio, tautan: 'jodohonline.company', postingan: '1', pengikut: 0, mengikuti: '0', ketukDetik: 1.2, sensor: true}}],
+    ['Profil Instagram + Ikuti', {track: 'elemen', jenis: 'profil', durasi: 75, masuk: 'geser-atas', props: {akun: 'jodohonline.id', nama: 'jodohonline 💘', bio, tautan: 'jodohonline.company', postingan: '1', pengikut: 0, mengikuti: '0', ketukDetik: 1.2, sensor: true}}],
     ['Kolom komentar + ketik', {track: 'elemen', jenis: 'komentar', durasi: 75, props: {komentar: 'akun1|DAFTAR|1m|2\nakun2|DAFTAR|3m|1', ketik: 'DAFTAR', ketikDetik: 0.3, akunSaya: 'kamu', sensor: true}}],
     ['Browser HP', {track: 'elemen', jenis: 'browser', durasi: 66, props: {alamat: 'jodohonline.company', halaman: 'foto/beranda.png'}}],
   ];

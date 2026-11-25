@@ -6,8 +6,9 @@ window.PT_CONFIG = {
   // Nama & akun sosial perusahaan
   namaPT: 'PT Mencari Cinta Sejati',
   singkatan: 'PT MCS',
-  instagram: 'jodohonline.company', // tanpa @ ; kosongkan jika belum ada
-  tiktok: '',                  // tanpa @ ; isi username TikTok bila sudah ada (kosong = tombol TikTok disembunyikan)
+  instagram: 'jodohonline.company', // USERNAME Instagram (tanpa @), dipakai untuk link & syarat follow di formulir
+  instagramNama: 'jodohonline.id',   // nama yang ditampilkan untuk akun Instagram
+  tiktok: 'jodohonline.id',          // username TikTok (tanpa @) ; kosongkan jika belum ada
 
   // Syarat sebelum pendaftar di-ACC: follow akun di atas + komen kata ini
   // di postingan terbaru. Direktur mengecek lewat username IG di formulir.
