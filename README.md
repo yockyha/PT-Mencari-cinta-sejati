@@ -2,6 +2,8 @@
 
 Kantor virtual 3D tempat orang datang sebagai **tamu** untuk **💘 cari jodoh**, **🤝 cari teman**, atau sekadar **💬 curhat**. Pemilik situs memegang kendali sebagai **👑 Direktur Utama**.
 
+🌐 **Situs:** <https://jodohonline.company> · kantor: <https://jodohonline.company/kantor/> · daftar: <https://jodohonline.company/kantor/#daftar> · dashboard: <https://jodohonline.company/dashboard/>
+
 ## Konsep
 
 | Siapa | Bisa apa |
@@ -90,7 +92,7 @@ Keamanan: harga dihitung server dari `paket.js` (bukan dari browser), notifikasi
    | `FIREBASE_DB_SECRET` | secret dari langkah 3 (Secret) |
    | `FIREBASE_DB_URL` | `databaseURL` dari `config.js` |
    | `FIREBASE_API_KEY` | `apiKey` dari `config.js` |
-5. Midtrans → **Settings → Payment → Notification URL** → isi `https://<situsmu>/api/bayar/notifikasi` (mis. `https://pt-mencari-cinta-sejati-bas.pages.dev/api/bayar/notifikasi`), simpan
+5. Midtrans → **Settings → Payment → Notification URL** → isi `https://<situsmu>/api/bayar/notifikasi` (mis. `https://jodohonline.company/api/bayar/notifikasi`), simpan
 6. Di `config.js` ubah `pembayaran.otomatis: ''` menjadi `otomatis: 'midtrans'`, commit & merge ke `main`. Cloudflare men-deploy ulang otomatis (variabel baru juga baru terpakai setelah deploy ulang)
 7. Coba beli Diamond di kantor → pilih ⚡ Bayar otomatis → di Sandbox bayar pakai simulator <https://simulator.sandbox.midtrans.com> → diamond masuk sendiri
 
@@ -200,7 +202,7 @@ Di mode lokal (tanpa Firebase), buka `/dashboard/` dan login dengan `direkturDem
    - **GitHub Pages**: Settings → Pages → Deploy from branch.
 3. Tambahkan domain hosting ke Firebase → Authentication → Settings → **Authorized domains**.
 4. Isi `instagram`, `toko.linkBayar`, dan **hapus `direkturDemo`** di `config.js`.
-5. (Opsional) Domain sendiri, misalnya `ptmencaricintasejati.id`, bisa disambungkan di Cloudflare/Netlify.
+5. Domain sendiri: situs ini memakai **jodohonline.company** (Cloudflare Pages → Custom domains). Alamat `pt-mencari-cinta-sejati-bas.pages.dev` tetap jalan sebagai cadangan.
 
 ## Kustomisasi cepat
 
