@@ -36,12 +36,12 @@ export async function onRequestPost({ request, env }) {
   const uid = await uidDariToken({ ...env, FIREBASE_API_KEY: env.FIREBASE_API_KEY || KUNCI_PUBLIK }, b.idToken).catch(() => null);
   if (!uid) return balas({ error: 'Sesi tidak sah.' }, 401);
   const penyedia = env.METERED_APP && env.METERED_API_KEY ? dariMetered : env.TURN_KEY_ID && env.TURN_KEY_API_TOKEN ? dariCloudflare : null;
-  if (!penyedia) return balas({ iceServers: STUN, turn: false });
+  if (!penyedia) return balas({ iceServers: STUN, turn: false, alasan: 'Variabel TURN belum terbaca (METERED_APP / METERED_API_KEY). Cek nama variabel, lingkungan Production, lalu Retry deployment.' });
   try {
     const ice = (await penyedia(env)).filter(s => s && s.urls);
-    return balas({ iceServers: [...STUN, ...ice], turn: ice.length > 0 });
+    return balas({ iceServers: [...STUN, ...ice], turn: ice.length > 0, ...(ice.length ? {} : { alasan: 'Penyedia TURN tidak mengirim server.' }) });
   } catch (e) {
     console.error('turn', e);
-    return balas({ iceServers: STUN, turn: false });
+    return balas({ iceServers: STUN, turn: false, alasan: 'Penyedia TURN menolak: ' + String(e && e.message || e).slice(0, 80) });
   }
 }
