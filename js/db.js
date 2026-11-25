@@ -150,7 +150,8 @@ class DBFirebase {
     D.onValue(D.ref(db.rdb, '.info/serverTimeOffset'), s => { db.offset = s.val() || 0; });
     return db;
   }
-  r(p) { return this.D.ref(this.rdb, p); }
+  // Path kosong ('') = akar database. ref(db, '') ditolak Firebase, jadi pakai ref(db).
+  r(p) { return p ? this.D.ref(this.rdb, p) : this.D.ref(this.rdb); }
   now() { return Date.now() + this.offset; }
   set(p, v) { return this.D.set(this.r(p), v).catch(e => { console.warn('set', p, e.message); throw e; }); }
   update(p, o) { return this.D.update(this.r(p), o).catch(e => { console.warn('update', p, e.message); throw e; }); }

@@ -1,0 +1,699 @@
+{
+ "versi": 1,
+ "fps": 30,
+ "lebar": 1080,
+ "tinggi": 1920,
+ "durasi": 1500,
+ "vo": {
+  "src": "vo2.mp3",
+  "volume": 1
+ },
+ "lapis": [
+  {
+   "id": "g1",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/drone.mp4",
+   "mulai": 0,
+   "durasi": 172,
+   "gelap": 0.35,
+   "kecepatan": 0.8,
+   "nama": "Drone kantor (redup)"
+  },
+  {
+   "id": "e2",
+   "track": "elemen",
+   "jenis": "tanya",
+   "mulai": 0,
+   "durasi": 110,
+   "props": {
+    "komentar": "penonton1|cara daftarnya gimana kak? 🙏\npenonton2|linknya mana min??\npenonton3|harus bayar gak sih? 😅\npenonton4|aku mau join tapi bingung 😭\npenonton5|ACC-nya lama gak?",
+    "jeda": 0.62,
+    "sensor": true
+   },
+   "masuk": "none",
+   "keluar": "fade",
+   "nama": "Komentar penonton"
+  },
+  {
+   "id": "t3",
+   "track": "teks",
+   "jenis": "judul",
+   "teks": "Cara daftar",
+   "mulai": 110,
+   "durasi": 62,
+   "kecil": "cuma 4 langkah",
+   "y": 520
+  },
+  {
+   "id": "t4",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Banyak yang nanya di komen…",
+   "mulai": 0,
+   "durasi": 55,
+   "y": 1410
+  },
+  {
+   "id": "t5",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "*cara daftarnya gimana sih?*",
+   "mulai": 55,
+   "durasi": 55,
+   "y": 1410
+  },
+  {
+   "id": "t6",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Oke, cuma *empat langkah!*",
+   "mulai": 110,
+   "durasi": 62
+  },
+  {
+   "id": "e7",
+   "track": "elemen",
+   "jenis": "profil",
+   "mulai": 172,
+   "durasi": 102,
+   "props": {
+    "akun": "jodohonline.id",
+    "nama": "PT Mencari Cinta Sejati 💘",
+    "bio": "Kantor virtual buat cari jodoh, cari teman & curhat\nDaftar → di-ACC Direktur 👑",
+    "tautan": "jodohonline.company/daftar",
+    "postingan": "2",
+    "pengikut": 0,
+    "mengikuti": "0",
+    "sensor": true,
+    "ketukDetik": 1.53
+   },
+   "masuk": "geser-atas",
+   "nama": "Profil IG: Ikuti"
+  },
+  {
+   "id": "t8",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "LANGKAH 1 · FOLLOW",
+   "mulai": 178,
+   "durasi": 96,
+   "nyala": "0",
+   "y": 1190,
+   "masuk": "pop"
+  },
+  {
+   "id": "t9",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "*Satu.* Follow @jodohonline.id",
+   "mulai": 172,
+   "durasi": 102,
+   "y": 1330
+  },
+  {
+   "id": "g10",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/drone.mp4",
+   "mulai": 274,
+   "durasi": 89,
+   "trim": 2.5,
+   "kecepatan": 0.6,
+   "gelap": 0.45,
+   "nama": "Reels di balik komentar"
+  },
+  {
+   "id": "e11",
+   "track": "elemen",
+   "jenis": "komentar",
+   "mulai": 274,
+   "durasi": 89,
+   "props": {
+    "komentar": "penonton1|DAFTAR|1m|2\npenonton2|DAFTAR 🙋‍♀️|2m|4\npenonton3|daftar kak!|4m|1\npenonton4|DAFTAR|6m|0",
+    "ketik": "DAFTAR",
+    "ketikDetik": 1.0,
+    "akunSaya": "kamu",
+    "sensor": true
+   },
+   "masuk": "geser-atas",
+   "nama": "Komentar IG: DAFTAR"
+  },
+  {
+   "id": "t12",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "LANGKAH 2 · KOMEN",
+   "mulai": 279,
+   "durasi": 84,
+   "nyala": "0",
+   "y": 200,
+   "masuk": "pop"
+  },
+  {
+   "id": "t13",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "*Dua.* Komen *\"DAFTAR\"*",
+   "mulai": 274,
+   "durasi": 89,
+   "y": 400
+  },
+  {
+   "id": "e14",
+   "track": "elemen",
+   "jenis": "profil",
+   "mulai": 363,
+   "durasi": 63,
+   "props": {
+    "akun": "jodohonline.id",
+    "nama": "PT Mencari Cinta Sejati 💘",
+    "bio": "Kantor virtual buat cari jodoh, cari teman & curhat\nDaftar → di-ACC Direktur 👑",
+    "tautan": "jodohonline.company/daftar",
+    "postingan": "2",
+    "pengikut": 0,
+    "mengikuti": "0",
+    "sensor": true,
+    "ketukDetik": 1.0,
+    "target": "tautan",
+    "sudahIkut": true
+   },
+   "masuk": "none",
+   "nama": "Profil IG: ketuk link"
+  },
+  {
+   "id": "e15",
+   "track": "elemen",
+   "jenis": "browser",
+   "mulai": 426,
+   "durasi": 102,
+   "props": {
+    "alamat": "jodohonline.company/daftar",
+    "halaman": "foto/formulir.png"
+   },
+   "nama": "Browser: formulir"
+  },
+  {
+   "id": "t16",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "LANGKAH 3 · LINK DI BIO",
+   "mulai": 371,
+   "durasi": 157,
+   "nyala": "0",
+   "y": 1190,
+   "masuk": "pop"
+  },
+  {
+   "id": "t17",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "*Tiga.* Buka link di bio:",
+   "mulai": 363,
+   "durasi": 66,
+   "y": 1330
+  },
+  {
+   "id": "t18",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "jodohonline.company*/daftar*",
+   "mulai": 429,
+   "durasi": 99,
+   "y": 1330
+  },
+  {
+   "id": "g19",
+   "track": "gambar",
+   "jenis": "foto",
+   "src": "foto/formulir.png",
+   "mulai": 528,
+   "durasi": 71,
+   "zoom": 1.04,
+   "nama": "Formulir kosong"
+  },
+  {
+   "id": "g20",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/formulir.mp4",
+   "mulai": 599,
+   "durasi": 128,
+   "trim": 0,
+   "kecepatan": 0.4,
+   "nama": "Pilih tujuan"
+  },
+  {
+   "id": "g21",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/formulir.mp4",
+   "mulai": 727,
+   "durasi": 139,
+   "trim": 1.7,
+   "kecepatan": 0.85,
+   "nama": "Isi nama, umur, kota, IG"
+  },
+  {
+   "id": "t22",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "LANGKAH 4 · ISI FORMULIR",
+   "mulai": 538,
+   "durasi": 328,
+   "nyala": "0",
+   "y": 1190,
+   "masuk": "pop"
+  },
+  {
+   "id": "t23",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "*Empat.* Isi formulirnya.",
+   "mulai": 528,
+   "durasi": 71,
+   "y": 1330
+  },
+  {
+   "id": "t24",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Pilih tujuan: *jodoh, teman,* atau *curhat*",
+   "mulai": 599,
+   "durasi": 128,
+   "y": 1330
+  },
+  {
+   "id": "t25",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Isi nama, umur, kota & *username IG*",
+   "mulai": 727,
+   "durasi": 139,
+   "y": 1330
+  },
+  {
+   "id": "g26",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/formulir.mp4",
+   "mulai": 866,
+   "durasi": 67,
+   "trim": 5.8,
+   "kecepatan": 1.6,
+   "nama": "Centang & kirim"
+  },
+  {
+   "id": "t27",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Centang syaratnya, lalu *kirim!*",
+   "mulai": 866,
+   "durasi": 67,
+   "y": 1330
+  },
+  {
+   "id": "g28",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/dash_acc.mp4",
+   "mulai": 933,
+   "durasi": 196,
+   "kecepatan": 0.689,
+   "nama": "Dashboard: ACC"
+  },
+  {
+   "id": "t29",
+   "track": "teks",
+   "jenis": "cap",
+   "teks": "DI-ACC ✓",
+   "mulai": 1001,
+   "durasi": 128,
+   "warna": "#1f9d55",
+   "y": 760,
+   "x": 160
+  },
+  {
+   "id": "t30",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Tinggal tunggu *di-ACC Direktur.*",
+   "mulai": 933,
+   "durasi": 94,
+   "y": 1330
+  },
+  {
+   "id": "t31",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Direktur cek: *udah follow & komen?*",
+   "mulai": 1027,
+   "durasi": 102,
+   "y": 1330
+  },
+  {
+   "id": "g32",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/diterima.mp4",
+   "mulai": 1129,
+   "durasi": 126,
+   "nama": "Resmi jadi tamu"
+  },
+  {
+   "id": "g33",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/chat.mp4",
+   "mulai": 1255,
+   "durasi": 53,
+   "trim": 1.4,
+   "nama": "Ngobrol"
+  },
+  {
+   "id": "g34",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/game.mp4",
+   "mulai": 1308,
+   "durasi": 51,
+   "trim": 2.7,
+   "nama": "Main game"
+  },
+  {
+   "id": "t35",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Kalau udah di-ACC… *selamat!*",
+   "mulai": 1129,
+   "durasi": 74
+  },
+  {
+   "id": "t36",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Kamu *resmi jadi tamu!*",
+   "mulai": 1203,
+   "durasi": 52
+  },
+  {
+   "id": "t37",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Bisa *ngobrol, main game,* sampai *cari jodoh*",
+   "mulai": 1255,
+   "durasi": 104
+  },
+  {
+   "id": "e38",
+   "track": "elemen",
+   "jenis": "profil",
+   "mulai": 1359,
+   "durasi": 141,
+   "props": {
+    "akun": "jodohonline.id",
+    "nama": "PT Mencari Cinta Sejati 💘",
+    "bio": "Kantor virtual buat cari jodoh, cari teman & curhat\nDaftar → di-ACC Direktur 👑",
+    "tautan": "jodohonline.company/daftar",
+    "postingan": "2",
+    "pengikut": 0,
+    "mengikuti": "0",
+    "sensor": true,
+    "ketukDetik": 1.41
+   },
+   "masuk": "geser-atas",
+   "nama": "Profil IG: penutup"
+  },
+  {
+   "id": "t39",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Gampang kan?",
+   "mulai": 1359,
+   "durasi": 32,
+   "y": 1330
+  },
+  {
+   "id": "t40",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "*Follow,* komen *DAFTAR,* daftar *sekarang!*",
+   "mulai": 1391,
+   "durasi": 109,
+   "y": 1330
+  },
+  {
+   "id": "t41",
+   "track": "teks",
+   "jenis": "akun",
+   "teks": "@jodohonline.id",
+   "mulai": 0,
+   "durasi": 172,
+   "masuk": "none",
+   "y": 150,
+   "x": 130
+  }
+ ],
+ "sfx": [
+  {
+   "id": "s1",
+   "nama": "Pop komentar 1",
+   "src": "sfx/pop.mp3",
+   "mulai": 0,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s2",
+   "nama": "Pop komentar 2",
+   "src": "sfx/pop.mp3",
+   "mulai": 18,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s3",
+   "nama": "Pop komentar 3",
+   "src": "sfx/pop.mp3",
+   "mulai": 37,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s4",
+   "nama": "Pop komentar 4",
+   "src": "sfx/pop.mp3",
+   "mulai": 55,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s5",
+   "nama": "Pop komentar 5",
+   "src": "sfx/pop.mp3",
+   "mulai": 74,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s6",
+   "nama": "Whoosh judul",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 107,
+   "durasi": 18,
+   "volume": 0.3
+  },
+  {
+   "id": "s7",
+   "nama": "Geser profil",
+   "src": "sfx/geser.mp3",
+   "mulai": 172,
+   "durasi": 18,
+   "volume": 0.8
+  },
+  {
+   "id": "s8",
+   "nama": "Ketuk Ikuti",
+   "src": "sfx/ketuk.mp3",
+   "mulai": 216,
+   "durasi": 12,
+   "volume": 0.45
+  },
+  {
+   "id": "s9",
+   "nama": "Notif mengikuti",
+   "src": "sfx/notif.mp3",
+   "mulai": 220,
+   "durasi": 22,
+   "volume": 0.3
+  },
+  {
+   "id": "s10",
+   "nama": "Geser komentar",
+   "src": "sfx/geser.mp3",
+   "mulai": 274,
+   "durasi": 18,
+   "volume": 0.8
+  },
+  {
+   "id": "s11",
+   "nama": "Ketik DAFTAR",
+   "src": "sfx/ketik.mp3",
+   "mulai": 304,
+   "durasi": 24,
+   "volume": 1.0
+  },
+  {
+   "id": "s12",
+   "nama": "Ketuk kirim",
+   "src": "sfx/ketuk.mp3",
+   "mulai": 330,
+   "durasi": 12,
+   "volume": 0.45
+  },
+  {
+   "id": "s13",
+   "nama": "Pop komentar masuk",
+   "src": "sfx/pop.mp3",
+   "mulai": 335,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s14",
+   "nama": "Ketuk link",
+   "src": "sfx/ketuk.mp3",
+   "mulai": 391,
+   "durasi": 12,
+   "volume": 0.45
+  },
+  {
+   "id": "s15",
+   "nama": "Ketik alamat",
+   "src": "sfx/ketik.mp3",
+   "mulai": 427,
+   "durasi": 30,
+   "volume": 1.0
+  },
+  {
+   "id": "s16",
+   "nama": "Ketuk tujuan",
+   "src": "sfx/ketuk.mp3",
+   "mulai": 612,
+   "durasi": 12,
+   "volume": 0.4
+  },
+  {
+   "id": "s17",
+   "nama": "Ketik nama",
+   "src": "sfx/ketik.mp3",
+   "mulai": 634,
+   "durasi": 40,
+   "volume": 1.0
+  },
+  {
+   "id": "s18",
+   "nama": "Ketik IG",
+   "src": "sfx/ketik.mp3",
+   "mulai": 808,
+   "durasi": 40,
+   "volume": 1.0
+  },
+  {
+   "id": "s19",
+   "nama": "Centang 1",
+   "src": "sfx/ketuk.mp3",
+   "mulai": 893,
+   "durasi": 12,
+   "volume": 0.45
+  },
+  {
+   "id": "s20",
+   "nama": "Centang 2",
+   "src": "sfx/ketuk.mp3",
+   "mulai": 897,
+   "durasi": 12,
+   "volume": 0.45
+  },
+  {
+   "id": "s21",
+   "nama": "Kirim",
+   "src": "sfx/ketuk.mp3",
+   "mulai": 903,
+   "durasi": 12,
+   "volume": 0.45
+  },
+  {
+   "id": "s22",
+   "nama": "Notif terkirim",
+   "src": "sfx/notif.mp3",
+   "mulai": 906,
+   "durasi": 22,
+   "volume": 0.3
+  },
+  {
+   "id": "s23",
+   "nama": "Klik Terima",
+   "src": "sfx/ketuk.mp3",
+   "mulai": 996,
+   "durasi": 12,
+   "volume": 0.5
+  },
+  {
+   "id": "s24",
+   "nama": "Cap DI-ACC",
+   "src": "sfx/cap.mp3",
+   "mulai": 1001,
+   "durasi": 18,
+   "volume": 0.45
+  },
+  {
+   "id": "s25",
+   "nama": "Level up resmi",
+   "src": "sfx/levelup.mp3",
+   "mulai": 1177,
+   "durasi": 33,
+   "volume": 0.3
+  },
+  {
+   "id": "s26",
+   "nama": "Whoosh ngobrol",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 1252,
+   "durasi": 18,
+   "volume": 0.25
+  },
+  {
+   "id": "s27",
+   "nama": "Whoosh game",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 1305,
+   "durasi": 18,
+   "volume": 0.22
+  },
+  {
+   "id": "s28",
+   "nama": "Geser profil penutup",
+   "src": "sfx/geser.mp3",
+   "mulai": 1359,
+   "durasi": 18,
+   "volume": 0.8
+  },
+  {
+   "id": "s29",
+   "nama": "Ketuk Ikuti penutup",
+   "src": "sfx/ketuk.mp3",
+   "mulai": 1399,
+   "durasi": 12,
+   "volume": 0.45
+  },
+  {
+   "id": "s30",
+   "nama": "Notif penutup",
+   "src": "sfx/notif.mp3",
+   "mulai": 1403,
+   "durasi": 25,
+   "volume": 0.3
+  }
+ ]
+}
