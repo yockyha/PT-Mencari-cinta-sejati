@@ -4,6 +4,7 @@ import {AbsoluteFill, Easing, Img, interpolate, Sequence, useCurrentFrame, useVi
 import {JUDUL, TEKS} from '../font';
 import {BalasKomentar} from '../ig/BalasKomentar';
 import {Browser} from '../ig/Browser';
+import {KotakDm, ObrolanDm} from '../ig/DmIg';
 import {KomentarIg} from '../ig/KomentarIg';
 import {ProfilIg} from '../ig/ProfilIg';
 import {TumpukanKomentar} from '../ig/TumpukanKomentar';
@@ -83,6 +84,8 @@ const Elemen = ({l}: {readonly l: Extract<Lapis, {track: 'elemen'}>}) => {
   if (l.jenis === 'profil') return <ProfilIg {...p} />;
   if (l.jenis === 'komentar') return <KomentarIg {...p} />;
   if (l.jenis === 'tanya') return <TumpukanKomentar {...p} />;
+  if (l.jenis === 'kotakdm') return <KotakDm {...p} />;
+  if (l.jenis === 'dm') return <ObrolanDm {...p} />;
   return <Browser {...p} />;
 };
 

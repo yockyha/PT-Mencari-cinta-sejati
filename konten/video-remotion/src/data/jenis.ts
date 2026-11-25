@@ -3,7 +3,7 @@ export type Masuk = 'none' | 'fade' | 'pop' | 'banting' | 'geser-atas' | 'geser-
 export type Keluar = 'none' | 'fade';
 type Dasar = {id: string; mulai: number; durasi: number; masuk?: Masuk; keluar?: Keluar; nama?: string};
 export type LapisGambar = Dasar & ({jenis: 'video'; src: string; trim?: number; kecepatan?: number; gelap?: number} | {jenis: 'foto'; src: string; zoom?: number});
-export type LapisElemen = Dasar & {jenis: 'balas' | 'profil' | 'komentar' | 'browser' | 'tanya'; props: Record<string, unknown>};
+export type LapisElemen = Dasar & {jenis: 'balas' | 'profil' | 'komentar' | 'browser' | 'tanya' | 'kotakdm' | 'dm'; props: Record<string, unknown>};
 export type LapisTeks = Dasar & {
   jenis: 'sub' | 'judul' | 'cap' | 'stiker' | 'chips' | 'akun';
   teks: string; kecil?: string; y?: number; x?: number | null; kanan?: number | null; ukuran?: number; warna?: string; miring?: number; nyala?: string;

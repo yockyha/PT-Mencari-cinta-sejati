@@ -29,8 +29,8 @@ const uid = (p: string) => p + Math.random().toString(36).slice(2, 8);
 const detik = (f: number, fps: number) => (f / fps).toFixed(1).replace('.', ',') + ' d';
 const jam = (f: number, fps: number) => { const s = f / fps; return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}.${String(Math.floor((s % 1) * 10))}`; };
 
-const LABEL: Record<string, string> = {video: '🎬', foto: '🖼', tanya: '🙋', balas: '💬', profil: '👤', komentar: '🗨', browser: '🌐', sub: 'Aa', judul: 'T', cap: '🔖', stiker: '⭐', chips: '🏷', akun: '@'};
-const NAMA_JENIS: Record<string, string> = {video: 'Klip video', foto: 'Foto', tanya: 'Tumpukan komentar', balas: 'Balasan komentar', profil: 'Profil Instagram', komentar: 'Kolom komentar', browser: 'Browser HP', sub: 'Subtitle', judul: 'Judul', cap: 'Cap', stiker: 'Stiker', chips: 'Chip', akun: 'Nama akun'};
+const LABEL: Record<string, string> = {video: '🎬', foto: '🖼', tanya: '🙋', kotakdm: '📥', dm: '✉️', balas: '💬', profil: '👤', komentar: '🗨', browser: '🌐', sub: 'Aa', judul: 'T', cap: '🔖', stiker: '⭐', chips: '🏷', akun: '@'};
+const NAMA_JENIS: Record<string, string> = {video: 'Klip video', foto: 'Foto', tanya: 'Tumpukan komentar', kotakdm: 'Kotak masuk DM', dm: 'Obrolan DM', balas: 'Balasan komentar', profil: 'Profil Instagram', komentar: 'Kolom komentar', browser: 'Browser HP', sub: 'Subtitle', judul: 'Judul', cap: 'Cap', stiker: 'Stiker', chips: 'Chip', akun: 'Nama akun'};
 const labelLapis = (l: Lapis) => (l.track === 'teks' ? (l as LapisTeks).teks.replace(/\*/g, '') : l.nama || NAMA_JENIS[l.jenis]);
 
 function ujung(tl: Timeline) {
@@ -312,6 +312,8 @@ function PanelPustaka({pustaka, tl, frame, tambahLapis, tambahSfx, pasangVo, ung
   const bio = 'Kantor virtual buat cari jodoh, cari teman & curhat\nDaftar → di-ACC Direktur 👑';
   const ELEMEN: [string, any][] = [
     ['Tumpukan komentar penonton', {track: 'elemen', jenis: 'tanya', durasi: 150, masuk: 'none', props: {komentar: 'penonton1|cara daftarnya gimana kak? 🙏\npenonton2|linknya mana min??\npenonton3|harus bayar gak sih?', jeda: 0.7, sensor: true}}],
+    ['Kotak masuk DM', {track: 'elemen', jenis: 'kotakdm', durasi: 90, masuk: 'none', props: {akun: 'jodohonline.company', pesan: 'penonton1|kak udah di-ACC, terus ngapain? 😭|1m\npenonton2|bingung mau ngapain di kantornya|2m', jeda: 0.5, sensor: true}}],
+    ['Obrolan DM', {track: 'elemen', jenis: 'dm', durasi: 120, masuk: 'none', props: {pengguna: 'penonton1', pesan: 'kiri|kak aku udah di-ACC 🥹\nkiri|terus abis join ngapain ya?\nkanan|sini aku jelasin 👇', jeda: 0.8, sensor: true}}],
     ['Balasan komentar', {track: 'elemen', jenis: 'balas', durasi: 90, masuk: 'none', props: {pengguna: 'penonton', komentar: 'tulis pertanyaan penonton', sensor: true}}],
     ['Profil Instagram + Ikuti', {track: 'elemen', jenis: 'profil', durasi: 75, masuk: 'geser-atas', props: {akun: 'jodohonline.id', nama: 'jodohonline 💘', bio, tautan: 'jodohonline.company', postingan: '1', pengikut: 0, mengikuti: '0', ketukDetik: 1.2, sensor: true}}],
     ['Kolom komentar + ketik', {track: 'elemen', jenis: 'komentar', durasi: 75, props: {komentar: 'akun1|DAFTAR|1m|2\nakun2|DAFTAR|3m|1', ketik: 'DAFTAR', ketikDetik: 0.3, akunSaya: 'kamu', sensor: true}}],
@@ -426,8 +428,8 @@ function Inspektur({tl, pilih, item, ubah, pustaka, hapus, duplikat, potong, fra
   } else {
     isi = <>{Object.entries(item.props as Record<string, unknown>).map(([k, v]) => typeof v === 'boolean'
       ? <label key={k} className="je-cek" htmlFor={'je-p-' + k}><input id={'je-p-' + k} type="checkbox" checked={v} onChange={(e) => set('props.' + k, e.target.checked)} /> {k === 'sensor' ? 'Sensor (buramkan nama & angka)' : k === 'sudahIkut' ? 'Sudah mengikuti sejak awal' : k}</label>
-      : typeof v === 'number' ? <Angka key={k} id={'je-p-' + k} label={k === 'ketukDetik' ? 'Detik diketuk' : k === 'ketikDetik' ? 'Mulai mengetik (detik)' : k === 'jeda' ? 'Jeda antar komentar (detik)' : k} nilai={v} step={k.endsWith('Detik') ? 0.1 : 1} set={(n) => set('props.' + k, n)} />
-      : <label key={k} className="je-f" htmlFor={'je-p-' + k}><span>{k === 'komentar' ? (item.jenis === 'komentar' ? 'Komentar (user|teks|waktu|suka per baris)' : 'Komentar (user|teks per baris)') : k === 'target' ? 'Yang diketuk (ikuti / tautan)' : k}</span>{String(v).includes('\n') || String(v).length > 40 ? <textarea id={'je-p-' + k} rows={4} value={String(v)} onChange={(e) => set('props.' + k, e.target.value)} /> : <input id={'je-p-' + k} value={String(v)} onChange={(e) => set('props.' + k, e.target.value)} />}</label>)}</>;
+      : typeof v === 'number' ? <Angka key={k} id={'je-p-' + k} label={k === 'ketukDetik' ? 'Detik diketuk' : k === 'ketikDetik' ? 'Mulai mengetik (detik)' : k === 'jeda' ? (item.jenis === 'dm' || item.jenis === 'kotakdm' ? 'Jeda antar pesan (detik)' : 'Jeda antar komentar (detik)') : k} nilai={v} step={k.endsWith('Detik') ? 0.1 : 1} set={(n) => set('props.' + k, n)} />
+      : <label key={k} className="je-f" htmlFor={'je-p-' + k}><span>{k === 'komentar' ? (item.jenis === 'komentar' ? 'Komentar (user|teks|waktu|suka per baris)' : 'Komentar (user|teks per baris)') : k === 'pesan' ? (item.jenis === 'dm' ? 'Pesan (kiri|teks atau kanan|teks per baris)' : 'Pesan (user|teks|waktu per baris)') : k === 'pengguna' ? 'Nama lawan bicara' : k === 'akun' && item.jenis === 'kotakdm' ? 'Akun pemilik kotak masuk' : k === 'target' ? 'Yang diketuk (ikuti / tautan)' : k}</span>{String(v).includes('\n') || String(v).length > 40 ? <textarea id={'je-p-' + k} rows={4} value={String(v)} onChange={(e) => set('props.' + k, e.target.value)} /> : <input id={'je-p-' + k} value={String(v)} onChange={(e) => set('props.' + k, e.target.value)} />}</label>)}</>;
   }
   return (
     <aside className="je-inspektur" aria-label="Properti">

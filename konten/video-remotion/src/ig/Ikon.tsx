@@ -11,7 +11,7 @@ export const Gembok = ({ukuran = 30}: {readonly ukuran?: number}) => (
 );
 // Avatar bulat berwarna dengan inisial
 export const Avatar = ({nama, ukuran, warna}: {readonly nama: string; readonly ukuran: number; readonly warna: string}) => (
-  <div style={{width: ukuran, height: ukuran, borderRadius: '50%', flex: 'none', background: warna, color: 'white', display: 'grid', placeItems: 'center', fontSize: ukuran * 0.42, fontWeight: 700}}>{nama === 'jodohonline.id' ? '💘' : nama[0].toUpperCase()}</div>
+  <div style={{width: ukuran, height: ukuran, borderRadius: '50%', flex: 'none', background: warna, color: 'white', display: 'grid', placeItems: 'center', fontSize: ukuran * 0.42, fontWeight: 700}}>{nama === 'jodohonline.id' || nama === 'jodohonline.company' ? '💘' : nama[0].toUpperCase()}</div>
 );
 // Titik sentuhan jari
 export const Ketuk = ({x, y, kemajuan}: {readonly x: number; readonly y: number; readonly kemajuan: number}) =>
