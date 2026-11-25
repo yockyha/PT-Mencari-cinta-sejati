@@ -1,6 +1,6 @@
 import type {CSSProperties} from 'react';
 import {AbsoluteFill, Img, Interactive, staticFile} from 'remotion';
-import './font';
+import './fontStudio';
 import {JUDUL, TEKS} from './font';
 
 // Cover video (thumbnail) Reels/TikTok. Teks penting ada di area tengah 3:4 (y 240–1680) supaya aman di grid profil.

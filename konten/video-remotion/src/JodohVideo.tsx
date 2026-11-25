@@ -1,6 +1,6 @@
 import {Audio} from '@remotion/media';
 import {AbsoluteFill, Sequence, staticFile, Track} from 'remotion';
-import './font';
+import './fontStudio';
 import {Foto, Rekaman} from './elemen/Klip';
 import {Akun, Cap, Chips, Judul, Stiker, Sub} from './elemen/Teks';
 import {BalasKomentar} from './ig/BalasKomentar';

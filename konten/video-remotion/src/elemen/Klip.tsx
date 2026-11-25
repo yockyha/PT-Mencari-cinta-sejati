@@ -1,13 +1,15 @@
 import {Video} from '@remotion/media';
 import type {CSSProperties} from 'react';
-import {AbsoluteFill, Easing, Img, interpolate, Interactive, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {useAset} from '../data/aset';
+import {AbsoluteFill, Easing, Img, interpolate, Interactive, useCurrentFrame, useVideoConfig} from 'remotion';
 
 // Rekaman layar asli dari aplikasi (mp4)
 const RekamanInner = ({src, mulai, kecepatan, style}: {readonly src: string; readonly mulai: number; readonly kecepatan: number; readonly style?: CSSProperties}) => {
   const {fps} = useVideoConfig();
+  const aset = useAset();
   return (
     <AbsoluteFill style={style}>
-      <Video src={staticFile(src)} trimBefore={Math.round(mulai * fps)} playbackRate={kecepatan} muted objectFit="cover" style={{width: '100%', height: '100%'}} />
+      <Video src={aset(src)} trimBefore={Math.round(mulai * fps)} playbackRate={kecepatan} muted objectFit="cover" style={{width: '100%', height: '100%'}} />
     </AbsoluteFill>
   );
 };
@@ -25,10 +27,11 @@ export const Rekaman = Interactive.create({
 const FotoInner = ({src, zoom, style}: {readonly src: string; readonly zoom: number; readonly style?: CSSProperties}) => {
   const frame = useCurrentFrame();
   const {durationInFrames} = useVideoConfig();
+  const aset = useAset();
   return (
     <AbsoluteFill style={{overflow: 'hidden', ...style}}>
       <Img
-        src={staticFile(src)}
+        src={aset(src)}
         style={{
           width: '100%',
           height: '100%',

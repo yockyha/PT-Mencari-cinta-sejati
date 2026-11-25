@@ -1,0 +1,316 @@
+<title>Studio Konten jodohonline</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: meja produksi — tiap video satu "lembar kerja": layar HP (video/cover) di kiri, naskah & status di kanan. */
+:root{
+  --bg:#fbf3f4;--kertas:#ffffff;--tinta:#2a1420;--redup:#7a5d68;--garis:#efd9df;
+  --pink:#ff4f7b;--pinkLembut:#ffe3eb;--kuning:#ffd23f;--hijau:#1f9d55;--emas:#c8901a;
+  --display:"Lilita One","Arial Black",system-ui,sans-serif;--body:"Nunito",system-ui,sans-serif;--mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1b1015;--kertas:#26161d;--tinta:#fbeef2;--redup:#c3a3b0;--garis:#3c2630;--pink:#ff6a90;--pinkLembut:#3b1d29;--kuning:#ffd75a;--hijau:#3fc47c;--emas:#e2b04a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1b1015;--kertas:#26161d;--tinta:#fbeef2;--redup:#c3a3b0;--garis:#3c2630;--pink:#ff6a90;--pinkLembut:#3b1d29;--kuning:#ffd75a;--hijau:#3fc47c;--emas:#e2b04a;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--tinta);font:600 15px/1.5 var(--body)}
+.bungkus{max-width:1180px;margin:0 auto;padding-block:28px 72px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{margin:0;text-wrap:balance}
+header.atas{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-end;justify-content:space-between}
+h1{font:400 clamp(32px,5vw,50px)/1 var(--display);letter-spacing:.5px}
+h1 span{color:var(--pink)}
+.akun{display:flex;align-items:center;gap:10px;margin-top:8px;color:var(--redup)}
+.akun img{width:40px;height:40px;border-radius:50%;border:2px solid var(--tinta)}
+.btn{border:2px solid var(--tinta);background:var(--pink);color:#fff;border-radius:999px;font:800 14px var(--body);padding:8px 16px;cursor:pointer;box-shadow:0 3px 0 var(--tinta);display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.btn.putih{background:var(--kertas);color:var(--tinta)}
+.btn.kecil{font-size:12px;padding:4px 10px;box-shadow:0 2px 0 var(--tinta)}
+.btn:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--kuning);outline-offset:2px}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+/* alur status */
+.alur{display:grid;grid-template-columns:repeat(5,1fr);gap:0;margin:22px 0 8px;border:2px solid var(--tinta);border-radius:14px;overflow:hidden;background:var(--kertas)}
+.alur div{padding:10px 12px;border-left:2px solid var(--garis);min-width:0}
+.alur div:first-child{border-left:0}
+.alur b{display:block;font:400 26px var(--display);font-variant-numeric:tabular-nums}
+.alur small{font-size:12px;color:var(--redup);font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+@media (max-width:640px){.alur{grid-template-columns:repeat(3,1fr)}.alur div:nth-child(4){border-left:0}.alur div:nth-child(n+4){border-top:2px solid var(--garis)}}
+.pesan{font-size:13px;color:var(--redup);margin:6px 0 0;min-height:1.2em}
+h2{font:400 26px/1.1 var(--display);margin:40px 0 14px}
+/* lembar kerja video */
+.lembar{display:grid;grid-template-columns:280px 1fr;gap:26px;background:var(--kertas);border:2px solid var(--tinta);border-radius:20px;padding:20px;margin-bottom:22px;box-shadow:0 5px 0 var(--tinta)}
+@media (max-width:820px){.lembar{grid-template-columns:1fr}}
+.kiri{display:grid;gap:10px;justify-items:center;align-content:start}
+.kiri [data-edit]{width:260px;max-width:100%;justify-content:center}
+.tabMedia{display:flex;gap:6px}
+.tabMedia button{border:2px solid var(--tinta);background:var(--kertas);color:var(--tinta);border-radius:999px;font:800 12px var(--body);padding:4px 12px;cursor:pointer}
+.tabMedia button[aria-pressed="true"]{background:var(--tinta);color:var(--kertas)}
+.hp{width:260px;max-width:100%;aspect-ratio:9/16;border:6px solid var(--tinta);border-radius:30px;overflow:hidden;background:#111;position:relative}
+.hp video,.hp img{width:100%;height:100%;object-fit:cover;display:block}
+.hp .kosong{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#f3dce4;padding:20px;font-size:13px}
+.zona{position:absolute;left:0;right:0;pointer-events:none;border:2px dashed rgba(255,210,63,.9)}
+.unggah{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.kanan{min-width:0;display:grid;gap:14px;align-content:start}
+.kepala{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.no{font:700 13px var(--mono);background:var(--tinta);color:var(--kertas);border-radius:6px;padding:3px 8px}
+.judul{flex:1;min-width:200px;font:400 24px var(--display);border:0;border-bottom:2px dashed var(--garis);background:transparent;color:var(--tinta);padding:2px 0}
+.status{display:inline-flex;align-items:center;gap:8px}
+.pill{font:800 12px var(--body);border-radius:999px;padding:3px 10px;border:2px solid var(--tinta);white-space:nowrap}
+.s-ide{background:var(--kertas)}.s-storyboard{background:var(--pinkLembut)}.s-produksi{background:var(--kuning);color:#2a1420}.s-siap{background:var(--pink);color:#fff}.s-tayang{background:var(--hijau);color:#fff}
+.baris{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+label{display:block;font:800 12px var(--body);text-transform:uppercase;letter-spacing:.6px;color:var(--redup);margin-bottom:4px}
+input,textarea,select{width:100%;border:2px solid var(--garis);border-radius:10px;background:var(--bg);color:var(--tinta);font:600 14px/1.45 var(--body);padding:8px 10px}
+textarea{resize:vertical}
+.hook{font:800 17px var(--body)}
+.salinWrap{position:relative}
+.salinWrap .btn{position:absolute;right:8px;top:8px}
+.salinWrap textarea{padding-right:76px}
+.tautan{display:flex;gap:8px}
+.tautan input{flex:1;min-width:0}
+.cek{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:6px}
+.cek label{display:flex;gap:8px;align-items:center;text-transform:none;letter-spacing:0;font:700 14px var(--body);color:var(--tinta);margin:0;padding:6px 10px;border:2px solid var(--garis);border-radius:10px;cursor:pointer}
+.cek input{width:auto;accent-color:var(--pink)}
+.cek label.ok{border-color:var(--hijau)}
+.catatan{border-left:4px solid var(--kuning);padding-left:12px}
+.disimpan{font-size:12px;color:var(--redup)}
+.kosongBesar{border:2px dashed var(--garis);border-radius:20px;padding:30px;text-align:center;color:var(--redup)}
+/* profil & panduan */
+.dua,.tiga{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+.blok{background:var(--kertas);border:2px solid var(--garis);border-radius:18px;padding:18px;min-width:0;display:grid;gap:12px;align-content:start}
+.blok h3{font:400 20px var(--display)}
+.profilFoto{display:flex;gap:14px;align-items:center}
+.profilFoto img{width:96px;height:96px;border-radius:50%;border:3px solid var(--tinta)}
+ol.langkah{margin:0;padding-left:20px;display:grid;gap:8px}
+code{font:500 12.5px var(--mono);background:var(--pinkLembut);padding:1px 6px;border-radius:5px;overflow-wrap:anywhere}
+pre{font:500 12.5px/1.5 var(--mono);background:var(--bg);border:2px solid var(--garis);border-radius:10px;padding:10px 12px;overflow-x:auto;margin:0}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
+</style>
+
+<div class="bungkus">
+  <header class="atas">
+    <div>
+      <h1>Studio Konten <span>jodohonline</span></h1>
+      <div class="akun"><img src="media/profil.png" alt="Foto profil Direktur PT Mencari Cinta Sejati"><span>@jodohonline.id · PT Mencari Cinta Sejati</span></div>
+    </div>
+    <button class="btn" type="button" id="tambah">+ Video baru</button>
+  </header>
+
+  <div class="alur" id="alur" aria-label="Jumlah video per tahap"></div>
+  <p class="pesan" id="pesan" role="status">Memuat daftar video…</p>
+
+  <h2>Video</h2>
+  <div id="daftar"><div class="kosongBesar">Daftar video muncul di sini. Klik <b>+ Video baru</b> untuk menambah lembar kerja.</div></div>
+
+  <h2>Profil akun</h2>
+  <div class="dua">
+    <div class="blok">
+      <div class="profilFoto"><img src="media/profil.png" alt="Foto profil"><div><h3>Foto profil</h3><p class="disimpan">1080×1080 · Direktur + papan nama PT</p></div></div>
+      <div><label for="p_nama">Nama (IG & TikTok)</label><div class="salinWrap"><textarea id="p_nama" rows="1" data-p="nama"></textarea><button class="btn kecil putih" type="button" data-salin="p_nama">Salin</button></div></div>
+      <div><label for="p_link">Link di bio</label><div class="salinWrap"><textarea id="p_link" rows="1" data-p="link"></textarea><button class="btn kecil putih" type="button" data-salin="p_link">Salin</button></div></div>
+    </div>
+    <div class="blok">
+      <div><label for="p_bioIg">Bio Instagram <span id="n_bioIg"></span></label><div class="salinWrap"><textarea id="p_bioIg" rows="4" data-p="bioIg" maxlength="150"></textarea><button class="btn kecil putih" type="button" data-salin="p_bioIg">Salin</button></div></div>
+      <div><label for="p_bioTt">Bio TikTok <span id="n_bioTt"></span></label><div class="salinWrap"><textarea id="p_bioTt" rows="2" data-p="bioTt" maxlength="80"></textarea><button class="btn kecil putih" type="button" data-salin="p_bioTt">Salin</button></div></div>
+    </div>
+  </div>
+
+  <h2>Cara mengedit video</h2>
+  <div class="tiga">
+    <div class="blok">
+      <h3>Edit langsung di Studio (ala CapCut)</h3>
+      <ol class="langkah">
+        <li>Klik <b>✂️ Edit video</b> di lembar kerjanya.</li>
+        <li>Geser klip di timeline untuk memindah waktunya, tarik ujung kiri/kanan untuk memendekkan atau memanjangkan. Tekan <b>S</b> untuk memotong di playhead.</li>
+        <li>Klik teks atau elemen untuk mengubah isi, posisi, ukuran, warna, dan animasi masuk/keluar. Teks juga bisa diseret naik-turun langsung di layar pratinjau.</li>
+        <li>Tambah klip, foto, teks, elemen Instagram, dan efek suara dari panel kiri. Semua perubahan tersimpan otomatis.</li>
+        <li>Klik <b>Ekspor MP4</b>: video dirender di browser (pakai Chrome di laptop, ±3–5 menit), lalu otomatis mengganti video di lembar kerja dan bisa disimpan ke perangkat.</li>
+      </ol>
+    </div>
+    <div class="blok">
+      <h3>Edit sendiri di Remotion Studio</h3>
+      <ol class="langkah">
+        <li>Unduh repo GitHub <code>PT-Mencari-cinta-sejati</code>, buka folder <code>konten/video-remotion</code>.</li>
+        <li>Pasang Node.js, lalu jalankan:<pre>npm i
+npm run dev</pre></li>
+        <li>Remotion Studio terbuka di browser. Klik teks, subtitle, atau klip di timeline untuk mengubah isi dan waktunya.</li>
+        <li>Render hasilnya:<pre>npx remotion render JodohOnline out/video.mp4 --license-key=free-license
+npx remotion still Cover out/cover.png --license-key=free-license</pre></li>
+        <li>Unggah file baru lewat tombol <b>Ganti video</b> / <b>Ganti cover</b> di lembar kerjanya.</li>
+      </ol>
+    </div>
+    <div class="blok">
+      <h3>Minta Claude yang mengerjakan</h3>
+      <ol class="langkah">
+        <li>Tulis revisinya di kolom <b>Catatan revisi untuk Claude</b> pada video yang bersangkutan.</li>
+        <li>Di chat, bilang: <i>"kerjakan revisi di Studio Konten"</i>.</li>
+        <li>Claude membaca catatan itu, mengedit dan merender ulang, lalu memperbarui video, cover, dan statusnya di sini.</li>
+      </ol>
+      <p class="disimpan">Garis kuning putus-putus di layar HP menandai area aman Reels: teks penting sebaiknya di dalamnya agar tidak tertutup tombol & caption.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+const STATUS = [['ide', 'Ide'], ['storyboard', 'Storyboard'], ['produksi', 'Rekam & edit'], ['siap', 'Siap posting'], ['tayang', 'Tayang']];
+const CEK = [['cover', 'Cover dipasang'], ['kisi', 'Kisi profil diatur'], ['musik', 'Musik trending ditambah'], ['caption', 'Caption ditempel'], ['pin', 'Komentar di-pin'], ['link', 'Link di bio aktif']];
+const $ = id => document.getElementById(id);
+const pesan = t => { $('pesan').textContent = t; };
+let db = null, assets = null, downloads = null, bisaTulis = true, videos = [];
+
+// Editor video (dimuat saat pertama dibutuhkan)
+let editorSiap = null;
+function muatEditor() {
+  return (editorSiap ??= new Promise((ok, gagal) => { const sc = document.createElement('script'); sc.src = 'editor.js'; sc.onload = () => ok(window.JodohEditor); sc.onerror = () => { editorSiap = null; gagal(new Error('editor gagal dimuat')); }; document.head.append(sc); }));
+}
+async function bukaEditor(id, judul, tombol) {
+  if (!db) { pesan('Masuk ke claude.ai dulu untuk mengedit.'); return; }
+  tombol.disabled = true; const t = tombol.textContent; tombol.textContent = 'Membuka editor…';
+  try { const E = await muatEditor(); E.buka({ videoId: id, judul, db, assets, downloads, tutup: () => tombol.focus() }); }
+  catch (e) { pesan('Editor gagal dimuat. Muat ulang halaman lalu coba lagi.'); }
+  tombol.disabled = false; tombol.textContent = t;
+}
+
+function salin(teks, tombol) {
+  const ok = () => { tombol.textContent = 'Tersalin ✔'; setTimeout(() => (tombol.textContent = 'Salin'), 1500); };
+  try { navigator.clipboard.writeText(teks).then(ok).catch(() => pilih(tombol)); } catch (e) { pilih(tombol); }
+}
+function pilih(tombol) { const t = tombol.parentElement.querySelector('textarea,input'); if (t) { t.focus(); t.select(); tombol.textContent = 'Tekan Ctrl+C'; } }
+document.addEventListener('click', e => { const b = e.target.closest('[data-salin]'); if (b) { const el = $(b.dataset.salin); if (el) salin(el.value, b); } });
+
+function sumber(v, jenis) { const a = v[jenis + 'Asset'], f = v[jenis + 'File']; return a ? '/_blob/' + a : f || ''; }
+
+function alur() {
+  const el = $('alur'); el.textContent = '';
+  for (const [k, n] of STATUS) { const d = document.createElement('div'); const b = document.createElement('b'); b.textContent = videos.filter(v => (v.data.status || 'ide') === k).length; const s = document.createElement('small'); s.textContent = n; d.append(b, s); el.append(d); }
+}
+
+// Satu lembar kerja per video. Elemen dibuat sekali lalu diperbarui, kecuali kolom yang sedang diketik.
+const lembar = new Map();
+function buatLembar(id) {
+  const a = document.createElement('article'); a.className = 'lembar'; a.dataset.id = id;
+  a.innerHTML = `
+    <div class="kiri">
+      <div class="tabMedia" role="group" aria-label="Pilih media"><button type="button" data-tab="video" aria-pressed="true">Video</button><button type="button" data-tab="cover" aria-pressed="false">Cover</button><button type="button" data-tab="zona" aria-pressed="false">Area aman</button></div>
+      <div class="hp"><video controls playsinline preload="metadata"></video><img alt="Cover video" hidden><div class="kosong" hidden></div>
+        <div class="zona" hidden style="top:6%;bottom:20%;left:9%;right:14%"></div></div>
+      <button type="button" class="btn" data-edit>✂️ Edit video</button>
+      <div class="unggah"></div>
+    </div>
+    <div class="kanan">
+      <div class="kepala"><span class="no"></span><input class="judul" data-f="judul" aria-label="Judul video" id="${id}_judul">
+        <span class="status"><span class="pill"></span><select data-f="status" aria-label="Status" id="${id}_status">${STATUS.map(([k, n]) => `<option value="${k}">${n}</option>`).join('')}</select></span></div>
+      <div class="baris">
+        <div><label for="${id}_tayang">Jadwal tayang</label><input type="date" data-f="tayang" id="${id}_tayang"></div>
+        <div><label for="${id}_storyboard">Storyboard</label><div class="tautan"><input data-f="storyboard" id="${id}_storyboard" placeholder="https://claude.ai/artifact/…"><a class="btn kecil putih" target="_blank" rel="noopener" data-buka>Buka ↗</a></div></div>
+      </div>
+      <div><label for="${id}_hook">Hook / judul postingan</label><div class="salinWrap"><textarea class="hook" rows="2" data-f="hook" id="${id}_hook"></textarea><button class="btn kecil putih" type="button" data-salin="${id}_hook">Salin</button></div></div>
+      <div class="baris">
+        <div><label for="${id}_capIg">Caption Instagram</label><div class="salinWrap"><textarea rows="7" data-f="capIg" id="${id}_capIg"></textarea><button class="btn kecil putih" type="button" data-salin="${id}_capIg">Salin</button></div></div>
+        <div><label for="${id}_capTt">Caption TikTok</label><div class="salinWrap"><textarea rows="7" data-f="capTt" id="${id}_capTt"></textarea><button class="btn kecil putih" type="button" data-salin="${id}_capTt">Salin</button></div></div>
+      </div>
+      <div><label for="${id}_pin">Komentar untuk di-pin</label><div class="salinWrap"><textarea rows="2" data-f="pin" id="${id}_pin"></textarea><button class="btn kecil putih" type="button" data-salin="${id}_pin">Salin</button></div></div>
+      <div><label>Sebelum posting</label><div class="cek">${CEK.map(([k, n]) => `<label><input type="checkbox" data-cek="${k}" id="${id}_cek_${k}"> ${n}</label>`).join('')}</div></div>
+      <div class="catatan"><label for="${id}_catatan">Catatan revisi untuk Claude</label><textarea rows="3" data-f="catatan" id="${id}_catatan" placeholder="contoh: subtitle adegan 5 terlalu ke pinggir, ganti hook jadi…"></textarea></div>
+      <div class="disimpan" aria-live="polite"></div>
+    </div>`;
+  a.querySelector('[data-edit]').addEventListener('click', e => bukaEditor(id, (a._v && a._v.judul) || 'Video', e.currentTarget));
+  // tab media
+  a.querySelectorAll('[data-tab]').forEach(b => b.addEventListener('click', () => {
+    const t = b.dataset.tab;
+    if (t === 'zona') { const on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on); a.querySelector('.zona').hidden = !on; return; }
+    a.querySelectorAll('[data-tab="video"],[data-tab="cover"]').forEach(x => x.setAttribute('aria-pressed', x === b));
+    a.dataset.media = t; isiMedia(a, a._v);
+  }));
+  // simpan kolom
+  const tulis = async (patch) => {
+    if (!db) return; const info = a.querySelector('.disimpan'); info.textContent = 'Menyimpan…';
+    try { await db.doc('video/' + id).update({ ...patch, diubah: Date.now() }); info.textContent = 'Tersimpan ✔'; }
+    catch (e) { info.textContent = e && e.code === 'invalid_argument' ? 'Kamu hanya bisa melihat, tidak bisa mengubah.' : 'Gagal menyimpan. Coba lagi.'; }
+  };
+  a.querySelectorAll('[data-f]').forEach(el => el.addEventListener('change', () => tulis({ [el.dataset.f]: el.value })));
+  a.querySelectorAll('[data-cek]').forEach(el => el.addEventListener('change', () => tulis({ cek: { [el.dataset.cek]: el.checked } })));
+  lembar.set(id, a); return a;
+}
+
+function isiMedia(a, v) {
+  if (!v) return;
+  const vid = a.querySelector('video'), img = a.querySelector('img'), kosong = a.querySelector('.kosong');
+  const tab = a.dataset.media || 'video', src = sumber(v, tab);
+  vid.hidden = img.hidden = true; kosong.hidden = !!src;
+  kosong.textContent = tab === 'video' ? 'Belum ada video. Unggah lewat tombol di bawah.' : 'Belum ada cover. Unggah lewat tombol di bawah.';
+  if (!src) return;
+  if (tab === 'video') { if (vid.getAttribute('src') !== src) vid.setAttribute('src', src); vid.hidden = false; }
+  else { if (img.getAttribute('src') !== src) img.setAttribute('src', src); img.hidden = false; vid.pause(); }
+}
+
+function perbarui(id, v) {
+  const a = lembar.get(id) || buatLembar(id); a._v = v;
+  a.querySelector('.no').textContent = '#' + String(v.no || '?').padStart(2, '0');
+  const st = v.status || 'ide', pill = a.querySelector('.pill'); pill.className = 'pill s-' + st; pill.textContent = (STATUS.find(s => s[0] === st) || STATUS[0])[1];
+  a.querySelectorAll('[data-f]').forEach(el => { if (document.activeElement !== el) el.value = v[el.dataset.f] || (el.dataset.f === 'status' ? 'ide' : ''); el.disabled = !bisaTulis; });
+  a.querySelectorAll('[data-cek]').forEach(el => { el.checked = !!(v.cek || {})[el.dataset.cek]; el.disabled = !bisaTulis; el.closest('label').classList.toggle('ok', el.checked); });
+  pill.textContent += v.mintaRender && (!v.dirender || v.dirender < v.mintaRender) ? ' · menunggu render Claude' : '';
+  const sb = v.storyboard || '', buka = a.querySelector('[data-buka]');
+  if (/^https:\/\//.test(sb)) { buka.href = sb; buka.hidden = false; } else buka.hidden = true;
+  isiMedia(a, v);
+  // tombol unggah (hanya untuk yang boleh mengedit)
+  const u = a.querySelector('.unggah');
+  if (assets && !u.childElementCount) for (const [jenis, n, tipe] of [['video', 'Ganti video', 'video/mp4,video/webm'], ['cover', 'Ganti cover', 'image/png,image/jpeg,image/webp']]) {
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'btn kecil putih'; b.textContent = n;
+    const f = document.createElement('input'); f.type = 'file'; f.accept = tipe; f.hidden = true; f.id = id + '_up_' + jenis;
+    b.addEventListener('click', () => f.click());
+    f.addEventListener('change', async () => {
+      const file = f.files && f.files[0]; if (!file) return; b.disabled = true; b.textContent = 'Mengunggah…';
+      try { const r = await assets.upload(file); await db.doc('video/' + id).update({ [jenis + 'Asset']: r.id, diubah: Date.now() }); b.textContent = n + ' ✔'; }
+      catch (e) { b.textContent = e && e.code === 'too_large' ? 'Maks. 20 MB' : 'Gagal, coba lagi'; }
+      b.disabled = false; f.value = '';
+    });
+    u.append(b, f);
+  }
+  return a;
+}
+
+function render() {
+  alur();
+  const wadah = $('daftar');
+  if (!videos.length) return;
+  const urut = videos.slice().sort((x, y) => (x.data.no || 0) - (y.data.no || 0));
+  const kosong = wadah.querySelector('.kosongBesar'); if (kosong) kosong.remove();
+  urut.forEach(d => wadah.append(perbarui(d.id, d.data)));
+  for (const [id, el] of lembar) if (!videos.some(d => d.id === id)) { el.remove(); lembar.delete(id); }
+}
+
+// profil akun
+function isiProfil(p) {
+  document.querySelectorAll('[data-p]').forEach(el => { if (document.activeElement !== el) el.value = p[el.dataset.p] || ''; el.disabled = !bisaTulis; });
+  hitung();
+}
+function hitung() { $('n_bioIg').textContent = `(${[...$('p_bioIg').value].length}/150)`; $('n_bioTt').textContent = `(${[...$('p_bioTt').value].length}/80)`; }
+document.querySelectorAll('[data-p]').forEach(el => {
+  el.addEventListener('input', hitung);
+  el.addEventListener('change', async () => { if (!db) return; try { await db.doc('merek/profil').set({ ...profilNow(), diubah: Date.now() }); pesan('Profil tersimpan ✔'); } catch (e) { pesan('Profil gagal disimpan.'); } });
+});
+const profilNow = () => Object.fromEntries([...document.querySelectorAll('[data-p]')].map(el => [el.dataset.p, el.value]));
+
+$('tambah').addEventListener('click', async () => {
+  if (!db) { pesan('Penyimpanan belum siap. Muat ulang halaman.'); return; }
+  const no = videos.reduce((m, d) => Math.max(m, d.data.no || 0), 0) + 1;
+  $('tambah').disabled = true;
+  try { await db.doc('video/v' + no).set({ no, judul: 'Video ' + no, status: 'ide', hook: '', capIg: '', capTt: '', pin: '', catatan: '', storyboard: '', tayang: '', cek: {}, diubah: Date.now() }); pesan(`Lembar kerja video #${no} dibuat.`); }
+  catch (e) { pesan(e && e.code === 'quota_exceeded' ? 'Penyimpanan penuh.' : 'Gagal membuat video baru.'); }
+  $('tambah').disabled = false;
+});
+
+(async () => {
+  try { db = await window.claude?.use('db'); } catch (e) { db = null; }
+  if (!db) { pesan('Masuk ke claude.ai untuk melihat dan mengubah data studio.'); $('tambah').disabled = true; return; }
+  try { const user = await window.claude.use('user'); const w = user ? await user.can('data.write') : null; if (w === false) { bisaTulis = false; $('tambah').hidden = true; } } catch (e) {}
+  try { assets = await window.claude.use('assets'); } catch (e) { assets = null; }
+  try { downloads = await window.claude.use('downloads'); } catch (e) { downloads = null; }
+  let selesai = false; const timer = setTimeout(() => { if (!selesai) pesan('Data belum bisa dijangkau. Periksa koneksi.'); }, 10000);
+  db.collection('video').onSnapshot(s => {
+    videos = s.docs.map(d => ({ id: d.id, data: d.data() || {} }));
+    if (!s.metadata.fromCache) { selesai = true; clearTimeout(timer); pesan(videos.length ? `${videos.length} video · perubahan tersimpan otomatis` : 'Belum ada video. Klik + Video baru.'); }
+    render();
+  }, e => { clearTimeout(timer); pesan('Daftar video tidak bisa dimuat.'); });
+  db.doc('merek/profil').onSnapshot(s => isiProfil(s.exists ? s.data() : {}), () => {});
+})();
+</script>

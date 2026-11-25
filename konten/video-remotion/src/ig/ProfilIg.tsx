@@ -1,6 +1,7 @@
 import type {CSSProperties} from 'react';
-import {AbsoluteFill, Easing, Img, interpolate, Interactive, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Easing, Img, interpolate, Interactive, useCurrentFrame, useVideoConfig} from 'remotion';
 import {IG} from '../font';
+import {useAset} from '../data/aset';
 import {Avatar, Ketuk, Sensor} from './Ikon';
 
 // Halaman profil gaya Instagram (tema terang). Tombol Ikuti diketuk pada detik `ketukDetik`.
@@ -8,6 +9,7 @@ const ProfilIgInner = ({akun, nama, bio, tautan, postingan, pengikut, mengikuti,
   readonly akun: string; readonly nama: string; readonly bio: string; readonly tautan: string;
   readonly postingan: string; readonly pengikut: number; readonly mengikuti: string; readonly ketukDetik: number; readonly sensor: boolean; readonly style?: CSSProperties;
 }) => {
+  const aset = useAset();
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const sudah = frame >= ketukDetik * fps;
@@ -45,7 +47,7 @@ const ProfilIgInner = ({akun, nama, bio, tautan, postingan, pengikut, mengikuti,
         <div style={{flex: 1, textAlign: 'center', borderRadius: 18, padding: '22px 0', fontSize: 38, fontWeight: 700, background: '#efefef'}}>Kirim pesan</div>
       </div>
       <div style={{display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 4, marginTop: 20}}>
-        {kisi.map(k => <Img key={k} src={staticFile(k)} style={{width: '100%', aspectRatio: '3/4', objectFit: 'cover'}} />)}
+        {kisi.map(k => <Img key={k} src={aset(k)} style={{width: '100%', aspectRatio: '3/4', objectFit: 'cover'}} />)}
       </div>
       <Ketuk x={290} y={735} kemajuan={(frame - ketukDetik * fps + 4) / (0.4 * fps)} />
     </AbsoluteFill>

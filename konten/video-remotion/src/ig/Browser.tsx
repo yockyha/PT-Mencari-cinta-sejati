@@ -1,10 +1,12 @@
 import type {CSSProperties} from 'react';
-import {AbsoluteFill, Img, interpolate, Interactive, staticFile, useCurrentFrame, useVideoConfig} from 'remotion';
+import {AbsoluteFill, Img, interpolate, Interactive, useCurrentFrame, useVideoConfig} from 'remotion';
 import {IG} from '../font';
+import {useAset} from '../data/aset';
 import {Gembok} from './Ikon';
 
 // Browser HP: alamat diketik, halaman dimuat (screenshot asli beranda)
 const BrowserInner = ({alamat, halaman, style}: {readonly alamat: string; readonly halaman: string; readonly style?: CSSProperties}) => {
+  const aset = useAset();
   const frame = useCurrentFrame();
   const {fps} = useVideoConfig();
   const t = frame / fps;
@@ -21,7 +23,7 @@ const BrowserInner = ({alamat, halaman, style}: {readonly alamat: string; readon
         <div style={{height: '100%', background: '#1a73e8', width: `${interpolate(muat, [0, 0.5], [0, 100], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})}%`, opacity: muat > 0.55 ? 0 : 1}} />
       </div>
       <div style={{position: 'absolute', top: 222, left: 0, right: 0, bottom: 0, overflow: 'hidden', opacity: interpolate(muat, [0.25, 0.45], [0, 1], {extrapolateLeft: 'clamp', extrapolateRight: 'clamp'})}}>
-        <Img src={staticFile(halaman)} style={{width: '100%'}} />
+        <Img src={aset(halaman)} style={{width: '100%'}} />
       </div>
     </AbsoluteFill>
   );
