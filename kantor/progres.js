@@ -3,9 +3,9 @@
 //  arah, acara terjadwal, peringkat, toko (EXP & Kartu Eksekutif),
 //  dan notifikasi dari Direktur.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, OUTFIT, AKSESORIS, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611251546';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611251546';
-import * as Bayar from './bayar.js?v=202611251546';
+import { CFG, TUJUAN, LOKASI, OUTFIT, AKSESORIS, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611251651';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611251651';
+import * as Bayar from './bayar.js?v=202611251651';
 
 // ---------------------------------------------------------------- DATA TUGAS
 const RUANG_TUJUAN = { jodoh: 'kafe', teman: 'meja', curhat: 'taman' };
@@ -20,6 +20,7 @@ export const TUR = [
 export const HARIAN = [
   { id: 'kopi', nama: 'Bikin kopi di Mesin Kopi Jodoh', exp: 10, ke: 'kafe' },
   { id: 'meja', nama: 'Duduk di salah satu Meja Nongkrong', exp: 10, ke: 'meja' },
+  { id: 'mejaSeru', nama: 'Ikut kegiatan Meja Nongkrong (ngobrol, papan, atau Pilih Mana)', exp: 10, ke: 'meja' },
   { id: 'chat', nama: 'Kirim 3 pesan di chat', exp: 10, target: 3 },
   { id: 'ajak', nama: 'Ajak 1 orang ngobrol pribadi', exp: 15 },
   { id: 'peluk', nama: 'Peluk 1 curhat di papan curhat', exp: 10, ke: 'taman' },

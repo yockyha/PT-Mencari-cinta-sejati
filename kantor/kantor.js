@@ -3,15 +3,16 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, OUTFIT, AKSESORIS, LOKASI, lokasiDi, LS, bersih, igBersih, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611251546';
-import { bukaDB } from '../js/db.js?v=202611251546';
-import { buatLayanan } from '../js/layanan.js?v=202611251546';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611251546';
-import * as Sosial from './sosial.js?v=202611251546';
-import * as Direktur from './direktur.js?v=202611251546';
-import * as Prog from './progres.js?v=202611251546';
-import * as Game from './game.js?v=202611251546';
-import * as Bayar from './bayar.js?v=202611251546';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, OUTFIT, AKSESORIS, LOKASI, lokasiDi, LS, bersih, igBersih, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611251651';
+import { bukaDB } from '../js/db.js?v=202611251651';
+import { buatLayanan } from '../js/layanan.js?v=202611251651';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611251651';
+import * as Sosial from './sosial.js?v=202611251651';
+import * as Direktur from './direktur.js?v=202611251651';
+import * as Prog from './progres.js?v=202611251651';
+import * as Game from './game.js?v=202611251651';
+import * as Bayar from './bayar.js?v=202611251651';
+import * as Meja from './meja.js?v=202611251651';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
@@ -1369,7 +1370,8 @@ function duduk(k) {
   if (m) {
     Prog.lapor('meja');
     const teman = [...lain.values(), ...(L?.mode === 'lokal' ? bot : [])].filter(o => o.mj === m.topik).length;
-    toast(`Kamu nongkrong di meja ${m.topik}. ${teman ? teman + ' orang lain juga di sini, sapa yuk!' : 'Tunggu yang lain datang, atau ajak lewat chat.'}`, 3600);
+    toast(`Kamu nongkrong di meja ${m.topik}. ${teman ? teman + ' orang lain juga di sini, sapa yuk!' : 'Mulai obrolan atau ikut kegiatan mejanya!'}`, 3600);
+    Meja.bukaMeja(TOPIK.indexOf(m.topik), m.topik);
   }
 }
 let aksiSekarang = null;
@@ -1377,6 +1379,7 @@ function perbaruiAksi() {
   let pilih = null, bd = 1e9;
   for (const t of titikAksi) { const d = Math.hypot(t.x - saya.x, t.z - saya.z); if (d < t.r && d < bd) { bd = d; pilih = t; } }
   if (!pilih && !saya.duduk) { const k = kursiDekat(); if (k) pilih = { label: 'Duduk', aksi: () => duduk(k) }; }
+  if (!pilih && saya.duduk && saya.meja) { const mt = saya.meja; pilih = { label: 'Buka meja ' + mt, aksi: () => Meja.bukaMeja(TOPIK.indexOf(mt), mt) }; }
   if (!pilih && saya.duduk) pilih = { label: 'Berdiri', aksi: () => { berdiri(); posWaktu = 0; } };
   if (pilih?.label !== aksiSekarang?.label) {
     const b = $('aksi');
@@ -1523,7 +1526,7 @@ async function mulai() {
   K.segarkanOrang = () => { pasangKarakterSaya(); sinkronLain(K.onlineTerakhir); };
   window.__kantor = { L, saya, lain, bot, pindah, K }; // untuk debugging
   const urutKunci = o => Object.entries(o || {}).sort((a, b) => (a[0] < b[0] ? -1 : 1)).map(([k, v]) => ({ ...v, k }));
-  db.on('online', o => { K.onlineTerakhir = o; sinkronLain(o); });
+  db.on('online', o => { K.onlineTerakhir = o; sinkronLain(o); Meja.orangBerubah(); });
   db.on('chat', terimaChat, { limit: 30 });
   db.on('papan', o => { K.papanList = urutKunci(o); isiPapan = K.papanList; papanKV.ulang(); }, { limit: 10 });
   db.on('curhat', o => { K.curhatList = urutKunci(o); curhatKV.ulang(); Sosial.curhatBerubah(); }, { limit: 30 });

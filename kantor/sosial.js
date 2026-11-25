@@ -2,11 +2,11 @@
 //  Interaksi antar-tamu: profil, ajak ngobrol (pribadi), suka & match,
 //  papan curhat, daftar orang di kantor, lapor & sembunyikan.
 // =====================================================================
-import { TUJUAN, GENDER, LS, bersih, esc, fmt, kasar } from '../js/common.js?v=202611251546';
-import { TS } from '../js/db.js?v=202611251546';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611251546';
-import * as Prog from './progres.js?v=202611251546';
-import * as Suara from './suara.js?v=202611251546';
+import { TUJUAN, GENDER, LS, bersih, esc, fmt, kasar } from '../js/common.js?v=202611251651';
+import { TS } from '../js/db.js?v=202611251651';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611251651';
+import * as Prog from './progres.js?v=202611251651';
+import * as Suara from './suara.js?v=202611251651';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const siap = () => { if (!K.resmi()) { toast('👀 Kamu masih pengunjung. Daftar dulu untuk berinteraksi.'); K.bukaDaftar(); return false; } if (K.terkunci) { toast('Kamu belum bisa berinteraksi sekarang.'); return false; } return true; };
@@ -142,7 +142,7 @@ export function bukaProfil(o) {
         K.segarkanOrang(); gambarUndangan(); tutupKartu();
         toast(`${nama} disembunyikan. Chat & ajakannya tidak akan muncul lagi.`, 3200);
       };
-      const pm = isi.querySelector('#pM'); if (pm) pm.onclick = () => import('./direktur.js?v=202611251546').then(D => D.bukaModerasiOrang(o));
+      const pm = isi.querySelector('#pM'); if (pm) pm.onclick = () => import('./direktur.js?v=202611251651').then(D => D.bukaModerasiOrang(o));
     },
   });
 }
