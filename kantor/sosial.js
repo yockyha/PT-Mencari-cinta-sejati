@@ -2,11 +2,11 @@
 //  Interaksi antar-tamu: profil, ajak ngobrol (pribadi), suka & match,
 //  papan curhat, daftar orang di kantor, lapor & sembunyikan.
 // =====================================================================
-import { TUJUAN, GENDER, LS, bersih, esc, fmt, kasar } from '../js/common.js?v=202611251502';
-import { TS } from '../js/db.js?v=202611251502';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611251502';
-import * as Prog from './progres.js?v=202611251502';
-import * as Suara from './suara.js?v=202611251502';
+import { TUJUAN, GENDER, LS, bersih, esc, fmt, kasar } from '../js/common.js?v=202611251546';
+import { TS } from '../js/db.js?v=202611251546';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611251546';
+import * as Prog from './progres.js?v=202611251546';
+import * as Suara from './suara.js?v=202611251546';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const siap = () => { if (!K.resmi()) { toast('👀 Kamu masih pengunjung. Daftar dulu untuk berinteraksi.'); K.bukaDaftar(); return false; } if (K.terkunci) { toast('Kamu belum bisa berinteraksi sekarang.'); return false; } return true; };
@@ -102,7 +102,7 @@ export function bukaProfil(o) {
       <button class="btn" type="button" id="pA">${adaRuang ? '💬 Buka obrolan' : '💌 Ajak ngobrol'}</button>
       ${bisaSuka ? `<button class="btn putih" type="button" id="pL">${sukaKu.has(uid) ? '💔 Batal suka' : '❤ Suka'}</button>` : ''}
       <button class="btn putih" type="button" id="pD">🚶 Datangi</button>
-      ${K.match && K.match[uid] && !o.npc ? '<button class="btn" type="button" id="pT">📞 Telepon</button>' : ''}
+      ${(adaRuang || (K.match && K.match[uid])) && !o.npc ? '<button class="btn" type="button" id="pT">📞 Telepon</button>' : ''}
     </div>
     <p class="kecil tautan"><button type="button" id="pR">🚩 Laporkan</button> · <button type="button" id="pH">🙈 Sembunyikan</button>${K.peran[L.uid] && !peran ? ' · <button type="button" id="pM">🛡 Moderasi</button>' : ''}</p>
     ${bisaSuka ? '<p class="kecil">❤ Suka itu rahasia. Kalau kalian saling suka, dua-duanya dapat kabar <b>match</b> dan obrolan langsung terbuka.</p>' : ''}`, {
@@ -142,7 +142,7 @@ export function bukaProfil(o) {
         K.segarkanOrang(); gambarUndangan(); tutupKartu();
         toast(`${nama} disembunyikan. Chat & ajakannya tidak akan muncul lagi.`, 3200);
       };
-      const pm = isi.querySelector('#pM'); if (pm) pm.onclick = () => import('./direktur.js?v=202611251502').then(D => D.bukaModerasiOrang(o));
+      const pm = isi.querySelector('#pM'); if (pm) pm.onclick = () => import('./direktur.js?v=202611251546').then(D => D.bukaModerasiOrang(o));
     },
   });
 }
@@ -219,7 +219,8 @@ export function bukaObrolan(r) {
 function bukaRuang(r) {
   const L = K.L, info = rooms[r] || {};
   const u = L.lawan(r), nama = bersih(info.n || orangDariUid(u)?.nama || 'Teman', 20);
-  const bisaTelp = !!(K.match && K.match[u]) && !u.startsWith('bot:');
+  // telepon: pasangan yang saling match ATAU obrolan pribadi yang sudah diterima kedua pihak (ruang ini)
+  const bisaTelp = !u.startsWith('bot:');
   bukaKartu(`<div class="kepalaRuang"><button type="button" class="mini putih" id="rB">← Obrolan</button><h2>${esc(nama)}</h2>${bisaTelp ? '<button type="button" class="mini" id="rC" aria-label="Telepon">📞</button>' : ''}</div>
     <div class="dmIsi" id="rI" aria-live="polite"><p class="kecil">Memuat…</p></div>
     <form id="rF" class="dmForm" autocomplete="off"><input id="rT" maxlength="300" placeholder="Tulis pesan…" enterkeyhint="send" aria-label="Pesan pribadi">${Suara.bisaRekam() ? '<button class="btn putih" type="button" id="rV" aria-label="Rekam pesan suara">🎤</button>' : ''}<button class="btn" type="submit">Kirim</button></form>

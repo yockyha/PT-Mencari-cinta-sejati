@@ -48,12 +48,13 @@ r["dm"] = {"$room": {".read": f"{A} && {IKUT}",
 r["suaraDm"] = {"$room": {".read": f"{A} && {IKUT}", "$id": {
   ".write": f"{A} && {IKUT} && ((!data.exists() && newData.exists() && root.child('dm/' + $room + '/ok').val() === true && {BEBAS}) || (data.exists() && !newData.exists() && data.child('t').val() < now - 604800000))",
   ".validate": "newData.child('uid').val() === auth.uid && newData.child('d').isString() && newData.child('d').val().length <= 160000 && newData.child('tp').isString() && newData.child('tp').val().matches(/^audio\\/(webm|mp4|ogg|mpeg|aac|x-m4a)$/) && newData.child('t').val() === now"}}}
-# TELEPON (WebRTC): hanya pasangan yang saling match. sinyal = offer/answer/ICE, telepon/<penerima> = panggilan masuk
+# TELEPON (WebRTC): pasangan yang saling match atau obrolan pribadi yang sudah diterima kedua pihak. sinyal = offer/answer/ICE, telepon/<penerima> = panggilan masuk
 MATCH_LAIN = f"root.child('match/' + auth.uid + '/' + {LAIN}).exists()"
-r["sinyal"] = {"$room": {".read": f"{A} && {IKUT}", ".write": f"{A} && {IKUT} && (!newData.exists() || ({MATCH_LAIN} && {BEBAS}))"}}
+DM_OK = "root.child('dm/' + $room + '/ok').val() === true"
+r["sinyal"] = {"$room": {".read": f"{A} && {IKUT}", ".write": f"{A} && {IKUT} && (!newData.exists() || (({MATCH_LAIN} || {DM_OK}) && {BEBAS}))"}}
 r["telepon"] = {"$ke": {
   ".read": f"{A} && (auth.uid === $ke || data.child('dari').val() === auth.uid)",
-  ".write": f"{A} && (auth.uid === $ke || (newData.exists() && newData.child('dari').val() === auth.uid && root.child('match/' + auth.uid + '/' + $ke).exists() && {BEBAS} && (!data.exists() || data.child('dari').val() === auth.uid || data.child('t').val() < now - 60000)) || (!newData.exists() && data.child('dari').val() === auth.uid))",
+  ".write": f"{A} && (auth.uid === $ke || (newData.exists() && newData.child('dari').val() === auth.uid && (root.child('match/' + auth.uid + '/' + $ke).exists() || root.child('dm/' + auth.uid + '_' + $ke + '/ok').val() === true || root.child('dm/' + $ke + '_' + auth.uid + '/ok').val() === true) && {BEBAS} && (!data.exists() || data.child('dari').val() === auth.uid || data.child('t').val() < now - 60000)) || (!newData.exists() && data.child('dari').val() === auth.uid))",
   ".validate": "newData.child('dari').isString() && newData.child('r').isString() && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('st').val().matches(/^(dering|angkat|tolak)$/) && newData.child('t').isNumber()"}}
 r["dmku"] = {"$uid": {".read": f"{A} && auth.uid === $uid", "$room": {
   ".write": f"{A} && {IKUT} && ($room.beginsWith($uid + '_') || $room.endsWith('_' + $uid))",

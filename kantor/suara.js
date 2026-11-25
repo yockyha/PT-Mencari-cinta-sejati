@@ -1,14 +1,14 @@
 // =====================================================================
 //  Suara: pesan suara (voice note) di obrolan pribadi & telepon suara
-//  untuk pasangan yang saling match.
+//  untuk pasangan yang saling match atau obrolan pribadi yang sudah diterima.
 //  - Voice note: maks. 30 detik, audio disimpan terpisah di suaraDm/<ruang>/<id>
 //    dan baru diunduh saat diputar; dihapus otomatis setelah 7 hari.
 //  - Telepon: WebRTC langsung antar-perangkat (tidak lewat server, tidak direkam).
 //    Sinyal pembuka lewat telepon/<penerima> & sinyal/<ruang>. Server TURN dari /api/turn.
 // =====================================================================
-import { bersih, esc } from '../js/common.js?v=202611251502';
-import { TS } from '../js/db.js?v=202611251502';
-import { $, K, toast } from './ui.js?v=202611251502';
+import { bersih, esc } from '../js/common.js?v=202611251546';
+import { TS } from '../js/db.js?v=202611251546';
+import { $, K, toast } from './ui.js?v=202611251546';
 
 export const MAKS_DETIK = 30;
 const UMUR_SUARA = 7 * 24 * 3600e3;
