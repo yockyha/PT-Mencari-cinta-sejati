@@ -21,7 +21,7 @@ window.PT_CONFIG = {
   //  Hapus/ganti sebelum dipublikasikan.
   // ---------------------------------------------------------
   domainLogin: 'ptmcs.id',
-  direkturDemo: { username: 'direktur', password: 'cintasejati' },
+  direkturDemo: null, // dimatikan: situs sudah memakai Firebase (mode online)
 
   // Pendaftaran tamu
   pendaftaran: {
@@ -35,7 +35,15 @@ window.PT_CONFIG = {
   //  diisi karyawan NPC, dan tab lain di browser yang sama ikut terlihat.
   //  Cara mengisi: lihat README.md bagian "Mengaktifkan mode online".
   // ---------------------------------------------------------
-  firebase: null,
+  firebase: {
+    apiKey: "AIzaSyDRzE1RCfgW5jObialv6uKEBvxBaHxCQtI",
+    authDomain: "pt-mencari-cinta-sejati.firebaseapp.com",
+    databaseURL: "https://pt-mencari-cinta-sejati-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "pt-mencari-cinta-sejati",
+    storageBucket: "pt-mencari-cinta-sejati.firebasestorage.app",
+    messagingSenderId: "815630034062",
+    appId: "1:815630034062:web:5ec317491df13ee82755df",
+  },
   /* contoh:
   firebase: {
     apiKey: "AIza...",
