@@ -2,10 +2,11 @@
 //  Interaksi antar-tamu: profil, ajak ngobrol (pribadi), suka & match,
 //  papan curhat, daftar orang di kantor, lapor & sembunyikan.
 // =====================================================================
-import { TUJUAN, GENDER, LS, bersih, esc, fmt, kasar } from '../js/common.js?v=202611251250';
-import { TS } from '../js/db.js?v=202611251250';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611251250';
-import * as Prog from './progres.js?v=202611251250';
+import { TUJUAN, GENDER, LS, bersih, esc, fmt, kasar } from '../js/common.js?v=202611251335';
+import { TS } from '../js/db.js?v=202611251335';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611251335';
+import * as Prog from './progres.js?v=202611251335';
+import * as Suara from './suara.js?v=202611251335';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const siap = () => { if (!K.resmi()) { toast('👀 Kamu masih pengunjung. Daftar dulu untuk berinteraksi.'); K.bukaDaftar(); return false; } if (K.terkunci) { toast('Kamu belum bisa berinteraksi sekarang.'); return false; } return true; };
@@ -35,7 +36,9 @@ export function mulai() {
     const b = $('badge'); b.textContent = belum; b.hidden = !belum;
     if (layar === 'daftar') bukaObrolan();
   });
+  Suara.pantauPanggilanMasuk(L);
   db.on('match/' + L.uid, o => {
+    K.match = o || {};
     for (const [u, v] of Object.entries(o || {})) {
       if (sudahMatch.has(u) || !v) continue;
       sudahMatch.add(u); LS.set('matchLihat', [...sudahMatch]);
@@ -99,12 +102,14 @@ export function bukaProfil(o) {
       <button class="btn" type="button" id="pA">${adaRuang ? '💬 Buka obrolan' : '💌 Ajak ngobrol'}</button>
       ${bisaSuka ? `<button class="btn putih" type="button" id="pL">${sukaKu.has(uid) ? '💔 Batal suka' : '❤ Suka'}</button>` : ''}
       <button class="btn putih" type="button" id="pD">🚶 Datangi</button>
+      ${K.match && K.match[uid] && !o.npc ? '<button class="btn" type="button" id="pT">📞 Telepon</button>' : ''}
     </div>
     <p class="kecil tautan"><button type="button" id="pR">🚩 Laporkan</button> · <button type="button" id="pH">🙈 Sembunyikan</button>${K.peran[L.uid] && !peran ? ' · <button type="button" id="pM">🛡 Moderasi</button>' : ''}</p>
     ${bisaSuka ? '<p class="kecil">❤ Suka itu rahasia. Kalau kalian saling suka, dua-duanya dapat kabar <b>match</b> dan obrolan langsung terbuka.</p>' : ''}`, {
     pasang(isi) {
       isi.querySelector('#pS').onclick = () => { if (!siap()) return; tutupKartu(); $('chatI').value = `Halo ${nama}! `; $('chatI').focus(); };
       isi.querySelector('#pD').onclick = () => { tutupKartu(); K.pindah(o.x + 1.2, o.z + 1.2); };
+      const pt = isi.querySelector('#pT'); if (pt) pt.onclick = () => { if (!siap()) return; tutupKartu(); Suara.telepon(L, uid, nama, K.prof.n); };
       isi.querySelector('#pA').onclick = () => {
         if (!siap()) return;
         if (adaRuang) { bukaObrolan(r); return; }
@@ -137,7 +142,7 @@ export function bukaProfil(o) {
         K.segarkanOrang(); gambarUndangan(); tutupKartu();
         toast(`${nama} disembunyikan. Chat & ajakannya tidak akan muncul lagi.`, 3200);
       };
-      const pm = isi.querySelector('#pM'); if (pm) pm.onclick = () => import('./direktur.js?v=202611251250').then(D => D.bukaModerasiOrang(o));
+      const pm = isi.querySelector('#pM'); if (pm) pm.onclick = () => import('./direktur.js?v=202611251335').then(D => D.bukaModerasiOrang(o));
     },
   });
 }
@@ -214,22 +219,51 @@ export function bukaObrolan(r) {
 function bukaRuang(r) {
   const L = K.L, info = rooms[r] || {};
   const u = L.lawan(r), nama = bersih(info.n || orangDariUid(u)?.nama || 'Teman', 20);
-  bukaKartu(`<div class="kepalaRuang"><button type="button" class="mini putih" id="rB">← Obrolan</button><h2>${esc(nama)}</h2></div>
+  const bisaTelp = !!(K.match && K.match[u]) && !u.startsWith('bot:');
+  bukaKartu(`<div class="kepalaRuang"><button type="button" class="mini putih" id="rB">← Obrolan</button><h2>${esc(nama)}</h2>${bisaTelp ? '<button type="button" class="mini" id="rC" aria-label="Telepon">📞</button>' : ''}</div>
     <div class="dmIsi" id="rI" aria-live="polite"><p class="kecil">Memuat…</p></div>
-    <form id="rF" class="dmForm" autocomplete="off"><input id="rT" maxlength="300" placeholder="Tulis pesan…" enterkeyhint="send" aria-label="Pesan pribadi"><button class="btn" type="submit">Kirim</button></form>
+    <form id="rF" class="dmForm" autocomplete="off"><input id="rT" maxlength="300" placeholder="Tulis pesan…" enterkeyhint="send" aria-label="Pesan pribadi">${Suara.bisaRekam() ? '<button class="btn putih" type="button" id="rV" aria-label="Rekam pesan suara">🎤</button>' : ''}<button class="btn" type="submit">Kirim</button></form>
+    <div class="dmRekam" id="rR" hidden><span class="dmMerah"></span><b id="rRd">0:00</b><small>/ 0:${Suara.MAKS_DETIK}</small><button type="button" class="mini putih" id="rRb">Batal</button><button type="button" class="mini" id="rRk">Kirim 🎤</button></div>
     <p class="kecil tautan">Obrolan ini hanya bisa dibaca kalian berdua. <button type="button" id="rX">Tutup obrolan</button></p>`, {
     tutup() { if (lepasRuang) lepasRuang(); lepasRuang = null; ruangTerbuka = null; layar = ''; },
     pasang(isi) {
       layar = 'ruang'; ruangTerbuka = r;
       L.bacaDm(r);
       const box = isi.querySelector('#rI');
+      let dibersihkan = false;
       lepasRuang = L.db.on(`dm/${r}/pesan`, o => {
         const msgs = Object.entries(o || {}).sort((a, b) => (a[0] < b[0] ? -1 : 1)).map(([, v]) => v);
-        box.innerHTML = msgs.length ? msgs.map(m => `<div class="dm ${m.uid === L.uid ? 'saya' : ''}"><span>${esc(m.m)}</span><small>${esc(jam(m.t))}</small></div>`).join('') : '<p class="kecil">Belum ada pesan. Sapa duluan!</p>';
+        box.innerHTML = msgs.length ? msgs.map(m => `<div class="dm ${m.uid === L.uid ? 'saya' : ''}">${m.sv && m.sv.id ? Suara.htmlSuara(m) : `<span>${esc(m.m)}</span>`}<small>${esc(jam(m.t))}</small></div>`).join('') : '<p class="kecil">Belum ada pesan. Sapa duluan!</p>';
+        Suara.pasangPemutar(L, r, box);
+        if (!dibersihkan) { dibersihkan = true; Suara.bersihkanSuaraLama(L, r, msgs); }
         box.scrollTop = box.scrollHeight;
         L.bacaDm(r);
       }, { limit: 60 });
       isi.querySelector('#rB').onclick = () => bukaObrolan();
+      const rc = isi.querySelector('#rC'); if (rc) rc.onclick = () => { if (!siap()) return; Suara.telepon(L, u, nama, K.prof.n); };
+      // ---- rekam pesan suara
+      const rv = isi.querySelector('#rV'), form = isi.querySelector('#rF'), bar = isi.querySelector('#rR');
+      let rek = null;
+      const kembali = () => { rek = null; bar.hidden = true; form.hidden = false; };
+      if (rv) rv.onclick = async () => {
+        if (!siap() || rek) return;
+        try {
+          rek = await Suara.mulaiRekam(d => { isi.querySelector('#rRd').textContent = `0:${String(Math.floor(d)).padStart(2, '0')}`; if (d >= Suara.MAKS_DETIK) isi.querySelector('#rRk').click(); });
+          form.hidden = true; bar.hidden = false; isi.querySelector('#rRd').textContent = '0:00';
+        } catch (e) { rek = null; toast(e && e.name === 'NotAllowedError' ? 'Izin mikrofon ditolak. Izinkan mikrofon di pengaturan browser.' : 'Mikrofon tidak bisa dipakai di perangkat ini.', 3600); }
+      };
+      isi.querySelector('#rRb').onclick = () => { if (rek) rek.batal(); kembali(); };
+      isi.querySelector('#rRk').onclick = async () => {
+        if (!rek || rek === 'mengirim') return;
+        const r0 = rek; rek = 'mengirim';
+        try {
+          const hasil = await r0.selesai();
+          if (hasil.dur < 0.8) { toast('Rekaman terlalu pendek.'); kembali(); return; }
+          await Suara.kirimSuara(L, r, K.prof.n, hasil);
+          if (u.startsWith('bot:')) botBalas(r, u, 'balas');
+        } catch (e) { console.warn(e); toast('Pesan suara gagal terkirim.'); }
+        kembali();
+      };
       isi.querySelector('#rX').onclick = () => { L.tutupDm(r); tutupKartu(); toast('Obrolan ditutup dari daftarmu.'); };
       let terakhir = 0;
       isi.querySelector('#rF').onsubmit = e => {

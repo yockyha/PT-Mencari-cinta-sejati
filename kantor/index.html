@@ -235,8 +235,32 @@ button,input,select{font:inherit}
 .rekening b{font:700 18px var(--display)}
 .salinBaris{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
 .salinBaris code{font-size:15px!important;font-weight:800}
+
+/* pesan suara & telepon */
+.vn{display:flex;align-items:center;gap:8px;min-width:170px;border:0;background:transparent;color:inherit;font:800 13px var(--body);cursor:pointer;padding:2px 0}
+.vn b{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--pink);color:#fff;border:2px solid var(--ink);font-size:12px;flex:none}
+.dm.saya .vn b{background:#fff;color:var(--pink)}
+.vn i{flex:1;height:6px;border-radius:3px;background:rgba(42,20,32,.18);overflow:hidden;position:relative}
+.vn i u{position:absolute;inset:0 auto 0 0;width:0;background:var(--ink);text-decoration:none}
+.dm.saya .vn i{background:rgba(255,255,255,.4)}.dm.saya .vn i u{background:#fff}
+.dmRekam{display:flex;align-items:center;gap:8px;margin-top:8px;padding:8px 10px;border:3px solid var(--ink);border-radius:999px;background:var(--cream)}
+.dmRekam b{font:800 15px var(--body);font-variant-numeric:tabular-nums}.dmRekam small{flex:1;color:var(--muted)}
+.dmMerah{width:12px;height:12px;border-radius:50%;background:#e23b3b;animation:kedip 1s infinite}
+@keyframes kedip{50%{opacity:.25}}
+.kepalaRuang{display:flex;align-items:center;gap:10px}.kepalaRuang h2{flex:1;margin:0}
+#telepon{position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:16px;background:rgba(26,11,19,.82)}
+#telepon[hidden]{display:none}
+.tlpKotak{display:grid;justify-items:center;gap:10px;color:#fff;text-align:center;max-width:320px}
+.tlpFoto{width:110px;height:110px;border-radius:50%;background:var(--pink);border:4px solid #fff;display:grid;place-items:center;font:700 48px var(--display);box-shadow:0 0 0 10px rgba(255,79,123,.25)}
+.tlpNama{font:700 24px var(--display)}.tlpStatus{font:800 15px var(--body);color:#ffd9e3;font-variant-numeric:tabular-nums}
+.tlpTombol{display:flex;gap:26px;margin-top:18px}
+.tlpBulat{width:64px;height:64px;border-radius:50%;border:3px solid #fff;background:rgba(255,255,255,.15);color:#fff;font-size:26px;cursor:pointer}
+.tlpBulat[aria-pressed="true"]{background:#fff;color:var(--ink)}
+.tlpHijau{background:#1f9d55}.tlpMerah{background:#e23b3b}
+.tlpCatatan{color:#d9b8c4;margin-top:8px}
+@media (prefers-reduced-motion:reduce){.dmMerah{animation:none}}
 </style>
-<script src="../config.js?v=202611251250"></script>
+<script src="../config.js?v=202611251335"></script>
 <script type="importmap">{"imports":{"three":"../vendor/three.module.js"}}</script>
 </head>
 <body>
@@ -269,6 +293,6 @@ button,input,select{font:inherit}
 <div id="tirai" hidden><div class="isi"></div></div>
 <div id="loading"><div><span class="hati">❤</span>Membuka pintu kantor…</div></div>
 
-<script type="module" src="kantor.js?v=202611251250"></script>
+<script type="module" src="kantor.js?v=202611251335"></script>
 </body>
 </html>
