@@ -6,8 +6,13 @@ window.PT_CONFIG = {
   // Nama & akun sosial perusahaan
   namaPT: 'PT Mencari Cinta Sejati',
   singkatan: 'PT MCS',
-  instagram: 'ptmencaricintasejati', // tanpa @ ; kosongkan jika belum ada
-  donasi: '',                        // contoh: 'https://saweria.co/namamu' ; kosongkan untuk menyembunyikan
+  instagram: 'jodohonline.id', // tanpa @ ; kosongkan jika belum ada
+  tiktok: 'jodohonline.id',    // tanpa @ ; kosongkan jika belum ada
+
+  // Syarat sebelum pendaftar di-ACC: follow akun di atas + komen kata ini
+  // di postingan terbaru. Direktur mengecek lewat username IG di formulir.
+  // Ganti jadi null untuk mematikan syarat ini.
+  wajibFollow: { komen: 'DAFTAR' },
 
   // Target tamu angkatan pertama (untuk bar di halaman Kartu Tamu)
   kuota: 10000,
@@ -60,15 +65,34 @@ window.PT_CONFIG = {
   //  linkBayar: halaman tempat tamu membayar (Saweria, Trakteer, dll.).
   //  Kosongkan linkBayar untuk menutup toko sementara.
   // ---------------------------------------------------------
-  toko: {
-    linkBayar: '',
-    caraBayar: 'Bayar lewat link di bawah, lalu tulis KODE TAMU kamu di kolom pesan supaya Direktur bisa mencocokkan pembayaranmu.',
-    paket: [
-      { id: 'vip30', nama: 'Kartu Eksekutif 30 hari', harga: 5000, vipHari: 30, ket: 'Lihat siapa yang menyukaimu, Lounge Eksekutif, outfit & nama emas' },
-      { id: 'exp100', nama: '100 EXP', harga: 5000, exp: 100, ket: 'Langsung naik ±2 level untuk pemula' },
-      { id: 'exp300', nama: '300 EXP', harga: 12000, exp: 300, ket: 'Buka Jas & Dasi, Gaun Pesta, dan lainnya' },
-      { id: 'exp1000', nama: '1.000 EXP', harga: 35000, exp: 1000, ket: 'Buka hampir semua outfit & aksesoris' },
+  // ---------------------------------------------------------
+  //  PEMBAYARAN (dipakai untuk Diamond, Kartu Eksekutif/EXP, dan donasi)
+  //  Pembeli membayar ke rekening/QRIS kamu dengan NOMINAL UNIK,
+  //  lalu kamu cocokkan di mutasi rekening dan klik Setujui di Dashboard.
+  //  Metode yang dikosongkan otomatis disembunyikan.
+  // ---------------------------------------------------------
+  pembayaran: {
+    // QRIS: unggah gambar QR kamu ke folder pembayaran/ (mis. pembayaran/qris.png) lalu isi path-nya.
+    qris: '',
+    qrisNama: '',           // nama merchant yang tertulis di QRIS
+    bank: [
+      { bank: 'BCA', nomor: '', atasNama: '' },
+      { bank: 'BRI', nomor: '', atasNama: '' },
     ],
+    kodeUnik: true,         // tambah Rp1–Rp499 unik supaya transfer mudah dikenali
+
+    // PEMBAYARAN OTOMATIS (diamond langsung masuk tanpa perlu disetujui)
+    // 'midtrans' = aktif. Kunci rahasia TIDAK ditaruh di sini, tapi di
+    // Cloudflare Pages → Settings → Variables (lihat README bagian Midtrans).
+    // Kosongkan '' untuk memakai cara manual (QRIS/rekening di atas).
+    otomatis: '',
+  },
+
+  // Harga paket Diamond, Kartu Eksekutif/EXP, dan donasi ada di paket.js
+
+  toko: {
+    linkBayar: '',          // opsional: link Saweria/Trakteer sebagai metode "Lainnya"
+    caraBayar: 'Bayar lewat link di bawah, lalu tulis KODE TAMU kamu di kolom pesan supaya Direktur bisa mencocokkan pembayaranmu.',
   },
 
   // Pengumuman di Mading (baris terbaru di atas)
@@ -78,3 +102,21 @@ window.PT_CONFIG = {
     { judul: 'Aturan kantor', isi: 'Sopan, tidak melecehkan, tidak spam, dan jangan sebar data pribadi orang lain. Pelanggar dikeluarkan Satpam.' },
   ],
 };
+
+// ---------------------------------------------------------
+//  MODE OFFLINE OTOMATIS
+//  Saat situs dibuka dari komputer sendiri (localhost / 127.0.0.1),
+//  misalnya lewat jalankan-offline.bat, situs memakai MODE LOKAL:
+//  tanpa internet & tanpa Firebase, data tersimpan di browser itu saja,
+//  dan Dashboard Direktur memakai akun demo di bawah ini.
+//  Tambahkan ?online=1 di alamat untuk tetap memakai Firebase dari localhost.
+//  Di hosting (Cloudflare Pages) blok ini tidak berpengaruh.
+// ---------------------------------------------------------
+(function () {
+  var lokal = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+  if (lokal && !/[?&]online=1/.test(location.search)) {
+    window.PT_CONFIG.firebase = null;
+    window.PT_CONFIG.direkturDemo = { username: 'direktur', password: 'cintasejati' };
+    window.PT_CONFIG.modeOffline = true;
+  }
+})();

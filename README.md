@@ -2,6 +2,8 @@
 
 Kantor virtual 3D tempat orang datang sebagai **tamu** untuk **💘 cari jodoh**, **🤝 cari teman**, atau sekadar **💬 curhat**. Pemilik situs memegang kendali sebagai **👑 Direktur Utama**.
 
+🌐 **Situs:** <https://jodohonline.company> · kantor: <https://jodohonline.company/kantor/> · daftar: <https://jodohonline.company/kantor/#daftar> · dashboard: <https://jodohonline.company/dashboard/>
+
 ## Konsep
 
 | Siapa | Bisa apa |
@@ -61,12 +63,50 @@ Login username + kata sandi. Isinya:
 ### Acara terjadwal
 Direktur membuat acara di **Panel → Acara** (ada template: Speed Dating, Mabar, Sesi Curhat, Kuis Cinta, Turnamen Tangkap Hati, Malam Eksekutif). Tamu melihatnya di papan jadwal lobi dan tab Acara, bisa menekan **Ikut** untuk diingatkan 10 menit sebelumnya. Saat acara berlangsung muncul spanduk 🔴 LIVE; tamu yang datang ke ruangannya otomatis tercatat hadir (dicek waktu server) dan mendapat EXP.
 
-### Toko: jual EXP & Kartu Eksekutif
-- Paket diatur di `config.js` → `toko.paket` (bawaan: Kartu Eksekutif 30 hari Rp5.000, 100/300/1.000 EXP)
+### Pembayaran: QRIS & transfer BCA/BRI
+Dipakai untuk **💠 Diamond**, **Kartu Eksekutif/EXP**, dan **🎁 donasi**. Uang masuk langsung ke QRIS/rekeningmu, tanpa potongan.
+
+1. Isi di `config.js` → `pembayaran`:
+   - `qris`: path gambar QRIS (unggah ke folder `pembayaran/`, lihat `pembayaran/README.md`)
+   - `bank`: nomor rekening & atas nama **BCA** dan **BRI** (kosongkan yang tidak dipakai)
+2. Pembeli memilih paket → memilih **QRIS / BCA / BRI** → membayar **nominal unik** (harga + Rp1–499, mis. Rp10.330) → menekan *Saya sudah bayar*
+3. Di **Dashboard → Toko & Pesanan**, cocokkan nominal unik dengan mutasi rekening/QRIS → **Setujui**. Diamond/paket langsung masuk, pembeli dapat notifikasi; donasi tercatat di **Papan Donatur**
+
+Cara manual ini tetap tersedia sebagai cadangan. Supaya **tidak perlu standby menyetujui**, aktifkan pembayaran otomatis di bawah.
+
+### ⚡ Pembayaran otomatis (Midtrans): diamond langsung masuk
+Pembeli memilih **⚡ Bayar otomatis** → halaman bayar Midtrans (QRIS, VA BCA, VA BRI, GoPay, ShopeePay) → begitu lunas, Midtrans mengabari server situs (`/api/bayar/notifikasi`) dan **Diamond / Kartu Eksekutif / EXP / donasi masuk sendiri dalam beberapa detik**. Tidak dibayar dalam 60 menit → batal sendiri. Uang masuk ke saldo Midtrans, lalu dicairkan ke rekeningmu (biaya Midtrans ± 0,7% QRIS, ± Rp4.000 per VA).
+
+Keamanan: harga dihitung server dari `paket.js` (bukan dari browser), notifikasi dicek tanda tangan SHA-512 Midtrans, nominal dicocokkan, dan setiap pesanan hanya bisa dilunasi **sekali** (notifikasi ganda tidak dobel).
+
+**Pasang (sekali saja, ±20 menit):**
+1. **Daftar Midtrans** di <https://dashboard.midtrans.com/register>. Mulai di mode **Sandbox** (uang mainan) untuk mencoba. Untuk uang sungguhan, lengkapi verifikasi bisnis (KTP + rekening) lalu pindah ke **Production**
+2. Midtrans → **Settings → Access Keys** → salin **Server Key** (`SB-Mid-server-…` di Sandbox)
+3. Firebase Console → ⚙️ **Project settings → Service accounts → Database secrets** → **Show** → salin secret-nya
+4. Cloudflare → **Workers & Pages → pt-mencari-cinta-sejati → Settings → Variables and Secrets** → tambahkan (tipe **Secret** untuk yang rahasia):
+
+   | Nama | Isi |
+   |---|---|
+   | `MIDTRANS_SERVER_KEY` | Server Key dari langkah 2 (Secret) |
+   | `MIDTRANS_PRODUCTION` | `false` untuk Sandbox, `true` untuk uang sungguhan |
+   | `FIREBASE_DB_SECRET` | secret dari langkah 3 (Secret) |
+   | `FIREBASE_DB_URL` | `databaseURL` dari `config.js` |
+   | `FIREBASE_API_KEY` | `apiKey` dari `config.js` |
+5. Midtrans → **Settings → Payment → Notification URL** → isi `https://<situsmu>/api/bayar/notifikasi` (mis. `https://jodohonline.company/api/bayar/notifikasi`), simpan
+6. Di `config.js` ubah `pembayaran.otomatis: ''` menjadi `otomatis: 'midtrans'`, commit & merge ke `main`. Cloudflare men-deploy ulang otomatis (variabel baru juga baru terpakai setelah deploy ulang)
+7. Coba beli Diamond di kantor → pilih ⚡ Bayar otomatis → di Sandbox bayar pakai simulator <https://simulator.sandbox.midtrans.com> → diamond masuk sendiri
+
+**Jangan pernah** menaruh Server Key atau Database secret di `config.js` / GitHub. Keduanya hanya di variabel Cloudflare. Pembayaran otomatis hanya jalan di situs online (bukan mode offline).
+
+### 💠 Diamond & Lemari Diamond
+- Paket Diamond diatur di `paket.js` → `diamond` (bawaan 50/110/300/650 Diamond, Rp5rb–50rb)
+- Barang khusus Diamond (outfit: Jas Pengantin, Hoodie Hati, Jaket Varsity; aksesoris: kacamata hati, balon hati, topi pesta) diatur di `js/common.js` (`dm` = harga)
+- **Sekali saja (dan setiap mengubah harga):** Dashboard → Toko & Pesanan → **Terbitkan harga barang Diamond**. Harga di database inilah yang dipakai server untuk memotong diamond
+- Membeli barang dikunci server: diamond terpotong persis sebesar harga dan barang tercatat dalam satu transaksi. Saldo diamond hanya bisa ditambah Direktur
+
+### Kartu Eksekutif & EXP (dibayar dengan uang)
+- Paket diatur di `paket.js` → `toko` (bawaan: Kartu Eksekutif 30 hari Rp5.000, 100/300/1.000 EXP)
 - **Kartu Eksekutif** membuka: lihat *siapa* yang menyukaimu, Lounge Eksekutif (lewat lift lobi), Setelan Emas, Mahkota Emas, Halo, nama emas 💎, dan ajakan ngobrol yang menonjol
-- Alur bayar (manual, tanpa server): tamu menyalin **kode tamu** → bayar di `toko.linkBayar` (Saweria/Trakteer/dll.) dengan kode di pesan → tekan *Saya sudah bayar* → kamu mencocokkan di **Panel → Pesanan** → *Setujui* → EXP/VIP langsung aktif dan tamu dapat notifikasi
-- Toko tertutup selama `linkBayar` kosong
-- Kalau ramai, alur ini bisa diotomatiskan dengan webhook pembayaran + Cloudflare Worker/Cloud Function yang menulis ke Firebase
 
 Semua aturan di atas dijaga di server lewat `database.rules.json`, bukan cuma di tampilan. **Batasan yang perlu diketahui:** EXP dari tugas dicatat oleh browser tamu (dibatasi maksimal 60 EXP per 3 detik), jadi tamu yang paham teknis bisa mengakali EXP *tugas*. Ini hanya berpengaruh ke barang kosmetik. EXP yang **dibeli**, Kartu Eksekutif, dan daftar "siapa yang menyukaimu" sepenuhnya dikunci server dan hanya bisa diberikan Direktur.
 
@@ -82,22 +122,37 @@ kantor/progres.js     EXP, level, tugas, petunjuk arah, acara, peringkat, toko
 kantor/game.js        mini-game Tangkap Hati
 kantor/ui.js          alat UI bersama
 dashboard/            Dashboard Direktur (login, persetujuan, kendali penuh)
+vendor/               three.js (pustaka 3D) disimpan lokal
+jalankan-offline.*    peluncur offline (.bat Windows, .ps1 server, .sh Mac/Linux)
 idcard/               generator Kartu Tamu
 js/db.js              lapisan data: Firebase (online) atau tiruan lokal
 js/layanan.js         semua operasi data (chat, undangan, usir, dll.)
 js/common.js          tujuan, topik meja, filter kata kasar, utilitas
 config.js             ← file yang perlu diubah
+paket.js              harga Diamond, Kartu Eksekutif/EXP & batas donasi (dipakai situs + server)
+functions/api/bayar/  server pembayaran otomatis (Cloudflare Pages Functions)
+server/               kode server: Midtrans, Firebase REST, proses pelunasan
 database.rules.json   aturan keamanan Firebase Realtime Database
 ```
 
-## Menjalankan di komputer
+## Menjalankan di komputer (offline)
 
-```bash
-python3 -m http.server 8000
-# buka http://localhost:8000
-```
+Bisa dijalankan **tanpa internet dan tanpa Firebase**. Saat dibuka dari `localhost`, situs otomatis memakai mode lokal: data tersimpan di browser itu saja, dan Dashboard Direktur memakai akun demo (`direktur` / `cintasejati`).
 
-Harus lewat server, bukan dibuka sebagai `file://`, karena halaman memakai ES module.
+**Windows:** klik dua kali **`jalankan-offline.bat`**. Server kecil (PowerShell bawaan Windows, tanpa install apa pun) menyala dan browser terbuka otomatis di `http://localhost:8080/`. Tutup jendela hitamnya untuk berhenti.
+
+**Mac / Linux:** `sh jalankan-offline.sh` lalu buka `http://localhost:8080/` (butuh `python3`).
+
+Alamat yang bisa dibuka:
+- `http://localhost:8080/` – beranda
+- `http://localhost:8080/kantor/` – kantor 3D (tab kedua = tamu lain, untuk mencoba interaksi)
+- `http://localhost:8080/dashboard/` – Dashboard Direktur
+
+Catatan:
+- three.js disimpan di `vendor/three.module.js`, jadi kantor 3D tidak perlu internet.
+- Tanpa internet, font Google tidak termuat dan diganti font bawaan sistem. Tampilan sedikit berbeda, fungsi tetap sama.
+- Mau mengetes versi online (Firebase) dari komputer sendiri? Tambahkan `?online=1` di alamat, misalnya `http://localhost:8080/kantor/?online=1`.
+- Data mode offline tidak tercampur dengan data di situs online.
 
 ## Mode lokal vs online
 
@@ -147,7 +202,7 @@ Di mode lokal (tanpa Firebase), buka `/dashboard/` dan login dengan `direkturDem
    - **GitHub Pages**: Settings → Pages → Deploy from branch.
 3. Tambahkan domain hosting ke Firebase → Authentication → Settings → **Authorized domains**.
 4. Isi `instagram`, `toko.linkBayar`, dan **hapus `direkturDemo`** di `config.js`.
-5. (Opsional) Domain sendiri, misalnya `ptmencaricintasejati.id`, bisa disambungkan di Cloudflare/Netlify.
+5. Domain sendiri: situs ini memakai **jodohonline.company** (Cloudflare Pages → Custom domains). Alamat `pt-mencari-cinta-sejati-bas.pages.dev` tetap jalan sebagai cadangan.
 
 ## Kustomisasi cepat
 

@@ -218,9 +218,40 @@
       ".read": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
       ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
       "$id": {
+        ".read": "auth != null && data.child('uid').val() === auth.uid",
         ".write": "auth != null && !data.exists() && newData.child('uid').val() === auth.uid && (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
-        ".validate": "root.child('peran/' + auth.uid).val() === 'direktur' || (newData.child('paket').isString() && newData.child('paket').val().length <= 20 && newData.child('n').isString() && newData.child('t').val() === now)"
+        ".validate": "root.child('peran/' + auth.uid).val() === 'direktur' || (newData.child('paket').isString() && newData.child('paket').val().length <= 20 && newData.child('jenis').val().matches(/^(diamond|paket|donasi)$/) && newData.child('metode').val().matches(/^(qris|bca|bri|lain)$/) && newData.child('nominal').isNumber() && newData.child('nominal').val() >= 1000 && newData.child('nominal').val() <= 10000000 && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('t').val() === now)"
       }
+    },
+    "diamond": {
+      ".read": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && newData.isNumber() && newData.val() >= 0 && newData.val() < data.val()",
+        ".validate": "newData.isNumber() && newData.val() >= 0"
+      }
+    },
+    "milik": {
+      ".read": true,
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$uid": {
+        "$item": {
+          ".write": "auth != null && auth.uid === $uid && !data.exists() && (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && root.child('katalog/' + $item + '/harga').exists() && newData.parent().parent().parent().child('diamond/' + $uid).val() === root.child('diamond/' + $uid).val() - root.child('katalog/' + $item + '/harga').val()",
+          ".validate": "newData.val() === true"
+        }
+      }
+    },
+    "katalog": {
+      ".read": true,
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$item": {
+        ".validate": "newData.child('harga').isNumber() && newData.child('harga').val() > 0"
+      }
+    },
+    "donatur": {
+      ".read": true,
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'"
     },
     "riwayat": {
       ".read": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",

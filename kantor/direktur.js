@@ -30,6 +30,8 @@ export function perbaruiPeran() {
     lepas.push(db.on('saran', o => { saran = o || {}; segar(); }, { limit: 50 }));
     lepas.push(db.on('ban', o => { larangan = o || {}; segar(); }));
     if (p === 'direktur') lepas.push(db.on('pesanan', o => {
+      // pesanan otomatis (Midtrans) lunas sendiri, jadi tidak perlu ditampilkan di sini
+      o = Object.fromEntries(Object.entries(o || {}).filter(([, v]) => v && v.metode !== 'otomatis'));
       const baru = Object.keys(o || {}).filter(k => !pesanan[k]).length;
       if (baru && Object.keys(pesanan).length) toast(`💳 ${baru} pesanan baru masuk`);
       pesanan = o || {}; segar(); tandaPanel();
@@ -303,31 +305,15 @@ function tabAcara() {
 // ---------------------------------------------------------------- PESANAN (toko)
 const rp = n => 'Rp' + Number(n).toLocaleString('id-ID');
 function tabPesanan() {
-  const pk = id => (CFG.toko?.paket || []).find(p => p.id === id);
-  const list = Object.entries(pesanan).filter(([, v]) => v).sort((a, b) => a[1].t - b[1].t);
+  const list = Object.entries(pesanan).filter(([, v]) => v && v.metode !== 'otomatis').sort((a, b) => a[1].t - b[1].t);
+  const met = { otomatis: '⚡ Otomatis', qris: 'QRIS', bca: 'BCA', bri: 'BRI', lain: 'Lainnya' };
   return {
-    html: `<p class="kecil">Cocokkan <b>kode tamu</b> dengan catatan pembayaran di halaman pembayaranmu${CFG.toko?.linkBayar ? '' : ' (link pembayaran belum diisi di <code>config.js</code>)'}. Setujui hanya jika uangnya sudah masuk.</p>
-      ${list.length ? `<div class="daftar">${list.map(([id, v]) => { const p = pk(v.paket) || { nama: v.paket, harga: 0 }; return `<div><span><b>${esc(p.nama)}</b> · ${rp(p.harga)}<br><small>${esc(bersih(v.n, 20))} · <code>${esc(v.kode || '')}</code> · ${esc(new Date(v.t).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }))}</small></span>
-        <span class="tombolKecil"><button type="button" class="mini" data-ok="${esc(id)}">Setujui</button><button type="button" class="mini putih" data-no="${esc(id)}">Tolak</button></span></div>`; }).join('')}</div>` : '<p>Tidak ada pesanan yang menunggu.</p>'}`,
+    html: `<p class="kecil">Cocokkan <b>nominal unik</b> dengan mutasi rekening/QRIS kamu. Setujui hanya jika uangnya sudah masuk. Kelola lengkap di Dashboard Direktur.</p>
+      ${list.length ? `<div class="daftar">${list.map(([id, v]) => `<div><span><b>${esc(v.nama || v.paket)}</b> · <b>${rp(v.nominal || (K.L.cariPaket(v) || {}).harga || 0)}</b><br><small>${esc(bersih(v.n, 20))} · ${esc(met[v.metode] || '-')} · <code>${esc(v.kode || '')}</code> · ${esc(new Date(v.t).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }))}</small></span>
+        <span class="tombolKecil"><button type="button" class="mini" data-ok="${esc(id)}">Setujui</button><button type="button" class="mini putih" data-no="${esc(id)}">Tolak</button></span></div>`).join('')}</div>` : '<p>Tidak ada pesanan yang menunggu.</p>'}`,
     pasang(isi) {
-      isi.querySelectorAll('[data-ok]').forEach(b => b.onclick = async () => {
-        const v = pesanan[b.dataset.ok], p = pk(v?.paket); if (!v || !p) return;
-        b.disabled = true;
-        try {
-          if (p.exp) await K.L.beriExp(v.uid, p.exp);
-          if (p.vipHari) await K.L.beriVip(v.uid, p.vipHari);
-          await K.L.kirimNotif(v.uid, `Pembelian ${p.nama} disetujui. Terima kasih sudah mendukung ${CFG.namaPT}! 💖`);
-          await K.L.hapus('pesanan/' + b.dataset.ok);
-          toast('Pesanan disetujui ✔');
-        } catch (e) { gagal(e); b.disabled = false; }
-      });
-      isi.querySelectorAll('[data-no]').forEach(b => b.onclick = async () => {
-        const v = pesanan[b.dataset.no]; if (!v) return;
-        try {
-          await K.L.kirimNotif(v.uid, `Pembayaran untuk pesananmu belum kami temukan. Pastikan kode tamu ${v.kode} tertulis di pesan pembayaran, lalu hubungi Direktur.`);
-          await K.L.hapus('pesanan/' + b.dataset.no); toast('Pesanan ditolak.');
-        } catch (e) { gagal(e); }
-      });
+      isi.querySelectorAll('[data-ok]').forEach(b => b.onclick = async () => { const v = pesanan[b.dataset.ok]; if (!v) return; b.disabled = true; try { await K.L.setujuiPesanan(b.dataset.ok, v); toast('Pesanan disetujui ✔'); } catch (e) { gagal(e); b.disabled = false; } });
+      isi.querySelectorAll('[data-no]').forEach(b => b.onclick = async () => { const v = pesanan[b.dataset.no]; if (!v) return; try { await K.L.tolakPesanan(b.dataset.no, v); toast('Pesanan ditolak.'); } catch (e) { gagal(e); } });
     },
   };
 }
