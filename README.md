@@ -101,7 +101,10 @@ Keamanan: harga dihitung server dari `paket.js` (bukan dari browser), notifikasi
 ### 🎙️ Pesan suara & 📞 telepon
 - **Pesan suara** di obrolan pribadi: tombol 🎤, maks. 30 detik. Audio disimpan terpisah (`suaraDm`) dan baru diunduh saat diputar; dihapus otomatis setelah 7 hari.
 - **Telepon suara** khusus pasangan yang **saling match** (tombol 📞 di profil & obrolan). WebRTC langsung antar-perangkat, tidak direkam, maks. 30 menit.
-- **Server TURN** (agar telepon tetap tersambung di data seluler): Cloudflare → **Realtime → TURN Server → Create**, lalu isi di Cloudflare Pages → Settings → Variables and Secrets: `TURN_KEY_ID` dan `TURN_KEY_API_TOKEN` (tipe Secret). Tanpa itu, telepon tetap jalan lewat STUN (umumnya lancar di WiFi).
+- **Server TURN** (agar telepon tetap tersambung di data seluler), pilih salah satu dan isi di Cloudflare Pages → Settings → Variables and Secrets (tipe Secret), lalu deploy ulang:
+  - **Metered Open Relay** (gratis 20 GB/bulan, tanpa kartu): daftar di https://www.metered.ca/tools/openrelay/ → isi `METERED_APP` (nama aplikasi, bagian depan `<nama>.metered.live`) dan `METERED_API_KEY`.
+  - **Cloudflare Realtime** (gratis 1.000 GB/bulan, perlu metode pembayaran): `TURN_KEY_ID` dan `TURN_KEY_API_TOKEN`.
+  - Tanpa itu, telepon tetap jalan lewat STUN (umumnya lancar di WiFi).
 
 ### 💠 Diamond & Lemari Diamond
 - Paket Diamond diatur di `paket.js` → `diamond` (bawaan 50/110/300/650 Diamond, Rp5rb–50rb)
