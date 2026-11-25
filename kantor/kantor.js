@@ -1218,7 +1218,7 @@ function bukaLoker() {
 // ---- resepsionis
 function bukaResepsionis() {
   const ig = CFG.instagram ? `<a class="btn putih" href="https://www.instagram.com/${encodeURIComponent(CFG.instagram)}/" target="_blank" rel="noopener">Instagram</a>` : '';
-  const don = CFG.donasi ? `<a class="btn putih" href="${esc(CFG.donasi)}" target="_blank" rel="noopener">Traktir kopi ☕</a>` : '';
+  const don = '<button class="btn putih" type="button" id="rDon">🎁 Donasi</button>';
   const tim = Object.entries(K.peran).map(([u, p]) => ({ p, n: (K.tamu.find(t => t.uid === u) || {}).n || (lain.get(u) || {}).nama || 'Tanpa nama' }));
   const dir = tim.filter(t => t.p === 'direktur').map(t => esc(t.n)).join(', ') || '—';
   const staf = tim.filter(t => t.p === 'staf').map(t => esc(t.n)).join(', ') || '—';
@@ -1234,7 +1234,7 @@ function bukaResepsionis() {
     <p class="kecil"><b>Cara main:</b> WASD/panah untuk jalan (Shift lari) · seret layar untuk putar kamera · <b>E</b> untuk aksi · <b>Enter</b> untuk chat. Di HP: geser sisi kiri bawah untuk jalan.</p>
     <p class="kecil">👑 Direktur: ${dir}<br>🛡 Staf: ${staf}</p>
     <div class="baris">${resmi() ? '' : '<button class="btn" type="button" id="rD">📝 Daftar jadi tamu</button>'}<a class="btn putih" href="../idcard/index.html">Kartu Tamu</a>${ig}${don}</div>`, {
-    pasang(isi) { const b = isi.querySelector('#rD'); if (b) b.onclick = bukaDaftar; },
+    pasang(isi) { const b = isi.querySelector('#rD'); if (b) b.onclick = bukaDaftar; isi.querySelector('#rDon').onclick = () => Bayar.bukaDonasi(); },
   });
 }
 function bukaMading() {
@@ -1534,6 +1534,7 @@ async function mulai() {
   Sosial.mulai(); Direktur.mulai(); Prog.mulai();
   hitungOnline();
   setTimeout(() => {
+    Bayar.kembaliDariBayar();
     if (resmi()) tulisLog('', `Selamat datang kembali, ${prof?.n || ''}!`, 'sys');
     else if (location.hash === '#daftar' || !K.daftarku) { if ($('kartu').hidden) bukaDaftar(); }
     else tulisLog('', K.daftarku.status === 'menunggu' ? '⏳ Pendaftaranmu sedang ditinjau Direktur.' : 'Pendaftaranmu belum diterima. Ketuk tombol di kanan atas untuk melihat catatan.', 'sys');

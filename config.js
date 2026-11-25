@@ -7,7 +7,6 @@ window.PT_CONFIG = {
   namaPT: 'PT Mencari Cinta Sejati',
   singkatan: 'PT MCS',
   instagram: 'ptmencaricintasejati', // tanpa @ ; kosongkan jika belum ada
-  donasi: '',                        // contoh: 'https://saweria.co/namamu' ; kosongkan untuk menyembunyikan
 
   // Target tamu angkatan pertama (untuk bar di halaman Kartu Tamu)
   kuota: 10000,
@@ -75,31 +74,19 @@ window.PT_CONFIG = {
       { bank: 'BRI', nomor: '', atasNama: '' },
     ],
     kodeUnik: true,         // tambah Rp1–Rp499 unik supaya transfer mudah dikenali
+
+    // PEMBAYARAN OTOMATIS (diamond langsung masuk tanpa perlu disetujui)
+    // 'midtrans' = aktif. Kunci rahasia TIDAK ditaruh di sini, tapi di
+    // Cloudflare Pages → Settings → Variables (lihat README bagian Midtrans).
+    // Kosongkan '' untuk memakai cara manual (QRIS/rekening di atas).
+    otomatis: '',
   },
 
-  // Paket Diamond (💠) untuk membeli outfit & aksesoris khusus
-  diamond: {
-    paket: [
-      { id: 'dm50', diamond: 50, harga: 5000 },
-      { id: 'dm110', diamond: 110, harga: 10000, ket: 'Bonus 10 💠' },
-      { id: 'dm300', diamond: 300, harga: 25000, ket: 'Bonus 50 💠' },
-      { id: 'dm650', diamond: 650, harga: 50000, ket: 'Bonus 150 💠' },
-    ],
-  },
-
-  // Donasi untuk mendukung kantor
-  donasi: { min: 5000, saran: [10000, 25000, 50000, 100000] },
+  // Harga paket Diamond, Kartu Eksekutif/EXP, dan donasi ada di paket.js
 
   toko: {
     linkBayar: '',          // opsional: link Saweria/Trakteer sebagai metode "Lainnya"
     caraBayar: 'Bayar lewat link di bawah, lalu tulis KODE TAMU kamu di kolom pesan supaya Direktur bisa mencocokkan pembayaranmu.',
-    // Paket yang dibayar dengan uang (selain Diamond):
-    paket: [
-      { id: 'vip30', nama: 'Kartu Eksekutif 30 hari', harga: 5000, vipHari: 30, ket: 'Lihat siapa yang menyukaimu, Lounge Eksekutif, outfit & nama emas' },
-      { id: 'exp100', nama: '100 EXP', harga: 5000, exp: 100, ket: 'Langsung naik ±2 level untuk pemula' },
-      { id: 'exp300', nama: '300 EXP', harga: 12000, exp: 300, ket: 'Buka Jas & Dasi, Gaun Pesta, dan lainnya' },
-      { id: 'exp1000', nama: '1.000 EXP', harga: 35000, exp: 1000, ket: 'Buka hampir semua outfit & aksesoris' },
-    ],
   },
 
   // Pengumuman di Mading (baris terbaru di atas)

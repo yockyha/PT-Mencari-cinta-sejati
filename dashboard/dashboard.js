@@ -40,7 +40,7 @@ const diusir = uid => (S.ban?.[uid]?.sampai || 0) > kini();
 const onlineAktif = () => ent(S.online).filter(([, p]) => !p.t || kini() - p.t < 120000);
 const gagal = e => { console.warn(e); toast('Gagal: ' + (e && e.message ? e.message.replace(/^.*PERMISSION_DENIED.*$/, 'izin ditolak server') : 'coba lagi')); };
 const paket = id => [...(CFG.toko?.paket || []), ...(CFG.diamond?.paket || []).map(p => ({ ...p, nama: `${p.diamond} Diamond` }))].find(p => p.id === id) || (id === 'donasi' ? { id, nama: 'Donasi', harga: 0 } : null);
-const METODE = { qris: 'QRIS', bca: 'BCA', bri: 'BRI', lain: 'Lainnya' };
+const METODE = { otomatis: '⚡ Otomatis', qris: 'QRIS', bca: 'BCA', bri: 'BRI', lain: 'Lainnya' };
 
 // ---------------------------------------------------------------- MULAI
 (async function mulai() {
@@ -140,7 +140,7 @@ function ringkas() {
       <div class="angka sorot tombol" data-ke="daftar"><b>${fmt(menunggu)}</b><span>📝 pendaftar menunggu</span></div>
       <div class="angka tombol" data-ke="online"><b>${fmt(onlineAktif().length)}</b><span>🟢 online sekarang</span></div>
       <div class="angka tombol" data-ke="anggota"><b>${fmt(ang.length)}</b><span>👥 anggota resmi</span></div>
-      <div class="angka tombol" data-ke="toko"><b>${fmt(ent(S.pesanan).length)}</b><span>💳 pesanan menunggu</span></div>
+      <div class="angka tombol" data-ke="toko"><b>${fmt(ent(S.pesanan).filter(([, v]) => v.metode !== 'otomatis').length)}</b><span>💳 pesanan menunggu</span></div>
       <div class="angka tombol" data-ke="toko"><b>${rp(pendapatan)}</b><span>💰 total pendapatan</span></div>
       <div class="angka tombol" data-ke="laporan"><b>${fmt(ent(S.laporan).length)}</b><span>🚩 laporan</span></div>
       <div class="angka tombol" data-ke="acara"><b>${fmt(nanti)}</b><span>📅 acara mendatang</span></div>
@@ -400,24 +400,27 @@ function vAcara() {
 
 // ---------------------------------------------------------------- 💳 TOKO
 function vToko() {
-  const ps = ent(S.pesanan).sort((a, b) => a[1].t - b[1].t);
+  const semua = ent(S.pesanan).sort((a, b) => a[1].t - b[1].t);
+  const ps = semua.filter(([, v]) => v.metode !== 'otomatis'), pOto = semua.filter(([, v]) => v.metode === 'otomatis');
   const rw = ent(S.riwayat).sort((a, b) => b[1].t - a[1].t);
   const total = rw.reduce((a, [, r]) => a + (r.harga || 0), 0);
   const bln = t => new Date(t + 7 * 3600e3).toISOString().slice(0, 7);
   const bulanIni = rw.filter(([, r]) => bln(r.t) === bln(kini())).reduce((a, [, r]) => a + (r.harga || 0), 0);
   const perMetode = Object.keys(METODE).map(m => [m, rw.filter(([, r]) => r.metode === m).reduce((a, [, r]) => a + (r.harga || 0), 0)]).filter(([, v]) => v);
   const donasi = rw.filter(([, r]) => r.jenis === 'donasi').reduce((a, [, r]) => a + (r.harga || 0), 0);
-  const B = CFG.pembayaran || {}, metode = [B.qris ? 'QRIS' : null, ...(B.bank || []).filter(x => x && x.nomor).map(x => x.bank), CFG.toko?.linkBayar ? 'Lainnya' : null].filter(Boolean);
+  const B = CFG.pembayaran || {}, metode = [B.otomatis === 'midtrans' ? '⚡ Otomatis (Midtrans)' : null, B.qris ? 'QRIS' : null, ...(B.bank || []).filter(x => x && x.nomor).map(x => x.bank), CFG.toko?.linkBayar ? 'Lainnya' : null].filter(Boolean);
   const kat = S.katalog || {}, katBeda = BARANG_DIAMOND.filter(x => !kat[x.id] || kat[x.id].harga !== x.harga);
   const donatur = ent(S.donatur).sort((a, b) => (b[1].total || 0) - (a[1].total || 0));
   const dmBeredar = ent(S.diamond).reduce((a, [, v]) => a + (+v || 0), 0);
   return {
     html: `<div class="grid"><div class="angka sorot"><b>${fmt(ps.length)}</b><span>pesanan menunggu</span></div><div class="angka"><b>${rp(bulanIni)}</b><span>pendapatan bulan ini</span></div><div class="angka"><b>${rp(total)}</b><span>total pendapatan</span></div><div class="angka"><b>${rp(donasi)}</b><span>🎁 total donasi</span></div><div class="angka"><b>${fmt(dmBeredar)}</b><span>${IKON_DM} diamond beredar</span></div></div>
       <div class="panel"><h3>Metode pembayaran aktif <small>${metode.length ? esc(metode.join(' · ')) : 'belum ada'}</small></h3>
+        ${B.otomatis === 'midtrans' ? `<p class="kecil">⚡ <b>Pembayaran otomatis aktif.</b> Pesanan lewat Midtrans langsung lunas sendiri, tidak perlu disetujui. ${pOto.length ? `${fmt(pOto.length)} tamu sedang di halaman bayar.` : ''} Uang masuk ke saldo Midtrans kamu, lalu dicairkan ke rekening.</p>` : '<p class="kecil">💡 Mau diamond masuk otomatis tanpa perlu menyetujui? Aktifkan Midtrans (lihat README bagian <b>Pembayaran otomatis</b>).</p>'}
         ${metode.length ? '<p class="kecil">Atur QRIS & rekening di <code>config.js</code> → <code>pembayaran</code>.</p>' : '<p><b>⚠️ Toko masih tertutup.</b> Isi <code>pembayaran.qris</code> dan/atau nomor rekening BCA/BRI di <code>config.js</code>, lalu merge ke <code>main</code>.</p>'}
         ${katBeda.length ? `<p><b>⚠️ Harga barang Diamond belum diterbitkan</b> (${katBeda.length} barang). Tanpa ini, tamu tidak bisa membeli barang dengan Diamond.</p><button class="btn" type="button" id="kT">Terbitkan harga barang Diamond</button>` : `<p class="kecil">✅ Harga ${BARANG_DIAMOND.length} barang Diamond sudah terbit.</p>`}
       </div>
-      <div class="panel"><h3>Pesanan menunggu</h3>
+      ${pOto.length ? `<div class="panel"><h3>⚡ Menunggu dibayar (otomatis) <small>${fmt(pOto.length)}</small></h3><p class="kecil">Tidak perlu diapa-apakan: lunas → masuk sendiri, tidak dibayar 60 menit → batal sendiri.</p><ul class="feed">${pOto.slice(-20).reverse().map(([, v]) => `<li><span class="isi"><b>${esc(v.nama || v.paket)}</b><br><span class="kecil">${esc(bersih(v.n, 20))} · <code>${esc(v.kode)}</code></span></span><b>${rp(v.nominal)}</b><time>${esc(tgl(v.t))}</time></li>`).join('')}</ul></div>` : ''}
+      <div class="panel"><h3>Pesanan manual menunggu</h3>
         <p class="kecil">Buka mutasi rekening / riwayat QRIS, cari <b>nominal unik</b> di bawah (sampai 3 digit terakhir), lalu Setujui. Diamond/paket masuk otomatis ke akun pembeli.</p>
         ${ps.length ? `<ul class="feed">${ps.map(([id, v]) => `<li><span class="isi"><b>${esc(v.nama || paket(v.paket)?.nama || v.paket)}</b> ${v.jenis === 'donasi' ? '🎁' : ''}<br><span class="kecil">${esc(bersih(v.n, 20))} · <code>${esc(v.kode || kodeTamu(v.uid))}</code> · ${esc(tgl(v.t))}${v.pesan ? ` · “${esc(v.pesan)}”` : ''}</span></span>
           <span class="nominal"><b>${rp(v.nominal || paket(v.paket)?.harga || 0)}</b><small>${esc(METODE[v.metode] || '-')}</small></span>

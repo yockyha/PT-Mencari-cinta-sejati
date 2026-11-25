@@ -30,6 +30,8 @@ export function perbaruiPeran() {
     lepas.push(db.on('saran', o => { saran = o || {}; segar(); }, { limit: 50 }));
     lepas.push(db.on('ban', o => { larangan = o || {}; segar(); }));
     if (p === 'direktur') lepas.push(db.on('pesanan', o => {
+      // pesanan otomatis (Midtrans) lunas sendiri, jadi tidak perlu ditampilkan di sini
+      o = Object.fromEntries(Object.entries(o || {}).filter(([, v]) => v && v.metode !== 'otomatis'));
       const baru = Object.keys(o || {}).filter(k => !pesanan[k]).length;
       if (baru && Object.keys(pesanan).length) toast(`💳 ${baru} pesanan baru masuk`);
       pesanan = o || {}; segar(); tandaPanel();
@@ -303,8 +305,8 @@ function tabAcara() {
 // ---------------------------------------------------------------- PESANAN (toko)
 const rp = n => 'Rp' + Number(n).toLocaleString('id-ID');
 function tabPesanan() {
-  const list = Object.entries(pesanan).filter(([, v]) => v).sort((a, b) => a[1].t - b[1].t);
-  const met = { qris: 'QRIS', bca: 'BCA', bri: 'BRI', lain: 'Lainnya' };
+  const list = Object.entries(pesanan).filter(([, v]) => v && v.metode !== 'otomatis').sort((a, b) => a[1].t - b[1].t);
+  const met = { otomatis: '⚡ Otomatis', qris: 'QRIS', bca: 'BCA', bri: 'BRI', lain: 'Lainnya' };
   return {
     html: `<p class="kecil">Cocokkan <b>nominal unik</b> dengan mutasi rekening/QRIS kamu. Setujui hanya jika uangnya sudah masuk. Kelola lengkap di Dashboard Direktur.</p>
       ${list.length ? `<div class="daftar">${list.map(([id, v]) => `<div><span><b>${esc(v.nama || v.paket)}</b> · <b>${rp(v.nominal || (K.L.cariPaket(v) || {}).harga || 0)}</b><br><small>${esc(bersih(v.n, 20))} · ${esc(met[v.metode] || '-')} · <code>${esc(v.kode || '')}</code> · ${esc(new Date(v.t).toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' }))}</small></span>

@@ -1,7 +1,8 @@
 // =====================================================================
 //  Toko & pembayaran: top up Diamond, Lemari Diamond (beli outfit),
 //  Kartu Eksekutif/EXP, donasi, papan donatur, dan status pesanan.
-//  Pembayaran: QRIS atau transfer BCA/BRI dengan NOMINAL UNIK, lalu
+//  Pembayaran otomatis (Midtrans: QRIS/VA BCA/BRI/e-wallet) langsung masuk,
+//  atau manual: QRIS/transfer BCA/BRI dengan NOMINAL UNIK, lalu
 //  diverifikasi Direktur di Dashboard (Toko & Pesanan).
 // =====================================================================
 import { CFG, OUTFIT, AKSESORIS, LS, esc, fmt, bersih, rupiah, IKON_DM, kodeTamu, hash } from '../js/common.js';
@@ -12,12 +13,16 @@ const BAYAR = () => CFG.pembayaran || {};
 const resmi = () => !!(K.resmi && K.resmi());
 
 // Metode pembayaran yang benar-benar diisi di config.js
+// Pembayaran otomatis (Midtrans) hanya jalan di mode online, lewat /api/bayar/buat
+export const otomatisAktif = () => BAYAR().otomatis === 'midtrans' && K.L && K.L.mode === 'online' && !!K.L.db.idToken;
+
 export function metodeAktif() {
   const b = BAYAR(), m = [];
+  if (otomatisAktif()) m.push({ id: 'otomatis', nama: '⚡ Bayar otomatis', ket: 'QRIS, VA BCA/BRI, GoPay, ShopeePay. Langsung masuk tanpa menunggu', otomatis: true });
   if (b.qris) m.push({ id: 'qris', nama: 'QRIS', ket: 'Scan dari m-banking atau e-wallet apa pun' });
   for (const x of b.bank || []) if (x && x.nomor) m.push({ id: String(x.bank).toLowerCase(), nama: 'Transfer ' + x.bank, ket: `${x.nomor} a.n. ${x.atasNama || ''}`, data: x });
   if (CFG.toko && CFG.toko.linkBayar) m.push({ id: 'lain', nama: 'Lainnya', ket: 'Saweria / Trakteer / dll.' });
-  return m.filter(x => ['qris', 'bca', 'bri', 'lain'].includes(x.id));
+  return m.filter(x => ['otomatis', 'qris', 'bca', 'bri', 'lain'].includes(x.id));
 }
 export const tokoBuka = () => metodeAktif().length > 0;
 
@@ -66,11 +71,14 @@ async function muatPesananKu(box) {
   const masih = hasil.filter(([, v]) => v);
   LS.set('pesananKu', masih.map(([id]) => id));
   box.innerHTML = masih.length
-    ? `<div class="daftar">${masih.reverse().map(([, v]) => `<div><span><b>${esc(v.nama || v.paket)}</b> · ${rupiah(v.nominal)}<br><small>${esc(namaMetode(v.metode))} · ${esc(tanggalJam(v.t))}</small></span><span class="pillTj" style="--w:#c8901a">⏳ Diverifikasi</span></div>`).join('')}</div>
-       <p class="kecil">Pesanan yang sudah disetujui/ditolak hilang dari daftar ini, dan kamu mendapat pesan dari Direktur.</p>`
+    ? `<div class="daftar">${masih.reverse().map(([, v]) => `<div><span><b>${esc(v.nama || v.paket)}</b> · ${rupiah(v.nominal)}<br><small>${esc(namaMetode(v.metode))} · ${esc(tanggalJam(v.t))}</small></span>${v.metode === 'otomatis'
+      ? (linkBayar()[v.kode] ? `<a class="mini" href="${esc(linkBayar()[v.kode])}" target="_blank" rel="noopener">Lanjut bayar ↗</a>` : '<span class="pillTj" style="--w:#c8901a">⏳ Menunggu bayar</span>')
+      : '<span class="pillTj" style="--w:#c8901a">⏳ Diverifikasi</span>'}</div>`).join('')}</div>
+       <p class="kecil">Pesanan yang sudah lunas/disetujui/ditolak hilang dari daftar ini, dan kamu mendapat pesan di sini. Pembayaran otomatis yang tidak dibayar dalam 60 menit dibatalkan sendiri.</p>`
     : '<p class="kecil">Tidak ada pesanan yang menunggu. Semua pesananmu sudah diproses.</p>';
 }
-const namaMetode = id => ({ qris: 'QRIS', bca: 'Transfer BCA', bri: 'Transfer BRI', lain: 'Lainnya' }[id] || id);
+const linkBayar = () => LS.get('linkBayar', {}) || {};
+const namaMetode = id => ({ otomatis: 'Otomatis', qris: 'QRIS', bca: 'Transfer BCA', bri: 'Transfer BRI', lain: 'Lainnya' }[id] || id);
 
 // ---------------------------------------------------------------- ALUR BAYAR
 // item: { jenis, paket, nama, harga, pesan?, tampil? }
@@ -80,8 +88,47 @@ export function bukaBayar(item) {
   if (!metode.length) { toast('Pembayaran belum dibuka. Coba lagi nanti ya.'); return; }
   bukaKartu(`<h2>💳 ${esc(item.nama)}</h2><p>Harga: <b>${rupiah(item.harga)}</b>. Pilih cara bayar:</p>
     <div class="metode">${metode.map(m => `<button type="button" data-m="${m.id}"><b>${esc(m.nama)}</b><small>${esc(m.ket)}</small></button>`).join('')}</div>`, {
-    pasang(el) { el.querySelectorAll('[data-m]').forEach(b => b.onclick = () => langkahBayar(item, metode.find(m => m.id === b.dataset.m))); },
+    pasang(el) { el.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { const m = metode.find(x => x.id === b.dataset.m); if (m.otomatis) bayarOtomatis(item, b); else langkahBayar(item, m); }); },
   });
+}
+
+// Buat transaksi di server lalu buka halaman bayar Midtrans. Diamond masuk
+// sendiri begitu Midtrans mengabari server bahwa pembayaran lunas.
+async function bayarOtomatis(item, tombol) {
+  if (Date.now() - LS.get('pesanT', 0) < 15000) { toast('Tunggu sebentar sebelum membuat pesanan baru ya.'); return; }
+  LS.set('pesanT', Date.now());
+  tombol.disabled = true; tombol.querySelector('small').textContent = 'Menyiapkan halaman bayar…';
+  const jendela = window.open('', '_blank'); // dibuka saat klik supaya tidak diblokir browser
+  try {
+    const r = await fetch('/api/bayar/buat', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({
+      idToken: await K.L.db.idToken(), jenis: item.jenis, paket: item.paket, nominal: item.harga,
+      ...(item.jenis === 'donasi' ? { pesan: item.pesan || '', tampil: item.tampil !== false } : {}) }) });
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok || !d.redirect_url) throw new Error(d.error || 'Gagal membuat pembayaran.');
+    LS.set('pesananKu', [...pesananKu(), d.orderId]);
+    LS.set('linkBayar', Object.fromEntries([...Object.entries(linkBayar()).slice(-19), [d.orderId, d.redirect_url]]));
+    if (jendela) jendela.location.href = d.redirect_url;
+    tutupKartu();
+    bukaKartu(`<div class="match"><div class="hatiBesar">⚡</div><h2>Selesaikan pembayaran</h2><p>${esc(item.nama)} · <b>${rupiah(item.harga)}</b><br>Halaman bayar ${jendela ? 'sudah terbuka di tab baru' : 'siap dibuka'}. Pilih QRIS, VA BCA/BRI, atau e-wallet.<br><b>Begitu lunas, ${item.jenis === 'donasi' ? 'namamu masuk Papan Donatur' : 'langsung masuk ke akunmu'}</b>. Tidak perlu menunggu Direktur.</p>
+      <div class="baris"><a class="btn" href="${esc(d.redirect_url)}" ${jendela ? 'target="_blank" rel="noopener"' : ''}>Buka halaman bayar ↗</a><button class="btn putih" type="button" id="bO">Tutup</button></div>
+      <p class="kecil">Kode pesanan: <code>${esc(d.orderId)}</code>. Berlaku 60 menit.</p></div>`, { pasang(x) { x.querySelector('#bO').onclick = tutupKartu; } });
+  } catch (e) {
+    if (jendela) jendela.close();
+    LS.set('pesanT', 0);
+    tombol.disabled = false; tombol.querySelector('small').textContent = 'Coba lagi';
+    toast('⚠️ ' + e.message + (metodeAktif().length > 1 ? ' Kamu juga bisa pakai cara manual.' : ''), 4200);
+  }
+}
+
+// Dipanggil kantor saat kembali dari halaman Midtrans (?bayar=selesai)
+export function kembaliDariBayar() {
+  const q = new URLSearchParams(location.search);
+  if (q.get('bayar') !== 'selesai') return;
+  history.replaceState(null, '', location.pathname + location.hash);
+  const st = q.get('transaction_status');
+  toast(st === 'settlement' || st === 'capture' ? '✅ Pembayaran berhasil! Diamond/paketmu masuk dalam beberapa detik.'
+    : st === 'pending' ? '⏳ Pembayaran belum selesai. Selesaikan dulu ya, nanti masuk otomatis.'
+      : '🧾 Terima kasih! Kalau sudah bayar, item masuk otomatis dalam beberapa detik.', 5200);
 }
 
 function langkahBayar(item, m) {

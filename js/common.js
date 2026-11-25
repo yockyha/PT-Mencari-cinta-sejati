@@ -1,10 +1,16 @@
 // Utilitas bersama untuk semua halaman.
+import PAKET from '../paket.js';
 export const CFG = Object.assign({
-  namaPT: 'PT Mencari Cinta Sejati', singkatan: 'PT MCS', instagram: '', donasi: '',
+  namaPT: 'PT Mencari Cinta Sejati', singkatan: 'PT MCS', instagram: '',
   kuota: 10000, firebase: null, mading: [], domainLogin: 'ptmcs.id', direkturDemo: null,
   pendaftaran: { umurMin: 13, umurMinJodoh: 18 }, toko: { paket: [] },
   pembayaran: { qris: '', bank: [], kodeUnik: true }, diamond: { paket: [] }, donasi: { min: 5000, saran: [] },
 }, window.PT_CONFIG || {});
+// Harga paket selalu dari paket.js (sama dengan yang dipakai server pembayaran)
+CFG.diamond = { paket: PAKET.diamond };
+CFG.donasi = PAKET.donasi;
+CFG.toko = { ...(CFG.toko || {}), paket: PAKET.toko };
+export { PAKET };
 
 // Tujuan tamu datang ke kantor
 export const TUJUAN = {

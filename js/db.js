@@ -167,6 +167,8 @@ class DBFirebase {
     return this.uid;
   }
   async keluar() { await this.A.signOut(this.auth); }
+  // Token login (untuk server pembayaran otomatis memastikan siapa pembelinya)
+  async idToken() { return this.auth.currentUser ? this.auth.currentUser.getIdToken() : ''; }
   get masukDashboard() { return !this.anon; }
 }
 

@@ -70,16 +70,40 @@ Dipakai untuk **💠 Diamond**, **Kartu Eksekutif/EXP**, dan **🎁 donasi**. Ua
 2. Pembeli memilih paket → memilih **QRIS / BCA / BRI** → membayar **nominal unik** (harga + Rp1–499, mis. Rp10.330) → menekan *Saya sudah bayar*
 3. Di **Dashboard → Toko & Pesanan**, cocokkan nominal unik dengan mutasi rekening/QRIS → **Setujui**. Diamond/paket langsung masuk, pembeli dapat notifikasi; donasi tercatat di **Papan Donatur**
 
-Verifikasi masih manual (klik Setujui). Verifikasi otomatis butuh akun *payment gateway* (Midtrans/Xendit/Tripay) atas namamu; strukturnya sudah siap disambungkan lewat Cloudflare Pages Functions.
+Cara manual ini tetap tersedia sebagai cadangan. Supaya **tidak perlu standby menyetujui**, aktifkan pembayaran otomatis di bawah.
+
+### ⚡ Pembayaran otomatis (Midtrans): diamond langsung masuk
+Pembeli memilih **⚡ Bayar otomatis** → halaman bayar Midtrans (QRIS, VA BCA, VA BRI, GoPay, ShopeePay) → begitu lunas, Midtrans mengabari server situs (`/api/bayar/notifikasi`) dan **Diamond / Kartu Eksekutif / EXP / donasi masuk sendiri dalam beberapa detik**. Tidak dibayar dalam 60 menit → batal sendiri. Uang masuk ke saldo Midtrans, lalu dicairkan ke rekeningmu (biaya Midtrans ± 0,7% QRIS, ± Rp4.000 per VA).
+
+Keamanan: harga dihitung server dari `paket.js` (bukan dari browser), notifikasi dicek tanda tangan SHA-512 Midtrans, nominal dicocokkan, dan setiap pesanan hanya bisa dilunasi **sekali** (notifikasi ganda tidak dobel).
+
+**Pasang (sekali saja, ±20 menit):**
+1. **Daftar Midtrans** di <https://dashboard.midtrans.com/register>. Mulai di mode **Sandbox** (uang mainan) untuk mencoba. Untuk uang sungguhan, lengkapi verifikasi bisnis (KTP + rekening) lalu pindah ke **Production**
+2. Midtrans → **Settings → Access Keys** → salin **Server Key** (`SB-Mid-server-…` di Sandbox)
+3. Firebase Console → ⚙️ **Project settings → Service accounts → Database secrets** → **Show** → salin secret-nya
+4. Cloudflare → **Workers & Pages → pt-mencari-cinta-sejati → Settings → Variables and Secrets** → tambahkan (tipe **Secret** untuk yang rahasia):
+
+   | Nama | Isi |
+   |---|---|
+   | `MIDTRANS_SERVER_KEY` | Server Key dari langkah 2 (Secret) |
+   | `MIDTRANS_PRODUCTION` | `false` untuk Sandbox, `true` untuk uang sungguhan |
+   | `FIREBASE_DB_SECRET` | secret dari langkah 3 (Secret) |
+   | `FIREBASE_DB_URL` | `databaseURL` dari `config.js` |
+   | `FIREBASE_API_KEY` | `apiKey` dari `config.js` |
+5. Midtrans → **Settings → Payment → Notification URL** → isi `https://<situsmu>/api/bayar/notifikasi` (mis. `https://pt-mencari-cinta-sejati-bas.pages.dev/api/bayar/notifikasi`), simpan
+6. Di `config.js` ubah `pembayaran.otomatis: ''` menjadi `otomatis: 'midtrans'`, commit & merge ke `main`. Cloudflare men-deploy ulang otomatis (variabel baru juga baru terpakai setelah deploy ulang)
+7. Coba beli Diamond di kantor → pilih ⚡ Bayar otomatis → di Sandbox bayar pakai simulator <https://simulator.sandbox.midtrans.com> → diamond masuk sendiri
+
+**Jangan pernah** menaruh Server Key atau Database secret di `config.js` / GitHub. Keduanya hanya di variabel Cloudflare. Pembayaran otomatis hanya jalan di situs online (bukan mode offline).
 
 ### 💠 Diamond & Lemari Diamond
-- Paket Diamond diatur di `config.js` → `diamond.paket` (bawaan 50/110/300/650 Diamond, Rp5rb–50rb)
+- Paket Diamond diatur di `paket.js` → `diamond` (bawaan 50/110/300/650 Diamond, Rp5rb–50rb)
 - Barang khusus Diamond (outfit: Jas Pengantin, Hoodie Hati, Jaket Varsity; aksesoris: kacamata hati, balon hati, topi pesta) diatur di `js/common.js` (`dm` = harga)
 - **Sekali saja (dan setiap mengubah harga):** Dashboard → Toko & Pesanan → **Terbitkan harga barang Diamond**. Harga di database inilah yang dipakai server untuk memotong diamond
 - Membeli barang dikunci server: diamond terpotong persis sebesar harga dan barang tercatat dalam satu transaksi. Saldo diamond hanya bisa ditambah Direktur
 
 ### Kartu Eksekutif & EXP (dibayar dengan uang)
-- Paket diatur di `config.js` → `toko.paket` (bawaan: Kartu Eksekutif 30 hari Rp5.000, 100/300/1.000 EXP)
+- Paket diatur di `paket.js` → `toko` (bawaan: Kartu Eksekutif 30 hari Rp5.000, 100/300/1.000 EXP)
 - **Kartu Eksekutif** membuka: lihat *siapa* yang menyukaimu, Lounge Eksekutif (lewat lift lobi), Setelan Emas, Mahkota Emas, Halo, nama emas 💎, dan ajakan ngobrol yang menonjol
 
 Semua aturan di atas dijaga di server lewat `database.rules.json`, bukan cuma di tampilan. **Batasan yang perlu diketahui:** EXP dari tugas dicatat oleh browser tamu (dibatasi maksimal 60 EXP per 3 detik), jadi tamu yang paham teknis bisa mengakali EXP *tugas*. Ini hanya berpengaruh ke barang kosmetik. EXP yang **dibeli**, Kartu Eksekutif, dan daftar "siapa yang menyukaimu" sepenuhnya dikunci server dan hanya bisa diberikan Direktur.
@@ -103,6 +127,9 @@ js/db.js              lapisan data: Firebase (online) atau tiruan lokal
 js/layanan.js         semua operasi data (chat, undangan, usir, dll.)
 js/common.js          tujuan, topik meja, filter kata kasar, utilitas
 config.js             ← file yang perlu diubah
+paket.js              harga Diamond, Kartu Eksekutif/EXP & batas donasi (dipakai situs + server)
+functions/api/bayar/  server pembayaran otomatis (Cloudflare Pages Functions)
+server/               kode server: Midtrans, Firebase REST, proses pelunasan
 database.rules.json   aturan keamanan Firebase Realtime Database
 ```
 

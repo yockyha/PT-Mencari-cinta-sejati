@@ -1,0 +1,32 @@
+// =====================================================================
+//  DAFTAR PAKET & HARGA (satu-satunya sumber harga)
+//  Dipakai oleh tampilan toko DAN server pembayaran otomatis
+//  (functions/), jadi harga tidak bisa diakali dari browser.
+//  Ubah harga di sini saja.
+// =====================================================================
+export default {
+  // Paket Diamond (💠) untuk membeli outfit & aksesoris khusus
+  diamond: [
+    { id: 'dm50', diamond: 50, harga: 5000 },
+    { id: 'dm110', diamond: 110, harga: 10000, ket: 'Bonus 10 💠' },
+    { id: 'dm300', diamond: 300, harga: 25000, ket: 'Bonus 50 💠' },
+    { id: 'dm650', diamond: 650, harga: 50000, ket: 'Bonus 150 💠' },
+  ],
+  // Paket lain yang dibayar dengan uang
+  toko: [
+    { id: 'vip30', nama: 'Kartu Eksekutif 30 hari', harga: 5000, vipHari: 30, ket: 'Lihat siapa yang menyukaimu, Lounge Eksekutif, outfit & nama emas' },
+    { id: 'exp100', nama: '100 EXP', harga: 5000, exp: 100, ket: 'Langsung naik ±2 level untuk pemula' },
+    { id: 'exp300', nama: '300 EXP', harga: 12000, exp: 300, ket: 'Buka Jas & Dasi, Gaun Pesta, dan lainnya' },
+    { id: 'exp1000', nama: '1.000 EXP', harga: 35000, exp: 1000, ket: 'Buka hampir semua outfit & aksesoris' },
+  ],
+  // Donasi (nominal bebas)
+  donasi: { min: 5000, maks: 10000000, saran: [10000, 25000, 50000, 100000] },
+};
+
+// Hitung item pesanan dari data yang dikirim pembeli. Mengembalikan null bila tidak sah.
+export function hitungItem(P, { jenis, paket, nominal }) {
+  if (jenis === 'diamond') { const p = P.diamond.find(x => x.id === paket); return p ? { jenis, paket: p.id, nama: `${p.diamond} Diamond`, harga: p.harga, diamond: p.diamond } : null; }
+  if (jenis === 'paket') { const p = P.toko.find(x => x.id === paket); return p ? { jenis, paket: p.id, nama: p.nama, harga: p.harga, exp: p.exp || 0, vipHari: p.vipHari || 0 } : null; }
+  if (jenis === 'donasi') { const n = Math.round(+nominal || 0); return n >= P.donasi.min && n <= P.donasi.maks ? { jenis, paket: 'donasi', nama: 'Donasi', harga: n } : null; }
+  return null;
+}
