@@ -37,7 +37,7 @@ for node, val in [("saran", "newData.child('dari').val() === auth.uid && newData
                   ("laporan", "newData.child('dari').val() === auth.uid && newData.child('target').isString() && newData.child('alasan').isString() && newData.child('alasan').val().length <= 120 && newData.child('t').val() === now")]:
     r[node] = {".read": f"{A} && {STAF}", ".write": f"{A} && {DIR}", "$id": {".write": f"{A} && ((!data.exists() && {BEBAS}) || (!newData.exists() && {STAF}))", ".validate": val}}
 # MEJA NONGKRONG: obrolan, papan kegiatan & voting "Pilih Mana" per meja topik
-MEJA_ID = "$meja.matches(/^(gaming|musik|drakor|olahraga|kuliner|buku|jalan|random)$/)"
+MEJA_ID = "$meja.matches(/^(gaming|musik|drakor|olahraga|kuliner|buku|jalan|random|kafe|lounge)$/)"
 r["mejaChat"] = {".read": True, ".write": f"{A} && {DIR}", "$meja": {"$id": {
   ".write": f"{A} && {MEJA_ID} && ((!data.exists() && {BEBAS}) || (!newData.exists() && {STAF}))", ".validate": pesan(160)}}}
 TXT = lambda k, n: f"newData.child('{k}').isString() && newData.child('{k}').val().length <= {n}"

@@ -166,6 +166,11 @@ button,input,select{font:inherit}
 .kartuPemantik.kedip{opacity:.75}.kartuPemantik.dapat{animation:dapat .6s}
 @keyframes dapat{40%{transform:scale(1.06)}}
 #kartu h3{margin:14px 0 8px;font-size:16px}
+.lokerIsi{max-height:min(34vh,300px);overflow-y:auto;overscroll-behavior:contain;padding-right:4px}
+.lokerIsi h4,#kartu h4{margin:10px 0 6px;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.lokerIsi .sw.teks button small{font-weight:700;opacity:.75}
+.lokerGender{margin-bottom:6px}
+.fotoHasil{width:100%;border:3px solid var(--ink);border-radius:14px;display:block}
 .dmForm{display:flex;gap:6px;margin-top:8px}
 .dmForm input{flex:1;min-width:0}
 .dmForm .btn{padding:6px 12px}
@@ -275,7 +280,7 @@ button,input,select{font:inherit}
 .tlpCatatan{color:#d9b8c4;margin-top:8px}
 @media (prefers-reduced-motion:reduce){.dmMerah{animation:none}}
 </style>
-<script src="../config.js?v=202611251651"></script>
+<script src="../config.js?v=202611251741"></script>
 <script type="importmap">{"imports":{"three":"../vendor/three.module.js"}}</script>
 </head>
 <body>
@@ -308,6 +313,6 @@ button,input,select{font:inherit}
 <div id="tirai" hidden><div class="isi"></div></div>
 <div id="loading"><div><span class="hati">❤</span>Membuka pintu kantor…</div></div>
 
-<script type="module" src="kantor.js?v=202611251651"></script>
+<script type="module" src="kantor.js?v=202611251741"></script>
 </body>
 </html>

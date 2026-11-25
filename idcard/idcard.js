@@ -1,6 +1,6 @@
-import { CFG, TUJUAN, STATUS, bersih, igBersih, kasar, hash, fmt, esc, profil, simpanProfil } from '../js/common.js?v=202611251651';
-import { bukaDB } from '../js/db.js?v=202611251651';
-import { buatLayanan } from '../js/layanan.js?v=202611251651';
+import { CFG, TUJUAN, STATUS, bersih, igBersih, kasar, hash, fmt, esc, profil, simpanProfil } from '../js/common.js?v=202611251741';
+import { bukaDB } from '../js/db.js?v=202611251741';
+import { buatLayanan } from '../js/layanan.js?v=202611251741';
 
 const $ = id => document.getElementById(id);
 const cv = $('kartu'), x = cv.getContext('2d');

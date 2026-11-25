@@ -8,11 +8,11 @@
 //                 + permainan khusus (putar destinasi, roda random, dll)
 //  Data: mejaChat/<meja>, mejaPapan/<meja>, mejaVote/<meja>/<hari>/<uid>
 // =====================================================================
-import { LS, bersih, esc, hariIni, sensor } from '../js/common.js?v=202611251651';
-import { TS } from '../js/db.js?v=202611251651';
-import { K, toast, bukaKartu, tutupKartu, jam, tanggalJam } from './ui.js?v=202611251651';
-import * as Prog from './progres.js?v=202611251651';
-import * as Sosial from './sosial.js?v=202611251651';
+import { LS, bersih, esc, hariIni, sensor } from '../js/common.js?v=202611251741';
+import { TS } from '../js/db.js?v=202611251741';
+import { K, toast, bukaKartu, tutupKartu, jam, tanggalJam } from './ui.js?v=202611251741';
+import * as Prog from './progres.js?v=202611251741';
+import * as Sosial from './sosial.js?v=202611251741';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const cari = q => encodeURIComponent(q);
@@ -59,6 +59,16 @@ const MEJA = [
     suka: '🔥 Setuju', tombol: 'Lempar hot take', roda: true,
     pilih: [['Bisa terbang', 'Bisa menghilang'], ['Kucing', 'Anjing'], ['Pagi', 'Malam'], ['Chat duluan', 'Nunggu di-chat'], ['Liburan tanpa HP', 'Di rumah dengan WiFi'], ['Kaya tapi sendiri', 'Sederhana tapi bahagia bareng'], ['Tau masa depan', 'Ubah masa lalu']],
     pemantik: ['Kebiasaan aneh kamu yang orang lain jarang tau?', 'Kalau bisa punya satu kekuatan super, apa?', 'Hal kecil yang bikin kamu senyum hari ini?', 'Fakta random tentang kamu?', 'Emoji yang paling sering kamu pakai?', 'Kalau jadi hewan, kamu hewan apa?', 'Hal yang pengen kamu coba sebelum umur 30?', 'Red flag paling nggak masuk akal menurut kamu?'] },
+  // meja bundar (bukan meja topik): Kafe Jodoh & Lounge Eksekutif
+  { id: 'kafe', papan: '💌 Cari Teman Ngopi', ajak: 'Lagi pengen ngopi bareng? Pasang ajakannya, yang tertarik tinggal ketuk ☕.',
+    f: [['Mau ngopi apa?', 'kopi susu gula aren', 40], ['Kota / kapan', 'Jakarta · Sabtu sore', 50], ['Pesan singkat', 'Cari teman ngobrol santai, bukan buat ghosting 😆', 140]],
+    suka: '☕ Ikut ngopi', tombol: 'Pasang ajakan',
+    pilih: [['Kencan di kafe', 'Kencan di taman'], ['Chat lama dulu', 'Langsung ketemu'], ['Dia yang traktir', 'Bayar sendiri-sendiri'], ['Telepon', 'Video call'], ['Cinta pandangan pertama', 'Tumbuh pelan-pelan'], ['Pasangan humoris', 'Pasangan romantis'], ['LDR', 'Satu kota']],
+    pemantik: ['Kencan pertama impian kamu kayak apa?', 'Love language kamu apa?', 'Red flag yang langsung bikin ilfeel?', 'Green flag yang bikin klepek-klepek?', 'Kamu tipe yang chat duluan atau nunggu?', 'Hal kecil yang bikin kamu jatuh hati?', 'Tempat ngopi favorit di kotamu?', 'Lagu yang cocok buat kisah cintamu sekarang?'] },
+  { id: 'lounge', papan: '🥂 Toast Eksekutif', ajak: 'Angkat gelas! Tulis harapan atau ucapan baik untuk sesama tamu.',
+    f: [['Ucapan / harapan kamu', 'Semoga semua yang di sini ketemu jodohnya tahun ini 🥂', 160]], suka: '🥂 Cheers', tombol: 'Angkat gelas',
+    pilih: [['Makan malam mewah', 'Street food'], ['Liburan ke Eropa', 'Keliling Indonesia'], ['Rumah di kota', 'Villa di gunung'], ['Pesta besar', 'Makan malam berdua'], ['Mobil sport', 'Motor klasik'], ['Kerja keras', 'Kerja cerdas'], ['Jam tangan', 'Sepatu']],
+    pemantik: ['Pencapaian yang paling kamu banggakan tahun ini?', 'Kalau sukses besar, hal pertama yang kamu lakukan?', 'Siapa orang yang paling berjasa di hidupmu?', 'Mimpi besar kamu 5 tahun lagi?', 'Kemewahan kecil yang selalu kamu nikmati?', 'Nasihat terbaik yang pernah kamu terima?', 'Makan malam dengan tokoh siapa saja, pilih siapa?', 'Apa arti sukses buat kamu?'] },
 ];
 const DESTINASI = ['Raja Ampat, Papua Barat Daya', 'Labuan Bajo, NTT', 'Danau Toba, Sumatera Utara', 'Bromo, Jawa Timur', 'Ubud, Bali', 'Nusa Penida, Bali', 'Belitung', 'Karimunjawa, Jawa Tengah', 'Dieng, Jawa Tengah', 'Kawah Ijen, Jawa Timur', 'Pulau Derawan, Kalimantan Timur', 'Tana Toraja, Sulawesi Selatan', 'Wakatobi, Sulawesi Tenggara', 'Bukittinggi, Sumatera Barat', 'Yogyakarta', 'Lombok, NTB', 'Sumba, NTT', 'Ranu Kumbolo, Jawa Timur', 'Kepulauan Seribu, Jakarta', 'Bandung', 'Malang', 'Kyoto, Jepang', 'Seoul, Korea Selatan', 'Bangkok, Thailand', 'Singapura', 'Kuala Lumpur, Malaysia', 'Hanoi, Vietnam', 'Istanbul, Turki', 'Paris, Prancis', 'Swiss'];
 const RODA = ['Sebutin 3 hal yang kamu syukuri hari ini di obrolan meja 🙏', 'Ceritain makanan terakhir yang kamu makan 🍽️', 'Kasih pujian tulus ke orang yang lagi duduk di sini 💖', 'Tulis emoji yang menggambarkan mood kamu sekarang', 'Rekomendasiin satu lagu ke meja ini 🎵', 'Ceritain mimpi teraneh yang pernah kamu alami 😴', 'Sebutin tipe ideal kamu dalam 3 kata 👀', 'Tanya satu pertanyaan random ke orang di meja ini ❓', 'Ceritain hal paling memalukan minggu ini 🙈', 'Kalau dapat Rp10 juta sekarang, buat apa? 💸', 'Tulis "hai" ke orang yang belum pernah kamu sapa 👋', 'Sebutin film yang kamu tonton terakhir 🎬'];

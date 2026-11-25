@@ -101,7 +101,7 @@
       ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
       "$meja": {
         "$id": {
-          ".write": "auth != null && $meja.matches(/^(gaming|musik|drakor|olahraga|kuliner|buku|jalan|random)$/) && ((!data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
+          ".write": "auth != null && $meja.matches(/^(gaming|musik|drakor|olahraga|kuliner|buku|jalan|random|kafe|lounge)$/) && ((!data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
           ".validate": "newData.child('uid').val() === auth.uid && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('m').isString() && newData.child('m').val().length > 0 && newData.child('m').val().length <= 160 && newData.child('t').val() === now"
         }
       }
@@ -111,7 +111,7 @@
       ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
       "$meja": {
         "$id": {
-          ".write": "auth != null && $meja.matches(/^(gaming|musik|drakor|olahraga|kuliner|buku|jalan|random)$/) && ((!data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (data.exists() && !newData.exists() && (data.child('uid').val() === auth.uid || root.child('peran/' + auth.uid).exists())))",
+          ".write": "auth != null && $meja.matches(/^(gaming|musik|drakor|olahraga|kuliner|buku|jalan|random|kafe|lounge)$/) && ((!data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (data.exists() && !newData.exists() && (data.child('uid').val() === auth.uid || root.child('peran/' + auth.uid).exists())))",
           ".validate": "data.exists() || (newData.child('uid').val() === auth.uid && newData.hasChildren(['n', 't']))",
           "uid": {
             ".validate": "!data.exists() || data.val() === newData.val()"
@@ -149,7 +149,7 @@
       "$meja": {
         "$hari": {
           "$uid": {
-            ".write": "auth != null && auth.uid === $uid && $meja.matches(/^(gaming|musik|drakor|olahraga|kuliner|buku|jalan|random)$/) && $hari.matches(/^[0-9]+$/) && $hari.length === 8 && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+            ".write": "auth != null && auth.uid === $uid && $meja.matches(/^(gaming|musik|drakor|olahraga|kuliner|buku|jalan|random|kafe|lounge)$/) && $hari.matches(/^[0-9]+$/) && $hari.length === 8 && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
             ".validate": "newData.val() === 'a' || newData.val() === 'b'"
           }
         }
