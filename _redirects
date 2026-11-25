@@ -1,0 +1,4 @@
+# Link pendek untuk bio Instagram/TikTok (Cloudflare Pages)
+/daftar   /kantor/#daftar   302
+/daftar/  /kantor/#daftar   302
+/masuk    /kantor/          302
