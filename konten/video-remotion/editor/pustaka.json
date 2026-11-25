@@ -169,6 +169,11 @@
    "src": "vo.mp3",
    "nama": "Voice-over video 1",
    "detik": 54.99
+  },
+  {
+   "src": "vo2.mp3",
+   "nama": "Voice-over video 2",
+   "detik": 49.71
   }
  ]
 }
