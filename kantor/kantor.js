@@ -1027,6 +1027,9 @@ function terimaChat(obj) {
 const resmi = () => !!(L && (K.anggotaSaya || K.peran[L.uid]));
 const SARAN_RUANG = { jodoh: ['Kafe Jodoh', 19.5, 2.5, Math.PI / 2], teman: ['Meja Nongkrong', 0, 1.5, Math.PI], curhat: ['Taman Curhat', 18.5, -9.2, Math.PI] };
 
+// Syarat follow & komen sebelum di-ACC (config.js → wajibFollow)
+const WF = CFG.wajibFollow && (CFG.instagram || CFG.tiktok) ? CFG.wajibFollow : null;
+const akunSosial = () => [CFG.instagram && `<b>@${esc(CFG.instagram)}</b> di Instagram`, CFG.tiktok && `<b>@${esc(CFG.tiktok)}</b> di TikTok`].filter(Boolean).join(' / ');
 function bukaDaftar() {
   if (resmi()) return bukaUbahData();
   const d = K.daftarku;
@@ -1068,12 +1071,16 @@ function formulir(p) {
         <div><label for="dK">Kota *</label><input id="dK" maxlength="40" placeholder="contoh: Bandung" value="${esc(p.kota || '')}"></div>
         <div id="bS"><label for="dS">Status hati</label><select id="dS">${STATUS.map(x => `<option ${x === p.s ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></div>
       </div>
-      <label for="dI">Username Instagram (opsional, membantu verifikasi)</label>
+      ${WF ? `<div class="syaratFollow"><b>📌 Syarat di-ACC Direktur</b>
+        <ol><li>Follow ${akunSosial()}</li><li>Komen <b>"${esc(WF.komen || 'DAFTAR')}"</b> di postingan terbaru</li><li>Tulis username Instagram-mu di bawah (Direktur mengecek follow & komenmu dari sini)</li></ol>
+        <div class="baris">${CFG.instagram ? `<a class="btn putih mini" href="https://www.instagram.com/${encodeURIComponent(CFG.instagram)}/" target="_blank" rel="noopener">📷 Buka Instagram</a>` : ''}${CFG.tiktok ? `<a class="btn putih mini" href="https://www.tiktok.com/@${encodeURIComponent(CFG.tiktok)}" target="_blank" rel="noopener">🎵 Buka TikTok</a>` : ''}</div></div>` : ''}
+      <label for="dI">Username Instagram${WF ? ' *' : ' (opsional, membantu verifikasi)'}</label>
       <input id="dI" maxlength="31" placeholder="@username" autocapitalize="none" autocorrect="off" value="${esc(p.ig ? '@' + p.ig : '')}">
       <label for="dB">Tentang aku *</label>
       <textarea id="dB" maxlength="100" rows="2" placeholder="contoh: suka kopi, musik indie, dan jalan sore">${esc(p.b || '')}</textarea>
       <label for="dA2">Kenapa ingin bergabung? *</label>
       <textarea id="dA2" maxlength="200" rows="2" placeholder="contoh: pengen nambah teman ngobrol di malam hari">${esc(p.alasan || '')}</textarea>
+      ${WF ? `<label class="cek"><input type="checkbox" id="dF"> Aku sudah follow ${akunSosial()} dan komen "${esc(WF.komen || 'DAFTAR')}"</label>` : ''}
       <label class="cek"><input type="checkbox" id="dA"> Data di atas benar, dan aku akan sopan, tidak melecehkan, tidak spam, serta tidak menyebar data pribadi orang lain</label>
       <p class="err" id="dE"></p>
       <div class="baris"><button class="btn" type="submit">Kirim pendaftaran</button><button class="btn putih" type="button" id="dL">Lihat-lihat dulu</button></div>
@@ -1095,11 +1102,14 @@ function formulir(p) {
           : d.kota.length < 2 ? 'Isi kota tempat tinggalmu.'
           : d.b.length < 10 ? 'Ceritakan sedikit tentang dirimu (minimal 10 huruf).'
           : d.alasan.length < 10 ? 'Tulis alasan bergabung (minimal 10 huruf).'
+          : WF && d.ig.length < 2 ? 'Tulis username Instagram-mu supaya Direktur bisa mengecek follow & komenmu.'
+          : WF && !isi.querySelector('#dF').checked ? `Follow ${CFG.instagram ? '@' + CFG.instagram : 'akun kami'} & komen "${WF.komen || 'DAFTAR'}" dulu, lalu centang ya.`
           : [d.n, d.ig, d.b, d.alasan, d.kota].some(kasar) ? 'Pakai kata-kata yang lebih sopan ya.'
           : !isi.querySelector('#dA').checked ? 'Centang pernyataan di bawah dulu ya.' : '';
         if (salah) { E.textContent = salah; return; }
         E.textContent = 'Mengirim…';
         try {
+          if (WF) d.ikut = true;
           await L.daftarAkses(d);
           prof = { ...(prof || {}), ...d, look: saya.look }; simpanProfil(prof);
           perbaruiTombolProfil();

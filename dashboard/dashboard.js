@@ -183,6 +183,7 @@ function vDaftar() {
         <dt>Kota</dt><dd>${esc(d.kota)}</dd>
         ${d.s ? `<dt>Status hati</dt><dd>${esc(d.s)}</dd>` : ''}
         <dt>Instagram</dt><dd>${d.ig ? `<a href="https://www.instagram.com/${encodeURIComponent(d.ig)}/" target="_blank" rel="noopener">@${esc(d.ig)}</a>` : '—'}</dd>
+        ${CFG.wajibFollow ? `<dt>Follow & komen</dt><dd>${d.ikut ? `☑️ mengaku sudah${d.ig ? ` · <a href="https://www.instagram.com/${encodeURIComponent(d.ig)}/" target="_blank" rel="noopener">cek profilnya</a>` : ''}` : '⚠️ belum'}<br><span class="kecil">Cek di daftar follower & komen "${esc(CFG.wajibFollow.komen || 'DAFTAR')}" sebelum ACC</span></dd>` : ''}
         <dt>Masuk</dt><dd>${esc(tgl(d.t))}</dd>
         <dt>Kode</dt><dd><code>${esc(kodeTamu(u))}</code></dd>
       </dl>

@@ -6,7 +6,13 @@ window.PT_CONFIG = {
   // Nama & akun sosial perusahaan
   namaPT: 'PT Mencari Cinta Sejati',
   singkatan: 'PT MCS',
-  instagram: 'ptmencaricintasejati', // tanpa @ ; kosongkan jika belum ada
+  instagram: 'jodohonline.id', // tanpa @ ; kosongkan jika belum ada
+  tiktok: 'jodohonline.id',    // tanpa @ ; kosongkan jika belum ada
+
+  // Syarat sebelum pendaftar di-ACC: follow akun di atas + komen kata ini
+  // di postingan terbaru. Direktur mengecek lewat username IG di formulir.
+  // Ganti jadi null untuk mematikan syarat ini.
+  wajibFollow: { komen: 'DAFTAR' },
 
   // Target tamu angkatan pertama (untuk bar di halaman Kartu Tamu)
   kuota: 10000,
