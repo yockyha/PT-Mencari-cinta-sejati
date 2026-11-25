@@ -78,3 +78,21 @@ window.PT_CONFIG = {
     { judul: 'Aturan kantor', isi: 'Sopan, tidak melecehkan, tidak spam, dan jangan sebar data pribadi orang lain. Pelanggar dikeluarkan Satpam.' },
   ],
 };
+
+// ---------------------------------------------------------
+//  MODE OFFLINE OTOMATIS
+//  Saat situs dibuka dari komputer sendiri (localhost / 127.0.0.1),
+//  misalnya lewat jalankan-offline.bat, situs memakai MODE LOKAL:
+//  tanpa internet & tanpa Firebase, data tersimpan di browser itu saja,
+//  dan Dashboard Direktur memakai akun demo di bawah ini.
+//  Tambahkan ?online=1 di alamat untuk tetap memakai Firebase dari localhost.
+//  Di hosting (Cloudflare Pages) blok ini tidak berpengaruh.
+// ---------------------------------------------------------
+(function () {
+  var lokal = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+  if (lokal && !/[?&]online=1/.test(location.search)) {
+    window.PT_CONFIG.firebase = null;
+    window.PT_CONFIG.direkturDemo = { username: 'direktur', password: 'cintasejati' };
+    window.PT_CONFIG.modeOffline = true;
+  }
+})();

@@ -82,6 +82,8 @@ kantor/progres.js     EXP, level, tugas, petunjuk arah, acara, peringkat, toko
 kantor/game.js        mini-game Tangkap Hati
 kantor/ui.js          alat UI bersama
 dashboard/            Dashboard Direktur (login, persetujuan, kendali penuh)
+vendor/               three.js (pustaka 3D) disimpan lokal
+jalankan-offline.*    peluncur offline (.bat Windows, .ps1 server, .sh Mac/Linux)
 idcard/               generator Kartu Tamu
 js/db.js              lapisan data: Firebase (online) atau tiruan lokal
 js/layanan.js         semua operasi data (chat, undangan, usir, dll.)
@@ -90,14 +92,24 @@ config.js             ← file yang perlu diubah
 database.rules.json   aturan keamanan Firebase Realtime Database
 ```
 
-## Menjalankan di komputer
+## Menjalankan di komputer (offline)
 
-```bash
-python3 -m http.server 8000
-# buka http://localhost:8000
-```
+Bisa dijalankan **tanpa internet dan tanpa Firebase**. Saat dibuka dari `localhost`, situs otomatis memakai mode lokal: data tersimpan di browser itu saja, dan Dashboard Direktur memakai akun demo (`direktur` / `cintasejati`).
 
-Harus lewat server, bukan dibuka sebagai `file://`, karena halaman memakai ES module.
+**Windows:** klik dua kali **`jalankan-offline.bat`**. Server kecil (PowerShell bawaan Windows, tanpa install apa pun) menyala dan browser terbuka otomatis di `http://localhost:8080/`. Tutup jendela hitamnya untuk berhenti.
+
+**Mac / Linux:** `sh jalankan-offline.sh` lalu buka `http://localhost:8080/` (butuh `python3`).
+
+Alamat yang bisa dibuka:
+- `http://localhost:8080/` – beranda
+- `http://localhost:8080/kantor/` – kantor 3D (tab kedua = tamu lain, untuk mencoba interaksi)
+- `http://localhost:8080/dashboard/` – Dashboard Direktur
+
+Catatan:
+- three.js disimpan di `vendor/three.module.js`, jadi kantor 3D tidak perlu internet.
+- Tanpa internet, font Google tidak termuat dan diganti font bawaan sistem. Tampilan sedikit berbeda, fungsi tetap sama.
+- Mau mengetes versi online (Firebase) dari komputer sendiri? Tambahkan `?online=1` di alamat, misalnya `http://localhost:8080/kantor/?online=1`.
+- Data mode offline tidak tercampur dengan data di situs online.
 
 ## Mode lokal vs online
 
