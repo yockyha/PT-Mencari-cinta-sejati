@@ -36,6 +36,24 @@ r["curhatPemilik"] = {".read": f"{A} && {STAF}", ".write": f"{A} && {DIR}", "$id
 for node, val in [("saran", "newData.child('dari').val() === auth.uid && newData.child('m').isString() && newData.child('m').val().length <= 300 && newData.child('t').val() === now"),
                   ("laporan", "newData.child('dari').val() === auth.uid && newData.child('target').isString() && newData.child('alasan').isString() && newData.child('alasan').val().length <= 120 && newData.child('t').val() === now")]:
     r[node] = {".read": f"{A} && {STAF}", ".write": f"{A} && {DIR}", "$id": {".write": f"{A} && ((!data.exists() && {BEBAS}) || (!newData.exists() && {STAF}))", ".validate": val}}
+# MEJA NONGKRONG: obrolan, papan kegiatan & voting "Pilih Mana" per meja topik
+MEJA_ID = "$meja.matches(/^(gaming|musik|drakor|olahraga|kuliner|buku|jalan|random)$/)"
+r["mejaChat"] = {".read": True, ".write": f"{A} && {DIR}", "$meja": {"$id": {
+  ".write": f"{A} && {MEJA_ID} && ((!data.exists() && {BEBAS}) || (!newData.exists() && {STAF}))", ".validate": pesan(160)}}}
+TXT = lambda k, n: f"newData.child('{k}').isString() && newData.child('{k}').val().length <= {n}"
+r["mejaPapan"] = {".read": True, ".write": f"{A} && {DIR}", "$meja": {"$id": {
+  ".write": f"{A} && {MEJA_ID} && ((!data.exists() && {BEBAS}) || (data.exists() && !newData.exists() && (data.child('uid').val() === auth.uid || {STAF})))",
+  ".validate": "data.exists() || (newData.child('uid').val() === auth.uid && newData.hasChildren(['n', 't']))",
+  "uid": {".validate": "!data.exists() || data.val() === newData.val()"},
+  "n": {".validate": "newData.isString() && newData.val().length <= 30 && (!data.exists() || data.val() === newData.val())"},
+  "a": {".validate": "newData.isString() && newData.val().length <= 60 && (!data.exists() || data.val() === newData.val())"},
+  "b": {".validate": "newData.isString() && newData.val().length <= 60 && (!data.exists() || data.val() === newData.val())"},
+  "c": {".validate": "newData.isString() && newData.val().length <= 160 && (!data.exists() || data.val() === newData.val())"},
+  "t": {".validate": "(!data.exists() && newData.val() === now) || data.val() === newData.val()"},
+  "s": {"$uid": {".write": f"{A} && auth.uid === $uid && (!newData.exists() || {BEBAS})", ".validate": "newData.val() === true"}},
+  "$lain": {".validate": False}}}}
+r["mejaVote"] = {".read": True, ".write": f"{A} && {DIR}", "$meja": {"$hari": {"$uid": {
+  ".write": f"{A} && auth.uid === $uid && {MEJA_ID} && $hari.matches(/^[0-9]+$/) && $hari.length === 8 && {BEBAS}", ".validate": "newData.val() === 'a' || newData.val() === 'b'"}}}}
 r["undangan"] = {"$ke": {".read": f"{A} && auth.uid === $ke", "$dari": {
   ".write": f"{A} && ((auth.uid === $dari && newData.exists() && {BEBAS}) || (auth.uid === $ke && !newData.exists()))",
   ".validate": "newData.child('n').isString() && newData.child('n').val().length <= 20 && newData.child('t').val() === now"}}}
