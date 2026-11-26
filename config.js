@@ -7,12 +7,12 @@ window.PT_CONFIG = {
   namaPT: 'PT Mencari Cinta Sejati',
   singkatan: 'PT MCS',
   instagram: 'jodohonline.company', // USERNAME Instagram (tanpa @), dipakai untuk link & syarat follow di formulir
-  instagramNama: 'jodohonline.id',   // nama yang ditampilkan untuk akun Instagram
+  instagramNama: 'jodohonline.company', // nama yang ditampilkan untuk akun Instagram
   tiktok: 'jodohonline.id',          // username TikTok (tanpa @) ; kosongkan jika belum ada
 
   // Kontak resmi (tampil di halaman /kontak, dipakai juga untuk syarat Midtrans).
   // Isi email dan nomor WhatsApp (format 628xxxx) yang boleh dilihat publik.
-  kontak: { email: '', wa: '' },
+  kontak: { email: 'bb0309121@gmail.com', wa: '' },
 
   // Syarat sebelum pendaftar di-ACC: follow akun di atas + komen kata ini
   // di postingan terbaru. Direktur mengecek lewat username IG di formulir.
