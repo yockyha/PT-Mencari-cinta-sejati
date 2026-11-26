@@ -77,12 +77,13 @@ if (require.main === module) (async () => {
   if (ingin('speed')) {
     const s = await sesi(b);
     await ev(s, () => { const K = __kantor.K, o = K.lain.get('t2') || {}; K.lain.set('t2', { ...o, uid: 't2', nama: 'dimas.p', tj: 'jodoh', zd: 8, mb: 'INFP', ll: 1 }); });
-    await ev(s, () => { const L = __kantor.L, t = L.db.now(); L.db.set('speedDating', { buka: true, ronde: { no: 1, mulai: t - 173000, durasi: 180, pasangan: { urina: 't2', t2: 'urina' } } }); });
+    await ev(s, () => { const L = __kantor.L, t = L.db.now(); L.db.set('speedDating', { buka: true, ronde: { no: 1, mulai: t - 4000, durasi: 180, pasangan: { urina: 't2', t2: 'urina' } } }); });
     await maju(s, 400);
     const P = ['hai! kamu suka kopi juga? ☕', 'iyaa tim kopi susu 😆', 'kencan pertama impianmu apa?', 'nonton + makan boba sih 🥹'];
     await rekam(s, 'sd', 7.5, async (i) => {
       const k = [6, 36, 70, 100].indexOf(i);
       if (k >= 0) await ev(s, ([m, k]) => { const L = __kantor.L; L.db.push('sdChat/t2_urina', { uid: k % 2 ? 'urina' : 't2', n: k % 2 ? 'Rina' : 'dimas.p', m, t: L.db.now() }); }, [P[k], k]);
+      if (i === 150) await ev(s, () => { const L = __kantor.L; L.db.set('speedDating/ronde/mulai', L.db.now() - 181000); });
       if (i === 205) await klik(s, '#vY');
     });
     await s.ctx.close();
