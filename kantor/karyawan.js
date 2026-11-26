@@ -6,8 +6,8 @@
 //    (kurir datang ke lobi), istirahat, beres-beres; OB ngepel & menyapu.
 //  Disimulasikan di tiap perangkat (tidak lewat database).
 // =====================================================================
-import { CFG, LOKASI, esc } from '../js/common.js?v=202611260933';
-import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611260933';
+import { CFG, LOKASI, esc } from '../js/common.js?v=202611261019';
+import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611261019';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const jarak = (a, x, z) => Math.hypot(a.x - x, a.z - z);

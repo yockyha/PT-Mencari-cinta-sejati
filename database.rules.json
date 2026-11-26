@@ -212,6 +212,13 @@
         ".validate": "newData.child('sampai').isNumber() && (!newData.child('n').exists() || (newData.child('n').isString() && newData.child('n').val().length <= 30))"
       }
     },
+    "papanInfo": {
+      ".read": true,
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$id": {
+        ".validate": "newData.child('j').isString() && newData.child('j').val().length >= 1 && newData.child('j').val().length <= 60 && (!newData.child('m').exists() || (newData.child('m').isString() && newData.child('m').val().length <= 400)) && (!newData.child('ik').exists() || (newData.child('ik').isString() && newData.child('ik').val().length <= 8)) && (!newData.child('w').exists() || newData.child('w').val().matches(/^(pink|emas|biru|hijau|ungu|merah)$/)) && (!newData.child('pin').exists() || newData.child('pin').isBoolean()) && newData.child('t').isNumber()"
+      }
+    },
     "privasi": {
       ".read": true,
       "$uid": {
