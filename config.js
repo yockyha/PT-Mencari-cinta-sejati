@@ -12,7 +12,7 @@ window.PT_CONFIG = {
 
   // Kontak resmi (tampil di halaman /kontak, dipakai juga untuk syarat Midtrans).
   // Isi email dan nomor WhatsApp (format 628xxxx) yang boleh dilihat publik.
-  kontak: { email: '', wa: '' },
+  kontak: { email: 'bb0309121@gmail.com', wa: '' },
 
   // Syarat sebelum pendaftar di-ACC: follow akun di atas + komen kata ini
   // di postingan terbaru. Direktur mengecek lewat username IG di formulir.
