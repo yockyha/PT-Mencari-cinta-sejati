@@ -3,11 +3,12 @@
 //  Semua tindakan juga dijaga database.rules.json di server, jadi
 //  tamu biasa tidak bisa memakainya walau mengutak-atik browser.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, fmt, esc, bersih, kodeTamu } from '../js/common.js?v=202611260304';
-import * as Prog from './progres.js?v=202611260304';
-import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611260304';
-import * as Hadir from './hadir.js?v=202611260304';
-import { TS } from '../js/db.js?v=202611260304';
+import { CFG, TUJUAN, LOKASI, fmt, esc, bersih, kodeTamu } from '../js/common.js?v=202611260350';
+import * as Prog from './progres.js?v=202611260350';
+import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611260350';
+import * as Hadir from './hadir.js?v=202611260350';
+import * as Speed from './speeddating.js?v=202611260350';
+import { TS } from '../js/db.js?v=202611260350';
 
 let laporan = {}, saran = {}, larangan = {}, pesanan = {}, lepas = [], tabAktif = '';
 const peranku = () => K.L && K.peran[K.L.uid];
@@ -99,6 +100,7 @@ function kuasa() {
         <button type="button" data-k="karyawan">🫡 Panggil karyawan<small>Semua karyawan berkumpul di sekitarmu</small></button>
         <button type="button" data-k="loker">👔 Lemari Direktur<small>Semua baju terbuka untukmu</small></button>
       </div>
+      ${Speed.htmlKendali()}
       <h3>📣 Kumpulkan tamu</h3>
       <p class="kecil">Kirim undangan ke semua tamu online untuk datang ke satu tempat.</p>
       <div class="sw teks">${Object.entries(LOKASI).filter(([, l]) => !l.vip).map(([k, l]) => `<button type="button" data-lok="${k}">${esc(l.nama)}</button>`).join('')}</div>
@@ -126,6 +128,7 @@ function kuasa() {
           toast(`🎁 +20 EXP terkirim ke ${ok} tamu`); Hadir.efekLokal('hati', 30); b.disabled = false;
         }
       });
+      Speed.pasangKendali(isi);
       isi.querySelectorAll('[data-lok]').forEach(b => b.onclick = () => Hadir.kirimEfek('kumpul', b.dataset.lok).then(() => { tutupKartu(); Prog.pergiKe(b.dataset.lok); }).catch(gagal));
       isi.querySelectorAll('[data-ke]').forEach(b => b.onclick = () => { const o = K.lain.get(b.dataset.ke); if (!o) return; tutupKartu(); K.pindah(o.x + 1.4, o.z + 1.4); toast(`🚀 Kamu mendatangi ${o.nama}`); });
     },
@@ -186,7 +189,7 @@ function orang() {
       <h3>Sedang dikeluarkan</h3>
       ${diusir.length ? `<div class="daftar">${diusir.map(([u, b]) => `<div><span>${esc(b.n || namaDari(u))}<br><small>${b.sampai > now + 3650 * 86400e3 ? 'diblokir' : 'sampai ' + esc(tanggalJam(b.sampai))} · ${esc(b.alasan || '')}</small></span><button type="button" class="mini putih" data-ampun="${esc(u)}">Ampuni</button></div>`).join('')}</div>` : '<p class="kecil">Tidak ada.</p>'}`,
     pasang(isi) {
-      isi.querySelectorAll('[data-lihat]').forEach(b => b.onclick = () => import('./sosial.js?v=202611260304').then(S => S.bukaProfil(o.find(x => x.uid === b.dataset.lihat))));
+      isi.querySelectorAll('[data-lihat]').forEach(b => b.onclick = () => import('./sosial.js?v=202611260350').then(S => S.bukaProfil(o.find(x => x.uid === b.dataset.lihat))));
       isi.querySelectorAll('[data-mod]').forEach(b => b.onclick = () => bukaModerasiOrang(o.find(x => x.uid === b.dataset.mod)));
       isi.querySelectorAll('[data-ampun]').forEach(b => b.onclick = () => {
         const u = b.dataset.ampun;

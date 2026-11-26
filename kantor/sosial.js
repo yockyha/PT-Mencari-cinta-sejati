@@ -2,14 +2,15 @@
 //  Interaksi antar-tamu: profil, ajak ngobrol (pribadi), suka & match,
 //  papan curhat, daftar orang di kantor, lapor & sembunyikan.
 // =====================================================================
-import { TUJUAN, GENDER, LS, bersih, esc, fmt, kasar, igBersih } from '../js/common.js?v=202611260304';
-import { TS } from '../js/db.js?v=202611260304';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611260304';
-import * as Prog from './progres.js?v=202611260304';
-import * as Suara from './suara.js?v=202611260304';
-import * as Grup from './grup.js?v=202611260304';
-import * as Stiker from './stiker.js?v=202611260304';
-import * as Foto from './foto.js?v=202611260304';
+import { TUJUAN, GENDER, LS, bersih, esc, fmt, kasar, igBersih } from '../js/common.js?v=202611260350';
+import { TS } from '../js/db.js?v=202611260350';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611260350';
+import * as Prog from './progres.js?v=202611260350';
+import * as Suara from './suara.js?v=202611260350';
+import * as Grup from './grup.js?v=202611260350';
+import * as Stiker from './stiker.js?v=202611260350';
+import * as Foto from './foto.js?v=202611260350';
+import * as Seru from './seru.js?v=202611260350';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const siap = () => { if (!K.resmi()) { toast('👀 Kamu masih pengunjung. Daftar dulu untuk berinteraksi.'); K.bukaDaftar(); return false; } if (K.terkunci) { toast('Kamu belum bisa berinteraksi sekarang.'); return false; } return true; };
@@ -105,6 +106,7 @@ export function bukaProfil(o) {
     <p>${pillTujuan(o.tj)} ${peran ? `<span class="pillTj" style="--w:${peran === 'direktur' ? '#c8901a' : '#3a6ea5'}">${peran === 'direktur' ? 'Direktur Utama' : (o.jabatan || 'Staf kantor')}</span>` : ''}</p>
     <p>${o.gd ? `${GENDER[o.gd]}<br>` : ''}${o.s && o.tj === 'jodoh' ? `💗 Status: <b>${esc(o.s)}</b><br>` : ''}${o.mj ? `🪑 Lagi nongkrong di meja <b>${esc(o.mj)}</b><br>` : ''}${o.b ? `“${esc(o.b)}”<br>` : ''}<span id="pIg"></span>
     ${o.npc ? '<br><span class="kecil">Tamu NPC (mode lokal)</span>' : ''}</p>
+    ${o.npc ? '' : Seru.htmlKepribadian(o) + Seru.htmlKecocokan(o)}
     <div class="baris">
       <button class="btn putih" type="button" id="pS">👋 Sapa</button>
       <button class="btn" type="button" id="pA">${adaRuang ? '💬 Buka obrolan' : '💌 Ajak ngobrol'}</button>
@@ -145,6 +147,7 @@ export function bukaProfil(o) {
       };
       if (!o.npc) muatIg(o, isi.querySelector('#pIg'));
       Foto.isiAvatar(isi);
+      const ik = isi.querySelector('[data-isikep]'); if (ik) ik.onclick = () => K.bukaDaftar();
       const av = isi.querySelector('.kepalaProfil [data-av]'); if (av) av.onclick = () => { if (av.classList.contains('ada')) Foto.fotoProfil(uid).then(u => u && bukaKartu(`<h2>${esc(nama)}</h2><img class="fotoBesar" src="${u}" alt="Foto profil ${esc(nama)}">`)); };
       const pmH = isi.querySelector('#pFH'); if (pmH) pmH.onclick = () => Foto.hapusFotoProfil(uid).then(() => { toast('Foto profil dihapus.'); tutupKartu(); });
       isi.querySelector('#pR').onclick = () => bukaLapor(o);
@@ -154,7 +157,7 @@ export function bukaProfil(o) {
         K.segarkanOrang(); gambarUndangan(); tutupKartu();
         toast(`${nama} disembunyikan. Chat & ajakannya tidak akan muncul lagi.`, 3200);
       };
-      const pm = isi.querySelector('#pM'); if (pm) pm.onclick = () => import('./direktur.js?v=202611260304').then(D => D.bukaModerasiOrang(o));
+      const pm = isi.querySelector('#pM'); if (pm) pm.onclick = () => import('./direktur.js?v=202611260350').then(D => D.bukaModerasiOrang(o));
     },
   });
 }
@@ -246,6 +249,7 @@ export function bukaProfilSaya() {
   bukaKartu(`<div class="kepalaProfil">${Foto.htmlAvatar(L.uid, p.n, 'besar')}<div><h2>${TUJUAN[p.tj].ikon} ${esc(p.n)}</h2><span class="baris kecil" style="margin:0"><button type="button" class="mini" id="mFG">📷 Ganti foto</button><button type="button" class="mini putih" id="mFH">Hapus</button></span></div></div>
     <p>${pillTujuan(p.tj)} ${K.peran[L.uid] ? `<span class="pillTj" style="--w:${K.peran[L.uid] === 'direktur' ? '#c8901a' : '#3a6ea5'}">${K.peran[L.uid] === 'direktur' ? '👑 Direktur Utama' : '🛡 Staf'}</span>` : ''}</p>
     ${p.b ? `<p>“${esc(p.b)}”</p>` : ''}
+    ${Seru.htmlKepribadian(p) || '<p class="kecil">✨ Isi zodiak, MBTI & love language di <b>Ubah data</b> supaya kecocokanmu dengan tamu lain terlihat.</p>'}
     <p>⭐ Level <b>${Prog.level()}</b> · ${fmt(Prog.totalExp())} EXP ${Prog.vvipSaya() ? '· <span class="pillTj" style="--w:#7b3ec9">👑 VVIP</span>' : Prog.vipSaya() ? '· <span class="pillTj" style="--w:#b8860b">💎 VIP</span>' : ''} <button type="button" class="mini" id="mVip">${Prog.vipSaya() ? 'Langganan' : '💎 Jadi VIP / VVIP'}</button></p>
     ${p.tj === 'jodoh' ? `<p>💘 <b>${fmt(K.disukai || 0)}</b> orang diam-diam menyukaimu.</p><div id="mPenyuka">${Prog.vipSaya() ? '<p class="kecil">Memuat…</p>' : '<p class="kecil">Mau tahu siapa saja? <button type="button" class="mini" id="mV">💎 Lihat dengan VIP</button></p>'}</div>` : ''}
     <div id="mIzin"><p class="kecil">🔒 Data pribadimu (nama lengkap, Instagram, TikTok) hanya terlihat Direktur & VVIP.</p></div>

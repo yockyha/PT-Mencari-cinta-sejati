@@ -121,6 +121,35 @@ r["galeriData"] = {".read": A, "$id": {
   ".write": f"{A} && ((!data.exists() && newData.exists() && newData.parent().parent().child('galeri/' + $id + '/uid').val() === auth.uid && !root.child('galeri/' + $id).exists()) || (!newData.exists() && (root.child('galeri/' + $id + '/uid').val() === auth.uid || {STAF})))",
   ".validate": "newData.child('d').isString() && newData.child('d').val().length <= 220000 && " + JPEG}}
 r["galeriKu"] = {"$uid": {".read": f"{A} && auth.uid === $uid", ".write": f"{A} && auth.uid === $uid", ".validate": "newData.val() === now"}}
+# STREAK HARIAN: lanjut bila 12–54 jam sejak check-in terakhir, selain itu mulai dari 1
+r["streak"] = {".read": True, "$uid": {".write": f"{A} && auth.uid === $uid && {BEBAS}",
+  ".validate": "newData.child('t').val() === now && newData.child('n').isNumber() && ((!data.exists() && newData.child('n').val() === 1) || (data.exists() && now - data.child('t').val() >= 43200000 && ((now - data.child('t').val() < 194400000 && newData.child('n').val() === data.child('n').val() + 1) || (now - data.child('t').val() >= 194400000 && newData.child('n').val() === 1))))"}}
+# AMPLOP CINTA: gratis tiap 20 jam (tg), selain itu Diamond terpotong 30 di transaksi yang sama
+DM_B = "newData.parent().parent().child('diamond/' + $uid).val()"
+DM_L = "root.child('diamond/' + $uid).val()"
+r["amplop"] = {"$uid": {".read": f"{A} && (auth.uid === $uid || {DIR})", ".write": f"{A} && auth.uid === $uid && {BEBAS}",
+  ".validate": f"newData.child('t').val() === now && newData.child('n').isNumber() && ((newData.child('tg').val() === now && (!data.exists() || !data.child('tg').exists() || now - data.child('tg').val() >= 72000000)) || ((data.exists() && newData.child('tg').val() === data.child('tg').val() || (!data.exists() && newData.child('tg').val() === 0)) && {DM_B} === {DM_L} - 30))"}}
+# MENFESS: pesan anonim; pengirim hanya diketahui Direktur (menfessPengirim), 1 menfess / 10 menit
+MF_OK = "(!root.child('menfessT/' + auth.uid).exists() || root.child('menfessT/' + auth.uid).val() < now - 600000) && newData.parent().parent().child('menfessT/' + auth.uid).val() === now && newData.parent().parent().child('menfessPengirim/' + $id).val() === auth.uid"
+PENGIRIM = "root.child('menfessPengirim/' + $id).val() === auth.uid"
+r["menfess"] = {".read": A, ".indexOn": ["t"], "$id": {
+  ".write": f"{A} && ((!data.exists() && {BEBAS} && {MF_OK}) || (data.exists() && !newData.exists() && ({PENGIRIM} || {STAF})))",
+  ".validate": "data.exists() || newData.hasChildren(['m', 't'])",
+  "m": {".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 280 && (!data.exists() || data.val() === newData.val())"},
+  "ke": {".validate": "newData.isString() && (!data.exists() || data.val() === newData.val())"},
+  "keN": {".validate": "newData.isString() && newData.val().length <= 30 && (!data.exists() || data.val() === newData.val())"},
+  "t": {".validate": "(!data.exists() && newData.val() === now) || data.val() === newData.val()"},
+  "n": {".write": f"{A} && {PENGIRIM} && newData.exists()", ".validate": "newData.isString() && newData.val().length <= 30 && newData.val() === root.child('anggota/' + auth.uid + '/n').val()"},
+  "s": {"$u": {".write": f"{A} && auth.uid === $u && (!newData.exists() || {BEBAS})", ".validate": "newData.val() === true"}},
+  "$lain": {".validate": False}}}
+r["menfessPengirim"] = {".read": f"{A} && {DIR}", "$id": {".write": f"{A} && ((!data.exists() && newData.val() === auth.uid) || (!newData.exists() && (data.val() === auth.uid || {STAF})))", ".validate": "newData.isString()"}}
+r["menfessT"] = {"$uid": {".read": f"{A} && auth.uid === $uid", ".write": f"{A} && auth.uid === $uid", ".validate": "newData.val() === now"}}
+r["menfessKu"] = {"$ke": {".read": f"{A} && auth.uid === $ke", "$id": {".write": f"{A} && ((newData.exists() && newData.parent().parent().parent().child('menfessPengirim/' + $id).val() === auth.uid) || (!newData.exists() && (auth.uid === $ke || root.child('menfessPengirim/' + $id).val() === auth.uid || {STAF})))", ".validate": "newData.child('t').val() === now"}}}
+# SPEED DATING: ronde diatur Direktur; antrean khusus tamu Cari Jodoh; obrolan hanya pasangan ronde ini
+r["speedDating"] = {".read": A, ".write": f"{A} && {DIR}"}
+r["sdAntre"] = {".read": A, "$uid": {".write": f"{A} && auth.uid === $uid && (!newData.exists() || ({BEBAS} && root.child('anggota/' + auth.uid + '/tj').val() === 'jodoh'))", ".validate": "newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('t').val() === now"}}
+SD_PAS = f"root.child('speedDating/ronde/pasangan/' + auth.uid).val() === {LAIN}"
+r["sdChat"] = {".read": f"{A} && {DIR}", "$room": {".read": f"{A} && {IKUT} && {SD_PAS}", "$id": {".write": f"{A} && {IKUT} && {SD_PAS} && !data.exists() && {BEBAS}", ".validate": pesan(200)}}}
 r["undangan"] = {"$ke": {".read": f"{A} && auth.uid === $ke", "$dari": {
   ".write": f"{A} && ((auth.uid === $dari && newData.exists() && {BEBAS}) || (auth.uid === $ke && !newData.exists()))",
   ".validate": "newData.child('n').isString() && newData.child('n').val().length <= 20 && newData.child('t').val() === now"}}}
@@ -173,12 +202,15 @@ r["pesanan"] = {**D(), "$id": {".read": f"{A} && data.child('uid').val() === aut
   ".write": f"{A} && !data.exists() && newData.child('uid').val() === auth.uid && {BEBAS}",
   ".validate": f"{DIR} || (newData.child('paket').isString() && newData.child('paket').val().length <= 20 && newData.child('jenis').val().matches(/^(diamond|paket|donasi)$/) && newData.child('metode').val().matches(/^(qris|bca|bri|lain)$/) && newData.child('nominal').isNumber() && newData.child('nominal').val() >= 1000 && newData.child('nominal').val() <= 10000000 && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('t').val() === now)"}}
 # DIAMOND: saldo hanya bisa ditambah Direktur; pemilik hanya bisa mengurangi (saat membeli barang)
+# hadiah streak: +20 Diamond hanya bila di transaksi yang sama streak naik ke kelipatan 7
+ST_BARU = "newData.parent().parent().child('streak/' + $uid)"
+HADIAH_STREAK = f"({ST_BARU}.child('t').val() === now && {ST_BARU}.child('n').val() % 7 === 0 && ((!data.exists() && newData.val() === 20) || (data.exists() && newData.val() === data.val() + 20)))"
 r["diamond"] = {".read": f"{A} && {DIR}", ".write": f"{A} && {DIR}", "$uid": {".read": f"{A} && auth.uid === $uid",
-  ".write": f"{A} && auth.uid === $uid && {BEBAS} && newData.isNumber() && newData.val() >= 0 && newData.val() < data.val()",
+  ".write": f"{A} && auth.uid === $uid && {BEBAS} && newData.isNumber() && newData.val() >= 0 && (newData.val() < data.val() || {HADIAH_STREAK})",
   ".validate": "newData.isNumber() && newData.val() >= 0"}}
 # MILIK: barang hanya tercatat jika di transaksi yang sama diamond terpotong persis sebesar harga katalog
 r["milik"] = {".read": True, ".write": f"{A} && {DIR}", "$uid": {"$item": {
-  ".write": f"{A} && auth.uid === $uid && !data.exists() && {BEBAS} && root.child('katalog/' + $item + '/harga').exists() && newData.parent().parent().parent().child('diamond/' + $uid).val() === root.child('diamond/' + $uid).val() - root.child('katalog/' + $item + '/harga').val()",
+  ".write": f"{A} && auth.uid === $uid && !data.exists() && {BEBAS} && ((root.child('katalog/' + $item + '/harga').exists() && newData.parent().parent().parent().child('diamond/' + $uid).val() === root.child('diamond/' + $uid).val() - root.child('katalog/' + $item + '/harga').val()) || ($item.beginsWith('gc') && newData.parent().parent().parent().child('amplop/' + $uid + '/t').val() === now))",
   ".validate": "newData.val() === true"}}}
 r["katalog"] = {".read": True, ".write": f"{A} && {DIR}", "$item": {".validate": "newData.child('harga').isNumber() && newData.child('harga').val() > 0"}}
 r["donatur"] = {".read": True, ".write": f"{A} && {DIR}"}

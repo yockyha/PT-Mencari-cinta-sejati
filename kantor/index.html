@@ -50,6 +50,10 @@ button,input,select{font:inherit}
 
 #btnKam{position:fixed;right:14px;top:calc(max(10px,env(safe-area-inset-top)) + 96px);z-index:5;font-size:13px;padding:5px 11px}
 @media (max-width:600px){#btnKam{top:auto;right:10px;bottom:calc(max(10px,env(safe-area-inset-bottom)) + 104px)}}
+#btnEmote{position:fixed;right:14px;top:calc(max(10px,env(safe-area-inset-top)) + 132px);z-index:5;font-size:16px;padding:4px 10px}
+#menuEmote{position:fixed;right:14px;top:calc(max(10px,env(safe-area-inset-top)) + 168px);z-index:8;display:flex;flex-direction:column;gap:4px;background:#fff6ef;border:3px solid var(--ink);border-radius:14px;padding:6px}
+#menuEmote[hidden]{display:none}#menuEmote button{font-size:22px;border:0;background:none;cursor:pointer;padding:2px 4px}
+@media (max-width:600px){#btnEmote{top:auto;right:10px;bottom:calc(max(10px,env(safe-area-inset-bottom)) + 140px)}#menuEmote{top:auto;right:10px;bottom:calc(max(10px,env(safe-area-inset-bottom)) + 176px)}}
 #joy{position:fixed;width:120px;height:120px;border-radius:50%;background:rgba(255,246,239,.25);border:3px solid rgba(42,20,32,.35);display:none;pointer-events:none;z-index:3;transform:translate(-50%,-50%)}
 #joy i{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;background:rgba(255,79,123,.85);border:3px solid var(--ink)}
 #bantuJoy{position:fixed;left:24px;bottom:calc(max(10px,env(safe-area-inset-bottom)) + 200px);color:#fff;font-weight:900;font-size:13px;text-shadow:0 1px 4px #000;pointer-events:none;z-index:3;display:none}
@@ -220,6 +224,17 @@ img.stiker{width:128px;height:128px;display:block}
 .kotakFoto{border:2px solid var(--ink);border-radius:10px;background:#fff;padding:0;overflow:hidden;cursor:pointer;display:flex;flex-direction:column}
 .kotakFoto img{width:100%;aspect-ratio:1;object-fit:cover;display:block}.kotakFoto span{font:800 11px var(--body);padding:3px 5px;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .fotoBesar{width:100%;max-height:60vh;object-fit:contain;border:3px solid var(--ink);border-radius:14px;background:#000;display:block;margin:8px 0}
+.kotakHarian{border:3px solid var(--ink);border-radius:14px;background:#fff6df;padding:10px 12px;margin-bottom:10px;text-align:center}
+.sdWaktu{font:900 22px var(--body);background:var(--ink);color:#fff;border-radius:10px;padding:2px 10px}.sdWaktu.mepet{background:#c0392b}
+.sdIsi{height:min(34vh,260px)}
+.cocok{border:3px solid var(--ink);border-radius:14px;background:#fff0f5;padding:10px 12px;margin:8px 0}.cocok ul{margin:6px 0 0;padding-left:18px;font-size:13px}
+.cocok .bilah{height:10px;border-radius:99px;background:#eee;overflow:hidden;margin-top:6px}.cocok .bilah i{display:block;height:100%;background:linear-gradient(90deg,#ff8fab,#ff4f7b)}
+.kepribadian span{display:inline-block;background:#f3e6ea;border-radius:99px;padding:2px 8px;margin:2px 4px 2px 0}
+.streakBaris{display:flex;gap:4px;justify-content:center;margin:10px 0}.streakBaris span{display:flex;flex-direction:column;align-items:center;font-size:22px;opacity:.3}.streakBaris span.on{opacity:1}.streakBaris small{font-size:11px;font-weight:800}
+.amplop{font-size:86px;text-align:center;margin:10px 0;display:flex;flex-direction:column;align-items:center}.amplop small{font:900 18px var(--body)}
+.amplop.goyang{animation:goyang .25s infinite}@keyframes goyang{25%{transform:rotate(-8deg)}75%{transform:rotate(8deg)}}
+.amplop.terbuka{animation:dapat .6s}
+.menfess p small{color:var(--muted)}
 .dmForm{display:flex;gap:6px;margin-top:8px}
 .dmForm input{flex:1;min-width:0}
 .dmForm .btn{padding:6px 12px}
@@ -329,7 +344,7 @@ img.stiker{width:128px;height:128px;display:block}
 .tlpCatatan{color:#d9b8c4;margin-top:8px}
 @media (prefers-reduced-motion:reduce){.dmMerah{animation:none}}
 </style>
-<script src="../config.js?v=202611260304"></script>
+<script src="../config.js?v=202611260350"></script>
 <script type="importmap">{"imports":{"three":"../vendor/three.module.js"}}</script>
 </head>
 <body>
@@ -361,6 +376,8 @@ img.stiker{width:128px;height:128px;display:block}
 </form>
 <button id="aksi" class="btn" type="button" hidden></button>
 <button id="btnKam" class="pill" type="button" title="Mode kamera">🎥 Ikut</button>
+<button id="btnEmote" class="pill" type="button" title="Emote & mood">😊</button>
+<div id="menuEmote" hidden></div>
 <div id="joy"><i></i></div>
 <div id="bantuJoy">Geser di sini untuk jalan</div>
 <div id="toast" role="status"></div>
@@ -368,6 +385,6 @@ img.stiker{width:128px;height:128px;display:block}
 <div id="tirai" hidden><div class="isi"></div></div>
 <div id="loading"><div><span class="hati">❤</span>Membuka pintu kantor…</div></div>
 
-<script type="module" src="kantor.js?v=202611260304"></script>
+<script type="module" src="kantor.js?v=202611260350"></script>
 </body>
 </html>
