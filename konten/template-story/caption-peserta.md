@@ -3,7 +3,7 @@
 Tag wajib: **@jodohonline.company** (Instagram) · **@jodohonline.id** (TikTok) · **#DateNightJodohonline**
 
 **Story 1, ajakan (sebelum acara)**
-Besok malam aku ikut Date Night di kantor jodoh 😳💘 Siapa mau ikut? Jumat 19.30 WIB, link di bio @jodohonline.company #DateNightJodohonline
+Malam ini aku ikut Date Night di kantor jodoh 😳💘 Siapa mau ikut? Jumat 19.30 WIB, link di bio @jodohonline.company #DateNightJodohonline
 
 **Story 2, outfit kencan**
 Dress code: merah, pink, formal ✅ Rate outfit kencanku 1–10 👇 @jodohonline.company #DateNightJodohonline
