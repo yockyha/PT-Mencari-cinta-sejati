@@ -3,8 +3,8 @@
 //  ajakan ngobrol, obrolan pribadi, suka & match, laporan, dan
 //  alat Direktur/Staf. Struktur data ini sama dengan database.rules.json.
 // =====================================================================
-import { TS } from './db.js?v=202611260219';
-import { CFG, bersih, sensor, rupiah } from './common.js?v=202611260219';
+import { TS } from './db.js?v=202611260236';
+import { CFG, bersih, sensor, rupiah } from './common.js?v=202611260236';
 
 export function buatLayanan(db) {
   const uid = db.uid;
@@ -21,7 +21,7 @@ export function buatLayanan(db) {
     // ---- buku tamu
     async daftarTamu(d) {
       const lama = await db.get('tamu/' + uid).catch(() => null);
-      return db.set('tamu/' + uid, { uid, n: d.n, ig: d.ig || '', tj: d.tj, t: (lama && lama.t) || TS }).catch(() => {});
+      return db.set('tamu/' + uid, { uid, n: d.n, ig: '', tj: d.tj, t: (lama && lama.t) || TS }).catch(() => {});
     },
 
     // ---- pendaftaran & keanggotaan
@@ -30,7 +30,7 @@ export function buatLayanan(db) {
     async terimaPendaftar(target, d, peran = 'tamu') {
       const upd = {
         [`anggota/${target}`]: { n: d.n, tj: d.tj, sejak: TS, oleh: uid },
-        [`tamu/${target}`]: { uid: target, n: d.n, ig: d.ig || '', tj: d.tj, t: TS },
+        [`tamu/${target}`]: { uid: target, n: d.n, ig: '', tj: d.tj, t: TS }, // ig, TikTok & nama lengkap hanya di profilPribadi
         [`pendaftaran/${target}`]: null,
       };
       if (peran === 'staf') upd[`peran/${target}`] = 'staf';
@@ -195,10 +195,13 @@ export function buatLayanan(db) {
     },
     kirimNotif(target, m, j = '') { return db.push(`notif/${target}`, { m: bersih(m, 200), t: TS, ...(j ? { j } : {}) }); },
     // ---- privasi Instagram: ig disimpan di profilPribadi (dibaca sesuai izin, diatur aturan Firebase)
-    async simpanPrivasiIg(ig, sembunyi) {
-      await db.set('privasi/' + uid, { ig: sembunyi ? 'sembunyi' : 'publik', t: TS });
-      await db.set('profilPribadi/' + uid, { ig: ig || '', t: TS });
-      if (sembunyi) await db.update('tamu/' + uid, { ig: '' }).catch(() => {});
+    // data pribadi (nama lengkap, Instagram, TikTok): hanya pemilik, Direktur, VVIP & yang diizinkan
+    // ganti = true: isi formulir menggantikan semuanya; false: hanya mengisi yang masih kosong (sinkron dari perangkat lain aman)
+    async simpanPribadi(d, ganti = false) {
+      const lama = ganti ? {} : ((await db.get('profilPribadi/' + uid).catch(() => null)) || {});
+      const ambil = k => (ganti ? d[k] || '' : lama[k] || d[k] || '');
+      await db.set('profilPribadi/' + uid, { nl: ambil('nl'), ig: ambil('ig'), tt: ambil('tt'), t: TS });
+      await db.update('tamu/' + uid, { ig: '' }).catch(() => {});
     },
     mintaIzinIg(pemilik, n) { return db.set(`izinIgMinta/${pemilik}/${uid}`, { n, t: TS }); },
     izinkanIg(peminta, ya) { return Promise.all([db.set(`izinIg/${uid}/${peminta}`, ya ? true : null), db.set(`izinIgMinta/${uid}/${peminta}`, null)]); },

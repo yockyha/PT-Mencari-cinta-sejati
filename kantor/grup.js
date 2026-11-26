@@ -5,11 +5,11 @@
 //  - Direktur bisa melihat & masuk semua grup (moderasi)
 //  Data: grup/<id>, grupPesan/<id>, grupku/<uid>/<id>, grupUndangan/<uid>/<id>
 // =====================================================================
-import { LS, bersih, esc, fmt } from '../js/common.js?v=202611260219';
-import { TS, kunciBaru } from '../js/db.js?v=202611260219';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611260219';
-import * as Prog from './progres.js?v=202611260219';
-import * as Stiker from './stiker.js?v=202611260219';
+import { LS, bersih, esc, fmt } from '../js/common.js?v=202611260236';
+import { TS, kunciBaru } from '../js/db.js?v=202611260236';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611260236';
+import * as Prog from './progres.js?v=202611260236';
+import * as Stiker from './stiker.js?v=202611260236';
 
 const IKON = ['👥', '🎮', '🎵', '🍜', '✈️', '💘', '📚', '⚽', '🐱', '☕', '🎬', '🌙'];
 const BATAS = { '': { anggota: 10, grup: 2 }, vip: { anggota: 30, grup: 5 }, vvip: { anggota: 100, grup: 10 } };
@@ -38,9 +38,9 @@ export function htmlDaftar() {
   const baca = LS.get('grupBaca', {}) || {};
   const und = Object.entries(undangan).filter(([, v]) => v);
   return `${und.length ? `<h3>📨 Undangan grup</h3><div class="daftar">${und.map(([g, v]) => `<div><span>${esc(v.ikon || '👥')} <b>${esc(bersih(v.nama, 30))}</b><br><small>dari ${esc(bersih(v.dari, 30))}</small></span><span class="baris kecil" style="margin:0"><button type="button" class="mini" data-gy="${esc(g)}">Gabung</button><button type="button" class="mini putih" data-gt="${esc(g)}">Tolak</button></span></div>`).join('')}</div>` : ''}
-    <div class="baris" style="margin-top:6px"><button class="btn" type="button" id="gBuat">＋ Buat grup</button>${direktur() ? '<button class="btn putih" type="button" id="gSemua">👑 Semua grup</button>' : ''}</div>
+    <div class="baris" style="margin-top:6px"><button class="btn" type="button" id="gBuat">＋ Buat grup${bolehBuatGrup() ? '' : ' 🔒'}</button>${direktur() ? '<button class="btn putih" type="button" id="gSemua">👑 Semua grup</button>' : ''}</div>
     ${l.length ? `<div class="daftar" style="margin-top:10px">${l.map(([g, v]) => `<div class="baris-ruang" data-g="${esc(g)}"><span>${v.t > (baca[g] || 0) && v.dari !== L.uid ? '<i class="titik"></i>' : ''}${esc(v.ikon || '👥')} <b>${esc(bersih(v.nama, 30))}</b><br><small>${v.m ? esc(bersih(v.m, 40)) + ' · ' : ''}${v.t ? esc(tanggalJam(v.t)) : ''}</small></span><button type="button" class="mini">Buka</button></div>`).join('')}</div>`
-      : '<p class="kecil">Belum ada grup. Buat grup lalu undang teman dari kantor, atau tunggu undangan.</p>'}`;
+      : `<p class="kecil">Belum ada grup. ${bolehBuatGrup() ? 'Buat grup lalu undang teman dari kantor, atau tunggu undangan.' : 'Membuat grup butuh 💎 VIP atau Level 7. Sambil itu, kamu bisa diundang teman ke grup mereka.'}</p>`}`;
 }
 export function pasangDaftar(isi) {
   layar = 'daftar';
@@ -53,8 +53,18 @@ export function pasangDaftar(isi) {
 export const lepasDaftar = () => { if (layar === 'daftar') layar = ''; };
 
 // ---------------------------------------------------------------- BUAT GRUP
+// Membuat grup: VIP/VVIP, level 7 ke atas, atau Direktur (dijaga juga oleh aturan Firebase)
+export const bolehBuatGrup = () => direktur() || Prog.vipSaya() || Prog.level() >= 7;
 function bukaBuat() {
   if (!siap()) return;
+  if (!bolehBuatGrup()) {
+    bukaKartu(`<h2>👥 Buat grup</h2><p>Membuat grup obrolan khusus tamu <b>💎 VIP / 👑 VVIP</b> atau yang sudah mencapai <b>Level 7</b>. Levelmu sekarang <b>${Prog.level()}</b>.</p>
+      <p class="kecil">Kamu tetap bisa bergabung ke grup lewat undangan teman.</p>
+      <div class="baris"><button class="btn" type="button" id="bV">💎 Jadi VIP</button><button class="btn putih" type="button" id="bT">✅ Kumpulkan EXP</button></div>`, {
+      pasang(i) { i.querySelector('#bV').onclick = () => K.bukaLangganan(); i.querySelector('#bT').onclick = () => Prog.bukaHub('tugas'); },
+    });
+    return;
+  }
   const milik = Object.values(grupku).filter(v => v && v.pemilik === K.L.uid).length, b = batas();
   if (milik >= b.grup) { toast(`Kamu sudah punya ${milik} grup. ${Prog.vvipSaya() ? '' : 'Jadi VIP/VVIP untuk bikin lebih banyak grup.'}`, 4000); return; }
   let ikon = '👥';

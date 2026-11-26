@@ -3,9 +3,9 @@
 //  Login username + kata sandi → ringkasan, persetujuan pendaftar,
 //  anggota, online, aktivitas, acara, toko, laporan, siaran & data.
 // =====================================================================
-import { CFG, LS, TUJUAN, LOKASI, GENDER, BARANG_DIAMOND, IKON_DM, esc, fmt, bersih, levelDari, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611260219';
-import { bukaDB } from '../js/db.js?v=202611260219';
-import { buatLayanan } from '../js/layanan.js?v=202611260219';
+import { CFG, LS, TUJUAN, LOKASI, GENDER, BARANG_DIAMOND, IKON_DM, esc, fmt, bersih, levelDari, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611260236';
+import { bukaDB } from '../js/db.js?v=202611260236';
+import { buatLayanan } from '../js/layanan.js?v=202611260236';
 
 const $ = id => document.getElementById(id);
 let db = null, L = null;
@@ -74,10 +74,12 @@ function tampilLogin() {
 
 function masukApp() {
   L = buatLayanan(db);
+  // sekali saja: hapus username IG lama dari buku tamu publik (sekarang hanya ada di data pribadi)
+  if (db.mode === 'online') db.get('tamu').then(o => { const upd = {}; for (const [u, v] of Object.entries(o || {})) if (v && v.ig) upd[`tamu/${u}/ig`] = ''; if (Object.keys(upd).length) db.update('', upd).catch(e => console.warn('bersih ig', e)); }).catch(() => {});
   $('login').hidden = true; $('app').hidden = false;
   $('mode').textContent = db.mode === 'lokal' ? 'langsung · mode lokal (demo)' : 'langsung · online';
   const node = ['pendaftaran', 'anggota', 'tamu', 'online', 'peran', 'ban', 'exp', 'expBeli', 'vip', 'papan', 'curhatPemilik', 'laporan', 'saran',
-    'pesanan', 'riwayat', 'acara', 'ikutAcara', 'hadirAcara', 'setelan', 'mading', 'pengumuman', 'diamond', 'milik', 'donatur', 'katalog'];
+    'pesanan', 'riwayat', 'acara', 'ikutAcara', 'hadirAcara', 'setelan', 'mading', 'pengumuman', 'diamond', 'milik', 'donatur', 'katalog', 'profilPribadi'];
   let onlineT = 0, onlineTunda = null;
   for (const n of node) db.on(n, v => {
     S[n] = v || {};
@@ -194,8 +196,10 @@ function vDaftar() {
         <dt>Kelamin</dt><dd>${esc(GENDER[d.g] || 'Rahasia')}</dd>
         <dt>Kota</dt><dd>${esc(d.kota)}</dd>
         ${d.s ? `<dt>Status hati</dt><dd>${esc(d.s)}</dd>` : ''}
+        ${d.nl ? `<dt>Nama lengkap</dt><dd>${esc(d.nl)}</dd>` : ''}
         <dt>Instagram</dt><dd>${d.ig ? `<a href="https://www.instagram.com/${encodeURIComponent(d.ig)}/" target="_blank" rel="noopener">@${esc(d.ig)}</a>` : '—'}</dd>
-        ${CFG.wajibFollow ? `<dt>Follow & komen</dt><dd>${d.ikut ? `☑️ mengaku sudah${d.ig ? ` · <a href="https://www.instagram.com/${encodeURIComponent(d.ig)}/" target="_blank" rel="noopener">cek profilnya</a>` : ''}` : '⚠️ belum'}<br><span class="kecil">Cek di daftar follower & komen "${esc(CFG.wajibFollow.komen || 'DAFTAR')}" sebelum ACC</span></dd>` : ''}
+        <dt>TikTok</dt><dd>${d.tt ? `<a href="https://www.tiktok.com/@${encodeURIComponent(d.tt)}" target="_blank" rel="noopener">@${esc(d.tt)}</a>` : '—'}</dd>
+        ${CFG.wajibFollow ? `<dt>Follow & komen</dt><dd>${d.ikut ? `☑️ mengaku sudah${d.ig ? ` · <a href="https://www.instagram.com/${encodeURIComponent(d.ig)}/" target="_blank" rel="noopener">cek profilnya</a>` : ''}` : '⚠️ belum'}<br><span class="kecil">✅ Verifikasi akun: cari komen <b>"${esc(CFG.wajibFollow.komen || 'DAFTAR')} ${esc(kodeTamu(u))}"</b> dari <b>@${esc(d.ig || d.tt || '?')}</b> di postingan terbaru, dan pastikan dia ada di daftar follower. Kalau komennya dari akun lain, berarti akun itu bukan miliknya.</span></dd>` : ''}
         <dt>Masuk</dt><dd>${esc(tgl(d.t))}</dd>
         <dt>Kode</dt><dd><code>${esc(kodeTamu(u))}</code></dd>
       </dl>
@@ -215,7 +219,7 @@ function vDaftar() {
       ${list.length ? `<div class="daftarKartu">${list.map(kartu).join('')}</div>` : `<p class="kosong">${filterDaftar === 'menunggu' ? 'Tidak ada pendaftar yang menunggu. 🎉' : 'Tidak ada pendaftaran yang ditolak.'}</p>`}
       <div class="panel"><h3>Format pendaftaran</h3>
         <p class="kecil">Pengunjung yang belum diterima hanya bisa melihat-lihat: tidak terlihat orang lain, tidak bisa chat, ngobrol, ikut acara, atau mengumpulkan EXP (dikunci di server). Formulir yang mereka isi:</p>
-        <ol class="kecil" style="line-height:1.7"><li>Tujuan datang: 💘 Cari Jodoh / 🤝 Cari Teman / 💬 Mau Curhat</li><li>Nama panggilan (2–20 huruf)</li><li>Umur (min. ${CFG.pendaftaran?.umurMin || 13}; Cari Jodoh min. ${CFG.pendaftaran?.umurMinJodoh || 18})</li><li>Jenis kelamin (opsional) & kota</li><li>Status hati (khusus Cari Jodoh)</li><li>Instagram (opsional, untuk verifikasi)</li><li>Tentang aku (10–100 huruf) & alasan bergabung (10–200 huruf)</li><li>Pernyataan data benar & janji sopan</li></ol>
+        <ol class="kecil" style="line-height:1.7"><li>Tujuan datang: 💘 Cari Jodoh / 🤝 Cari Teman / 💬 Mau Curhat</li><li>Nama karakter (2–20 huruf) & nama lengkap (privat)</li><li>Umur (min. 18 tahun)</li><li>Jenis kelamin (opsional) & kota</li><li>Status hati (khusus Cari Jodoh)</li><li>Username Instagram (wajib) & TikTok (opsional), diverifikasi lewat komen berisi kode unik</li><li>Tentang aku (10–100 huruf) & alasan bergabung (10–200 huruf)</li><li>Pernyataan data benar & janji sopan</li></ol>
       </div>`,
     pasang(el) {
       el.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { filterDaftar = b.dataset.f; gambar(true); });
@@ -281,6 +285,7 @@ function detailAnggota(u) {
       <div class="baris"><button class="btn putih kecil" type="button" data-exp="50">+50</button><button class="btn putih kecil" type="button" data-exp="100">+100</button><button class="btn putih kecil" type="button" data-exp="500">+500</button>
       <input data-i="expSet" type="number" min="0" placeholder="Atur EXP bonus" style="width:150px" aria-label="Atur EXP bonus"><button class="btn kecil" type="button" data-d="expSet">Atur</button></div></div>
     <div class="seksi"><h4>${IKON_DM} Diamond · saldo ${fmt(S.diamond?.[u] || 0)}</h4>
+      ${(() => { const pp = S.profilPribadi?.[u] || {}; return `<p class="kecil">🔒 Data pribadi: ${pp.nl ? `<b>${esc(pp.nl)}</b>` : 'nama lengkap —'} · ${pp.ig ? `<a href="https://www.instagram.com/${encodeURIComponent(pp.ig)}/" target="_blank" rel="noopener">IG @${esc(pp.ig)}</a>` : 'IG —'} · ${pp.tt ? `<a href="https://www.tiktok.com/@${encodeURIComponent(pp.tt)}" target="_blank" rel="noopener">TikTok @${esc(pp.tt)}</a>` : 'TikTok —'}</p>`; })()}
       <p class="kecil">Barang dimiliki: ${esc(Object.keys(S.milik?.[u] || {}).map(id => (BARANG_DIAMOND.find(x => x.id === id) || {}).nama || id).join(', ') || '—')}</p>
       <div class="baris"><button class="btn putih kecil" type="button" data-dm="50">+50</button><button class="btn putih kecil" type="button" data-dm="100">+100</button><button class="btn putih kecil" type="button" data-dm="500">+500</button>
       <input data-i="dmSet" type="number" min="0" placeholder="Atur saldo" style="width:130px" aria-label="Atur saldo diamond"><button class="btn kecil" type="button" data-d="dmSet">Atur</button></div></div>
