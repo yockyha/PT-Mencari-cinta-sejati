@@ -10,8 +10,9 @@
 //  (js/common.js) bila perlu tombol pintasan.
 //  Direktur bisa membuka lebih cepat / mengikuti jadwal lewat papan proyek.
 // =====================================================================
-import { esc } from '../js/common.js?v=202611261448';
-import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611261448';
+import { esc } from '../js/common.js?v=202611262230';
+import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611262230';
+import * as Musik from './musik.js?v=202611262230';
 
 export const GEDUNG = [
   {
@@ -312,7 +313,7 @@ function bukaHarapan(cipratkan) {
     <div class="baris"><button class="btn" type="button" id="hpL">🪙 Lempar koin</button></div>`, {
     pasang(el) {
       el.querySelector('#hpL').onclick = () => {
-        tutupKartu(); cipratkan(); K.emote && K.emote(5, 1.6);
+        tutupKartu(); cipratkan(); Musik.sfx('koin'); K.emote && K.emote(5, 1.6);
         setTimeout(() => toast(['✨ Koin masuk tepat di tengah! Harapanmu tercatat oleh semesta 💖', '✨ Plung! Semoga harapanmu segera terkabul 🌟', '✨ Air mancur berkilau. Pertanda baik! 💫'][Math.floor(Math.random() * 3)], 4200), 700);
         K.efekLokal && K.efekLokal('hati', 20);
       };

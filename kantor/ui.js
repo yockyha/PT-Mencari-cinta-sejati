@@ -1,5 +1,5 @@
 // Alat UI bersama + status bersama (K) untuk modul-modul kantor.
-import { esc } from '../js/common.js?v=202611261448';
+import { esc } from '../js/common.js?v=202611262230';
 
 export const $ = id => document.getElementById(id);
 

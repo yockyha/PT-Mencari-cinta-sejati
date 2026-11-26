@@ -52,6 +52,9 @@ button,input,select{font:inherit}
 
 #btnKam{position:fixed;right:14px;top:calc(max(10px,env(safe-area-inset-top)) + 96px);z-index:5;font-size:13px;padding:5px 11px}
 @media (max-width:600px){#btnKam{top:auto;right:10px;bottom:calc(max(10px,env(safe-area-inset-bottom)) + 104px)}}
+#btnMusik{position:fixed;right:14px;top:calc(max(10px,env(safe-area-inset-top)) + 168px);z-index:5;font-size:15px;padding:5px 11px}#btnMusik.mati{opacity:.55}
+@media (max-width:600px){#btnMusik{top:auto;right:10px;bottom:calc(max(10px,env(safe-area-inset-bottom)) + 176px)}}
+.aturSuara label.cek{margin-top:6px}.aturSuara input[type=range]{width:100%;accent-color:#ff4f7b}
 #btnEmote{position:fixed;right:14px;top:calc(max(10px,env(safe-area-inset-top)) + 132px);z-index:5;font-size:16px;padding:4px 10px}
 #menuEmote{position:fixed;right:14px;top:calc(max(10px,env(safe-area-inset-top)) + 168px);z-index:8;display:flex;flex-direction:column;gap:4px;background:#fff6ef;border:3px solid var(--ink);border-radius:14px;padding:6px}
 #menuEmote[hidden]{display:none}#menuEmote button{font-size:22px;border:0;background:none;cursor:pointer;padding:2px 4px}
@@ -353,7 +356,7 @@ table.season{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}t
 .tlpCatatan{color:#d9b8c4;margin-top:8px}
 @media (prefers-reduced-motion:reduce){.dmMerah{animation:none}}
 </style>
-<script src="../config.js?v=202611261448"></script>
+<script src="../config.js?v=202611262230"></script>
 <script type="importmap">{"imports":{"three":"../vendor/three.module.js"}}</script>
 </head>
 <body>
@@ -385,6 +388,7 @@ table.season{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}t
 </form>
 <button id="aksi" class="btn" type="button" hidden></button>
 <button id="btnKam" class="pill" type="button" title="Mode kamera">🎥 Ikut</button>
+<button id="btnMusik" class="pill" type="button" title="Musik & efek suara" aria-label="Pengaturan musik dan efek suara">🎵</button>
 <button id="btnEmote" class="pill" type="button" title="Emote & mood">😊</button>
 <div id="menuEmote" hidden></div>
 <div id="joy"><i></i></div>
@@ -394,6 +398,6 @@ table.season{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}t
 <div id="tirai" hidden><div class="isi"></div></div>
 <div id="loading"><div><span class="hati">❤</span>Membuka pintu kantor…</div></div>
 
-<script type="module" src="kantor.js?v=202611261448"></script>
+<script type="module" src="kantor.js?v=202611262230"></script>
 </body>
 </html>
