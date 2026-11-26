@@ -3,20 +3,21 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611260236';
-import { bukaDB } from '../js/db.js?v=202611260236';
-import { buatLayanan } from '../js/layanan.js?v=202611260236';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611260236';
-import * as Sosial from './sosial.js?v=202611260236';
-import * as Direktur from './direktur.js?v=202611260236';
-import * as Prog from './progres.js?v=202611260236';
-import * as Game from './game.js?v=202611260236';
-import * as Bayar from './bayar.js?v=202611260236';
-import * as Meja from './meja.js?v=202611260236';
-import * as Karyawan from './karyawan.js?v=202611260236';
-import * as Hadir from './hadir.js?v=202611260236';
-import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611260236';
-import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611260236';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611260304';
+import { bukaDB } from '../js/db.js?v=202611260304';
+import { buatLayanan } from '../js/layanan.js?v=202611260304';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611260304';
+import * as Sosial from './sosial.js?v=202611260304';
+import * as Direktur from './direktur.js?v=202611260304';
+import * as Prog from './progres.js?v=202611260304';
+import * as Game from './game.js?v=202611260304';
+import * as Bayar from './bayar.js?v=202611260304';
+import * as Meja from './meja.js?v=202611260304';
+import * as Karyawan from './karyawan.js?v=202611260304';
+import * as Hadir from './hadir.js?v=202611260304';
+import * as Foto from './foto.js?v=202611260304';
+import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611260304';
+import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611260304';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
@@ -212,6 +213,9 @@ function bangunDunia() {
   K.gambarJadwal = () => jadwal.ulang();
   setInterval(() => jadwal.ulang(), 60000);
   titikAksi.push({ x: -10, z: 11.6, r: 1.8, label: 'Lihat jadwal acara', aksi: () => Prog.bukaHub('acara') });
+  // dinding foto (galeri tamu) di dinding barat lobi
+  dindingFoto();
+  titikAksi.push({ x: -22.3, z: 15, r: 2.3, label: 'Lihat Dinding Foto 🖼️', aksi: () => Foto.bukaGaleri() });
   // mading HRD
   madingHRD(10, 10.15, 0);
   titikAksi.push({ x: 10, z: 11.5, r: 1.8, label: 'Baca mading', aksi: bukaMading });
@@ -512,6 +516,31 @@ function papanRapat() {
     });
   });
   bidangTeks(6.2, 2.0, 0, papanKV, -16, 1.4, -19.73);
+}
+
+// ---- dinding foto: 6 foto terbaru dari tamu
+let fotoKV = null;
+function dindingFoto() {
+  kotak(0.14, 2.5, 5.4, -23.82, 0.3, 15, '#2a1420');
+  fotoKV = kanvas(1100, 520, (c, w, h) => {
+    c.fillStyle = '#2a1420'; c.fillRect(0, 0, w, h);
+    c.fillStyle = '#ffd23f'; c.font = FD(40); c.textAlign = 'center'; c.fillText('🖼️ DINDING FOTO TAMU', w / 2, 50);
+    const l = Foto.thumbDinding();
+    if (!l.length) { c.fillStyle = '#ffb3c6'; c.font = FB(28, 800); c.fillText('Belum ada foto. Unggah momen serumu di sini!', w / 2, 280); return; }
+    l.forEach((g, i) => {
+      const col = i % 3, row = Math.floor(i / 3), W = 320, H = 210, X = 40 + col * 350, Y = 78 + row * 220, r = ((i * 37) % 7 - 3) * 0.012;
+      c.save(); c.translate(X + W / 2, Y + H / 2); c.rotate(r);
+      c.fillStyle = '#fff'; c.fillRect(-W / 2, -H / 2, W, H);
+      const iw = W - 20, ih = H - 48, s = Math.max(iw / g.img.naturalWidth, ih / g.img.naturalHeight);
+      const sw = iw / s, sh = ih / s;
+      c.drawImage(g.img, (g.img.naturalWidth - sw) / 2, (g.img.naturalHeight - sh) / 2, sw, sh, -W / 2 + 10, -H / 2 + 10, iw, ih);
+      c.fillStyle = '#2a1420'; c.font = FB(20, 800); c.textAlign = 'center';
+      c.fillText((g.c || g.n || '').slice(0, 28), 0, H / 2 - 14, W - 20);
+      c.restore();
+    });
+  });
+  bidangTeks(5.2, 2.46, 0, fotoKV, -23.73, 1.55, 15, Math.PI / 2);
+  K.gambarDindingFoto = () => { clearTimeout(K._tDF); K._tDF = setTimeout(() => fotoKV.ulang(), 120); };
 }
 
 // ---- buku tamu (dinding utara)
@@ -1621,7 +1650,8 @@ async function mulai() {
   K.renderer = renderer;
   K.bukaLangganan = () => { Prog.bukaHub('toko'); setTimeout(() => document.querySelector('#kartu #langganan')?.scrollIntoView({ behavior: 'smooth' }), 80); };
   K.efekLokal = Hadir.efekLokal; K.bukaPanel = Direktur.bukaPanel; K.panggilKaryawan = () => Karyawan.panggil(saya);
-  Sosial.mulai(); Direktur.mulai(); Prog.mulai(); Hadir.mulai(); Bayar.cekServer();
+  K.Foto = Foto;
+  Sosial.mulai(); Direktur.mulai(); Prog.mulai(); Hadir.mulai(); Bayar.cekServer(); Foto.mulai();
   hitungOnline();
   setTimeout(() => {
     Bayar.kembaliDariBayar();

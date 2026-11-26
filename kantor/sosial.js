@@ -2,13 +2,14 @@
 //  Interaksi antar-tamu: profil, ajak ngobrol (pribadi), suka & match,
 //  papan curhat, daftar orang di kantor, lapor & sembunyikan.
 // =====================================================================
-import { TUJUAN, GENDER, LS, bersih, esc, fmt, kasar, igBersih } from '../js/common.js?v=202611260236';
-import { TS } from '../js/db.js?v=202611260236';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611260236';
-import * as Prog from './progres.js?v=202611260236';
-import * as Suara from './suara.js?v=202611260236';
-import * as Grup from './grup.js?v=202611260236';
-import * as Stiker from './stiker.js?v=202611260236';
+import { TUJUAN, GENDER, LS, bersih, esc, fmt, kasar, igBersih } from '../js/common.js?v=202611260304';
+import { TS } from '../js/db.js?v=202611260304';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611260304';
+import * as Prog from './progres.js?v=202611260304';
+import * as Suara from './suara.js?v=202611260304';
+import * as Grup from './grup.js?v=202611260304';
+import * as Stiker from './stiker.js?v=202611260304';
+import * as Foto from './foto.js?v=202611260304';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const siap = () => { if (!K.resmi()) { toast('👀 Kamu masih pengunjung. Daftar dulu untuk berinteraksi.'); K.bukaDaftar(); return false; } if (K.terkunci) { toast('Kamu belum bisa berinteraksi sekarang.'); return false; } return true; };
@@ -100,7 +101,7 @@ export function bukaProfil(o) {
   const sukaKu = new Set(LS.get('sukaKu', []));
   const bisaSuka = o.tj === 'jodoh' && K.prof?.tj === 'jodoh';
   Prog.lapor('tur_profil');
-  bukaKartu(`<h2>${peran === 'direktur' ? '👑 ' : peran === 'staf' ? '🛡 ' : ''}${esc(nama)}</h2>
+  bukaKartu(`<div class="kepalaProfil">${o.npc ? '' : Foto.htmlAvatar(uid, nama, 'besar')}<h2>${peran === 'direktur' ? '👑 ' : peran === 'staf' ? '🛡 ' : ''}${esc(nama)}</h2></div>
     <p>${pillTujuan(o.tj)} ${peran ? `<span class="pillTj" style="--w:${peran === 'direktur' ? '#c8901a' : '#3a6ea5'}">${peran === 'direktur' ? 'Direktur Utama' : (o.jabatan || 'Staf kantor')}</span>` : ''}</p>
     <p>${o.gd ? `${GENDER[o.gd]}<br>` : ''}${o.s && o.tj === 'jodoh' ? `💗 Status: <b>${esc(o.s)}</b><br>` : ''}${o.mj ? `🪑 Lagi nongkrong di meja <b>${esc(o.mj)}</b><br>` : ''}${o.b ? `“${esc(o.b)}”<br>` : ''}<span id="pIg"></span>
     ${o.npc ? '<br><span class="kecil">Tamu NPC (mode lokal)</span>' : ''}</p>
@@ -111,7 +112,7 @@ export function bukaProfil(o) {
       <button class="btn putih" type="button" id="pD">🚶 Datangi</button>
       ${(adaRuang || (K.match && K.match[uid])) && !o.npc ? '<button class="btn" type="button" id="pT">📞 Telepon</button>' : ''}
     </div>
-    <p class="kecil tautan"><button type="button" id="pR">🚩 Laporkan</button> · <button type="button" id="pH">🙈 Sembunyikan</button>${K.peran[L.uid] && !peran ? ' · <button type="button" id="pM">🛡 Moderasi</button>' : ''}</p>
+    <p class="kecil tautan"><button type="button" id="pR">🚩 Laporkan</button> · <button type="button" id="pH">🙈 Sembunyikan</button>${K.peran[L.uid] && !peran ? ' · <button type="button" id="pM">🛡 Moderasi</button> · <button type="button" id="pFH">Hapus foto profil</button>' : ''}</p>
     ${bisaSuka ? '<p class="kecil">❤ Suka itu rahasia. Kalau kalian saling suka, dua-duanya dapat kabar <b>match</b> dan obrolan langsung terbuka.</p>' : ''}`, {
     pasang(isi) {
       isi.querySelector('#pS').onclick = () => { if (!siap()) return; tutupKartu(); $('chatI').value = `Halo ${nama}! `; $('chatI').focus(); };
@@ -143,6 +144,9 @@ export function bukaProfil(o) {
         } catch (e) { toast('Gagal. Coba lagi.'); }
       };
       if (!o.npc) muatIg(o, isi.querySelector('#pIg'));
+      Foto.isiAvatar(isi);
+      const av = isi.querySelector('.kepalaProfil [data-av]'); if (av) av.onclick = () => { if (av.classList.contains('ada')) Foto.fotoProfil(uid).then(u => u && bukaKartu(`<h2>${esc(nama)}</h2><img class="fotoBesar" src="${u}" alt="Foto profil ${esc(nama)}">`)); };
+      const pmH = isi.querySelector('#pFH'); if (pmH) pmH.onclick = () => Foto.hapusFotoProfil(uid).then(() => { toast('Foto profil dihapus.'); tutupKartu(); });
       isi.querySelector('#pR').onclick = () => bukaLapor(o);
       isi.querySelector('#pH').onclick = () => {
         K.sembunyi.add(uid); LS.set('sembunyi', [...K.sembunyi]);
@@ -150,7 +154,7 @@ export function bukaProfil(o) {
         K.segarkanOrang(); gambarUndangan(); tutupKartu();
         toast(`${nama} disembunyikan. Chat & ajakannya tidak akan muncul lagi.`, 3200);
       };
-      const pm = isi.querySelector('#pM'); if (pm) pm.onclick = () => import('./direktur.js?v=202611260236').then(D => D.bukaModerasiOrang(o));
+      const pm = isi.querySelector('#pM'); if (pm) pm.onclick = () => import('./direktur.js?v=202611260304').then(D => D.bukaModerasiOrang(o));
     },
   });
 }
@@ -239,7 +243,7 @@ function bukaLapor(o) {
 
 export function bukaProfilSaya() {
   const p = K.prof, L = K.L;
-  bukaKartu(`<h2>${TUJUAN[p.tj].ikon} ${esc(p.n)}</h2>
+  bukaKartu(`<div class="kepalaProfil">${Foto.htmlAvatar(L.uid, p.n, 'besar')}<div><h2>${TUJUAN[p.tj].ikon} ${esc(p.n)}</h2><span class="baris kecil" style="margin:0"><button type="button" class="mini" id="mFG">📷 Ganti foto</button><button type="button" class="mini putih" id="mFH">Hapus</button></span></div></div>
     <p>${pillTujuan(p.tj)} ${K.peran[L.uid] ? `<span class="pillTj" style="--w:${K.peran[L.uid] === 'direktur' ? '#c8901a' : '#3a6ea5'}">${K.peran[L.uid] === 'direktur' ? '👑 Direktur Utama' : '🛡 Staf'}</span>` : ''}</p>
     ${p.b ? `<p>“${esc(p.b)}”</p>` : ''}
     <p>⭐ Level <b>${Prog.level()}</b> · ${fmt(Prog.totalExp())} EXP ${Prog.vvipSaya() ? '· <span class="pillTj" style="--w:#7b3ec9">👑 VVIP</span>' : Prog.vipSaya() ? '· <span class="pillTj" style="--w:#b8860b">💎 VIP</span>' : ''} <button type="button" class="mini" id="mVip">${Prog.vipSaya() ? 'Langganan' : '💎 Jadi VIP / VVIP'}</button></p>
@@ -250,6 +254,9 @@ export function bukaProfilSaya() {
     pasang(isi) {
       isi.querySelector('#mU').onclick = () => K.bukaDaftar();
       isi.querySelector('#mVip').onclick = () => K.bukaLangganan();
+      Foto.isiAvatar(isi);
+      isi.querySelector('#mFG').onclick = () => Foto.gantiFotoProfil(bukaProfilSaya);
+      isi.querySelector('#mFH').onclick = () => Foto.hapusFotoProfil().then(() => { toast('Foto profil dihapus.'); bukaProfilSaya(); });
       const iz = isi.querySelector('#mIzin');
       if (iz) L.db.get('izinIg/' + L.uid).then(o => {
         const u = Object.keys(o || {});
@@ -292,13 +299,13 @@ export function bukaObrolan(r, tab) {
   const nG = Grup.jumlahBaru();
   bukaKartu(`<h2>💬 Obrolan</h2>
     <div class="sw teks tab"><button type="button" data-ot="pribadi" class="${tabObrolan === 'pribadi' ? 'on' : ''}">💌 Pribadi${jumlahDmBaru ? ` (${jumlahDmBaru})` : ''}</button><button type="button" data-ot="grup" class="${tabObrolan === 'grup' ? 'on' : ''}">👥 Grup${nG ? ` (${nG})` : ''}</button></div>
-    ${tabObrolan === 'grup' ? Grup.htmlDaftar() : daftar.length ? `<div class="daftar">${daftar.map(([rr, v]) => `<div class="baris-ruang" data-r="${esc(rr)}"><span>${v.baru ? '<i class="titik"></i>' : ''}<b>${esc(bersih(v.n, 20))}</b><br><small>${v.t ? esc(tanggalJam(v.t)) : ''}</small></span><button type="button" class="mini">Buka</button></div>`).join('')}</div>`
+    ${tabObrolan === 'grup' ? Grup.htmlDaftar() : daftar.length ? `<div class="daftar">${daftar.map(([rr, v]) => `<div class="baris-ruang" data-r="${esc(rr)}"><span>${v.baru ? '<i class="titik"></i>' : ''}${Foto.htmlAvatar(v.u, v.n, 'kecil')}<b>${esc(bersih(v.n, 20))}</b><br><small>${v.t ? esc(tanggalJam(v.t)) : ''}</small></span><button type="button" class="mini">Buka</button></div>`).join('')}</div>`
     : '<p>Belum ada obrolan. Ketuk orang lain di kantor, lalu pilih <b>💌 Ajak ngobrol</b>. Kalau dia menerima, obrolan pribadi kalian muncul di sini.</p>'}`, {
     tutup() { if (layar === 'daftar') layar = ''; Grup.lepasDaftar(); },
     pasang(isi) {
       isi.querySelectorAll('[data-ot]').forEach(b => b.onclick = () => bukaObrolan(null, b.dataset.ot));
       if (tabObrolan === 'grup') Grup.pasangDaftar(isi);
-      else isi.querySelectorAll('[data-r]').forEach(d => d.onclick = () => bukaRuang(d.dataset.r));
+      else { Foto.isiAvatar(isi); isi.querySelectorAll('[data-r]').forEach(d => d.onclick = () => bukaRuang(d.dataset.r)); }
     },
   });
   layar = 'daftar';
@@ -309,7 +316,7 @@ function bukaRuang(r) {
   const u = L.lawan(r), nama = bersih(info.n || orangDariUid(u)?.nama || 'Teman', 20);
   // telepon: pasangan yang saling match ATAU obrolan pribadi yang sudah diterima kedua pihak (ruang ini)
   const bisaTelp = !u.startsWith('bot:');
-  bukaKartu(`<div class="kepalaRuang"><button type="button" class="mini putih" id="rB">← Obrolan</button><h2>${esc(nama)}</h2>${bisaTelp ? '<button type="button" class="mini" id="rC" aria-label="Telepon">📞</button>' : ''}</div>
+  bukaKartu(`<div class="kepalaRuang"><button type="button" class="mini putih" id="rB">← Obrolan</button><h2>${Foto.htmlAvatar(u, nama, 'kecil')}${esc(nama)}</h2>${bisaTelp ? '<button type="button" class="mini" id="rC" aria-label="Telepon">📞</button>' : ''}</div>
     <div class="dmIsi" id="rI" aria-live="polite"><p class="kecil">Memuat…</p></div>
     <div class="pemilihStiker" id="rSt" hidden></div>
     <form id="rF" class="dmForm" autocomplete="off"><button class="btn putih" type="button" id="rSb" aria-label="Stiker">😀</button><input id="rT" maxlength="300" placeholder="Tulis pesan…" enterkeyhint="send" aria-label="Pesan pribadi">${Suara.bisaRekam() ? '<button class="btn putih" type="button" id="rV" aria-label="Rekam pesan suara">🎤</button>' : ''}<button class="btn" type="submit">Kirim</button></form>
@@ -319,6 +326,7 @@ function bukaRuang(r) {
     pasang(isi) {
       layar = 'ruang'; ruangTerbuka = r;
       L.bacaDm(r);
+      Foto.isiAvatar(isi);
       const box = isi.querySelector('#rI');
       let dibersihkan = false;
       lepasRuang = L.db.on(`dm/${r}/pesan`, o => {
@@ -460,7 +468,7 @@ export function bukaDaftarOnline() {
   const grup = Object.keys(TUJUAN).map(tj => [tj, semua.filter(o => o.tj === tj).sort((a, b) => urut(a) - urut(b))]);
   bukaKartu(`<h2>👥 Di kantor sekarang</h2>
     <p>${fmt(semua.length + 1)} orang, termasuk kamu.${L?.mode === 'lokal' ? ' <span class="kecil">Mode lokal: yang terlihat hanya NPC dan tab lain di browser ini.</span>' : ''}</p>
-    ${grup.map(([tj, l]) => `<h3>${TUJUAN[tj].ikon} ${TUJUAN[tj].nama} <small>(${l.length})</small></h3>${l.length ? `<div class="daftar">${l.map((o, i) => `<div><span>${K.peran[o.uid] === 'direktur' ? '👑 ' : (o.npc ? o.peran : K.peran[o.uid]) ? '🛡 ' : Prog.isVvip(o.uid) ? '✨VVIP ' : Prog.isVip(o.uid) ? '💎 ' : ''}${esc(o.nama)}${o.mj ? ` <small>· ${esc(o.mj)}</small>` : ''}</span><button type="button" class="mini" data-u="${esc(o.uid)}">Lihat</button></div>`).join('')}</div>` : '<p class="kecil">Belum ada.</p>'}`).join('')}`, {
-    pasang(isi) { isi.querySelectorAll('[data-u]').forEach(b => b.onclick = () => bukaProfil(semua.find(o => o.uid === b.dataset.u))); },
+    ${grup.map(([tj, l]) => `<h3>${TUJUAN[tj].ikon} ${TUJUAN[tj].nama} <small>(${l.length})</small></h3>${l.length ? `<div class="daftar">${l.map((o, i) => `<div><span>${o.npc ? '' : Foto.htmlAvatar(o.uid, o.nama, 'kecil')}${K.peran[o.uid] === 'direktur' ? '👑 ' : (o.npc ? o.peran : K.peran[o.uid]) ? '🛡 ' : Prog.isVvip(o.uid) ? '✨VVIP ' : Prog.isVip(o.uid) ? '💎 ' : ''}${esc(o.nama)}${o.mj ? ` <small>· ${esc(o.mj)}</small>` : ''}</span><button type="button" class="mini" data-u="${esc(o.uid)}">Lihat</button></div>`).join('')}</div>` : '<p class="kecil">Belum ada.</p>'}`).join('')}`, {
+    pasang(isi) { Foto.isiAvatar(isi); isi.querySelectorAll('[data-u]').forEach(b => b.onclick = () => bukaProfil(semua.find(o => o.uid === b.dataset.u))); },
   });
 }
