@@ -3,12 +3,12 @@
 //  Semua tindakan juga dijaga database.rules.json di server, jadi
 //  tamu biasa tidak bisa memakainya walau mengutak-atik browser.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, fmt, esc, bersih, kodeTamu } from '../js/common.js?v=202611261019';
-import * as Prog from './progres.js?v=202611261019';
-import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611261019';
-import * as Hadir from './hadir.js?v=202611261019';
-import * as Speed from './speeddating.js?v=202611261019';
-import { TS } from '../js/db.js?v=202611261019';
+import { CFG, TUJUAN, LOKASI, fmt, esc, bersih, kodeTamu } from '../js/common.js?v=202611261340';
+import * as Prog from './progres.js?v=202611261340';
+import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611261340';
+import * as Hadir from './hadir.js?v=202611261340';
+import * as Speed from './speeddating.js?v=202611261340';
+import { TS, kunciBaru } from '../js/db.js?v=202611261340';
 
 let laporan = {}, saran = {}, larangan = {}, pesanan = {}, lepas = [], tabAktif = '';
 const peranku = () => K.L && K.peran[K.L.uid];
@@ -199,7 +199,7 @@ function orang() {
       <h3>Sedang dikeluarkan</h3>
       ${diusir.length ? `<div class="daftar">${diusir.map(([u, b]) => `<div><span>${esc(b.n || namaDari(u))}<br><small>${b.sampai > now + 3650 * 86400e3 ? 'diblokir' : 'sampai ' + esc(tanggalJam(b.sampai))} · ${esc(b.alasan || '')}</small></span><button type="button" class="mini putih" data-ampun="${esc(u)}">Ampuni</button></div>`).join('')}</div>` : '<p class="kecil">Tidak ada.</p>'}`,
     pasang(isi) {
-      isi.querySelectorAll('[data-lihat]').forEach(b => b.onclick = () => import('./sosial.js?v=202611261019').then(S => S.bukaProfil(o.find(x => x.uid === b.dataset.lihat))));
+      isi.querySelectorAll('[data-lihat]').forEach(b => b.onclick = () => import('./sosial.js?v=202611261340').then(S => S.bukaProfil(o.find(x => x.uid === b.dataset.lihat))));
       isi.querySelectorAll('[data-mod]').forEach(b => b.onclick = () => bukaModerasiOrang(o.find(x => x.uid === b.dataset.mod)));
       isi.querySelectorAll('[data-ampun]').forEach(b => b.onclick = () => {
         const u = b.dataset.ampun;
@@ -339,12 +339,34 @@ const TEMPLAT = [
 function keWib(ms) { const d = new Date(ms + 7 * 3600e3); return d.toISOString().slice(0, 16); }
 function dariWib(v) { const [t, j] = v.split('T'); const [y, m, d] = t.split('-').map(Number); const [h, mi] = j.split(':').map(Number); return Date.UTC(y, m - 1, d, h - 7, mi); }
 
+// PAKET ACARA: satu klik menjadwalkan rangkaian sesi sekaligus (menit dari jam mulai)
+const PAKET_ACARA = {
+  dateNight: {
+    nama: '💘 Date Night: Kencan Buta Kantor Cinta',
+    info: { j: '💘 DATE NIGHT malam ini!', ik: '💘', w: 'pink', m: 'Kencan buta se-kantor! Dandan di Ruang Loker, Speed Dating di Kafe Jodoh, Truth or Dare berdua, naik bianglala di Taman Cinta, sampai penobatan Raja & Ratu Kencan. Total 230 EXP + hadiah Diamond untuk pasangan terbaik. Datang ya!' },
+    sesi: [
+      { m: 0, judul: '👗 Date Night · Dandan Kencan', isi: 'Pakai outfit kencan terbaikmu di Ruang Loker (dress code: merah/pink/formal), lalu foto di Photobooth lobi. Outfit terbaik dipuji Direktur!', lokasi: 'loker', durasi: 30, exp: 20 },
+      { m: 30, judul: '🎉 Date Night · Pembukaan', isi: 'Sambutan Direktur di lobi + hujan hati. Penjelasan aturan main malam ini. Jangan telat, yang hadir langsung dapat EXP!', lokasi: 'lobi', durasi: 15, exp: 20 },
+      { m: 45, judul: '☕ Date Night · Speed Dating', isi: 'Masuk antrean di ⭐ → Harian → Speed Dating. 3 menit ngobrol berdua per ronde, beri ❤ kalau cocok. Saling ❤ = match!', lokasi: 'kafe', durasi: 45, exp: 60 },
+      { m: 90, judul: '🎲 Date Night · Truth or Dare Berdua', isi: 'Ajak match-mu duduk di meja nongkrong, buka tab Seru: Truth or Dare, Pilih Mana, dan kartu obrolan. Kenalan lebih dalam!', lokasi: 'meja', durasi: 30, exp: 40 },
+      { m: 120, judul: '🎡 Date Night · Kencan di Taman Cinta', isi: 'Pembukaan perdana Taman Cinta khusus malam ini! Naik bianglala berdua, lempar koin harapan di air mancur, popcorn di bioskop.', lokasi: 'plaza', durasi: 30, exp: 50 },
+      { m: 150, judul: '👑 Date Night · Raja & Ratu Kencan', isi: 'Penobatan pasangan terbaik malam ini + foto bareng di lobi. Pasangan terpilih dapat hadiah Diamond dari Direktur!', lokasi: 'lobi', durasi: 30, exp: 40 },
+    ],
+  },
+};
 function tabAcara() {
   const now = K.L.db.now();
   const awal = keWib(Math.ceil((now + 30 * 60000) / 3600e3) * 3600e3);
   const daftar = Prog.semuaAcara().filter(([, a]) => a.mulai + a.durasi * 60000 > now - 86400e3).slice(0, 12);
   return {
-    html: `<h3>➕ Buat acara</h3>
+    html: `<h3>💘 Paket acara</h3>
+      <div class="kotakInfo"><b>${esc(PAKET_ACARA.dateNight.nama)}</b>
+        <p class="kecil">6 sesi berurutan (2,5 jam, total 230 EXP): ${PAKET_ACARA.dateNight.sesi.map(s => esc(s.judul.split(' · ')[1])).join(' → ')}.</p>
+        <div class="dua"><div><label for="pkT">Tanggal</label><input id="pkT" type="date" value="${keWib(now + 86400e3).slice(0, 10)}"></div>
+        <div><label for="pkJ">Jam mulai (WIB)</label><input id="pkJ" type="time" value="19:30"></div></div>
+        <label class="cek"><input type="checkbox" id="pkI" checked> 📢 Pasang pengumuman (disematkan) di Papan Informasi</label>
+        <div class="baris"><button class="btn" type="button" id="pkB">💘 Jadwalkan Date Night</button></div></div>
+      <h3>➕ Buat acara</h3>
       <p class="kecil">Template cepat:</p>
       <div class="sw teks">${TEMPLAT.map((t, i) => `<button type="button" data-t="${i}">${esc(t.judul)}</button>`).join('')}</div>
       <form id="aF">
@@ -370,6 +392,20 @@ function tabAcara() {
         isi.querySelector('#aJ').value = t.judul; isi.querySelector('#aI').value = t.isi; isi.querySelector('#aL').value = t.lokasi;
         isi.querySelector('#aD').value = t.durasi; isi.querySelector('#aE').value = t.exp;
       });
+      isi.querySelector('#pkB').onclick = async () => {
+        const P = PAKET_ACARA.dateNight, mulai = dariWib(isi.querySelector('#pkT').value + 'T' + isi.querySelector('#pkJ').value);
+        if (!isFinite(mulai) || mulai < K.L.db.now()) { toast('Pilih tanggal & jam yang belum lewat.'); return; }
+        if (!confirm(`Jadwalkan ${P.sesi.length} sesi Date Night mulai ${new Date(mulai).toLocaleString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' })} WIB?`)) return;
+        try {
+          for (const s of P.sesi) await K.L.buatAcara({ judul: s.judul, isi: s.isi, lokasi: s.lokasi, mulai: mulai + s.m * 60000, durasi: s.durasi, exp: s.exp });
+          if (isi.querySelector('#pkI').checked) {
+            const jam = new Date(mulai).toLocaleString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' });
+            await K.L.db.set('papanInfo/' + kunciBaru(), { ...P.info, j: '💘 DATE NIGHT · ' + jam.split(' pukul')[0], m: `${jam} WIB. ` + P.info.m, pin: true, t: TS });
+          }
+          toast('💘 Date Night terjadwal! Semua tamu bisa melihatnya.'); Hadir.kirimEfek('hati').catch(() => {});
+          setTimeout(() => bukaPanel('acara'), 500);
+        } catch (e) { gagal(e); }
+      };
       isi.querySelectorAll('[data-hapus]').forEach(b => b.onclick = () => K.L.hapus('acara/' + b.dataset.hapus).then(() => { toast('Acara dihapus'); bukaPanel('acara'); }).catch(gagal));
       isi.querySelector('#aF').onsubmit = e => {
         e.preventDefault();
