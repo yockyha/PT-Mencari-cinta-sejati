@@ -12,7 +12,7 @@ export async function buatTransaksi(env, { orderId, harga, nama, paket, pelangga
       transaction_details: { order_id: orderId, gross_amount: harga },
       item_details: [{ id: paket, price: harga, quantity: 1, name: String(nama).slice(0, 50) }],
       customer_details: { first_name: String(pelanggan).slice(0, 30) },
-      enabled_payments: ['other_qris', 'bca_va', 'bri_va', 'gopay', 'shopeepay'],
+      // tanpa enabled_payments: Midtrans menampilkan semua metode yang sudah aktif di akunmu (QRIS, VA, GoPay, dll.)
       expiry: { unit: 'minutes', duration: 60 },
       callbacks: { finish: kembaliKe },
     }),

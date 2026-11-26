@@ -75,7 +75,7 @@ Dipakai untuk **💠 Diamond**, **Kartu Eksekutif/EXP**, dan **🎁 donasi**. Ua
 Cara manual ini tetap tersedia sebagai cadangan. Supaya **tidak perlu standby menyetujui**, aktifkan pembayaran otomatis di bawah.
 
 ### ⚡ Pembayaran otomatis (Midtrans): diamond langsung masuk
-Pembeli memilih **⚡ Bayar otomatis** → halaman bayar Midtrans (QRIS, VA BCA, VA BRI, GoPay, ShopeePay) → begitu lunas, Midtrans mengabari server situs (`/api/bayar/notifikasi`) dan **Diamond / Kartu Eksekutif / EXP / donasi masuk sendiri dalam beberapa detik**. Tidak dibayar dalam 60 menit → batal sendiri. Uang masuk ke saldo Midtrans, lalu dicairkan ke rekeningmu (biaya Midtrans ± 0,7% QRIS, ± Rp4.000 per VA).
+Pembeli memilih **⚡ Bayar otomatis** → halaman bayar Midtrans (semua metode yang aktif di akun Midtrans-mu: QRIS, VA bank, GoPay, dll.) → begitu lunas, Midtrans mengabari server situs (`/api/bayar/notifikasi`) dan **Diamond / VIP (Rp25.000) / VVIP (Rp50.000) / EXP / donasi (nominal bebas, min. Rp5.000) masuk sendiri dalam beberapa detik**. Tidak dibayar dalam 60 menit → batal sendiri. Uang masuk ke saldo Midtrans, lalu dicairkan ke rekeningmu (biaya Midtrans ± 0,7% QRIS, ± Rp4.000 per VA).
 
 Keamanan: harga dihitung server dari `paket.js` (bukan dari browser), notifikasi dicek tanda tangan SHA-512 Midtrans, nominal dicocokkan, dan setiap pesanan hanya bisa dilunasi **sekali** (notifikasi ganda tidak dobel).
 
@@ -93,7 +93,7 @@ Keamanan: harga dihitung server dari `paket.js` (bukan dari browser), notifikasi
    | `FIREBASE_DB_URL` | `databaseURL` dari `config.js` |
    | `FIREBASE_API_KEY` | `apiKey` dari `config.js` |
 5. Midtrans → **Settings → Payment → Notification URL** → isi `https://<situsmu>/api/bayar/notifikasi` (mis. `https://jodohonline.company/api/bayar/notifikasi`), simpan
-6. Di `config.js` ubah `pembayaran.otomatis: ''` menjadi `otomatis: 'midtrans'`, commit & merge ke `main`. Cloudflare men-deploy ulang otomatis (variabel baru juga baru terpakai setelah deploy ulang)
+6. Cloudflare → **Deployments** → deployment terbaru → **Retry deployment** (variabel baru baru terpakai setelah deploy ulang). Tombol **⚡ Bayar otomatis** muncul sendiri begitu server siap; cek di `https://<situsmu>/api/bayar/status` (harus `"aktif": true`). Tidak perlu mengubah `config.js`
 7. Coba beli Diamond di kantor → pilih ⚡ Bayar otomatis → di Sandbox bayar pakai simulator <https://simulator.sandbox.midtrans.com> → diamond masuk sendiri
 
 **Jangan pernah** menaruh Server Key atau Database secret di `config.js` / GitHub. Keduanya hanya di variabel Cloudflare. Pembayaran otomatis hanya jalan di situs online (bukan mode offline).
