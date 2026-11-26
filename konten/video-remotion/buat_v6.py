@@ -66,7 +66,7 @@ t('sub', 'Kayak grup WA, tapi isinya *satu frekuensi* 🤝', 1, 0.45, 1, y=BAWAH
 sfx('Whoosh', 'whoosh', det(1, 0) - 3, 18, 0.3); sfx('Pop stiker', 'pop', det(1, 0.08), 15, 0.35)
 
 # 2 syarat
-g('foto', 'foto/levelup.png', 2, 0, 1, zoom=1.08, nama='Level up')
+g('video', 'klip/r_lounge.mp4', 2, 0, 1, gelap=0.35, kecepatan=round(1.5 / DURASI[2], 3), nama='Lounge VIP (redup)')
 t('chips', '⭐ LV.7+|💎 VIP|👑 VVIP', 2, 0.05, 1, nyala='0,1,2', y=560, masuk='pop')
 t('sub', 'Syaratnya: udah *Level 7,*', 2, 0, 0.5, y=BAWAH)
 t('sub', 'atau lu *VIP / VVIP* 💅', 2, 0.5, 1, y=BAWAH)

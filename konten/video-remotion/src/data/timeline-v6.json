@@ -80,12 +80,13 @@
   {
    "id": "g8",
    "track": "gambar",
-   "jenis": "foto",
-   "src": "foto/levelup.png",
+   "jenis": "video",
+   "src": "klip/r_lounge.mp4",
    "mulai": 252,
    "durasi": 102,
-   "zoom": 1.08,
-   "nama": "Level up"
+   "gelap": 0.35,
+   "kecepatan": 0.441,
+   "nama": "Lounge VIP (redup)"
   },
   {
    "id": "t9",
