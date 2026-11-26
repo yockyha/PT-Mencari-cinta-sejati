@@ -47,6 +47,9 @@ Login username + kata sandi. Isinya:
 - **👑 Ruang Direktur** (suite mewah): lounge tamu (sofa kulit, akuarium), meja Direktur (kursi singgasana, globe), kamar pribadi (kasur king, TV, mini bar, treadmill). Direktur bisa kerja, tidur, nonton TV, bikin kopi, olahraga. **Tamu harus mengetuk pintu dulu** (pintu dijaga 2 pengawal 🕶️ GUARD); Direktur mengizinkan (30 menit / 2 jam), menolak, mengundang, atau membuka ruangan untuk semua (Panel → Kuasa → 🚪 Pintu Ruanganmu)
 - **🎡 Taman Cinta** (gedung baru di barat kantor): air mancur harapan, Bioskop Cinta, bianglala (bisa dinaiki), kedai es krim/boba/sosis. Sebelum jadwal buka tampil sebagai proyek pembangunan dengan hitung mundur
 
+### 📢 Papan Informasi (halaman depan)
+Layar LED raksasa 2 sisi di halaman depan dekat pintu masuk, terlihat dari jalan, halaman, dan pintu. Info dari Direktur tampil bergantian seperti slide (ikon, judul, isi, tanggal), dengan lampu LED berjalan di bingkai, jam WIB, dan teks berjalan berisi semua judul. Tamu mengetuk papan untuk membaca semua info; tamu yang sedang online mendapat notifikasi saat ada info baru. Direktur menulis, menyematkan 📌, dan menghapus info lewat papan itu atau **Panel → Kuasa → 📢 Papan Informasi** (6 pilihan warna, 12 ikon). Hanya Direktur yang bisa menulis (aturan `papanInfo`).
+
 ### 👑 Pembeda Direktur
 - Label di atas kepala bertulisan **kuning emas** berbingkai emas + baris "★ DIREKTUR UTAMA ★", lebih besar dari label lain
 - Gelembung chat & baris chat berwarna emas, cincin emas di kaki, jas hitam berdasi

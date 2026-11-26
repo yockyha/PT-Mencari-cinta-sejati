@@ -3,27 +3,28 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611260933';
-import { bukaDB } from '../js/db.js?v=202611260933';
-import { buatLayanan } from '../js/layanan.js?v=202611260933';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611260933';
-import * as Sosial from './sosial.js?v=202611260933';
-import * as Direktur from './direktur.js?v=202611260933';
-import * as Prog from './progres.js?v=202611260933';
-import * as Game from './game.js?v=202611260933';
-import * as Bayar from './bayar.js?v=202611260933';
-import * as Meja from './meja.js?v=202611260933';
-import * as Karyawan from './karyawan.js?v=202611260933';
-import * as Hadir from './hadir.js?v=202611260933';
-import * as Foto from './foto.js?v=202611260933';
-import * as Seru from './seru.js?v=202611260933';
-import * as Speed from './speeddating.js?v=202611260933';
-import * as Aktivitas from './aktivitas.js?v=202611260933';
-import * as Komunitas from './komunitas.js?v=202611260933';
-import * as RuangDir from './ruangdir.js?v=202611260933';
-import * as Gedung from './gedung.js?v=202611260933';
-import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611260933';
-import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611260933';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611261019';
+import { bukaDB } from '../js/db.js?v=202611261019';
+import { buatLayanan } from '../js/layanan.js?v=202611261019';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611261019';
+import * as Sosial from './sosial.js?v=202611261019';
+import * as Direktur from './direktur.js?v=202611261019';
+import * as Prog from './progres.js?v=202611261019';
+import * as Game from './game.js?v=202611261019';
+import * as Bayar from './bayar.js?v=202611261019';
+import * as Meja from './meja.js?v=202611261019';
+import * as Karyawan from './karyawan.js?v=202611261019';
+import * as Hadir from './hadir.js?v=202611261019';
+import * as Foto from './foto.js?v=202611261019';
+import * as Seru from './seru.js?v=202611261019';
+import * as Speed from './speeddating.js?v=202611261019';
+import * as Aktivitas from './aktivitas.js?v=202611261019';
+import * as Komunitas from './komunitas.js?v=202611261019';
+import * as RuangDir from './ruangdir.js?v=202611261019';
+import * as Gedung from './gedung.js?v=202611261019';
+import * as PapanInfo from './papaninfo.js?v=202611261019';
+import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611261019';
+import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611261019';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
@@ -370,6 +371,7 @@ function bangunDunia() {
 
   // ---- LUAR KANTOR
   patungHati(-14, 32); patungHati(14, 32);
+  papanInformasi(12.6, 25.4, -0.55);
   for (const x of [-14, 14]) titikAksi.push({ x, z: 29.4, r: 2.2, label: '📸 Foto di patung hati', aksi: () => ambilFoto('Foto di Patung Hati', [x, 32]) });
   titikAksi.push({ x: 0, z: 28.6, r: 2.6, label: '📸 Foto di depan kantor', aksi: () => ambilFoto('Foto di Depan Kantor', [0, 20]) });
   titikAksi.push({ x: 0, z: -66.2, r: 1.4, label: '📸 Foto di lounge', aksi: () => ambilFoto('Foto di Lounge Eksekutif', [0, -69]) });
@@ -1554,6 +1556,35 @@ let airLompat = 0;
 
 // ---------------------------------------------------------------- BENDA INTERAKTIF
 let naikBianglala = null; // { cx, cz, cy, r, lama, t0 }
+// PAPAN INFORMASI: layar LED raksasa 2 sisi di halaman depan (konten & animasi di kantor/papaninfo.js)
+let infoKV = null, infoPos = null, infoT = 0;
+function papanInformasi(x, z, r) {
+  const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = r; scene.add(g);
+  const add = (w, h, d, px, py, pz, warna, mat) => { const m = new THREE.Mesh(GEO, mat || M(warna)); m.scale.set(w, h, d); m.position.set(px, py + h / 2, pz); m.castShadow = true; m.receiveShadow = true; g.add(m); return m; };
+  // tiang & kaki
+  for (const sx of [-3.55, 3.55]) { add(0.42, 6.9, 0.42, sx, 0, 0, '#2b2d42'); add(0.62, 0.18, 0.62, sx, 6.9, 0, '#d4a017'); add(0.9, 0.35, 0.9, sx, 0, 0, '#3a3f4a'); }
+  // bingkai layar
+  add(7.5, 4.45, 0.42, 0, 2.3, 0, '#14111a');
+  add(7.7, 0.16, 0.5, 0, 6.75, 0, '#d4a017'); add(7.7, 0.16, 0.5, 0, 2.22, 0, '#d4a017');
+  // layar (sama di kedua sisi)
+  infoKV = kanvas(1280, 720, PapanInfo.gambar);
+  for (const s of [1, -1]) { const m = new THREE.Mesh(new THREE.PlaneGeometry(7.1, 3.99), new THREE.MeshBasicMaterial({ map: infoKV.t, toneMapped: false })); m.position.set(0, 4.52, s * 0.22); m.rotation.y = s > 0 ? 0 : Math.PI; g.add(m); }
+  // mahkota "INFO" bercahaya di atas
+  const mk = kanvas(512, 128, (c, w, h) => { c.fillStyle = '#ffd23f'; bulat(c, 0, 0, w, h, 40); c.fill(); c.fillStyle = '#2a1420'; c.font = FD(76); c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('📢 INFO', w / 2, h / 2 + 4); });
+  for (const s of [1, -1]) { const m = new THREE.Mesh(new THREE.PlaneGeometry(2.2, 0.55), new THREE.MeshBasicMaterial({ map: mk.t, toneMapped: false })); m.position.set(0, 7.25, s * 0.06); m.rotation.y = s > 0 ? 0 : Math.PI; g.add(m); }
+  add(2.3, 0.6, 0.1, 0, 6.95, 0, '#d4a017');
+  // bak bunga di kaki papan
+  add(6.4, 0.5, 1.2, 0, 0, 0, '#d35470');
+  for (let i = 0; i < 16; i++) { const b = new THREE.Mesh(new THREE.SphereGeometry(0.16, 6, 5), new THREE.MeshBasicMaterial({ color: ['#ff4f7b', '#ffd23f', '#ff8fab', '#c39bff'][i % 4] })); b.position.set(-3 + (i % 8) * 0.85, 0.62, i < 8 ? 0.3 : -0.3); g.add(b); }
+  // lampu sorot kecil
+  for (const sx of [-2.4, 2.4]) for (const s of [1, -1]) { const l = new THREE.Mesh(new THREE.SphereGeometry(0.14, 8, 6), new THREE.MeshBasicMaterial({ color: '#fff2c4' })); l.position.set(sx, 6.6, s * 0.4); g.add(l); }
+  // tabrakan & titik aksi (depan & belakang)
+  const cr = Math.cos(r), sr = Math.sin(r), dunia = (lx, lz) => [x + lx * cr + lz * sr, z - lx * sr + lz * cr];
+  for (const lx of [-3.55, 3.55]) { const [wx, wz] = dunia(lx, 0); tabrak.push({ x1: wx - 0.45, x2: wx + 0.45, z1: wz - 0.45, z2: wz + 0.45 }); }
+  { const [wx, wz] = dunia(0, 0); tabrak.push({ x1: wx - 0.6, x2: wx + 0.6, z1: wz - 0.6, z2: wz + 0.6 }); }
+  for (const s of [1, -1]) { const [wx, wz] = dunia(0, s * 2.6); titikAksi.push({ x: wx, z: wz, r: 3.2, label: '📢 Baca Papan Informasi', aksi: () => PapanInfo.buka() }); }
+  infoPos = { x, z };
+}
 // PENGAWAL PRIBADI: tiap Direktur yang ada di kantor diikuti 1 GUARD berjas hitam (terlihat semua orang, disimulasikan di tiap perangkat)
 const pengawalIkut = new Map(); // uid Direktur -> { g, x, z, r, a }
 function buatPengawal() {
@@ -1951,6 +1982,7 @@ function langkah() {
   for (const h of hatiBesar) h.rotation.y += dt * 0.8;
   animasiSuite(dt, t);
   cekPenghalang(dt, t);
+  if (infoKV && t - infoT > 85 && Math.hypot(saya.x - infoPos.x, saya.z - infoPos.z) < 50) { infoT = t; infoKV.ulang(); }
   Gedung.update(dt, t, saya);
   if (airHati) { airLompat = Math.max(0, airLompat - dt); airHati.rotation.y += dt * (1.2 + airLompat * 8); airHati.position.y = 1.5 + Math.sin(t / 600) * 0.12 + airLompat * 0.6; }
 
@@ -2051,9 +2083,10 @@ async function mulai() {
   K.bukaHarian = k => ({ amplop: Seru.bukaAmplop, menfess: () => Seru.bukaMenfess(), speed: Speed.buka, mood: Seru.bukaMood, season: Komunitas.bukaSeason, kuis: Aktivitas.bukaKuis, kerupuk: Aktivitas.bukaKerupuk, kisah: Komunitas.bukaKisah, undang: Komunitas.bukaUndang, lencana: Komunitas.bukaLencana, kamar: () => Komunitas.bukaKamar() })[k]();
   K.Aktivitas = Aktivitas; K.Komunitas = Komunitas; K.kirimEfek = Hadir.kirimEfek;
   K.emote = (a, dur) => { berdiri(); saya.emoteA = a; saya.emoteT = dur; posWaktu = 0; };
+  K.bukaPapanInfo = PapanInfo.buka;
   K.gedungBuka = Gedung.sudahBuka; K.lihatProyek = Gedung.lihatProyek;
   K.bolehRuangDir = RuangDir.bolehMasuk; K.ketukDir = RuangDir.ketuk; K.panelPintuDir = RuangDir.bukaPanelIzin;
-  Sosial.mulai(); Direktur.mulai(); Prog.mulai(); Hadir.mulai(); Bayar.cekServer(); Foto.mulai(); Seru.mulai(); Seru.pasangEmote(); Speed.mulai(); Aktivitas.mulai(); Komunitas.mulai(); RuangDir.mulai(); Bayar.mulaiPapan(() => papanDonasiKV && papanDonasiKV.ulang()); setInterval(() => papanDonasiKV && papanDonasiKV.ulang(), 30000); setTimeout(dekorMusim, 1500);
+  Sosial.mulai(); Direktur.mulai(); Prog.mulai(); Hadir.mulai(); Bayar.cekServer(); Foto.mulai(); Seru.mulai(); Seru.pasangEmote(); Speed.mulai(); Aktivitas.mulai(); Komunitas.mulai(); RuangDir.mulai(); PapanInfo.mulai(() => infoKV && infoKV.ulang()); Bayar.mulaiPapan(() => papanDonasiKV && papanDonasiKV.ulang()); setInterval(() => papanDonasiKV && papanDonasiKV.ulang(), 30000); setTimeout(dekorMusim, 1500);
   hitungOnline();
   setTimeout(() => {
     Bayar.kembaliDariBayar();
