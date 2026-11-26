@@ -34,6 +34,33 @@
         ".validate": "root.child('peran/' + auth.uid).val() === 'direktur' || (newData.child('uid').val() === $uid && newData.child('n').val() === root.child('anggota/' + $uid + '/n').val() && newData.child('tj').val().matches(/^(jodoh|teman|curhat)$/) && newData.child('t').isNumber())"
       }
     },
+    "peran": {
+      ".read": true,
+      "$uid": {
+        ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur' && $uid !== auth.uid",
+        ".validate": "newData.val() === 'staf' || newData.val() === 'direktur'"
+      }
+    },
+    "ban": {
+      ".read": "auth != null && root.child('peran/' + auth.uid).exists()",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && root.child('peran/' + auth.uid).exists() && $uid !== auth.uid && root.child('peran/' + $uid).val() !== 'direktur' && (root.child('peran/' + auth.uid).val() === 'direktur' || !root.child('peran/' + $uid).exists())",
+        ".validate": "newData.child('sampai').isNumber() && newData.child('alasan').isString() && newData.child('alasan').val().length <= 100"
+      }
+    },
+    "pengumuman": {
+      ".read": true,
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'"
+    },
+    "setelan": {
+      ".read": true,
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'"
+    },
+    "mading": {
+      ".read": true,
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'"
+    },
     "chat": {
       ".read": true,
       ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
@@ -570,33 +597,6 @@
           ".validate": "newData.child('n').isString()"
         }
       }
-    },
-    "peran": {
-      ".read": true,
-      "$uid": {
-        ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur' && $uid !== auth.uid",
-        ".validate": "newData.val() === 'staf' || newData.val() === 'direktur'"
-      }
-    },
-    "ban": {
-      ".read": "auth != null && root.child('peran/' + auth.uid).exists()",
-      "$uid": {
-        ".read": "auth != null && auth.uid === $uid",
-        ".write": "auth != null && root.child('peran/' + auth.uid).exists() && $uid !== auth.uid && root.child('peran/' + $uid).val() !== 'direktur' && (root.child('peran/' + auth.uid).val() === 'direktur' || !root.child('peran/' + $uid).exists())",
-        ".validate": "newData.child('sampai').isNumber() && newData.child('alasan').isString() && newData.child('alasan').val().length <= 100"
-      }
-    },
-    "pengumuman": {
-      ".read": true,
-      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'"
-    },
-    "setelan": {
-      ".read": true,
-      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'"
-    },
-    "mading": {
-      ".read": true,
-      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'"
     },
     "exp": {
       ".read": true,

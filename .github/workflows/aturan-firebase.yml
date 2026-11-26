@@ -1,0 +1,53 @@
+# Memasang aturan keamanan Firebase (database.rules.json) secara otomatis
+# setiap ada perubahan aturan yang masuk ke branch main.
+# Butuh satu secret repository: FIREBASE_DB_SECRET
+# (Firebase Console → Project settings → Service accounts → Database secrets).
+name: Pasang aturan Firebase
+
+on:
+  push:
+    branches: [main]
+    paths: ['database.rules.json', 'alat/aturan/**', 'alat/buat-aturan-firebase.py']
+  pull_request:
+    paths: ['database.rules.json', 'alat/aturan/**', 'alat/buat-aturan-firebase.py']
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  cek:
+    name: Cek aturan tersusun benar
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Susun ulang dari alat/aturan dan bandingkan dengan database.rules.json
+        run: python3 alat/buat-aturan-firebase.py database.rules.json --cek
+
+  pasang:
+    name: Pasang ke Firebase
+    needs: cek
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    env:
+      DB_URL: https://pt-mencari-cinta-sejati-default-rtdb.asia-southeast1.firebasedatabase.app
+    steps:
+      - uses: actions/checkout@v4
+      - name: Kirim aturan ke Firebase Realtime Database
+        env:
+          SECRET: ${{ secrets.FIREBASE_DB_SECRET }}
+        run: |
+          if [ -z "$SECRET" ]; then
+            echo "::error::Secret FIREBASE_DB_SECRET belum diisi (GitHub → Settings → Secrets and variables → Actions)."
+            exit 1
+          fi
+          kode=$(curl -s -o hasil.json -w '%{http_code}' -X PUT --data-binary @database.rules.json "$DB_URL/.settings/rules.json?auth=$SECRET")
+          echo "HTTP $kode"; cat hasil.json; echo
+          if [ "$kode" != "200" ]; then
+            echo "::error::Firebase menolak aturan (HTTP $kode). Lihat pesan di atas."
+            exit 1
+          fi
+          echo "Aturan Firebase terpasang ✔"
