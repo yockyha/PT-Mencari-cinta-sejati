@@ -76,7 +76,9 @@ if (require.main === module) (async () => {
   // 1 speed dating: kecocokan + obrolan, timer habis → pilih ❤
   if (ingin('speed')) {
     const s = await sesi(b);
-    await ev(s, () => { const K = __kantor.K, o = K.lain.get('t2') || {}; K.lain.set('t2', { ...o, uid: 't2', nama: 'dimas.p', tj: 'jodoh', zd: 8, mb: 'INFP', ll: 1 }); });
+    for (let k = 0; k < 40 && !(await s.p.evaluate(() => __kantor.K.lain.has('t2'))); k++) await maju(s, 250);
+    console.log('t2 ada:', await s.p.evaluate(() => __kantor.K.lain.has('t2')));
+    await ev(s, () => { const o = __kantor.K.lain.get('t2'); if (o) Object.assign(o, { zd: 8, mb: 'INFP', ll: 1, tj: 'jodoh' }); });
     await ev(s, () => { const L = __kantor.L, t = L.db.now(); L.db.set('speedDating', { buka: true, ronde: { no: 1, mulai: t - 4000, durasi: 180, pasangan: { urina: 't2', t2: 'urina' } } }); });
     await maju(s, 400);
     const P = ['hai! kamu suka kopi juga? ☕', 'iyaa tim kopi susu 😆', 'kencan pertama impianmu apa?', 'nonton + makan boba sih 🥹'];
