@@ -3,20 +3,20 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611260100';
-import { bukaDB } from '../js/db.js?v=202611260100';
-import { buatLayanan } from '../js/layanan.js?v=202611260100';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611260100';
-import * as Sosial from './sosial.js?v=202611260100';
-import * as Direktur from './direktur.js?v=202611260100';
-import * as Prog from './progres.js?v=202611260100';
-import * as Game from './game.js?v=202611260100';
-import * as Bayar from './bayar.js?v=202611260100';
-import * as Meja from './meja.js?v=202611260100';
-import * as Karyawan from './karyawan.js?v=202611260100';
-import * as Hadir from './hadir.js?v=202611260100';
-import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611260100';
-import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611260100';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611260150';
+import { bukaDB } from '../js/db.js?v=202611260150';
+import { buatLayanan } from '../js/layanan.js?v=202611260150';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611260150';
+import * as Sosial from './sosial.js?v=202611260150';
+import * as Direktur from './direktur.js?v=202611260150';
+import * as Prog from './progres.js?v=202611260150';
+import * as Game from './game.js?v=202611260150';
+import * as Bayar from './bayar.js?v=202611260150';
+import * as Meja from './meja.js?v=202611260150';
+import * as Karyawan from './karyawan.js?v=202611260150';
+import * as Hadir from './hadir.js?v=202611260150';
+import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611260150';
+import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611260150';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
@@ -321,7 +321,7 @@ function bangunDunia() {
   }), 13.85, 2.35, 16, -Math.PI / 2);
   titikAksi.push({ x: 18.6, z: 16, r: 2.8, label: 'Meja Direktur', aksi: () => Direktur.bukaMeja() });
 
-  // ---- LOUNGE EKSEKUTIF (taman belakang, khusus Kartu Eksekutif)
+  // ---- LOUNGE EKSEKUTIF (taman belakang, khusus VIP)
   lantai(-12, -70, 12, -54, '#3b2b3f', 0.03);
   lantai(-9, -68, 9, -57, '#5a3d55', 0.035);
   const pagar = '#d4a017';
@@ -568,7 +568,7 @@ function labelNama(teks, gaya = '') {
   const kv = kanvas(360, 72, (x, w, h) => {
     x.font = FB(30, 900);
     const tw = Math.min(w - 6, x.measureText(teks).width + 30);
-    x.fillStyle = gaya === 'direktur' ? 'rgba(242,179,61,.96)' : gaya === 'staf' ? 'rgba(58,110,165,.94)' : gaya === 'vip' ? 'rgba(160,110,10,.95)' : gaya ? 'rgba(255,79,123,.9)' : 'rgba(42,20,32,.78)';
+    x.fillStyle = gaya === 'direktur' ? 'rgba(242,179,61,.96)' : gaya === 'staf' ? 'rgba(58,110,165,.94)' : gaya === 'vvip' ? 'rgba(123,62,201,.95)' : gaya === 'vip' ? 'rgba(160,110,10,.95)' : gaya ? 'rgba(255,79,123,.9)' : 'rgba(42,20,32,.78)';
     bulat(x, (w - tw) / 2, 8, tw, 54, 27); x.fill();
     x.fillStyle = gaya === 'direktur' ? '#2a1420' : '#fff'; x.textAlign = 'center'; x.textBaseline = 'middle';
     x.fillText(teks, w / 2, 37, w - 30);
@@ -624,7 +624,7 @@ function pasangKarakterSaya() {
   const lama = saya.g;
   saya.look = lookV2(prof?.look || lookAcakV2(Math.floor(Math.random() * 1e6), prof?.g === 'co' ? 'l' : prof?.g === 'ce' ? 'p' : ''), prof?.g);
   const peran = !resmi() ? 'pengunjung' : peranOrang(L.uid);
-  saya.g = buatKarakter(peran === 'direktur' ? saya.look : Prog.lookAman(saya.look), { peran });
+  saya.g = buatKarakter(peran === 'direktur' ? saya.look : Prog.lookAman(saya.look), { peran, tingkat: resmi() ? Prog.tingkat(L.uid) : '' });
   saya.label = prof && prof.tj && resmi() ? labelNama(teksLabel(prof.n, prof.tj, L.uid, Prog.level()), gayaPeran(L.uid)) : labelNama('👀 Pengunjung');
   saya.g.add(saya.label);
   if (lama) { if (saya.gel) { lama.remove(saya.gel); saya.g.add(saya.gel); } scene.remove(lama); }
@@ -634,6 +634,12 @@ function pasangKarakterSaya() {
 // ---------------------------------------------------------------- KAMERA & INPUT
 const kam = { yaw: Math.PI, pitch: innerWidth / innerHeight < 0.8 ? 0.55 : 0.38, jarak: innerWidth / innerHeight < 0.8 ? 10.5 : 8.5, x: 0, y: 1.4, z: 20 };
 const tombol = {};
+// Kamera ikut: saat berjalan, kamera pelan-pelan berputar ke belakang karakter (mengikuti arah hadap).
+// Seret layar tetap bisa memutar kamera 360°; 'Bebas' = kamera hanya berputar kalau diseret.
+let kamIkut = LS.get('kamIkut', true) !== false, seretT = 0;
+function segarTombolKam() { $('btnKam').textContent = kamIkut ? '🎥 Ikut' : '🎥 Bebas'; }
+$('btnKam').onclick = () => { kamIkut = !kamIkut; LS.set('kamIkut', kamIkut); segarTombolKam(); toast(kamIkut ? '🎥 Kamera mengikuti arah karakter' : '🎥 Kamera bebas: seret layar untuk memutar', 2600); canvas.focus(); };
+segarTombolKam();
 const joy = { aktif: false, id: null, ox: 0, oy: 0, x: 0, y: 0 };
 let seret = null, cubit = null;
 
@@ -683,6 +689,7 @@ canvas.addEventListener('pointermove', e => {
     return;
   }
   if (seret === e.pointerId) {
+    seretT = performance.now();
     kam.yaw -= dx * 0.0065;
     kam.pitch = clamp(kam.pitch + dy * 0.004, 0.05, 1.25);
   }
@@ -816,8 +823,8 @@ let L = null;
 const lain = K.lain; // uid -> {g, nama, tj, ...}
 
 const ikonPeran = uid => (K.peran[uid] === 'direktur' ? '👑 ' : K.peran[uid] === 'staf' ? '🛡 ' : '');
-const gayaPeran = uid => (K.peran[uid] === 'direktur' ? 'direktur' : K.peran[uid] === 'staf' ? 'staf' : Prog.isVip(uid) ? 'vip' : '');
-const teksLabel = (n, tj, uid, lv = 1) => (ikonPeran(uid) || (Prog.isVip(uid) ? '💎 ' : (TUJUAN[tj]?.ikon || '') + ' ')) + n + (lv > 1 && K.peran[uid] !== 'direktur' ? ' ⭐' + lv : '');
+const gayaPeran = uid => (K.peran[uid] === 'direktur' ? 'direktur' : K.peran[uid] === 'staf' ? 'staf' : Prog.isVvip(uid) ? 'vvip' : Prog.isVip(uid) ? 'vip' : '');
+const teksLabel = (n, tj, uid, lv = 1) => (ikonPeran(uid) || (Prog.isVvip(uid) ? '✨VVIP ' : Prog.isVip(uid) ? '💎 ' : (TUJUAN[tj]?.ikon || '') + ' ')) + n + (lv > 1 && K.peran[uid] !== 'direktur' ? ' ⭐' + lv : '');
 
 function sinkronLain(obj) {
   if (!L) return;
@@ -828,9 +835,9 @@ function sinkronLain(obj) {
     ada.add(uid);
     let o = lain.get(uid);
     const nm = bersih(p.n || 'Tamu', 20), tj = tujuanAman(p.tj), lv = clamp(p.lv | 0, 1, 99);
-    const kunci = JSON.stringify(p.l || {}) + '|' + nm + '|' + tj + '|' + (K.peran[uid] || '') + '|' + lv + '|' + Prog.isVip(uid);
+    const kunci = JSON.stringify(p.l || {}) + '|' + nm + '|' + tj + '|' + (K.peran[uid] || '') + '|' + lv + '|' + Prog.tingkat(uid);
     if (!o || o.kunci !== kunci) {
-      const g = buatKarakter(lookV2(p.l, p.g), { peran: peranOrang(uid) });
+      const g = buatKarakter(lookV2(p.l, p.g), { peran: peranOrang(uid), tingkat: Prog.tingkat(uid) });
       g.add(labelNama(teksLabel(nm, tj, uid, lv), gayaPeran(uid)));
       const baru = { g, kunci, uid, x: +p.x || 0, z: +p.z || 0, r: +p.r || 0, gel: null, gelT: 0 };
       if (o) { scene.remove(o.g); Object.assign(baru, { x: o.x, z: o.z, r: o.r, gel: o.gel, gelT: o.gelT }); if (o.gel) g.add(o.gel); }
@@ -855,7 +862,7 @@ let posTerakhir = '', posWaktu = 0;
 function kirimPosisi(t) {
   if (!L || !prof || !prof.tj || K.terkunci || !resmi()) return;
   const p = {
-    n: prof.n, tj: prof.tj, s: prof.tj === 'jodoh' ? (prof.s || '') : '', b: prof.b || '', g: prof.g || '', ig: prof.ig || '',
+    n: prof.n, tj: prof.tj, s: prof.tj === 'jodoh' ? (prof.s || '') : '', b: prof.b || '', g: prof.g || '', ig: prof.igSembunyi ? '' : (prof.ig || ''),
     l: Prog.lookAman(saya.look), lv: Prog.level(), x: +saya.x.toFixed(2), z: +saya.z.toFixed(2), r: +saya.r.toFixed(2), a: saya.a, mj: saya.meja || '',
   };
   const k = `${p.x},${p.z},${p.r},${p.a},${p.mj}`;
@@ -1011,6 +1018,8 @@ function bukaUbahData() {
       </div>
       <label for="uB">Tentang aku</label><textarea id="uB" maxlength="100" rows="2">${esc(p.b || '')}</textarea>
       <label for="uI">Username Instagram</label><input id="uI" maxlength="31" value="${esc(p.ig ? '@' + p.ig : '')}" autocapitalize="none">
+      <label class="cek"><input type="checkbox" id="uP" ${p.igSembunyi ? 'checked' : ''}> 🔒 Sembunyikan Instagram-ku dari tamu lain</label>
+      <p class="kecil">Kalau disembunyikan, tamu lain harus <b>minta izin</b> dulu untuk melihatnya. Direktur dan tamu VVIP tetap bisa melihat.</p>
       <p class="err" id="uE"></p>
       <div class="baris"><button class="btn" type="submit">Simpan</button></div>
     </form>`, {
@@ -1019,8 +1028,9 @@ function bukaUbahData() {
         e.preventDefault();
         const b = bersih(isi.querySelector('#uB').value, 100), ig = igBersih(isi.querySelector('#uI').value);
         if (kasar(b) || kasar(ig)) { isi.querySelector('#uE').textContent = 'Pakai kata-kata yang lebih sopan ya.'; return; }
-        prof = { ...prof, b, ig, g: isi.querySelector('#uG').value, s: isi.querySelector('#uS')?.value || prof.s };
-        simpanProfil(prof); posWaktu = 0; tutupKartu(); toast('Data tersimpan ✔');
+        prof = { ...prof, b, ig, g: isi.querySelector('#uG').value, s: isi.querySelector('#uS')?.value || prof.s, igSembunyi: isi.querySelector('#uP').checked };
+        simpanProfil(prof); posWaktu = 0; tutupKartu(); toast(prof.igSembunyi ? 'Data tersimpan ✔ Instagram-mu sekarang disembunyikan 🔒' : 'Data tersimpan ✔');
+        L.simpanPrivasiIg(prof.ig, prof.igSembunyi).catch(e => console.warn(e));
       };
     },
   });
@@ -1044,6 +1054,8 @@ function terapkanAkses() {
     }
     Prog.lapor('tur_daftar');
     if (dir) Hadir.direkturMasuk();
+    // simpan pengaturan privasi Instagram sekali per sesi (supaya data ig ada di profilPribadi)
+    if (!terapkanAkses.privasi) { terapkanAkses.privasi = true; L.simpanPrivasiIg(prof?.ig || '', !!prof?.igSembunyi).catch(() => {}); }
   }
   K._resmiLama = !!(a || dir);
   $('chatI').placeholder = resmi() ? 'Tulis pesan… (Enter)' : '👀 Daftar dulu untuk ikut ngobrol';
@@ -1107,7 +1119,7 @@ function bukaLoker() {
           const x = BARANG[b.dataset.id];
           if (!Prog.bolehBarang(x.id)) {
             if (x.dm) { Bayar.bukaBeliBarang(x.id); return; }
-            toast(x.vip ? `${x.nama} khusus pemegang Kartu Eksekutif 💎` : `${x.nama} terbuka di Level ${x.lv}. Kumpulkan EXP dari tugas & acara, atau beli EXP di Toko.`, 3600);
+            toast(x.vip ? `${x.nama} khusus VIP & VVIP 💎` : `${x.nama} terbuka di Level ${x.lv}. Kumpulkan EXP dari tugas & acara, atau beli EXP di Toko.`, 3600);
             return;
           }
           saya.look[x.slot] = SLOT_AKS.includes(x.slot) && saya.look[x.slot] === x.id ? '' : x.id;
@@ -1282,7 +1294,7 @@ function bukaArsip() {
 }
 const MOCKTAIL = [['🍹 Love Potion', 'stroberi, leci & soda'], ['🍸 Golden Hour', 'mangga, markisa & madu'], ['🥂 Sparkling Rose', 'mawar, lemon & soda'], ['🧉 Blue Lagoon', 'jeruk biru & lemon'], ['☕ Affogato', 'es krim & espresso']];
 function bukaBar() {
-  bukaKartu(`<h2>🍹 Bar Lounge</h2><p class="kecil">Semua minuman tanpa alkohol, gratis untuk pemegang Kartu Eksekutif 💎</p>
+  bukaKartu(`<h2>🍹 Bar Lounge</h2><p class="kecil">Semua minuman tanpa alkohol, gratis untuk VIP & VVIP 💎</p>
     <div class="daftar">${MOCKTAIL.map(([n, k], i) => `<div><span><b>${n}</b><br><small>${k}</small></span><button type="button" class="mini" data-m="${i}">Pesan</button></div>`).join('')}</div>`, {
     pasang(isi) { isi.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { const [n] = MOCKTAIL[+b.dataset.m]; tutupKartu(); bicara(saya, `${n}, cheers! 🥂`); toast(`${n} siap! Selamat menikmati ✨`); }); },
   });
@@ -1478,6 +1490,8 @@ function langkah() {
     saya.x += mx * v; saya.z += mz * v; geser(saya);
     saya.r = sudutLerp(saya.r, Math.atan2(mx, mz), Math.min(1, dt * 12));
     saya.a = 1; saya.cepat = lari ? 1.5 : 1;
+    // kamera mengikuti arah hadap (jeda sebentar setelah pemain memutar kamera sendiri)
+    if (kamIkut && seret === null && !cubit && t - seretT > 900) kam.yaw = sudutLerp(kam.yaw, saya.r, Math.min(1, dt * (lari ? 3 : 2.2)));
   } else if (!saya.duduk) { saya.lambai = Math.max(0, (saya.lambai || 0) - dt); saya.a = saya.lambai > 0 ? 5 : 0; }
 
   // pemain sendiri
@@ -1519,7 +1533,7 @@ function langkah() {
   if (t - cekT > 1000) {
     cekT = t;
     Prog.cekPosisi(saya.x, saya.z);
-    if (L && lokasiDi(saya.x, saya.z) === 'lounge' && !Prog.vipSaya() && !K.peran[L.uid]) { pindah(0, -51.8, 0); toast('Kartu Eksekutifmu sudah tidak aktif.'); }
+    if (L && lokasiDi(saya.x, saya.z) === 'lounge' && !Prog.vipSaya() && !K.peran[L.uid]) { pindah(0, -51.8, 0); toast('VIPmu sudah tidak aktif.'); }
   }
   perbaruiAksi();
   kirimPosisi(t);
@@ -1542,7 +1556,7 @@ async function mulai() {
   Object.assign(K, { L, saya, pindah, bicara, bukaDaftar, hitungOnline, berdiri, teksLabel, gayaPeran, resmi });
   Object.defineProperty(K, 'prof', { get: () => prof, set: v => { prof = v; } });
   K.segarkanOrang = () => { pasangKarakterSaya(); sinkronLain(K.onlineTerakhir); };
-  window.__kantor = { L, saya, lain, bot, pindah, K }; // untuk debugging
+  window.__kantor = { L, saya, lain, bot, pindah, K, kam }; // untuk debugging
   const urutKunci = o => Object.entries(o || {}).sort((a, b) => (a[0] < b[0] ? -1 : 1)).map(([k, v]) => ({ ...v, k }));
   db.on('online', o => { K.onlineTerakhir = o; sinkronLain(o); Meja.orangBerubah(); Hadir.onlineBerubah(); });
   db.on('chat', terimaChat, { limit: 30 });
@@ -1571,6 +1585,8 @@ async function mulai() {
       arcade: () => Game.bukaArcade(), patung: () => pindah(-14, 29.4, Math.PI), keMeja: i => keKursiMeja(MEJA[i]), mejaKafe: () => keKursiMeja(MEJA_BUNDAR[0]),
     },
   });
+  K.renderer = renderer;
+  K.bukaLangganan = () => { Prog.bukaHub('toko'); setTimeout(() => document.querySelector('#kartu #langganan')?.scrollIntoView({ behavior: 'smooth' }), 80); };
   K.efekLokal = Hadir.efekLokal; K.bukaPanel = Direktur.bukaPanel; K.panggilKaryawan = () => Karyawan.panggil(saya);
   Sosial.mulai(); Direktur.mulai(); Prog.mulai(); Hadir.mulai();
   hitungOnline();

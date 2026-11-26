@@ -5,7 +5,7 @@
 //  makan, melambai, ngetik).
 // =====================================================================
 import * as THREE from 'three';
-import { BARANG, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2 } from '../js/pakaian.js?v=202611260100';
+import { BARANG, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2 } from '../js/pakaian.js?v=202611260150';
 
 const GEO = new THREE.BoxGeometry(1, 1, 1);
 const _mat = {};
@@ -30,7 +30,7 @@ const ubah = (hex, f) => { const c = new THREE.Color(hex); if (f < 1) c.multiply
  * look: penampilan (v2 atau lama). opsi.peran: 'tamu' | 'staf' | 'direktur' | 'karyawan' | 'pengunjung'
  * opsi.bawa: 'pel' | 'sapu' | 'box' | 'kopi' | 'paket' | 'nampan' | 'laptop' | 'map'
  */
-export function buatKarakter(look, { peran = 'tamu', bawa = '' } = {}) {
+export function buatKarakter(look, { peran = 'tamu', bawa = '', tingkat = '' } = {}) {
   const L = lookV2(look);
   if (peran === 'direktur') Object.assign(L, { at: 'jasDir', bw: 'bahan', wb: 0, sp: 'pantofel' });
   const P = L.s === 'p';
@@ -170,6 +170,12 @@ export function buatKarakter(look, { peran = 'tamu', bawa = '' } = {}) {
     const h = hatiKecil(0.04, '#ffd23f'); h.position.set(0.17, 1.32, depan + 0.02); tubuh.add(h);
   } else if (peran === 'tamu') {
     part(0.13, 0.09, 0.02, -0.15, 1.3, depan + 0.012, putih); part(0.13, 0.03, 0.025, -0.15, 1.33, depan + 0.014, M('#ff4f7b'));
+  }
+
+  // VVIP: cincin ungu di kaki
+  if (tingkat === 'vvip' && peran !== 'direktur') {
+    const c = new THREE.Mesh(new THREE.RingGeometry(0.5, 0.7, 32), new THREE.MeshBasicMaterial({ color: '#b36bff', transparent: true, opacity: 0.7, side: THREE.DoubleSide, depthWrite: false }));
+    c.rotation.x = -Math.PI / 2; c.position.y = 0.03; g.add(c);
   }
 
   // ------------------------------------------------ LENGAN

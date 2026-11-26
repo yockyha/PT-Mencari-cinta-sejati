@@ -6,10 +6,10 @@
 //   - efek untuk semua orang (hujan hati, kembang api, hujan bunga,
 //     undangan berkumpul) yang hanya bisa dipicu Direktur
 // =====================================================================
-import { LOKASI, LS, bersih, esc, fmt } from '../js/common.js?v=202611260100';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog } from './ui.js?v=202611260100';
-import * as Prog from './progres.js?v=202611260100';
-import * as Karyawan from './karyawan.js?v=202611260100';
+import { LOKASI, LS, bersih, esc, fmt } from '../js/common.js?v=202611260150';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog } from './ui.js?v=202611260150';
+import * as Prog from './progres.js?v=202611260150';
+import * as Karyawan from './karyawan.js?v=202611260150';
 
 export const SAPA = {
   halo: { ikon: '👋', teks: 'Halo, Direktur!' },
@@ -125,9 +125,9 @@ function banner(o) {
 // ---------------------------------------------------------------- SAPA DIREKTUR (tamu)
 export function bukaSapa() {
   if (!K.resmi()) { K.bukaDaftar(); return; }
-  const tunggu = (LS.get('sapaT', 0) || 0) + 300000 - Date.now();
+  const tunggu = Prog.vvipSaya() ? 0 : (LS.get('sapaT', 0) || 0) + 300000 - Date.now();
   bukaKartu(`<h2>👋 Sapa Direktur</h2>
-    <p class="kecil">Sapaan langsung muncul di layar Direktur, dan Direktur bisa membalasnya. Ini bukan pesan pribadi. Kirim sekali tiap 5 menit ya.</p>
+    <p class="kecil">Sapaan langsung muncul di layar Direktur, dan Direktur bisa membalasnya. Ini bukan pesan pribadi. ${Prog.vvipSaya() ? 'Sebagai VVIP kamu bisa menyapa kapan saja 👑' : 'Kirim sekali tiap 5 menit ya.'}</p>
     <div class="sapaGrid">${Object.entries(SAPA).map(([k, s]) => `<button type="button" data-s="${k}" ${tunggu > 0 ? 'disabled' : ''}><b>${s.ikon}</b><span>${esc(s.teks)}</span></button>`).join('')}</div>
     ${tunggu > 0 ? `<p class="err">Kamu baru saja menyapa. Coba lagi ${Math.ceil(tunggu / 60000)} menit lagi.</p>` : ''}`, {
     pasang(isi) {

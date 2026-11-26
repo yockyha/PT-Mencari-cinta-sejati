@@ -3,11 +3,11 @@
 //  Semua tindakan juga dijaga database.rules.json di server, jadi
 //  tamu biasa tidak bisa memakainya walau mengutak-atik browser.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, fmt, esc, bersih, kodeTamu } from '../js/common.js?v=202611260100';
-import * as Prog from './progres.js?v=202611260100';
-import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611260100';
-import * as Hadir from './hadir.js?v=202611260100';
-import { TS } from '../js/db.js?v=202611260100';
+import { CFG, TUJUAN, LOKASI, fmt, esc, bersih, kodeTamu } from '../js/common.js?v=202611260150';
+import * as Prog from './progres.js?v=202611260150';
+import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611260150';
+import * as Hadir from './hadir.js?v=202611260150';
+import { TS } from '../js/db.js?v=202611260150';
 
 let laporan = {}, saran = {}, larangan = {}, pesanan = {}, lepas = [], tabAktif = '';
 const peranku = () => K.L && K.peran[K.L.uid];
@@ -186,7 +186,7 @@ function orang() {
       <h3>Sedang dikeluarkan</h3>
       ${diusir.length ? `<div class="daftar">${diusir.map(([u, b]) => `<div><span>${esc(b.n || namaDari(u))}<br><small>${b.sampai > now + 3650 * 86400e3 ? 'diblokir' : 'sampai ' + esc(tanggalJam(b.sampai))} · ${esc(b.alasan || '')}</small></span><button type="button" class="mini putih" data-ampun="${esc(u)}">Ampuni</button></div>`).join('')}</div>` : '<p class="kecil">Tidak ada.</p>'}`,
     pasang(isi) {
-      isi.querySelectorAll('[data-lihat]').forEach(b => b.onclick = () => import('./sosial.js?v=202611260100').then(S => S.bukaProfil(o.find(x => x.uid === b.dataset.lihat))));
+      isi.querySelectorAll('[data-lihat]').forEach(b => b.onclick = () => import('./sosial.js?v=202611260150').then(S => S.bukaProfil(o.find(x => x.uid === b.dataset.lihat))));
       isi.querySelectorAll('[data-mod]').forEach(b => b.onclick = () => bukaModerasiOrang(o.find(x => x.uid === b.dataset.mod)));
       isi.querySelectorAll('[data-ampun]').forEach(b => b.onclick = () => {
         const u = b.dataset.ampun;
@@ -206,7 +206,7 @@ export function bukaModerasiOrang(o) {
       <button class="btn putih" type="button" data-m="1440">Usir 1 hari</button>
       <button class="btn" type="button" data-m="blokir">Blokir permanen</button>
     </div>
-    ${direktur() && !o.npc ? `<h3>Hadiah</h3><div class="baris"><button class="btn putih" type="button" data-exp="50">🎁 +50 EXP</button><button class="btn putih" type="button" data-vip="30">💎 Eksekutif 30 hari</button></div>
+    ${direktur() && !o.npc ? `<h3>Hadiah</h3><div class="baris"><button class="btn putih" type="button" data-exp="50">🎁 +50 EXP</button><button class="btn putih" type="button" data-vip="30">💎 VIP 30 hari</button></div>
     <p class="kecil">Kode tamu: <code>${esc(kodeTamu(o.uid))}</code></p>` : ''}
     ${direktur() && !o.npc ? `<h3>Jabatan</h3><div class="baris"><button class="btn putih" type="button" id="mS">${staf ? 'Cabut jabatan staf' : 'Angkat jadi Staf 🛡'}</button></div><p class="kecil">Staf bisa mengusir tamu, menghapus pesan, dan membaca laporan. Hanya Direktur yang bisa membuat pengumuman, mengubah mading, menutup kantor, dan mengatur tim.</p>` : ''}
     <div class="baris"><button class="btn putih" type="button" id="mK">← Kembali ke panel</button></div>`, {
@@ -219,7 +219,7 @@ export function bukaModerasiOrang(o) {
         K.L.usir(o.uid, menit, alasan, nama).then(selesai).catch(gagal);
       });
       isi.querySelectorAll('[data-exp]').forEach(b => b.onclick = () => K.L.beriExp(o.uid, +b.dataset.exp).then(() => K.L.kirimNotif(o.uid, `Kamu dapat hadiah ${b.dataset.exp} EXP dari Direktur! 🎁`)).then(() => toast('Hadiah terkirim 🎁')).catch(gagal));
-      isi.querySelectorAll('[data-vip]').forEach(b => b.onclick = () => K.L.beriVip(o.uid, +b.dataset.vip).then(() => K.L.kirimNotif(o.uid, `Kartu Eksekutif kamu aktif ${b.dataset.vip} hari. Selamat menikmati Lounge Eksekutif! 💎`)).then(() => toast('Kartu Eksekutif diaktifkan 💎')).catch(gagal));
+      isi.querySelectorAll('[data-vip]').forEach(b => b.onclick = () => K.L.beriVip(o.uid, +b.dataset.vip).then(() => K.L.kirimNotif(o.uid, `VIP kamu aktif ${b.dataset.vip} hari. Selamat menikmati Lounge Eksekutif! 💎`)).then(() => toast('VIP diaktifkan 💎')).catch(gagal));
       const s = isi.querySelector('#mS');
       if (s) s.onclick = () => K.L.setPeran(o.uid, staf ? null : 'staf').then(() => { toast(staf ? 'Jabatan staf dicabut.' : `${nama} sekarang Staf 🛡`); bukaPanel('tim'); }).catch(gagal);
       isi.querySelector('#mK').onclick = () => bukaPanel('orang');
@@ -315,7 +315,7 @@ const TEMPLAT = [
   { judul: 'Sesi Curhat Bareng', isi: 'Ruang aman untuk cerita. Tulis di papan curhat, saling peluk dan kuatkan.', lokasi: 'taman', durasi: 60, exp: 40 },
   { judul: 'Kuis Cinta', isi: 'Direktur kasih pertanyaan di chat, yang jawab paling cepat menang hadiah EXP.', lokasi: 'rapat', durasi: 45, exp: 50 },
   { judul: 'Turnamen Tangkap Hati', isi: 'Skor tertinggi hari ini dapat hadiah dari Direktur!', lokasi: 'lobi', durasi: 60, exp: 30 },
-  { judul: 'Malam Eksekutif', isi: 'Nongkrong santai khusus pemegang Kartu Eksekutif.', lokasi: 'lounge', durasi: 90, exp: 40 },
+  { judul: 'Malam Eksekutif', isi: 'Nongkrong santai khusus VIP & VVIP.', lokasi: 'lounge', durasi: 90, exp: 40 },
 ];
 function keWib(ms) { const d = new Date(ms + 7 * 3600e3); return d.toISOString().slice(0, 16); }
 function dariWib(v) { const [t, j] = v.split('T'); const [y, m, d] = t.split('-').map(Number); const [h, mi] = j.split(':').map(Number); return Date.UTC(y, m - 1, d, h - 7, mi); }

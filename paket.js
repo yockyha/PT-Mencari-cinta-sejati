@@ -14,10 +14,16 @@ export default {
   ],
   // Paket lain yang dibayar dengan uang
   toko: [
-    { id: 'vip30', nama: 'Kartu Eksekutif 30 hari', harga: 5000, vipHari: 30, ket: 'Lihat siapa yang menyukaimu, Lounge Eksekutif, outfit & nama emas' },
+    // tidak dijual lagi (diganti VIP/VVIP dengan Diamond); tetap ada supaya pesanan lama bisa diproses
+    { id: 'vip30', nama: 'Kartu Eksekutif 30 hari', harga: 5000, vipHari: 30, sembunyi: true, ket: 'Lihat siapa yang menyukaimu, Lounge Eksekutif, outfit & nama emas' },
     { id: 'exp100', nama: '100 EXP', harga: 5000, exp: 100, ket: 'Langsung naik ±2 level untuk pemula' },
     { id: 'exp300', nama: '300 EXP', harga: 12000, exp: 300, ket: 'Buka Jas & Dasi, Gaun Pesta, dan lainnya' },
     { id: 'exp1000', nama: '1.000 EXP', harga: 35000, exp: 1000, ket: 'Buka hampir semua outfit & aksesoris' },
+  ],
+  // Langganan dibeli dengan Diamond (30 hari). 300 💠 = paket Rp25.000, 650 💠 = paket Rp50.000
+  langganan: [
+    { id: 'vip', nama: 'VIP', ikon: '💎', diamond: 300, hari: 30 },
+    { id: 'vvip', nama: 'VVIP', ikon: '👑', diamond: 650, hari: 30 },
   ],
   // Donasi (nominal bebas)
   donasi: { min: 5000, maks: 10000000, saran: [10000, 25000, 50000, 100000] },

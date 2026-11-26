@@ -3,9 +3,9 @@
 //  Login username + kata sandi → ringkasan, persetujuan pendaftar,
 //  anggota, online, aktivitas, acara, toko, laporan, siaran & data.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, GENDER, BARANG_DIAMOND, IKON_DM, esc, fmt, bersih, levelDari, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611260100';
-import { bukaDB } from '../js/db.js?v=202611260100';
-import { buatLayanan } from '../js/layanan.js?v=202611260100';
+import { CFG, TUJUAN, LOKASI, GENDER, BARANG_DIAMOND, IKON_DM, esc, fmt, bersih, levelDari, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611260150';
+import { bukaDB } from '../js/db.js?v=202611260150';
+import { buatLayanan } from '../js/layanan.js?v=202611260150';
 
 const $ = id => document.getElementById(id);
 let db = null, L = null;
@@ -155,7 +155,7 @@ function ringkas() {
       <div class="angka tombol" data-ke="toko"><b>${rp(pendapatan)}</b><span>💰 total pendapatan</span></div>
       <div class="angka tombol" data-ke="laporan"><b>${fmt(ent(S.laporan).length)}</b><span>🚩 laporan</span></div>
       <div class="angka tombol" data-ke="acara"><b>${fmt(nanti)}</b><span>📅 acara mendatang</span></div>
-      <div class="angka"><b>${fmt(ent(S.vip).filter(([u]) => vipAktif(u)).length)}</b><span>💎 Eksekutif aktif</span></div>
+      <div class="angka"><b>${fmt(ent(S.vip).filter(([u]) => vipAktif(u)).length)}</b><span>💎 VIP / VVIP aktif</span></div>
     </div>
     <div class="panel"><h3>Anggota per tujuan</h3><div class="tiga">${Object.entries(TUJUAN).map(([k, t]) => `<div class="angka"><b>${fmt(ang.filter(([, a]) => a.tj === k).length)}</b><span>${t.ikon} ${t.nama}</span></div>`).join('')}</div></div>
     <div class="dua">
@@ -254,7 +254,7 @@ function vAnggota() {
       <p class="kecil">${fmt(list.length)} dari ${fmt(semua.length)} anggota · ketuk baris untuk mengelola</p>
       <div class="tabelWrap"><table><thead><tr><th>Nama</th><th>Tujuan</th><th>Peran</th><th>Level</th><th>EXP</th><th>Eksekutif</th><th>Status</th><th>Sejak</th></tr></thead><tbody>
       ${list.map(a => `<tr data-u="${esc(a.u)}" class="${pilihAnggota === a.u ? 'pilih' : ''}"><td><b>${esc(a.n)}</b><br><code>${esc(kodeTamu(a.u))}</code></td><td>${pillTj(a.tj)}</td><td>${a.peran === 'direktur' ? '👑 Direktur' : a.peran === 'staf' ? '🛡 Staf' : 'Tamu'}</td>
-        <td class="angkaK">${a.peran === 'direktur' ? '∞' : levelDari(a.exp)}</td><td class="angkaK">${a.peran === 'direktur' ? '∞' : fmt(a.exp)}</td><td>${vipAktif(a.u) ? '💎 s/d ' + esc(tgl(S.vip[a.u].sampai)) : '—'}</td>
+        <td class="angkaK">${a.peran === 'direktur' ? '∞' : levelDari(a.exp)}</td><td class="angkaK">${a.peran === 'direktur' ? '∞' : fmt(a.exp)}</td><td>${vipAktif(a.u) ? (S.vip[a.u].tingkat === 'vvip' ? '👑 VVIP' : '💎 VIP') + ' s/d ' + esc(tgl(S.vip[a.u].sampai)) : '—'}</td>
         <td>${diusir(a.u) ? '🚪 diusir' : on.has(a.u) ? '🟢 online' : '—'}</td><td>${esc(tgl(a.sejak))}</td></tr>`).join('') || '<tr><td colspan="8" class="kosong">Belum ada anggota.</td></tr>'}
       </tbody></table></div>
       ${pilihAnggota ? detailAnggota(pilihAnggota) : ''}`,
@@ -283,8 +283,8 @@ function detailAnggota(u) {
       <p class="kecil">Barang dimiliki: ${esc(Object.keys(S.milik?.[u] || {}).map(id => (BARANG_DIAMOND.find(x => x.id === id) || {}).nama || id).join(', ') || '—')}</p>
       <div class="baris"><button class="btn putih kecil" type="button" data-dm="50">+50</button><button class="btn putih kecil" type="button" data-dm="100">+100</button><button class="btn putih kecil" type="button" data-dm="500">+500</button>
       <input data-i="dmSet" type="number" min="0" placeholder="Atur saldo" style="width:130px" aria-label="Atur saldo diamond"><button class="btn kecil" type="button" data-d="dmSet">Atur</button></div></div>
-    <div class="seksi"><h4>Kartu Eksekutif ${vipAktif(u) ? `· aktif s/d ${esc(tgl(S.vip[u].sampai))}` : ''}</h4>
-      <div class="baris"><button class="btn putih kecil" type="button" data-vip="7">+7 hari</button><button class="btn putih kecil" type="button" data-vip="30">+30 hari</button><button class="btn putih kecil" type="button" data-vip="365">+1 tahun</button>${vipAktif(u) ? '<button class="btn merah kecil" type="button" data-d="vipCabut">Cabut</button>' : ''}</div></div>
+    <div class="seksi"><h4>VIP ${vipAktif(u) ? `· aktif s/d ${esc(tgl(S.vip[u].sampai))}` : ''}</h4>
+      <div class="baris"><button class="btn putih kecil" type="button" data-vip="7">+7 hari</button><button class="btn putih kecil" type="button" data-vip="30">+30 hari</button><button class="btn putih kecil" type="button" data-vip="365">+1 tahun</button><button class="btn putih kecil" type="button" data-vvip="30">👑 VVIP +30 hari</button>${vipAktif(u) ? '<button class="btn merah kecil" type="button" data-d="vipCabut">Cabut</button>' : ''}</div></div>
     <div class="seksi"><h4>Jabatan</h4><div class="baris"><button class="btn ${peran === 'staf' ? 'putih' : ''} kecil" type="button" data-d="${peran === 'staf' ? 'jadiTamu' : 'jadiStaf'}">${peran === 'staf' ? 'Jadikan tamu biasa' : 'Angkat jadi Staf 🛡'}</button></div></div>
     <div class="seksi"><h4>Tindakan ${ban && ban.sampai > kini() ? `· 🚪 diusir s/d ${esc(tgl(ban.sampai))} (${esc(ban.alasan || '')})` : ''}</h4>
       <div class="baris"><input data-i="alasan" maxlength="100" placeholder="Alasan" value="Melanggar aturan kantor" style="flex:1 1 200px" aria-label="Alasan">
@@ -300,7 +300,8 @@ function pasangDetail(el) {
   const jalankan = (p, pesan) => p.then(() => { kotor = false; toast(pesan); }).catch(gagal);
   d.querySelectorAll('[data-exp]').forEach(b => b.onclick = () => jalankan(L.beriExp(u, +b.dataset.exp).then(() => L.kirimNotif(u, `Kamu dapat ${b.dataset.exp} EXP dari Direktur 🎁`)), `+${b.dataset.exp} EXP ✔`));
   d.querySelectorAll('[data-dm]').forEach(b => b.onclick = () => jalankan(L.beriDiamond(u, +b.dataset.dm).then(() => L.kirimNotif(u, `Kamu dapat ${b.dataset.dm} Diamond dari Direktur 🎁`)), `+${b.dataset.dm} Diamond ✔`));
-  d.querySelectorAll('[data-vip]').forEach(b => b.onclick = () => jalankan(L.beriVip(u, +b.dataset.vip).then(() => L.kirimNotif(u, `Kartu Eksekutif kamu diperpanjang ${b.dataset.vip} hari 💎`)), 'Kartu Eksekutif diperpanjang 💎'));
+  d.querySelectorAll('[data-vip]').forEach(b => b.onclick = () => jalankan(L.beriVip(u, +b.dataset.vip).then(() => L.kirimNotif(u, `VIP kamu diperpanjang ${b.dataset.vip} hari 💎`)), 'VIP diperpanjang 💎'));
+  d.querySelectorAll('[data-vvip]').forEach(b => b.onclick = () => jalankan(L.beriVip(u, +b.dataset.vvip, 'vvip').then(() => L.kirimNotif(u, `Kamu sekarang VVIP 👑 selama ${b.dataset.vvip} hari. Selamat!`)), 'VVIP diberikan 👑'));
   d.querySelectorAll('[data-usir]').forEach(b => b.onclick = () => {
     const m = b.dataset.usir === 'blokir' ? 60 * 24 * 365 * 100 : +b.dataset.usir;
     jalankan(L.usir(u, m, i('alasan').value || 'Melanggar aturan kantor', a.n), `${a.n} dikeluarkan 🚪`);
@@ -311,7 +312,7 @@ function pasangDetail(el) {
     if (k === 'simpan') { const n = bersih(i('n').value, 20); if (n.length < 2) return toast('Nama minimal 2 huruf'); jalankan(L.ubahAnggota(u, { n, tj: i('tj').value }), 'Data anggota disimpan ✔'); }
     if (k === 'dmSet') { const n = +i('dmSet').value; if (!(n >= 0)) return toast('Isi angka diamond'); jalankan(L.setDiamond(u, n), 'Saldo diamond diatur ✔'); }
     if (k === 'expSet') { const n = +i('expSet').value; if (!(n >= 0)) return toast('Isi angka EXP'); jalankan(L.setExpBeli(u, n), 'EXP bonus diatur ✔'); }
-    if (k === 'vipCabut') jalankan(db.set('vip/' + u, { sampai: kini() }), 'Kartu Eksekutif dicabut');
+    if (k === 'vipCabut') jalankan(db.set('vip/' + u, { sampai: kini() }), 'VIP dicabut');
     if (k === 'jadiStaf') jalankan(L.setPeran(u, 'staf').then(() => L.kirimNotif(u, 'Kamu diangkat menjadi Staf 🛡')), `${a.n} sekarang Staf 🛡`);
     if (k === 'jadiTamu') jalankan(L.setPeran(u, null), `${a.n} kembali jadi tamu`);
     if (k === 'ampun') jalankan(L.ampuni(u), 'Sudah diampuni');
@@ -360,7 +361,7 @@ const TEMPLAT = [
   { judul: 'Sesi Curhat Bareng', isi: 'Ruang aman untuk cerita. Tulis di papan curhat, saling peluk dan kuatkan.', lokasi: 'taman', durasi: 60, exp: 40 },
   { judul: 'Kuis Cinta', isi: 'Direktur kasih pertanyaan di chat, yang jawab paling cepat menang hadiah EXP.', lokasi: 'rapat', durasi: 45, exp: 50 },
   { judul: 'Turnamen Tangkap Hati', isi: 'Skor tertinggi hari ini dapat hadiah dari Direktur!', lokasi: 'lobi', durasi: 60, exp: 30 },
-  { judul: 'Malam Eksekutif', isi: 'Nongkrong santai khusus pemegang Kartu Eksekutif.', lokasi: 'lounge', durasi: 90, exp: 40 },
+  { judul: 'Malam Eksekutif', isi: 'Nongkrong santai khusus pemegang VIP.', lokasi: 'lounge', durasi: 90, exp: 40 },
 ];
 const keWib = ms => new Date(ms + 7 * 3600e3).toISOString().slice(0, 16);
 function dariWib(v) { const [t, j] = String(v).split('T'); if (!j) return NaN; const [y, m, d] = t.split('-').map(Number); const [h, mi] = j.split(':').map(Number); return Date.UTC(y, m - 1, d, h - 7, mi); }
