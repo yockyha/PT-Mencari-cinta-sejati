@@ -47,10 +47,10 @@ def klip(src, b, a, z, panjang, trim=0.0, **k):
     g('video', src, b, a, z, trim=trim, kecepatan=round(max(0.5, min(2.5, panjang / dur)), 3), **k)
 
 def chip(teks, b, a=0.02, z=1):
-    t('chips', teks, b, a, z, nyala='0', y=290, masuk='pop')
+    t('chips', teks, b, a, z, nyala='0', y=1690, masuk='pop')
     sfx('Pop ' + teks, 'pop', waktu(b, a, z)[0], 15, 0.3)
 
-SUB = 1480  # di bawah kartu aplikasi, masih di area aman Reels
+SUB = 130  # di atas: menutupi bar status aplikasi, bukan kartu fiturnya
 
 # 0 hook: angka berhitung
 g('video', 'klip/drone.mp4', 0, 0, 1, gelap=0.45, kecepatan=0.9, nama='Drone kantor (redup)')
@@ -74,7 +74,7 @@ t('sub', 'Nih, yang *baru-baru!* 👇', 2, 0.45, 1, y=1330)
 sfx('Whoosh judul', 'whoosh', det(2, 0) - 3, 18, 0.3)
 
 # 3 speed dating
-klip('klip/sd.mp4', 3, 0, 1, 7.3, trim=0.2, nama='Speed dating')
+klip('klip/sd.mp4', 3, 0, 1, 6.9, trim=0.2, nama='Speed dating')
 chip('💘 SPEED DATING', 3)
 t('sub', 'Ikut *speed dating:* dipasangin acak,', 3, 0, 0.4, y=SUB)
 t('sub', 'ngobrol *3 menit,*', 3, 0.4, 0.7, y=SUB)
