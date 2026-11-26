@@ -124,7 +124,7 @@ if (require.main === module) (async () => {
     await rekam(s, 'kerupuk', 5, async (i) => {
       if (i === 0) await ev(s, () => __kantor.K.bukaHarian('kerupuk'));
       if (i === 20) await klik(s, '#krM');
-      if (i > 26 && i % 2 === 0) await klik(s, '#krB');
+      if (i > 26 && i % 2 === 0) await ev(s, () => { const e = document.querySelector('#krB'); if (e) e.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true })); });
     });
     await s.ctx.close();
   }
