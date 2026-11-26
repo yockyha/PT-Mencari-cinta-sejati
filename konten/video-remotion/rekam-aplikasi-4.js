@@ -20,6 +20,7 @@ async function sesi(b, { jam = '2026-11-26T20:00:00+07:00' } = {}) {
     localStorage.setItem('ptmcs_profil', JSON.stringify({ n: 'Rina', tj: 'jodoh', s: 'Jomblo', g: 'ce', zd: 4, mb: 'ENFP', ll: 1, look: { o: 8, k: 2, b: 1, c: 3, r: 2, w: 1, a: 13 } }));
   }, { NAMA });
   await ctx.clock.install({ time: new Date(jam) });
+  await ctx.clock.pauseAt(new Date(new Date(jam).getTime() + 1000)); // jam hanya maju lewat fastForward (bukan waktu nyata)
   const p = await ctx.newPage(); p.on('pageerror', e => console.log('ERR', e.message));
   await p.goto(BASE + '/kantor/index.html');
   for (let i = 0; i < 80; i++) { await ctx.clock.fastForward(200); if (i > 10 && await p.evaluate(() => !!(window.__kantor && window.__kantor.L))) break; }
