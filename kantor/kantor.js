@@ -3,27 +3,27 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611260740';
-import { bukaDB } from '../js/db.js?v=202611260740';
-import { buatLayanan } from '../js/layanan.js?v=202611260740';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611260740';
-import * as Sosial from './sosial.js?v=202611260740';
-import * as Direktur from './direktur.js?v=202611260740';
-import * as Prog from './progres.js?v=202611260740';
-import * as Game from './game.js?v=202611260740';
-import * as Bayar from './bayar.js?v=202611260740';
-import * as Meja from './meja.js?v=202611260740';
-import * as Karyawan from './karyawan.js?v=202611260740';
-import * as Hadir from './hadir.js?v=202611260740';
-import * as Foto from './foto.js?v=202611260740';
-import * as Seru from './seru.js?v=202611260740';
-import * as Speed from './speeddating.js?v=202611260740';
-import * as Aktivitas from './aktivitas.js?v=202611260740';
-import * as Komunitas from './komunitas.js?v=202611260740';
-import * as RuangDir from './ruangdir.js?v=202611260740';
-import * as Gedung from './gedung.js?v=202611260740';
-import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611260740';
-import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611260740';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611260933';
+import { bukaDB } from '../js/db.js?v=202611260933';
+import { buatLayanan } from '../js/layanan.js?v=202611260933';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611260933';
+import * as Sosial from './sosial.js?v=202611260933';
+import * as Direktur from './direktur.js?v=202611260933';
+import * as Prog from './progres.js?v=202611260933';
+import * as Game from './game.js?v=202611260933';
+import * as Bayar from './bayar.js?v=202611260933';
+import * as Meja from './meja.js?v=202611260933';
+import * as Karyawan from './karyawan.js?v=202611260933';
+import * as Hadir from './hadir.js?v=202611260933';
+import * as Foto from './foto.js?v=202611260933';
+import * as Seru from './seru.js?v=202611260933';
+import * as Speed from './speeddating.js?v=202611260933';
+import * as Aktivitas from './aktivitas.js?v=202611260933';
+import * as Komunitas from './komunitas.js?v=202611260933';
+import * as RuangDir from './ruangdir.js?v=202611260933';
+import * as Gedung from './gedung.js?v=202611260933';
+import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611260933';
+import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611260933';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
@@ -64,6 +64,9 @@ const _mat = {};
 const M = (c, o = {}) => _mat[c + JSON.stringify(o)] ||= new THREE.MeshLambertMaterial({ color: c, ...o });
 const KACA = new THREE.MeshLambertMaterial({ color: 0xbfe8ff, transparent: true, opacity: 0.32, depthWrite: false });
 
+// benda yang otomatis memudar bila berada di antara kamera & karakter (papan nama, dinding, kanopi, dll.)
+const tembus = [];
+function bisaTembus(...ms) { for (const m of ms) { if (!m || m.userData.tembus) continue; m.material = m.material.clone(); if (m.geometry.type === 'PlaneGeometry') m.material.side = THREE.DoubleSide; m.userData.tembus = true; m.userData.op = 1; tembus.push(m); } return ms[0]; }
 const tabrak = [];   // kotak tabrakan {x1,x2,z1,z2}
 const kursi = [];    // tempat duduk {x,z,r,y}
 const titikAksi = []; // {x,z,r,label,aksi}
@@ -83,6 +86,7 @@ function dinding(x1, z1, x2, z2, { kaca = false, warna = '#f7ece6', tinggi = TIN
   const t = 0.26;
   const w = Math.abs(x2 - x1) || t, d = Math.abs(z2 - z1) || t;
   const m = kotak(w, tinggi, d, (x1 + x2) / 2, 0, (z1 + z2) / 2, warna, { tab: true, mat: kaca ? KACA : null, bayang: !kaca });
+  if (!kaca) bisaTembus(m);
   if (kaca) { // kusen
     kotak(w + 0.02, 0.12, d + 0.02, (x1 + x2) / 2, tinggi - 0.12, (z1 + z2) / 2, '#5b3a4a');
     kotak(w + 0.02, 0.12, d + 0.02, (x1 + x2) / 2, 0, (z1 + z2) / 2, '#5b3a4a');
@@ -167,19 +171,21 @@ function bangunDunia() {
     x.fillStyle = '#fff'; x.font = FD(92); x.textAlign = 'center'; x.textBaseline = 'middle';
     x.fillText('❤ ' + CFG.namaPT.toUpperCase(), w / 2, h / 2 + 4, w - 60);
   });
-  kotak(14.5, 2.9, 0.3, 0, TINGGI_DINDING, 20.1, '#2a1420');
-  bidangTeks(14, 2.6, 0, logo, 0, TINGGI_DINDING + 1.45, 20.27);
-  bidangTeks(14, 2.6, 0, logo, 0, TINGGI_DINDING + 1.45, 19.93, Math.PI);
+  bisaTembus(kotak(14.5, 2.9, 0.3, 0, TINGGI_DINDING, 20.1, '#2a1420'));
+  bisaTembus(bidangTeks(14, 2.6, 0, logo, 0, TINGGI_DINDING + 1.45, 20.27));
+  bisaTembus(bidangTeks(14, 2.6, 0, logo, 0, TINGGI_DINDING + 1.45, 19.93, Math.PI));
   // kanopi pintu
-  kotak(8, 0.2, 3, 0, TINGGI_DINDING - 0.1, 21.5, '#ff4f7b');
+  bisaTembus(kotak(8, 0.2, 3, 0, TINGGI_DINDING - 0.1, 21.5, '#ff4f7b'));
   kotak(0.2, TINGGI_DINDING - 0.1, 0.2, -3.8, 0, 22.9, '#2a1420', { tab: true });
   kotak(0.2, TINGGI_DINDING - 0.1, 0.2, 3.8, 0, 22.9, '#2a1420', { tab: true });
 
   // ---- LOBI
-  kotak(5.6, 1.1, 1.1, 0, 0, 13, '#ff4f7b', { tab: true });
-  kotak(5.8, 0.08, 1.3, 0, 1.1, 13, '#fff6ef');
-  kotak(0.5, 0.5, 0.05, 1.6, 1.18, 12.8, '#333a44');
-  kursiKantor(0, 11.9, 0, '#2a1420', false);
+  // meja resepsionis di sisi barat lobi (jalan masuk dari pintu ke dalam kantor tetap lega)
+  kotak(1.1, 1.1, 3.6, -5.2, 0, 14, '#ff4f7b', { tab: true });
+  kotak(1.3, 0.08, 3.8, -5.2, 1.1, 14, '#fff6ef');
+  kotak(0.05, 0.5, 0.5, -5.45, 1.18, 13.1, '#333a44');
+  bidangTeks(2.4, 0.42, 0, kanvas(480, 84, (x, w, h) => { x.fillStyle = '#fff6ef'; bulat(x, 0, 0, w, h, 16); x.fill(); x.fillStyle = '#ff4f7b'; x.font = FD(44); x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('💁‍♀️ RESEPSIONIS', w / 2, h / 2 + 2, w - 16); }), -4.63, 0.62, 14, Math.PI / 2);
+  kursiKantor(-6.25, 14, Math.PI / 2, '#2a1420', false);
   sofa(-9, 16.5, 0); sofa(9, 16.5, 0);
   kotak(2.2, 0.4, 1, -9, 0, 14.6, '#c99a6b', { tab: true }); kotak(2.2, 0.4, 1, 9, 0, 14.6, '#c99a6b', { tab: true });
   for (const [x, z] of [[-21.5, 18], [-21.5, 11.5], [21.5, 11.5], [-4.5, 18.5], [4.5, 18.5]]) pot(x, z);
@@ -220,13 +226,12 @@ function bangunDunia() {
   setInterval(() => jadwal.ulang(), 60000);
   titikAksi.push({ x: -10, z: 11.6, r: 1.8, label: 'Lihat jadwal acara', aksi: () => Prog.bukaHub('acara') });
   // PAPAN DONASI besar di belakang meja resepsionis (langsung terlihat dari pintu masuk)
-  for (const x of [-2.85, 2.85]) kotak(0.16, 3.75, 0.16, x, 0, 10.12, '#d4a017', { tab: true });
-  kotak(5.7, 2.75, 0.14, 0, 0.92, 10.06, '#2a1420');
-  kotak(5.9, 0.16, 0.22, 0, 3.67, 10.08, '#d4a017');
+  // (sisi timur lobi, di samping mading; jalan tengah ke dalam kantor tetap lega)
+  for (const x of [3.55, 7.65]) bisaTembus(kotak(0.16, 3.4, 0.16, x, 0, 10.12, '#d4a017', { tab: true }));
+  bisaTembus(kotak(4.0, 2.1, 0.14, 5.6, 0.95, 10.06, '#2a1420'), kotak(4.2, 0.16, 0.22, 5.6, 3.3, 10.08, '#d4a017'));
   papanDonasiKV = kanvas(1140, 540, gambarPapanDonasi);
-  bidangTeks(5.5, 2.6, 0, papanDonasiKV, 0, 2.3, 10.15);
-  for (const x of [-3.7, 3.7]) titikAksi.push({ x, z: 11.2, r: 1.5, label: '💖 Lihat Papan Donasi', aksi: () => Bayar.bukaPapanDonasi() });
-  titikAksi.push({ x: 0, z: 15.3, r: 1.2, label: '💖 Lihat Papan Donasi', aksi: () => Bayar.bukaPapanDonasi() });
+  bisaTembus(bidangTeks(3.85, 1.82, 0, papanDonasiKV, 5.6, 2.0, 10.15));
+  titikAksi.push({ x: 5.6, z: 11.3, r: 1.6, label: '💖 Lihat Papan Donasi', aksi: () => Bayar.bukaPapanDonasi() });
   // photobooth (lobi timur): latar warna-warni + pilihan bingkai, bisa foto bareng
   kotak(3.2, 2.6, 0.12, 11.2, 0, 19.75, '#ff8fab'); kotak(3.4, 0.2, 0.2, 11.2, 2.6, 19.75, '#ffd23f');
   bidangTeks(3, 2.3, 0, kanvas(600, 460, (c, w, h) => { const g = c.createLinearGradient(0, 0, w, h); g.addColorStop(0, '#ff8fab'); g.addColorStop(1, '#ffd23f'); c.fillStyle = g; c.fillRect(0, 0, w, h); c.font = '60px sans-serif'; for (let i = 0; i < 24; i++) c.fillText(['💗', '✨', '💘'][i % 3], (i * 113) % w, 60 + (i * 71) % h); c.fillStyle = '#fff'; c.font = FD(56); c.textAlign = 'center'; c.fillText('📸 PHOTOBOOTH', w / 2, h - 40); }), 11.2, 1.35, 19.68, Math.PI);
@@ -796,6 +801,12 @@ function papanCurhat() {
 // ---------------------------------------------------------------- LABEL & GELEMBUNG
 const peranOrang = uid => (K.peran[uid] === 'direktur' ? 'direktur' : K.peran[uid] === 'staf' ? 'staf' : 'tamu');
 function labelNama(teks, gaya = '') {
+  if (gaya === 'direktur') return labelDirektur(teks);
+  if (gaya === 'guard') {
+    const kv = kanvas(300, 72, (x, w, h) => { x.fillStyle = 'rgba(12,12,16,.95)'; bulat(x, 40, 8, w - 80, 56, 10); x.fill(); x.strokeStyle = '#c9c9d1'; x.lineWidth = 3; bulat(x, 42, 10, w - 84, 52, 9); x.stroke(); x.fillStyle = '#fff'; x.font = FD(36); x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(teks, w / 2, 38, w - 100); });
+    const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: kv.t, transparent: true, depthWrite: false }));
+    s.scale.set(1.64, 0.4, 1); s.position.y = 2.62; s.renderOrder = 5; return s;
+  }
   const kv = kanvas(360, 72, (x, w, h) => {
     x.font = FB(30, 900);
     const tw = Math.min(w - 6, x.measureText(teks).width + 30);
@@ -808,18 +819,35 @@ function labelNama(teks, gaya = '') {
   s.scale.set(1.97, 0.4, 1); s.position.y = 2.5; s.renderOrder = 5;
   return s;
 }
-function gelembung(teks) {
+// label Direktur: tulisan kuning emas di pita gelap berbingkai emas + baris "DIREKTUR UTAMA", lebih besar dari label lain
+function labelDirektur(teks) {
+  const kv = kanvas(460, 124, (x, w, h) => {
+    const gr = x.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, '#3a2408'); gr.addColorStop(1, '#140c04');
+    x.font = FD(40); const tw = Math.min(w - 8, x.measureText(teks).width + 56);
+    x.shadowColor = 'rgba(255,210,63,.9)'; x.shadowBlur = 16; x.fillStyle = gr; bulat(x, (w - tw) / 2, 10, tw, 66, 33); x.fill(); x.shadowBlur = 0;
+    x.strokeStyle = '#ffd23f'; x.lineWidth = 4; bulat(x, (w - tw) / 2 + 2, 12, tw - 4, 62, 31); x.stroke();
+    const tg = x.createLinearGradient(0, 18, 0, 70); tg.addColorStop(0, '#fff3a8'); tg.addColorStop(1, '#ffc21a');
+    x.fillStyle = tg; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(teks, w / 2, 45, w - 40);
+    x.fillStyle = '#ffd23f'; bulat(x, w / 2 - 88, 82, 176, 32, 16); x.fill();
+    x.fillStyle = '#2a1420'; x.font = FB(20, 900); x.fillText('★ DIREKTUR UTAMA ★', w / 2, 99);
+  });
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: kv.t, transparent: true, depthWrite: false }));
+  s.scale.set(2.5, 0.674, 1); s.position.y = 2.72; s.renderOrder = 6;
+  return s;
+}
+function gelembung(teks, gaya = '') {
   const kv = kanvas(512, 180, (x, w, h) => {
     x.font = FB(30, 800);
     const b = bungkus(x, teks, w - 60).slice(0, 3);
     const lh = 36, bh = b.length * lh + 26;
     const bw = Math.min(w - 8, Math.max(...b.map(s => x.measureText(s).width)) + 40);
     const X = (w - bw) / 2, Y = h - bh - 22;
-    x.fillStyle = '#fff'; x.strokeStyle = '#2a1420'; x.lineWidth = 5;
+    const dir = gaya === 'direktur';
+    x.fillStyle = dir ? '#2a1a06' : '#fff'; x.strokeStyle = dir ? '#ffd23f' : '#2a1420'; x.lineWidth = dir ? 6 : 5;
     bulat(x, X, Y, bw, bh, 22); x.fill(); x.stroke();
     x.beginPath(); x.moveTo(w / 2 - 14, Y + bh - 2); x.lineTo(w / 2, h - 4); x.lineTo(w / 2 + 14, Y + bh - 2); x.closePath(); x.fill();
     x.beginPath(); x.moveTo(w / 2 - 14, Y + bh); x.lineTo(w / 2, h - 4); x.lineTo(w / 2 + 14, Y + bh); x.stroke();
-    x.fillStyle = '#2a1420'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillStyle = dir ? '#ffd23f' : '#2a1420'; x.textAlign = 'center'; x.textBaseline = 'middle';
     b.forEach((s, i) => x.fillText(s, w / 2, Y + 13 + lh / 2 + i * lh));
   });
   const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: kv.t, transparent: true, depthWrite: false, depthTest: false }));
@@ -828,7 +856,8 @@ function gelembung(teks) {
 }
 function bicara(o, teks) {
   if (o.gel) { o.g.remove(o.gel); o.gel.material.map.dispose(); o.gel.material.dispose(); }
-  o.gel = gelembung(teks); o.g.add(o.gel); o.gelT = 6 + teks.length / 20;
+  const dir = (o === saya && L && K.peran[L.uid] === 'direktur') || (o.uid && K.peran[o.uid] === 'direktur');
+  o.gel = gelembung(teks, dir ? 'direktur' : ''); if (dir) o.gel.position.y = 3.3; o.g.add(o.gel); o.gelT = 6 + teks.length / 20;
 }
 
 // ---------------------------------------------------------------- TABRAKAN
@@ -964,7 +993,7 @@ const NAV = {
   pantry: [16, 2.5], pantry2: [19.5, 2.5], pantryT: [21, -2.5], pantryU: [18.5, -5.2], pantryS: [20.5, 10],
   taman: [18.5, -9], taman2: [16.6, -10.6], taman3: [21.6, -10.6],
   lobiT2: [12, 13.2], direkturPintu: [12.5, 16], direktur: [16.5, 16],
-  lobiDepan: [0, 15], posSatpam: [3.4, 22.2], posBarista: [21.5, 2.0], lobiU: [-5.5, 17.9], game: [-9.8, 17.9], lokerP: [-16.6, 2.2], dispenser: [-12.6, -4.4], madingDepan: [10, 11.6],
+  lobiDepan: [0, 15], posSatpam: [5.0, 22.5], posBarista: [21.5, 2.0], lobiU: [-5.5, 17.9], game: [-9.8, 17.9], lokerP: [-16.6, 2.2], dispenser: [-12.6, -4.4], madingDepan: [10, 11.6],
 };
 const SAMBUNG = [
   ['pintu', 'lobi'], ['lobi', 'lobiB'], ['lobi', 'lobiT'], ['lobiT', 'aisle'], ['lobiB', 'aisle'],
@@ -1132,7 +1161,7 @@ function terimaChat(obj) {
     if (!c || !c.m || K.sembunyi.has(c.uid)) continue;
     if (c.t && c.t < mulaiChat - 5 * 60000) continue;
     const nama = bersih(c.n, 20), teks = bersih(c.m, 120);
-    tulisLog(ikonPeran(c.uid) + nama, teks);
+    tulisLog(ikonPeran(c.uid) + nama, teks, K.peran[c.uid] === 'direktur' ? 'dir' : '');
     const o = c.uid === L.uid ? saya : lain.get(c.uid);
     if (o && o.g) bicara(o, teks);
   }
@@ -1525,6 +1554,53 @@ let airLompat = 0;
 
 // ---------------------------------------------------------------- BENDA INTERAKTIF
 let naikBianglala = null; // { cx, cz, cy, r, lama, t0 }
+// PENGAWAL PRIBADI: tiap Direktur yang ada di kantor diikuti 1 GUARD berjas hitam (terlihat semua orang, disimulasikan di tiap perangkat)
+const pengawalIkut = new Map(); // uid Direktur -> { g, x, z, r, a }
+function buatPengawal() {
+  const g = buatKarakter({ v: 2, s: 'l', at: 'jasDir', bw: 'bahan', wb: 0, sp: 'pantofel', r: 3, w: 0, k: 2, mt: 'hitam' }, { peran: 'pengawal' });
+  g.userData.tubuh.scale.set(1.24, 1.07, 1.24);
+  g.add(labelNama('🕶️ GUARD', 'guard')); scene.add(g); return g;
+}
+function updatePengawal(dt) {
+  const dirs = [];
+  if (saya.g && L && K.peran[L.uid] === 'direktur') dirs.push([L.uid, saya]);
+  for (const [uid, o] of lain) if (K.peran[uid] === 'direktur' && o.g) dirs.push([uid, o]);
+  const ada = new Set();
+  for (const [uid, d] of dirs) {
+    ada.add(uid);
+    const sr = Math.sin(d.r), cr = Math.cos(d.r);
+    const tx = d.x - sr * 1.5 + cr * 0.6, tz = d.z - cr * 1.5 - sr * 0.6; // di belakang, sedikit ke kanan
+    let p = pengawalIkut.get(uid);
+    if (!p) { p = { g: buatPengawal(), x: tx, z: tz, r: d.r, a: 0 }; pengawalIkut.set(uid, p); }
+    const jx = tx - p.x, jz = tz - p.z, j = Math.hypot(jx, jz);
+    if (j > 14) { p.x = tx; p.z = tz; p.a = 0; }
+    else if (j > 0.3) { const v = Math.min(j, (j > 3 ? 7.2 : 4.4) * dt); p.x += jx / j * v; p.z += jz / j * v; p.r = sudutLerp(p.r, Math.atan2(jx, jz), Math.min(1, dt * 10)); p.a = 1; }
+    else { p.a = 0; p.r = sudutLerp(p.r, d.r, Math.min(1, dt * 4)); }
+    p.g.position.set(p.x, 0, p.z); p.g.rotation.y = p.r; pose(p.g, p.a, dt, j > 3 ? 1.5 : 1);
+  }
+  for (const [uid, p] of pengawalIkut) if (!ada.has(uid)) { scene.remove(p.g); pengawalIkut.delete(uid); }
+}
+const _ray = new THREE.Raycaster(), _asal = new THREE.Vector3(), _arah = new THREE.Vector3(), pudar = new Set();
+let tembusT = 0;
+function cekPenghalang(dt, t) {
+  if (t - tembusT > 110 && saya.g) {
+    tembusT = t; pudar.clear();
+    for (const y of [0.6, 1.5, 2.3, 3.3, 4.5]) { // termasuk di atas kepala: papan tinggi yang menutupi pandangan
+      _asal.set(saya.g.position.x, saya.g.position.y + y, saya.g.position.z);
+      _arah.copy(camera.position).sub(_asal); const d = _arah.length(); _arah.normalize();
+      _ray.set(_asal, _arah); _ray.far = d;
+      for (const h of _ray.intersectObjects(tembus, false)) pudar.add(h.object);
+    }
+  }
+  for (const m of tembus) {
+    const tuju = pudar.has(m) ? 0.06 : 1, u = m.userData;
+    if (u.op === tuju) continue;
+    u.op += (tuju - u.op) * Math.min(1, dt * 9); if (Math.abs(tuju - u.op) < 0.02) u.op = tuju;
+    const tr = u.op < 1;
+    if (m.material.transparent !== tr) { m.material.transparent = tr; m.material.depthWrite = !tr; m.material.needsUpdate = true; }
+    m.material.opacity = u.op; m.visible = u.op > 0.09;
+  }
+}
 let layarNobar = null, laguKV = null, dekor = null, dekorJenis = null, papanDonasiKV = null;
 // gambar Papan Donasi: donasi terbaru (nama, nominal, kata-kata) + donatur teratas
 function gambarPapanDonasi(c, w, h) {
@@ -1867,12 +1943,14 @@ function langkah() {
     o.g.position.set(o.x, 0, o.z); o.g.rotation.y = o.r; pose(o.g, o.a, dt);
   }
   Karyawan.update(dt);
+  updatePengawal(dt);
   // gelembung chat
   for (const o of [saya, ...lain.values(), ...bot]) if (o.gel) { o.gelT -= dt; if (o.gelT <= 0) { o.g.remove(o.gel); o.gel.material.map.dispose(); o.gel = null; } }
 
   // hiasan
   for (const h of hatiBesar) h.rotation.y += dt * 0.8;
   animasiSuite(dt, t);
+  cekPenghalang(dt, t);
   Gedung.update(dt, t, saya);
   if (airHati) { airLompat = Math.max(0, airLompat - dt); airHati.rotation.y += dt * (1.2 + airLompat * 8); airHati.position.y = 1.5 + Math.sin(t / 600) * 0.12 + airLompat * 0.6; }
 
@@ -1961,7 +2039,7 @@ async function mulai() {
       resepsionis: bukaResepsionis, daftar: bukaDaftar, kopi: bukaKopi, curhat: () => Sosial.bukaCurhat(), koin: bukaKoin,
       loker: () => { if (lokasiDi(saya.x, saya.z) !== 'loker') pindah(-20, 7, -Math.PI / 2); bukaLoker(); }, toko: () => Prog.bukaHub('toko'), tugas: () => Prog.bukaHub('tugas'), acara: () => Prog.bukaHub('acara'),
       peringkat: () => Prog.bukaHub('peringkat'), papan: bukaPapan, bukuTamu: bukaBukuTamu, saran: () => Direktur.bukaMeja(), lounge: () => Prog.pergiKe('lounge'),
-      arcade: () => Game.bukaArcade(), patung: () => pindah(-14, 29.4, Math.PI), keMeja: i => keKursiMeja(MEJA[i]), mejaKafe: () => keKursiMeja(MEJA_BUNDAR[0]),
+      ketukDir: () => RuangDir.ketuk(), arcade: () => Game.bukaArcade(), patung: () => pindah(-14, 29.4, Math.PI), keMeja: i => keKursiMeja(MEJA[i]), mejaKafe: () => keKursiMeja(MEJA_BUNDAR[0]),
     },
   });
   K.renderer = renderer;

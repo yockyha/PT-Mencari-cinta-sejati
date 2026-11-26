@@ -37,15 +37,21 @@ Login username + kata sandi. Isinya:
 🔒 Isi obrolan pribadi antar-tamu sengaja tidak bisa dibaca siapa pun selain dua orang di dalamnya, termasuk Direktur.
 
 ### Ruangan
-- **Lobi**: resepsionis (info & aturan), mading kantor, sofa
+- **Lobi**: resepsionis di sisi barat (info & aturan), Papan Donasi & mading di sisi timur, sofa; jalan tengah dari pintu ke dalam kantor dibiarkan lega. Papan nama gedung, dinding & kanopi otomatis transparan bila menghalangi kamera
 - **💘 Kafe Jodoh** (pantry): Mesin Kopi Jodoh memberi ramalan + menyarankan tamu lain yang juga cari jodoh
 - **🤝 Meja Nongkrong**: 8 meja topik (Gaming, Musik, Drakor & Film, Olahraga, Kuliner, Buku, Jalan-jalan, Random). Duduk di meja = minatmu terlihat di profil
 - **💬 Taman Curhat**: papan curhat anonim (pelukan 🤗 + balasan) dan air mancur harapan
 - **📋 Ruang Rapat**: papan tulis bersama
 - **📖 Buku Tamu**: monitor LIVE, nama semua tamu turun bergantian seperti hujan (makin ramai makin cepat)
 - **👔 Ruang Loker**: ganti penampilan
-- **👑 Ruang Direktur** (suite mewah): lounge tamu (sofa kulit, akuarium), meja Direktur (kursi singgasana, globe), kamar pribadi (kasur king, TV, mini bar, treadmill). Direktur bisa kerja, tidur, nonton TV, bikin kopi, olahraga. **Tamu harus mengetuk pintu dulu**; Direktur mengizinkan (30 menit / 2 jam), menolak, mengundang, atau membuka ruangan untuk semua (Panel → Kuasa → 🚪 Pintu Ruanganmu)
+- **👑 Ruang Direktur** (suite mewah): lounge tamu (sofa kulit, akuarium), meja Direktur (kursi singgasana, globe), kamar pribadi (kasur king, TV, mini bar, treadmill). Direktur bisa kerja, tidur, nonton TV, bikin kopi, olahraga. **Tamu harus mengetuk pintu dulu** (pintu dijaga 2 pengawal 🕶️ GUARD); Direktur mengizinkan (30 menit / 2 jam), menolak, mengundang, atau membuka ruangan untuk semua (Panel → Kuasa → 🚪 Pintu Ruanganmu)
 - **🎡 Taman Cinta** (gedung baru di barat kantor): air mancur harapan, Bioskop Cinta, bianglala (bisa dinaiki), kedai es krim/boba/sosis. Sebelum jadwal buka tampil sebagai proyek pembangunan dengan hitung mundur
+
+### 👑 Pembeda Direktur
+- Label di atas kepala bertulisan **kuning emas** berbingkai emas + baris "★ DIREKTUR UTAMA ★", lebih besar dari label lain
+- Gelembung chat & baris chat berwarna emas, cincin emas di kaki, jas hitam berdasi
+- Selalu diikuti **1 pengawal 🕶️ GUARD** berjas hitam kekar di belakangnya (terlihat semua orang)
+- Kedatangan diumumkan ke semua tamu, karyawan menyapa, akses Panel Kuasa & suite Direktur
 
 ### 🏗️ Menambah gedung baru
 Semua gedung tambahan ada di `kantor/gedung.js` (daftar `GEDUNG`). Tiap gedung punya `mulai` & `selesai` (jadwal pembangunan), `area`, `gerbang`, daftar `fasilitas`, dan fungsi `bangun`. Selama belum selesai otomatis tampil pagar seng, crane, perancah, pekerja, dan papan hitung mundur; bangunannya "naik" sesuai progres. Direktur bisa menekan **⚡ Buka sekarang** di papan proyek. Tambahkan juga satu lokasi di `LOKASI` (`js/common.js`) dengan `gedung: '<id>'` supaya muncul tombol pintasannya.
