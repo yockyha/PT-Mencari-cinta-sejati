@@ -52,8 +52,8 @@ module.exports = { sesi, maju, tutup, rekam, foto, klik, ev, FPS };
 if (require.main === module) (async () => {
   fs.mkdirSync(OUT, { recursive: true });
   const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
-  const s = await sesi(b);
-  if (ingin('cek')) {
+  if (HANYA.includes('cek')) {
+    const s = await sesi(b);
     const H = k => ev(s, k => __kantor.K.bukaHarian(k), k);
     // speed dating: buka ronde berpasangan dengan dimas.p
     await ev(s, () => { const L = __kantor.L, t = L.db.now(); L.db.set('speedDating', { buka: true, ronde: { no: 1, mulai: t, durasi: 180, pasangan: { urina: 't2', t2: 'urina' } } }); });
