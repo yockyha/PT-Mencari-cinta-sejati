@@ -4,9 +4,10 @@
 //  atau menolak. Direktur juga bisa membuka ruangan untuk semua orang.
 //  Data: ketukDir/<uid> {n,t} · izinDir/<uid> {sampai,n} · setelan/ruangDir
 // =====================================================================
-import { esc, bersih } from '../js/common.js?v=202611261448';
-import { TS } from '../js/db.js?v=202611261448';
-import { K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611261448';
+import { esc, bersih } from '../js/common.js?v=202611262230';
+import { TS } from '../js/db.js?v=202611262230';
+import { K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611262230';
+import * as Musik from './musik.js?v=202611262230';
 
 let izinSaya = null, ketukan = {}, izinSemua = {}, ketukSaya = 0, awalKetuk = true;
 const dir = () => !!(K.L && K.peran[K.L.uid] === 'direktur');
@@ -46,7 +47,7 @@ const menit = ms => { const m = Math.round(ms / 60000); return m >= 60 ? `${Math
 
 function adaKetukan(uid, k) {
   toast(`🚪 Tok tok! ${k.n} mengetuk pintu ruanganmu.`, 5000);
-  try { const a = new (window.AudioContext || window.webkitAudioContext)(); for (const [d, f] of [[0, 520], [0.18, 520]]) { const o = a.createOscillator(), g = a.createGain(); o.frequency.value = f; g.gain.setValueAtTime(0.18, a.currentTime + d); g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + d + 0.15); o.connect(g).connect(a.destination); o.start(a.currentTime + d); o.stop(a.currentTime + d + 0.16); } } catch { /* tanpa suara */ }
+  Musik.sfx('ketuk');
   if (!document.getElementById('kartu').hidden) return; // jangan menimpa kartu yang sedang dibuka
   kartuKetukan(uid, k);
 }

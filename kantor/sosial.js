@@ -2,15 +2,16 @@
 //  Interaksi antar-tamu: profil, ajak ngobrol (pribadi), suka & match,
 //  papan curhat, daftar orang di kantor, lapor & sembunyikan.
 // =====================================================================
-import { TUJUAN, GENDER, LS, bersih, esc, fmt, kasar, igBersih, kodeTamu } from '../js/common.js?v=202611261448';
-import { TS } from '../js/db.js?v=202611261448';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611261448';
-import * as Prog from './progres.js?v=202611261448';
-import * as Suara from './suara.js?v=202611261448';
-import * as Grup from './grup.js?v=202611261448';
-import * as Stiker from './stiker.js?v=202611261448';
-import * as Foto from './foto.js?v=202611261448';
-import * as Seru from './seru.js?v=202611261448';
+import { TUJUAN, GENDER, LS, bersih, esc, fmt, kasar, igBersih, kodeTamu } from '../js/common.js?v=202611262230';
+import { TS } from '../js/db.js?v=202611262230';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611262230';
+import * as Musik from './musik.js?v=202611262230';
+import * as Prog from './progres.js?v=202611262230';
+import * as Suara from './suara.js?v=202611262230';
+import * as Grup from './grup.js?v=202611262230';
+import * as Stiker from './stiker.js?v=202611262230';
+import * as Foto from './foto.js?v=202611262230';
+import * as Seru from './seru.js?v=202611262230';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const siap = () => { if (!K.resmi()) { toast('👀 Kamu masih pengunjung. Daftar dulu untuk berinteraksi.'); K.bukaDaftar(); return false; } if (K.terkunci) { toast('Kamu belum bisa berinteraksi sekarang.'); return false; } return true; };
@@ -165,7 +166,7 @@ export function bukaProfil(o) {
         K.segarkanOrang(); gambarUndangan(); tutupKartu();
         toast(`${nama} disembunyikan. Chat & ajakannya tidak akan muncul lagi.`, 3200);
       };
-      const pm = isi.querySelector('#pM'); if (pm) pm.onclick = () => import('./direktur.js?v=202611261448').then(D => D.bukaModerasiOrang(o));
+      const pm = isi.querySelector('#pM'); if (pm) pm.onclick = () => import('./direktur.js?v=202611262230').then(D => D.bukaModerasiOrang(o));
     },
   });
 }
@@ -299,6 +300,7 @@ export function bukaProfilSaya() {
 function rayakanMatch(uid, nama) {
   const L = K.L, r = L.ruang(L.uid, uid);
   tulisLog('', `💘 Match! Kamu dan ${nama} saling suka.`, 'sys');
+  Musik.sfx('match');
   bukaKartu(`<div class="match"><div class="hatiBesar">💘</div><h2>It's a match!</h2><p>Kamu dan <b>${esc(nama)}</b> saling suka. Obrolan pribadi kalian sudah terbuka.</p>
     <div class="baris"><button class="btn" type="button" id="xM">Mulai ngobrol</button><button class="btn putih" type="button" id="xN">Nanti</button></div></div>`, {
     pasang(isi) { isi.querySelector('#xM').onclick = () => bukaObrolan(r); isi.querySelector('#xN').onclick = tutupKartu; },

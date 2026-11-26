@@ -1,7 +1,7 @@
 // Utilitas bersama untuk semua halaman.
-import PAKET from '../paket.js?v=202611261448';
-export { TINGKAT_DONASI, tingkatDonasi, ucapanDonasi, namaPapan } from '../paket.js?v=202611261448';
-import { PAKAIAN, SLOT } from './pakaian.js?v=202611261448';
+import PAKET from '../paket.js?v=202611262230';
+export { TINGKAT_DONASI, tingkatDonasi, ucapanDonasi, namaPapan } from '../paket.js?v=202611262230';
+import { PAKAIAN, SLOT } from './pakaian.js?v=202611262230';
 export const CFG = Object.assign({
   namaPT: 'PT Mencari Cinta Sejati', singkatan: 'PT MCS', instagram: '', instagramNama: '', tiktok: '', wajibFollow: null,
   kuota: 10000, firebase: null, mading: [], domainLogin: 'ptmcs.id', direkturDemo: null,
@@ -109,7 +109,7 @@ export const LOKASI = {
   rapat: { nama: '📋 Ruang Rapat', x: -12, z: -10, r: -Math.PI / 2 - 0.4, area: [-24, -20, -8, -7] },
   bukutamu: { nama: '📖 Buku Tamu', x: 3, z: -14.5, r: Math.PI, area: [-8, -20, 14, -7] },
   loker: { nama: '👔 Ruang Loker', x: -19, z: 7.5, r: -Math.PI / 2, area: [-24, 0, -15, 10] },
-  direktur: { nama: '👑 Ruang Direktur', x: 16.8, z: 16, r: Math.PI / 2, area: [14, 12, 24, 20] },
+  direktur: { nama: '👑 Ruang Direktur', x: 16.8, z: 16, r: Math.PI / 2, area: [14, 12, 34, 20] }, // suite: lounge tamu, kantor, kamar
   halaman: { nama: '🌳 Halaman', x: 0, z: 30, r: Math.PI, area: [-40, 20, 40, 50] },
   plaza: { nama: '🎡 Taman Cinta', x: -30.2, z: 22, r: -Math.PI / 2, area: [-80, -26, -32, 26], gedung: 'tamanCinta' },
   lounge: { nama: '💎 Lounge Eksekutif', x: 0, z: -62.5, r: Math.PI, area: [-12, -70, 12, -54], vip: true },

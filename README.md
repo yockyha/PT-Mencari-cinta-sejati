@@ -50,6 +50,9 @@ Login username + kata sandi. Isinya:
 ### 📢 Papan Informasi (halaman depan)
 Layar LED raksasa 2 sisi di halaman depan dekat pintu masuk, terlihat dari jalan, halaman, dan pintu. Info dari Direktur tampil bergantian seperti slide (ikon, judul, isi, tanggal), dengan lampu LED berjalan di bingkai, jam WIB, dan teks berjalan berisi semua judul. Tamu mengetuk papan untuk membaca semua info; tamu yang sedang online mendapat notifikasi saat ada info baru. Direktur menulis, menyematkan 📌, dan menghapus info lewat papan itu atau **Panel → Kuasa → 📢 Papan Informasi** (6 pilihan warna, 12 ikon). Hanya Direktur yang bisa menulis (aturan `papanInfo`).
 
+### 🎵 Musik latar & efek suara
+Semua musik & suara disintesis langsung di browser (`kantor/musik.js`, Web Audio API): tanpa file lagu, bebas hak cipta, dan sedikit berbeda tiap putaran. Lagu berganti otomatis dengan crossfade: **🎵 Ceria** (lobi, halaman, Taman Cinta), **☕ Santai lo-fi** (ruangan kantor & saat main Tangkap Hati), **🌙 Malam bossa** (Lounge & suite Direktur). Efek suara untuk duduk/berdiri, pesan kopi/minum/makan, chat, foto, koin, level naik, match, hadiah, pembayaran, game, ketukan & pintu suite, tidur, lambai, dll. Tombol **🎵** di kanan layar: hidup/mati & volume musik dan efek (tersimpan di perangkat). Musik otomatis dikecilkan saat telepon dan berhenti saat tab disembunyikan.
+
 ### 👑 Pembeda Direktur
 - Label di atas kepala bertulisan **kuning emas** berbingkai emas + baris "★ DIREKTUR UTAMA ★", lebih besar dari label lain
 - Gelembung chat & baris chat berwarna emas, cincin emas di kaki, jas hitam berdasi

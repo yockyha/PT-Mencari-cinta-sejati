@@ -3,10 +3,11 @@
 //  arah, acara terjadwal, peringkat, toko (EXP & VIP),
 //  dan notifikasi dari Direktur.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611261448';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611261448';
-import * as Bayar from './bayar.js?v=202611261448';
-import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611261448';
+import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611262230';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611262230';
+import * as Musik from './musik.js?v=202611262230';
+import * as Bayar from './bayar.js?v=202611262230';
+import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611262230';
 
 // ---------------------------------------------------------------- DATA TUGAS
 const RUANG_TUJUAN = { jodoh: 'kafe', teman: 'meja', curhat: 'taman' };
@@ -109,6 +110,7 @@ function segarLevel() {
 }
 
 function naikLevel(lv) {
+  Musik.sfx('level');
   const buka = PAKAIAN.filter(o => o.lv === lv && !o.khusus).map(o => SLOT[o.slot].ikon + ' ' + o.nama);
   tulisLog('', `⭐ Naik ke Level ${lv}!`, 'sys');
   if (kartuTerbuka()) { toast(`⭐ Naik ke Level ${lv}!${buka.length ? ' Barang baru terbuka di Ruang Loker.' : ''}`, 4000); return; }
@@ -176,6 +178,7 @@ export function lapor(id, n = 1) {
 
 // Kartu notifikasi sesuai jenisnya; juga notifikasi sistem HP/komputer bila tab sedang di belakang
 function tampilNotif(n) {
+  Musik.sfx(n.j === 'bayar' || n.j === 'donasi' ? 'bayar' : n.j === 'hadiah' ? 'hadiah' : 'notif');
   const m = esc(bersih(n.m, 200));
   if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
     try { new Notification(n.j === 'acc' ? '🎉 Kamu di-ACC Direktur!' : n.j === 'balasSapa' ? '👑 Direktur membalas sapaanmu' : '📬 Pesan dari Direktur', { body: bersih(n.m, 200), icon: '../favicon.svg' }); } catch (e) {}
