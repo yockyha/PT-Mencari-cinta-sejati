@@ -3,12 +3,12 @@
 //  Semua tindakan juga dijaga database.rules.json di server, jadi
 //  tamu biasa tidak bisa memakainya walau mengutak-atik browser.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, fmt, esc, bersih, kodeTamu } from '../js/common.js?v=202611260350';
-import * as Prog from './progres.js?v=202611260350';
-import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611260350';
-import * as Hadir from './hadir.js?v=202611260350';
-import * as Speed from './speeddating.js?v=202611260350';
-import { TS } from '../js/db.js?v=202611260350';
+import { CFG, TUJUAN, LOKASI, fmt, esc, bersih, kodeTamu } from '../js/common.js?v=202611260437';
+import * as Prog from './progres.js?v=202611260437';
+import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611260437';
+import * as Hadir from './hadir.js?v=202611260437';
+import * as Speed from './speeddating.js?v=202611260437';
+import { TS } from '../js/db.js?v=202611260437';
 
 let laporan = {}, saran = {}, larangan = {}, pesanan = {}, lepas = [], tabAktif = '';
 const peranku = () => K.L && K.peran[K.L.uid];
@@ -101,6 +101,8 @@ function kuasa() {
         <button type="button" data-k="loker">👔 Lemari Direktur<small>Semua baju terbuka untukmu</small></button>
       </div>
       ${Speed.htmlKendali()}
+      <h3>🎉 Dekorasi musiman</h3><select id="msS">${[['otomatis', 'Otomatis sesuai tanggal'], ['tidak', 'Tanpa dekorasi'], ['valentine', '💘 Valentine'], ['ramadan', '🌙 Ramadan'], ['17an', '🇮🇩 17 Agustus'], ['halloween', '🎃 Halloween'], ['natal', '🎄 Natal & Tahun Baru']].map(([k, n]) => `<option value="${k}" ${(K.setelan?.musim || 'otomatis') === k ? 'selected' : ''}>${n}</option>`).join('')}</select>
+      <div id="kmDir"><p class="kecil">Memuat…</p></div>
       <h3>📣 Kumpulkan tamu</h3>
       <p class="kecil">Kirim undangan ke semua tamu online untuk datang ke satu tempat.</p>
       <div class="sw teks">${Object.entries(LOKASI).filter(([, l]) => !l.vip).map(([k, l]) => `<button type="button" data-lok="${k}">${esc(l.nama)}</button>`).join('')}</div>
@@ -129,6 +131,8 @@ function kuasa() {
         }
       });
       Speed.pasangKendali(isi);
+      isi.querySelector('#msS').onchange = e => K.L.setelan({ musim: e.target.value }).then(() => toast('Dekorasi diperbarui 🎉')).catch(gagal);
+      K.Komunitas.htmlDirektur().then(h => { const b = isi.querySelector('#kmDir'); if (b) { b.innerHTML = h; K.Komunitas.pasangDirektur(b); } });
       isi.querySelectorAll('[data-lok]').forEach(b => b.onclick = () => Hadir.kirimEfek('kumpul', b.dataset.lok).then(() => { tutupKartu(); Prog.pergiKe(b.dataset.lok); }).catch(gagal));
       isi.querySelectorAll('[data-ke]').forEach(b => b.onclick = () => { const o = K.lain.get(b.dataset.ke); if (!o) return; tutupKartu(); K.pindah(o.x + 1.4, o.z + 1.4); toast(`🚀 Kamu mendatangi ${o.nama}`); });
     },
@@ -189,7 +193,7 @@ function orang() {
       <h3>Sedang dikeluarkan</h3>
       ${diusir.length ? `<div class="daftar">${diusir.map(([u, b]) => `<div><span>${esc(b.n || namaDari(u))}<br><small>${b.sampai > now + 3650 * 86400e3 ? 'diblokir' : 'sampai ' + esc(tanggalJam(b.sampai))} · ${esc(b.alasan || '')}</small></span><button type="button" class="mini putih" data-ampun="${esc(u)}">Ampuni</button></div>`).join('')}</div>` : '<p class="kecil">Tidak ada.</p>'}`,
     pasang(isi) {
-      isi.querySelectorAll('[data-lihat]').forEach(b => b.onclick = () => import('./sosial.js?v=202611260350').then(S => S.bukaProfil(o.find(x => x.uid === b.dataset.lihat))));
+      isi.querySelectorAll('[data-lihat]').forEach(b => b.onclick = () => import('./sosial.js?v=202611260437').then(S => S.bukaProfil(o.find(x => x.uid === b.dataset.lihat))));
       isi.querySelectorAll('[data-mod]').forEach(b => b.onclick = () => bukaModerasiOrang(o.find(x => x.uid === b.dataset.mod)));
       isi.querySelectorAll('[data-ampun]').forEach(b => b.onclick = () => {
         const u = b.dataset.ampun;
@@ -319,6 +323,12 @@ const TEMPLAT = [
   { judul: 'Kuis Cinta', isi: 'Direktur kasih pertanyaan di chat, yang jawab paling cepat menang hadiah EXP.', lokasi: 'rapat', durasi: 45, exp: 50 },
   { judul: 'Turnamen Tangkap Hati', isi: 'Skor tertinggi hari ini dapat hadiah dari Direktur!', lokasi: 'lobi', durasi: 60, exp: 30 },
   { judul: 'Malam Eksekutif', isi: 'Nongkrong santai khusus VIP & VVIP.', lokasi: 'lounge', durasi: 90, exp: 40 },
+  { judul: 'Senin Curhat Massal', isi: 'Direktur membacakan curhat anonim pilihan. Tulis curhatmu di Taman Curhat!', lokasi: 'taman', durasi: 60, exp: 40 },
+  { judul: 'Rabu Nobar', isi: 'Nonton bareng di layar Ruang Rapat sambil ramai-ramai di chat.', lokasi: 'rapat', durasi: 120, exp: 40 },
+  { judul: 'Jumat Speed Dating', isi: 'Kenalan 3 menit per orang. Ikut antrean di menu ⭐ → Harian → Speed Dating.', lokasi: 'kafe', durasi: 90, exp: 60 },
+  { judul: 'Minggu: Pasangan Minggu Ini', isi: 'Pengumuman pasangan match yang setuju ditampilkan. Kumpul di lobi!', lokasi: 'lobi', durasi: 30, exp: 30 },
+  { judul: 'Lomba Makan Kerupuk 17-an', isi: 'Lomba virtual: menu ⭐ → Harian → Lomba Kerupuk. Juara harian dapat hadiah!', lokasi: 'lobi', durasi: 60, exp: 40 },
+  { judul: 'Bukber Virtual', isi: 'Buka puasa bareng di Kafe Jodoh, cerita menu bukamu hari ini.', lokasi: 'kafe', durasi: 60, exp: 40 },
 ];
 function keWib(ms) { const d = new Date(ms + 7 * 3600e3); return d.toISOString().slice(0, 16); }
 function dariWib(v) { const [t, j] = v.split('T'); const [y, m, d] = t.split('-').map(Number); const [h, mi] = j.split(':').map(Number); return Date.UTC(y, m - 1, d, h - 7, mi); }

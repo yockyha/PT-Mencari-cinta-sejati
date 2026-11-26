@@ -8,11 +8,11 @@
 //                 + permainan khusus (putar destinasi, roda random, dll)
 //  Data: mejaChat/<meja>, mejaPapan/<meja>, mejaVote/<meja>/<hari>/<uid>
 // =====================================================================
-import { LS, bersih, esc, hariIni, sensor } from '../js/common.js?v=202611260350';
-import { TS } from '../js/db.js?v=202611260350';
-import { K, toast, bukaKartu, tutupKartu, jam, tanggalJam } from './ui.js?v=202611260350';
-import * as Prog from './progres.js?v=202611260350';
-import * as Sosial from './sosial.js?v=202611260350';
+import { LS, bersih, esc, hariIni, sensor } from '../js/common.js?v=202611260437';
+import { TS } from '../js/db.js?v=202611260437';
+import { K, toast, bukaKartu, tutupKartu, jam, tanggalJam } from './ui.js?v=202611260437';
+import * as Prog from './progres.js?v=202611260437';
+import * as Sosial from './sosial.js?v=202611260437';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const cari = q => encodeURIComponent(q);
@@ -249,6 +249,8 @@ function gambarSeru(el) {
   el.innerHTML = `<h3>🤔 Pilih Mana? <small class="kecil">(ganti tiap hari)</small></h3>
     <div class="pilihDua">${tombolPilih('a', a, na, pa)}<span>atau</span>${tombolPilih('b', b, nb, pb)}</div>
     <p class="kecil">${saya ? 'Pilihanmu sudah tercatat. Bahas alasannya di 💬 Ngobrol!' : 'Pilih dulu buat lihat hasil voting orang-orang.'}</p>
+    <h3>🍾 Truth or Dare</h3><p class="kecil">Putar botol: salah satu yang duduk di meja ini kena TRUTH atau DARE, hasilnya muncul di obrolan meja.</p>
+    <div class="baris"><button class="btn" type="button" id="sTd">🍾 Putar botol</button></div>
     <h3>💡 Kartu Pemantik</h3>
     <div class="kartuPemantik" id="sK">${esc(acak(m.pemantik))}</div>
     <div class="baris"><button class="btn putih" type="button" id="sG">🔀 Ganti</button><button class="btn" type="button" id="sT">Tanya di obrolan meja</button></div>
@@ -262,6 +264,7 @@ function gambarSeru(el) {
     K.L.db.set(`mejaVote/${m.id}/${hariIni()}/${uid}`, k).catch(() => toast('Gagal memilih. Coba lagi.'));
     if (!saya) Prog.lapor('mejaSeru');
   });
+  el.querySelector('#sTd').onclick = () => { const h = K.Aktivitas.putarBotol(m.id, [{ uid: uid, nama: K.prof?.n || 'Aku' }, ...diMeja(buka.topik)]); if (h) { buka.tab = 'ngobrol'; gambar(); } };
   const kartu = el.querySelector('#sK');
   el.querySelector('#sG').onclick = () => { let t; do t = acak(m.pemantik); while (t === kartu.textContent && m.pemantik.length > 1); kartu.textContent = t; };
   el.querySelector('#sT').onclick = () => { if (kirimChat('❓ ' + kartu.textContent)) { buka.tab = 'ngobrol'; gambar(); } };

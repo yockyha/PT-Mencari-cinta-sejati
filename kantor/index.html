@@ -227,6 +227,12 @@ img.stiker{width:128px;height:128px;display:block}
 .kotakHarian{border:3px solid var(--ink);border-radius:14px;background:#fff6df;padding:10px 12px;margin-bottom:10px;text-align:center}
 .sdWaktu{font:900 22px var(--body);background:var(--ink);color:#fff;border-radius:10px;padding:2px 10px}.sdWaktu.mepet{background:#c0392b}
 .sdIsi{height:min(34vh,260px)}
+.pilihEmpat{display:grid;grid-template-columns:1fr 1fr;gap:8px}.pilihEmpat .btn.benar{background:#2f9e6e;color:#fff}.pilihEmpat .btn.salah{background:#c0392b;color:#fff}
+.kerupuk{font-size:110px;text-align:center;cursor:pointer;user-select:none;transition:transform .05s;touch-action:manipulation}
+.kamar{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:10px;border:3px solid var(--ink);border-radius:14px;background:linear-gradient(var(--dinding) 55%,var(--lantai) 55%)}
+.kamar .petak{aspect-ratio:1;font-size:34px;border:2px dashed rgba(42,20,32,.25);border-radius:10px;background:transparent;cursor:pointer}.kamar .petak:disabled{cursor:default;border-color:transparent}
+table.season{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}table.season td,table.season th{border-bottom:1px dashed #e7d3da;padding:5px 4px;text-align:left}table.season tr:not(.buka){opacity:.5}
+.dmStreak{font-size:15px}
 .cocok{border:3px solid var(--ink);border-radius:14px;background:#fff0f5;padding:10px 12px;margin:8px 0}.cocok ul{margin:6px 0 0;padding-left:18px;font-size:13px}
 .cocok .bilah{height:10px;border-radius:99px;background:#eee;overflow:hidden;margin-top:6px}.cocok .bilah i{display:block;height:100%;background:linear-gradient(90deg,#ff8fab,#ff4f7b)}
 .kepribadian span{display:inline-block;background:#f3e6ea;border-radius:99px;padding:2px 8px;margin:2px 4px 2px 0}
@@ -344,7 +350,7 @@ img.stiker{width:128px;height:128px;display:block}
 .tlpCatatan{color:#d9b8c4;margin-top:8px}
 @media (prefers-reduced-motion:reduce){.dmMerah{animation:none}}
 </style>
-<script src="../config.js?v=202611260350"></script>
+<script src="../config.js?v=202611260437"></script>
 <script type="importmap">{"imports":{"three":"../vendor/three.module.js"}}</script>
 </head>
 <body>
@@ -385,6 +391,6 @@ img.stiker{width:128px;height:128px;display:block}
 <div id="tirai" hidden><div class="isi"></div></div>
 <div id="loading"><div><span class="hati">❤</span>Membuka pintu kantor…</div></div>
 
-<script type="module" src="kantor.js?v=202611260350"></script>
+<script type="module" src="kantor.js?v=202611260437"></script>
 </body>
 </html>

@@ -5,7 +5,7 @@
 //  makan, melambai, ngetik).
 // =====================================================================
 import * as THREE from 'three';
-import { BARANG, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2 } from '../js/pakaian.js?v=202611260350';
+import { BARANG, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2 } from '../js/pakaian.js?v=202611260437';
 
 const GEO = new THREE.BoxGeometry(1, 1, 1);
 const _mat = {};
@@ -48,7 +48,7 @@ export function buatKarakter(look, { peran = 'tamu', bawa = '', tingkat = '' } =
 
   // ------------------------------------------------ ATASAN: bahan badan & lengan
   const fix = {
-    o8: '#ff8fab', gcHoodieNeon: '#2bd9a8', denim: '#4a6fa5', kulit: '#1f1f24', o9: '#b5232f', o7: '#f7f3ee', emas: '#d4a017',
+    o8: '#ff8fab', gcHoodieNeon: '#2bd9a8', ssJaket: '#1d3557', denim: '#4a6fa5', kulit: '#1f1f24', o9: '#b5232f', o7: '#f7f3ee', emas: '#d4a017',
     seragam: '#ff4f7b', jasDir: '#1a1a22', ob: '#2c3e66', satpam: '#f2f2f2', ojol: '#16a34a', celemek: '#2b2d42',
   };
   const warnaAtas = fix[AT] || wa;
@@ -137,6 +137,7 @@ export function buatKarakter(look, { peran = 'tamu', bawa = '', tingkat = '' } =
     case 'sweater': part(lebar + 0.02, 0.08, 0.35, 0, 0.82, 0, M(ubah(wa, 0.8))); part(0.3, 0.06, 0.35, 0, 1.43, 0, M(ubah(wa, 0.8))); break;
     case 'kardigan': part(0.2, 0.64, 0.02, 0, 1.12, depan, putih); for (let i = 0; i < 3; i++) part(0.03, 0.03, 0.02, 0.11, 1.3 - i * 0.16, depan + 0.006, M(ubah(wa, 0.7))); break;
     case 'denim': part(0.2, 0.64, 0.02, 0, 1.12, depan, putih); for (const x of [-0.17, 0.17]) part(0.1, 0.08, 0.02, x, 1.28, depan + 0.002, M('#3a5a8a')); break;
+    case 'ssJaket': part(0.3, 0.07, 0.35, 0, 1.43, 0, M('#d4a017', { emissive: 0x3a2800 })); part(0.02, 0.6, 0.025, 0, 1.12, depan + 0.004, M('#d4a017')); part(0.12, 0.12, 0.02, -0.15, 1.28, depan + 0.004, M('#ffd23f', { emissive: 0x553300 })); break;
     case 'bomber': part(0.3, 0.07, 0.35, 0, 1.43, 0, M('#2b2d42')); part(lebar + 0.02, 0.08, 0.35, 0, 0.82, 0, M('#2b2d42')); part(0.02, 0.6, 0.025, 0, 1.12, depan + 0.004, M('#c0c4cc')); part(0.08, 0.1, 0.02, -0.17, 1.3, depan + 0.002, M('#ff6b35')); break;
     case 'kulit': part(0.2, 0.64, 0.02, 0, 1.12, depan, M(wa)); part(0.02, 0.6, 0.025, 0.11, 1.12, 0.172, M('#c0c4cc')); break;
     case 'o9': part(lebar + 0.02, 0.06, 0.34, 0, 1.43, 0, M('#fff6ef')); part(lebar + 0.02, 0.06, 0.34, 0, 0.83, 0, M('#fff6ef')); part(0.1, 0.12, 0.02, 0.15, 1.28, depan, M('#ffd23f')); break;
@@ -229,6 +230,7 @@ export function buatKarakter(look, { peran = 'tamu', bawa = '', tingkat = '' } =
   }
   // kepala
   if (KP === 'topi') { part(0.52, 0.16, 0.5, 0, 0.6, 0, M('#ff4f7b'), kepala); part(0.48, 0.04, 0.24, 0, 0.53, 0.32, M('#ff4f7b'), kepala); }
+  if (KP === 'ssTopi') { const em = M('#d4a017', { emissive: 0x3a2800 }); part(0.52, 0.16, 0.5, 0, 0.6, 0, M('#1d3557'), kepala); part(0.48, 0.04, 0.24, 0, 0.53, 0.32, M('#1d3557'), kepala); part(0.14, 0.1, 0.02, 0, 0.62, 0.255, em, kepala); }
   if (KP === 'kupluk') { part(0.52, 0.22, 0.5, 0, 0.6, 0, M(ubah(wa, 0.9)), kepala); part(0.54, 0.07, 0.52, 0, 0.5, 0, M(ubah(wa, 0.7)), kepala); bola(0.07, 0, 0.75, 0, M('#ffffff'), kepala); }
   if (KP === 'pita') { part(0.14, 0.12, 0.06, -0.1, 0.62, 0.1, M('#ff4f7b'), kepala); part(0.14, 0.12, 0.06, 0.1, 0.62, 0.1, M('#ff4f7b'), kepala); part(0.06, 0.08, 0.08, 0, 0.62, 0.1, M('#d35470'), kepala); }
   if (KP === 'bando') { part(0.46, 0.04, 0.06, 0, 0.56, 0.02, M('#2a1420'), kepala); for (const sx of [-1, 1]) { const e = part(0.13, 0.16, 0.06, sx * 0.17, 0.66, 0.02, M('#ff8fab'), kepala); e.rotation.z = -sx * 0.35; } }
@@ -290,6 +292,28 @@ export function buatKarakter(look, { peran = 'tamu', bawa = '', tingkat = '' } =
     const h = hatiKecil(0.24, '#ff4f7b'); h.position.y = 1.4; balon.add(h);
   }
 
+  // ------------------------------------------------ HEWAN PELIHARAAN (di samping kanan karakter)
+  let pet = null;
+  if (L.pt) {
+    pet = new THREE.Group(); pet.position.set(0.72, 0, -0.25); g.add(pet);
+    const p = (w, h, d, x, y, z, c, o = {}) => part(w, h, d, x, y, z, M(c, o), pet);
+    if (L.pt === 'pKucing' || L.pt === 'pAnjing') {
+      const c = L.pt === 'pKucing' ? '#f0a14a' : '#d9a066', c2 = L.pt === 'pKucing' ? '#ffffff' : '#fff6ef';
+      p(0.22, 0.2, 0.42, 0, 0.22, 0, c); p(0.06, 0.16, 0.06, -0.07, 0.07, 0.14, c); p(0.06, 0.16, 0.06, 0.07, 0.07, 0.14, c); p(0.06, 0.16, 0.06, -0.07, 0.07, -0.14, c); p(0.06, 0.16, 0.06, 0.07, 0.07, -0.14, c);
+      p(0.22, 0.2, 0.2, 0, 0.36, 0.26, c); p(0.14, 0.08, 0.02, 0, 0.32, 0.365, c2);
+      p(0.03, 0.03, 0.02, -0.05, 0.39, 0.362, '#2a1420'); p(0.03, 0.03, 0.02, 0.05, 0.39, 0.362, '#2a1420');
+      for (const sx of [-1, 1]) { const e = p(0.07, L.pt === 'pKucing' ? 0.09 : 0.12, 0.04, sx * 0.07, 0.5, 0.24, c); e.rotation.z = sx * (L.pt === 'pKucing' ? 0.2 : 0.5); }
+      const ek = p(0.05, 0.05, L.pt === 'pKucing' ? 0.3 : 0.12, 0, 0.32, -0.32, c); ek.rotation.x = L.pt === 'pKucing' ? -0.7 : -0.3;
+    } else if (L.pt === 'pKelinci') {
+      p(0.22, 0.22, 0.26, 0, 0.14, 0, '#ffffff'); p(0.18, 0.18, 0.18, 0, 0.32, 0.1, '#ffffff');
+      for (const sx of [-1, 1]) { p(0.05, 0.22, 0.03, sx * 0.05, 0.5, 0.08, '#ffffff'); p(0.03, 0.15, 0.035, sx * 0.05, 0.5, 0.09, '#ffb3c6'); }
+      p(0.03, 0.03, 0.02, -0.04, 0.34, 0.19, '#2a1420'); p(0.03, 0.03, 0.02, 0.04, 0.34, 0.19, '#2a1420'); bola(0.05, 0, 0.16, -0.15, M('#ffffff'), pet);
+    } else if (L.pt === 'pAyam') {
+      p(0.2, 0.22, 0.28, 0, 0.24, 0, '#ffffff'); p(0.14, 0.16, 0.14, 0, 0.42, 0.1, '#ffffff'); p(0.03, 0.1, 0.08, 0, 0.53, 0.1, '#e1251b');
+      p(0.05, 0.04, 0.06, 0, 0.42, 0.2, '#ffd23f'); p(0.03, 0.12, 0.03, -0.05, 0.07, 0, '#ffd23f'); p(0.03, 0.12, 0.03, 0.05, 0.07, 0, '#ffd23f'); p(0.18, 0.16, 0.06, 0, 0.32, -0.16, '#2f6e2f');
+    }
+  }
+
   // ------------------------------------------------ BAWAAN
   const kanan = lengan[1];
   if (bawa === 'pel') { part(0.04, 1.3, 0.04, 0, -0.45, 0.12, M('#b08d57'), kanan); part(0.32, 0.1, 0.14, 0, -1.12, 0.12, M('#8fd3ff'), kanan); }
@@ -301,7 +325,7 @@ export function buatKarakter(look, { peran = 'tamu', bawa = '', tingkat = '' } =
   if (bawa === 'map') part(0.24, 0.3, 0.04, 0, -0.62, 0.1, M('#3a6ea5'), kanan);
   if (bawa === 'laptop') { part(0.4, 0.03, 0.28, 0, -0.66, 0.24, M('#c0c4cc'), kanan); }
 
-  g.userData = { kaki, lengan, tubuh, kepala, sayap, aura, balon, fase: Math.random() * 6 };
+  g.userData = { kaki, lengan, tubuh, kepala, sayap, aura, balon, pet, fase: Math.random() * 6 };
   return g;
 }
 
@@ -324,6 +348,7 @@ export function pose(ch, a, dt, cepat = 1, paksaDuduk = false) {
   if (a === 8) { l0 = -2.3; l1 = -2.3; z0 = 0.35; z1 = -0.35; tunduk = 0.35; }
   if (a === 9) { const w = Math.abs(Math.sin(u.fase * 12)); l0 = -1.3; l1 = -1.3; z0 = -0.25 + w * 0.3; z1 = 0.25 - w * 0.3; }
   if (a === 10) { l0 = -2.9; l1 = -2.9; z0 = 0.45; z1 = -0.45; }
+  if (a === 11) { l0 = -1.45; l1 = -1.45; z0 = -0.55; z1 = 0.55; }
   u.lengan[0].rotation.x = lerp(u.lengan[0].rotation.x, l0);
   u.lengan[1].rotation.x = lerp(u.lengan[1].rotation.x, l1);
   u.lengan[1].rotation.z = lerp(u.lengan[1].rotation.z, z1);
@@ -335,5 +360,6 @@ export function pose(ch, a, dt, cepat = 1, paksaDuduk = false) {
   if (a === 0) u.kepala.rotation.y = Math.sin(u.fase * 0.4) * 0.15; else u.kepala.rotation.y = lerp(u.kepala.rotation.y, 0);
   if (u.sayap) { const f = Math.sin(performance.now() / 170) * 0.3; u.sayap[0].rotation.y = -0.5 - f; u.sayap[1].rotation.y = 0.5 + f; }
   if (u.aura) u.aura.rotation.y += (dt || 0.016) * 1.6;
+  if (u.pet) { u.pet.position.y = a === 1 ? Math.abs(Math.sin(u.fase * 1.3)) * 0.08 : 0; u.pet.rotation.y = a === 1 ? 0 : Math.sin(u.fase * 0.5) * 0.4; }
   if (u.balon) { const t = performance.now() / 900; u.balon.rotation.z = Math.sin(t) * 0.12; u.balon.rotation.x = Math.cos(t * 0.7) * 0.08; }
 }

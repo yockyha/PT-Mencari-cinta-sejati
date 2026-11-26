@@ -6,8 +6,8 @@
 //    (kurir datang ke lobi), istirahat, beres-beres; OB ngepel & menyapu.
 //  Disimulasikan di tiap perangkat (tidak lewat database).
 // =====================================================================
-import { CFG, LOKASI, esc } from '../js/common.js?v=202611260350';
-import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611260350';
+import { CFG, LOKASI, esc } from '../js/common.js?v=202611260437';
+import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611260437';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const jarak = (a, x, z) => Math.hypot(a.x - x, a.z - z);
@@ -35,7 +35,7 @@ const STAF = [
     sapa: ['Udah cek tugas harian? Lumayan buat naik level 📈', 'Ada acara seru nanti, cek jadwalnya ya!'], kegiatan: ['updateMading', 'ngobrol', 'pesanMakan'] },
   { id: 'hendra', n: 'Pak Hendra', jab: 'Notulen Ruang Rapat', ikon: '📝', fitur: 'notulen', look: S({ s: 'l', at: 'kemeja', wa: 9, bw: 'bahan', wb: 1, sp: 'pantofel', r: 0, w: 7, k: 1, lh: 'dasi', mt: 'kacamata' }), pos: [-20.9, -13.5], r: Math.PI / 2, posA: 6, duduk: true,
     sapa: ['Silakan tulis agenda di papan rapat 📝', 'Rapat perasaan dimulai!'], kegiatan: ['minum', 'ngobrol'] },
-  { id: 'citra', n: 'Mbak Citra', jab: 'Sekretaris Direktur', ikon: '👩‍💼', fitur: 'sekretaris', look: S({ s: 'p', at: 'blazer', wa: 6, bw: 'rokPendek', wb: 0, sp: 'heels', r: 6, w: 0, k: 0, tl: 'antingBulat' }), bawa: 'map', pos: [12.5, 16.6], r: -Math.PI / 2,
+  { id: 'citra', n: 'Mbak Citra', jab: 'Sekretaris Direktur', ikon: '👩‍💼', fitur: 'sekretaris', look: S({ s: 'p', at: 'blazer', wa: 6, bw: 'rokPendek', wb: 0, sp: 'heels', r: 6, w: 0, k: 0, tl: 'antingBulat' }), bawa: 'map', pos: [12.9, 14.3], r: -Math.PI / 2,
     sapa: ['Mau kasih saran ke Direktur? Lewat saya bisa 😊', 'VIP bisa buka Lounge di lantai atas lho 💎'], kegiatan: ['antarBerkas', 'ngobrol', 'pesanMakan'] },
   { id: 'bayu', n: 'Mas Bayu', jab: 'Game Master', ikon: '🎮', fitur: 'game', look: S({ s: 'l', at: 'seragam', bw: 'jogger', wb: 0, sp: 'lari', r: 7, w: 5, k: 2, kp: 'topi' }), pos: [-9.8, 17.9], r: -Math.PI / 2,
     sapa: ['Berani lawan rekor Tangkap Hati hari ini? 💗', 'Main game dapat EXP lho!'], kegiatan: ['mainGame', 'ngobrol', 'ngopi'] },

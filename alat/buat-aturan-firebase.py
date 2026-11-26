@@ -150,6 +150,22 @@ r["speedDating"] = {".read": A, ".write": f"{A} && {DIR}"}
 r["sdAntre"] = {".read": A, "$uid": {".write": f"{A} && auth.uid === $uid && (!newData.exists() || ({BEBAS} && root.child('anggota/' + auth.uid + '/tj').val() === 'jodoh'))", ".validate": "newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('t').val() === now"}}
 SD_PAS = f"root.child('speedDating/ronde/pasangan/' + auth.uid).val() === {LAIN}"
 r["sdChat"] = {".read": f"{A} && {DIR}", "$room": {".read": f"{A} && {IKUT} && {SD_PAS}", "$id": {".write": f"{A} && {IKUT} && {SD_PAS} && !data.exists() && {BEBAS}", ".validate": pesan(200)}}}
+# KOMUNITAS: kamar, season pass, pasangan minggu ini, kisah sukses
+r["kamar"] = {".read": A, "$uid": {".write": f"{A} && auth.uid === $uid && {BEBAS}", ".validate": "newData.child('wp').isNumber() && newData.child('lt').isNumber() && newData.child('t').val() === now"}}
+r["seasonKlaim"] = {"$uid": {".read": f"{A} && (auth.uid === $uid || {DIR})", "$ms": {"$k": {".write": f"{A} && auth.uid === $uid && !data.exists() && {BEBAS} && $k.matches(/^[bp][0-9]+$/) && ($k.beginsWith('b') || root.child('seasonPremium/' + auth.uid + '/' + $ms).exists())", ".validate": "newData.val() === true"}}}}
+r["seasonPremium"] = {"$uid": {".read": f"{A} && (auth.uid === $uid || {DIR})", ".write": f"{A} && {DIR}", "$ms": {".write": f"{A} && auth.uid === $uid && !data.exists() && {BEBAS} && newData.parent().parent().parent().child('diamond/' + $uid).val() === root.child('diamond/' + $uid).val() - 100", ".validate": "newData.val() === now"}}}
+r["pasanganSetuju"] = {".read": f"{A} && {DIR}", "$room": {".read": f"{A} && {IKUT}", "$u": {".write": f"{A} && auth.uid === $u && {IKUT} && root.child('match/' + auth.uid + '/' + {LAIN}).exists()", ".validate": "newData.val() === true"}}}
+r["pasanganMinggu"] = {".read": True, ".write": f"{A} && {DIR}"}
+r["kisah"] = {".read": A, ".write": f"{A} && {DIR}", "$id": {
+  ".write": f"{A} && !data.exists() && newData.child('a').val() === auth.uid && root.child('match/' + auth.uid + '/' + newData.child('b').val()).exists() && {BEBAS}",
+  ".validate": "newData.child('cerita').isString() && newData.child('cerita').val().length <= 300 && newData.child('na').isString() && newData.child('nb').isString() && (newData.child('ok').val() === false || " + DIR + ") && newData.child('t').isNumber()"}}
+# AKTIVITAS: lomba (skor mingguan/harian, hanya naik), bunga (1×/hari per orang), peluk (persetujuan), kuis kenal (hanya pasangan match)
+r["lomba"] = {".read": A, "$jenis": {"$periode": {"$uid": {".write": f"{A} && auth.uid === $uid && $jenis.matches(/^(kuis|kerupuk)$/) && {BEBAS}",
+  ".validate": "newData.child('s').isNumber() && newData.child('s').val() >= 0 && newData.child('s').val() <= 200 && newData.child('n').isString() && newData.child('n').val().length <= 20 && newData.child('t').val() === now && (!data.exists() || newData.child('s').val() > data.child('s').val())"}}}}
+r["bunga"] = {".read": A, "$ke": {"$dari": {".write": f"{A} && auth.uid === $dari && $dari !== $ke && {BEBAS} && (!data.exists() || data.val() < now - 72000000)", ".validate": "newData.val() === now"}}}
+r["aksiReq"] = {"$ke": {".read": f"{A} && auth.uid === $ke", "$dari": {".write": f"{A} && ((auth.uid === $dari && newData.exists() && {BEBAS}) || (!newData.exists() && (auth.uid === $ke || auth.uid === $dari)))", ".validate": "newData.child('j').val() === 'peluk' && newData.child('n').isString() && newData.child('t').val() === now"}}}
+r["aksiJawab"] = {"$dari": {".read": f"{A} && auth.uid === $dari", "$ke": {".write": f"{A} && ((auth.uid === $ke && newData.exists()) || (!newData.exists() && auth.uid === $dari))", ".validate": "newData.child('ok').isBoolean() && newData.child('t').val() === now"}}}
+r["kenal"] = {"$uid": {".read": f"{A} && (auth.uid === $uid || {DIR} || root.child('match/' + auth.uid + '/' + $uid).exists())", ".write": f"{A} && auth.uid === $uid && {BEBAS}", ".validate": "newData.child('j').exists() && newData.child('t').val() === now"}}
 r["undangan"] = {"$ke": {".read": f"{A} && auth.uid === $ke", "$dari": {
   ".write": f"{A} && ((auth.uid === $dari && newData.exists() && {BEBAS}) || (auth.uid === $ke && !newData.exists()))",
   ".validate": "newData.child('n').isString() && newData.child('n').val().length <= 20 && newData.child('t').val() === now"}}}
@@ -210,7 +226,7 @@ r["diamond"] = {".read": f"{A} && {DIR}", ".write": f"{A} && {DIR}", "$uid": {".
   ".validate": "newData.isNumber() && newData.val() >= 0"}}
 # MILIK: barang hanya tercatat jika di transaksi yang sama diamond terpotong persis sebesar harga katalog
 r["milik"] = {".read": True, ".write": f"{A} && {DIR}", "$uid": {"$item": {
-  ".write": f"{A} && auth.uid === $uid && !data.exists() && {BEBAS} && ((root.child('katalog/' + $item + '/harga').exists() && newData.parent().parent().parent().child('diamond/' + $uid).val() === root.child('diamond/' + $uid).val() - root.child('katalog/' + $item + '/harga').val()) || ($item.beginsWith('gc') && newData.parent().parent().parent().child('amplop/' + $uid + '/t').val() === now))",
+  ".write": f"{A} && auth.uid === $uid && !data.exists() && {BEBAS} && ((root.child('katalog/' + $item + '/harga').exists() && newData.parent().parent().parent().child('diamond/' + $uid).val() === root.child('diamond/' + $uid).val() - root.child('katalog/' + $item + '/harga').val()) || ($item.beginsWith('gc') && newData.parent().parent().parent().child('amplop/' + $uid + '/t').val() === now) || ($item.beginsWith('ss') && root.child('seasonPremium/' + $uid).exists()))",
   ".validate": "newData.val() === true"}}}
 r["katalog"] = {".read": True, ".write": f"{A} && {DIR}", "$item": {".validate": "newData.child('harga').isNumber() && newData.child('harga').val() > 0"}}
 r["donatur"] = {".read": True, ".write": f"{A} && {DIR}"}
