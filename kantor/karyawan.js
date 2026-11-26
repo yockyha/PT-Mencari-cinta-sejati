@@ -6,8 +6,8 @@
 //    (kurir datang ke lobi), istirahat, beres-beres; OB ngepel & menyapu.
 //  Disimulasikan di tiap perangkat (tidak lewat database).
 // =====================================================================
-import { CFG, LOKASI, esc } from '../js/common.js?v=202611260100';
-import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611260100';
+import { CFG, LOKASI, esc } from '../js/common.js?v=202611260150';
+import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611260150';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const jarak = (a, x, z) => Math.hypot(a.x - x, a.z - z);
@@ -36,7 +36,7 @@ const STAF = [
   { id: 'hendra', n: 'Pak Hendra', jab: 'Notulen Ruang Rapat', ikon: '📝', fitur: 'notulen', look: S({ s: 'l', at: 'kemeja', wa: 9, bw: 'bahan', wb: 1, sp: 'pantofel', r: 0, w: 7, k: 1, lh: 'dasi', mt: 'kacamata' }), pos: [-20.9, -13.5], r: Math.PI / 2, posA: 6, duduk: true,
     sapa: ['Silakan tulis agenda di papan rapat 📝', 'Rapat perasaan dimulai!'], kegiatan: ['minum', 'ngobrol'] },
   { id: 'citra', n: 'Mbak Citra', jab: 'Sekretaris Direktur', ikon: '👩‍💼', fitur: 'sekretaris', look: S({ s: 'p', at: 'blazer', wa: 6, bw: 'rokPendek', wb: 0, sp: 'heels', r: 6, w: 0, k: 0, tl: 'antingBulat' }), bawa: 'map', pos: [12.5, 16.6], r: -Math.PI / 2,
-    sapa: ['Mau kasih saran ke Direktur? Lewat saya bisa 😊', 'Kartu Eksekutif bisa buka Lounge di lantai atas lho 💎'], kegiatan: ['antarBerkas', 'ngobrol', 'pesanMakan'] },
+    sapa: ['Mau kasih saran ke Direktur? Lewat saya bisa 😊', 'VIP bisa buka Lounge di lantai atas lho 💎'], kegiatan: ['antarBerkas', 'ngobrol', 'pesanMakan'] },
   { id: 'bayu', n: 'Mas Bayu', jab: 'Game Master', ikon: '🎮', fitur: 'game', look: S({ s: 'l', at: 'seragam', bw: 'jogger', wb: 0, sp: 'lari', r: 7, w: 5, k: 2, kp: 'topi' }), pos: [-9.8, 17.9], r: -Math.PI / 2,
     sapa: ['Berani lawan rekor Tangkap Hati hari ini? 💗', 'Main game dapat EXP lho!'], kegiatan: ['mainGame', 'ngobrol', 'ngopi'] },
   { id: 'wati', n: 'Bu Wati', jab: 'Office Girl', ikon: '🧽', fitur: 'ob', ob: true, look: S({ s: 'p', at: 'ob', bw: 'bahan', wb: 3, sp: 'sandal', kp: 'hijab', wa: 2, k: 3 }), bawa: 'pel', pos: [-6.5, -5], r: 0,
@@ -272,13 +272,13 @@ const PANDUAN = {
   host: () => ({ isi: `<p>Duduk di salah satu <b>meja topik</b> dan langsung kebuka panel meja: obrolan grup, papan kegiatan khas topik, dan permainan "Pilih Mana?".</p>
       <div class="sw teks">${D.MEJA.map((m, i) => `<button type="button" data-meja="${i}">${esc(m.topik)}</button>`).join('')}</div>`, tombol: [] }),
   stylist: () => ({ isi: `<p>Lemari di sini dibagi per jenis: <b>atasan</b> (kaos, kemeja, hoodie, jaket, formal, dress), <b>bawahan</b> (celana, rok, sarung), <b>sepatu</b>, dan <b>aksesoris</b> (kepala, kacamata, anting, kalung, tas, efek). Ada pilihan <b>👨 Pria</b> & <b>👩 Wanita</b>.</p>
-      <ul><li>🔒 Barang terkunci terbuka sesuai <b>level</b>. Naik level dengan tugas harian, acara, dan game.</li><li>💠 Barang Diamond bisa dibeli di Toko.</li><li>💎 Barang emas khusus pemegang Kartu Eksekutif.</li></ul>`, tombol: [['👔 Buka lemari', 'loker'], ['💠 Lemari Diamond', 'toko']] }),
+      <ul><li>🔒 Barang terkunci terbuka sesuai <b>level</b>. Naik level dengan tugas harian, acara, dan game.</li><li>💠 Barang Diamond bisa dibeli di Toko.</li><li>💎 Barang emas khusus VIP & VVIP.</li></ul>`, tombol: [['👔 Buka lemari', 'loker'], ['💠 Lemari Diamond', 'toko']] }),
   hrd: () => ({ isi: `<p>Kumpulkan <b>EXP</b> buat naik level dan buka baju baru:</p><ul><li>✅ <b>Tugas harian</b>: ngopi, duduk di meja, chat, peluk curhat, main game, dll.</li><li>📅 <b>Acara</b> dari Direktur: hadir di lokasi saat acara berlangsung.</li><li>🏆 <b>Peringkat</b> tamu & skor game harian.</li></ul>`,
     tombol: [['✅ Tugas harian', 'tugas'], ['📅 Jadwal acara', 'acara'], ['🏆 Peringkat', 'peringkat']] }),
   notulen: () => ({ isi: `<p>Ruang Rapat Perasaan: tulis agenda, kata-kata semangat, atau salam di <b>papan rapat</b>. Semua orang bisa baca. Di koridor ada <b>📖 buku tamu</b> berisi semua tamu yang sudah datang.</p>`,
     tombol: [['✍ Tulis di papan rapat', 'papan'], ['📖 Lihat buku tamu', 'bukuTamu']] }),
-  sekretaris: () => ({ isi: `<p>Saya bantu urusan dengan Direktur:</p><ul><li>💡 Kirim <b>saran</b> atau masukan untuk Direktur.</li><li>💎 <b>Kartu Eksekutif</b>: lihat siapa yang menyukaimu, akses Lounge Eksekutif, dan barang emas.</li><li>💠 Top up <b>Diamond</b> & lemari Diamond di Toko.</li></ul>`,
-    tombol: [['💡 Kirim saran', 'saran'], ['🛍️ Toko & Kartu Eksekutif', 'toko'], ['💎 Ke Lounge', 'lounge']] }),
+  sekretaris: () => ({ isi: `<p>Saya bantu urusan dengan Direktur:</p><ul><li>💡 Kirim <b>saran</b> atau masukan untuk Direktur.</li><li>💎 <b>VIP</b>: lihat siapa yang menyukaimu, akses Lounge Eksekutif, dan barang emas.</li><li>💠 Top up <b>Diamond</b> & lemari Diamond di Toko.</li></ul>`,
+    tombol: [['💡 Kirim saran', 'saran'], ['🛍️ Toko & VIP', 'toko'], ['💎 Ke Lounge', 'lounge']] }),
   game: () => ({ isi: `<p><b>💗 Tangkap Hati</b>: tangkap hati yang jatuh pakai keranjang, hindari 💔. Skor tertinggi tiap hari masuk peringkat, dan main sekali sehari dapat EXP!</p>`, tombol: [['🎮 Main sekarang', 'arcade'], ['🏆 Peringkat', 'peringkat']] }),
   ob: o => ({ isi: `<p>${esc(acak(['Kantor harus bersih biar tamunya betah. Saya pel dari pagi lho! 🧽', 'Kalau lihat lantai basah, hati-hati ya. Nanti kepeleset kayak jatuh cinta 😆', 'Ssst… saya kasih tahu rahasia kantor ya.']))}</p>
       <p><b>🤫 Rahasia kantor:</b></p><ul><li>🧊 Buka <b>kulkas pantry</b>, siapa tahu ada camilan.</li><li>🍱 <b>Microwave</b> & 💧 <b>dispenser</b> bisa dipakai.</li><li>🪴 <b>Siram tanaman</b> di dalam kantor.</li><li>📸 Foto di <b>patung hati</b> depan kantor, hasilnya bisa disimpan!</li></ul>`, tombol: [['📸 Antar ke patung hati', 'patung']] }),

@@ -3,8 +3,8 @@
 //  ajakan ngobrol, obrolan pribadi, suka & match, laporan, dan
 //  alat Direktur/Staf. Struktur data ini sama dengan database.rules.json.
 // =====================================================================
-import { TS } from './db.js?v=202611260100';
-import { CFG, bersih, sensor, rupiah } from './common.js?v=202611260100';
+import { TS } from './db.js?v=202611260150';
+import { CFG, bersih, sensor, rupiah } from './common.js?v=202611260150';
 
 export function buatLayanan(db) {
   const uid = db.uid;
@@ -69,9 +69,9 @@ export function buatLayanan(db) {
       await db.set(`undangan/${uid}/${dari}`, null);
       return r;
     },
-    kirimDm(r, n, m) {
+    kirimDm(r, n, m, st = '') {
       const teks = sensor(bersih(m, 300));
-      db.push(`dm/${r}/pesan`, { uid, n, m: teks, t: TS });
+      db.push(`dm/${r}/pesan`, { uid, n, m: teks, t: TS, ...(st ? { st } : {}) });
       db.update(`dmku/${uid}/${r}`, { t: TS, baru: false }).catch(() => {});
       db.update(`dmku/${lawan(r)}/${r}`, { t: TS, baru: true }).catch(() => {});
     },
@@ -134,6 +134,16 @@ export function buatLayanan(db) {
       await db.update('', { [`diamond/${uid}`]: saldo - harga, [`milik/${uid}/${id}`]: true });
       return { ok: true, saldo: saldo - harga };
     },
+    // beli VIP / VVIP dengan Diamond: saldo dipotong & masa aktif ditambah dalam satu transaksi (dijaga aturan Firebase)
+    async beliLangganan(tingkat, harga, hari) {
+      const saldo = (await db.get('diamond/' + uid).catch(() => 0)) || 0;
+      if (saldo < harga) return { ok: false, alasan: 'kurang', saldo };
+      const lama = (await db.get('vip/' + uid).catch(() => null)) || {};
+      const kini = db.now(), dari = Math.max(kini, lama.sampai || 0);
+      const sampai = dari + hari * 86400e3;
+      await db.update('', { [`diamond/${uid}`]: saldo - harga, [`vip/${uid}`]: { sampai, tingkat } });
+      return { ok: true, sampai };
+    },
     async beriDiamond(target, n) {
       const lama = (await db.get('diamond/' + target).catch(() => 0)) || 0;
       return db.set('diamond/' + target, Math.max(0, lama + n));
@@ -174,12 +184,20 @@ export function buatLayanan(db) {
       const lama = (await db.get('expBeli/' + target).catch(() => 0)) || 0;
       return db.set('expBeli/' + target, lama + jumlah);
     },
-    async beriVip(target, hari) {
+    async beriVip(target, hari, tingkat = '') {
       const lama = (await db.get('vip/' + target).catch(() => null)) || {};
       const dari = Math.max(db.now(), lama.sampai || 0);
-      return db.set('vip/' + target, { sampai: dari + hari * 86400e3 });
+      return db.set('vip/' + target, { sampai: dari + hari * 86400e3, tingkat: tingkat || (lama.sampai > db.now() && lama.tingkat) || 'vip' });
     },
     kirimNotif(target, m, j = '') { return db.push(`notif/${target}`, { m: bersih(m, 200), t: TS, ...(j ? { j } : {}) }); },
+    // ---- privasi Instagram: ig disimpan di profilPribadi (dibaca sesuai izin, diatur aturan Firebase)
+    async simpanPrivasiIg(ig, sembunyi) {
+      await db.set('privasi/' + uid, { ig: sembunyi ? 'sembunyi' : 'publik', t: TS });
+      await db.set('profilPribadi/' + uid, { ig: ig || '', t: TS });
+      if (sembunyi) await db.update('tamu/' + uid, { ig: '' }).catch(() => {});
+    },
+    mintaIzinIg(pemilik, n) { return db.set(`izinIgMinta/${pemilik}/${uid}`, { n, t: TS }); },
+    izinkanIg(peminta, ya) { return Promise.all([db.set(`izinIg/${uid}/${peminta}`, ya ? true : null), db.set(`izinIgMinta/${uid}/${peminta}`, null)]); },
     // sapaan khusus untuk Direktur (satu per tamu, paling cepat 5 menit sekali) & efek untuk semua dari Direktur
     sapaDirektur(n, j) { return db.set('sapaDir/' + uid, { n, j, t: TS }); },
     efek(jenis, n, lok = '') { return db.set('efek', { jenis, n, t: TS, ...(lok ? { lok } : {}) }); },

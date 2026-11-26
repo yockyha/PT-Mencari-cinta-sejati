@@ -1,6 +1,6 @@
 // Utilitas bersama untuk semua halaman.
-import PAKET from '../paket.js?v=202611260100';
-import { PAKAIAN, SLOT } from './pakaian.js?v=202611260100';
+import PAKET from '../paket.js?v=202611260150';
+import { PAKAIAN, SLOT } from './pakaian.js?v=202611260150';
 export const CFG = Object.assign({
   namaPT: 'PT Mencari Cinta Sejati', singkatan: 'PT MCS', instagram: '', instagramNama: '', tiktok: '', wajibFollow: null,
   kuota: 10000, firebase: null, mading: [], domainLogin: 'ptmcs.id', direkturDemo: null,
@@ -11,6 +11,7 @@ export const CFG = Object.assign({
 CFG.diamond = { paket: PAKET.diamond };
 CFG.donasi = PAKET.donasi;
 CFG.toko = { ...(CFG.toko || {}), paket: PAKET.toko };
+export const LANGGANAN = PAKET.langganan;
 export { PAKET };
 
 // Tujuan tamu datang ke kantor

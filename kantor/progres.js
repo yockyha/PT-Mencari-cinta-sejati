@@ -1,12 +1,12 @@
 // =====================================================================
 //  Progres tamu: EXP & level, tugas (Tur Kantor + harian), petunjuk
-//  arah, acara terjadwal, peringkat, toko (EXP & Kartu Eksekutif),
+//  arah, acara terjadwal, peringkat, toko (EXP & VIP),
 //  dan notifikasi dari Direktur.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611260100';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611260100';
-import * as Bayar from './bayar.js?v=202611260100';
-import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611260100';
+import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611260150';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611260150';
+import * as Bayar from './bayar.js?v=202611260150';
+import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611260150';
 
 // ---------------------------------------------------------------- DATA TUGAS
 const RUANG_TUJUAN = { jodoh: 'kafe', teman: 'meja', curhat: 'taman' };
@@ -37,8 +37,17 @@ const P = { diamond: 0, milik: {}, donatur: {}, exp: 0, beli: 0, selesai: new Se
 export const direkturSaya = () => !!(K.L && K.peran[K.L.uid] === 'direktur');
 export const totalExp = () => (direkturSaya() ? Infinity : (P.exp || 0) + (P.beli || 0));
 export const level = () => (direkturSaya() ? 99 : levelDari(totalExp()));
-export const isVip = uid => !!(K.peran && K.peran[uid] === 'direktur') || !!(K.vip && K.vip[uid] && K.vip[uid].sampai > (K.L ? K.L.db.now() : Date.now()));
+// tingkat langganan: '' | 'vip' | 'vvip'. Direktur = vvip (semua fitur terbuka)
+export const tingkat = uid => {
+  if (K.peran && K.peran[uid] === 'direktur') return 'vvip';
+  const v = K.vip && K.vip[uid];
+  return v && v.sampai > (K.L ? K.L.db.now() : Date.now()) ? (v.tingkat === 'vvip' ? 'vvip' : 'vip') : '';
+};
+export const isVip = uid => !!tingkat(uid);
+export const isVvip = uid => tingkat(uid) === 'vvip';
 export const vipSaya = () => K.L && isVip(K.L.uid);
+export const vvipSaya = () => K.L && isVvip(K.L.uid);
+K.tingkat = tingkat;
 export const punyaBarang = id => direkturSaya() || !!P.milik[id];
 export const saldoDiamond = () => P.diamond || 0;
 export const daftarDonatur = () => P.donatur || {};
@@ -70,7 +79,7 @@ export function mulai() {
   db.on('donatur', v => { P.donatur = v || {}; });
   db.on('expBeli/' + L.uid, v => { const lama = P.beli; P.beli = v || 0; if (lama && P.beli > lama) toast(`🎁 +${fmt(P.beli - lama)} EXP dari Direktur!`, 3600); segarLevel(); });
   db.on('tugas/' + L.uid, v => { P.selesai = new Set(Object.keys(v || {})); segarArah(); });
-  db.on('vip', v => { const lama = vipSaya(); K.vip = v || {}; if (!lama && vipSaya() && levelLama !== null) rayakanVip(); K.segarkanOrang && K.segarkanOrang(); segarArah(); });
+  db.on('vip', v => { const lama = tingkat(L.uid); K.vip = v || {}; const kini = tingkat(L.uid); if (kini && kini !== lama && (lama === '' || kini === 'vvip') && levelLama !== null && !direkturSaya()) rayakanVip(kini); K.segarkanOrang && K.segarkanOrang(); segarArah(); });
   db.on('acara', v => { P.acara = v || {}; segarArah(); K.gambarJadwal && K.gambarJadwal(); });
   db.on('ikutAcara', v => { P.ikut = v || {}; });
   db.on('hadirAcara', v => { P.hadir = v || {}; segarArah(); });
@@ -109,10 +118,17 @@ function naikLevel(lv) {
     pasang(i) { i.querySelector('#lvL').onclick = () => { tutupKartu(); pergiKe('loker'); }; i.querySelector('#lvN').onclick = tutupKartu; },
   });
 }
-function rayakanVip() {
-  if (kartuTerbuka()) { toast('💎 Kartu Eksekutif aktif! Lounge Eksekutif sudah terbuka untukmu.', 4500); return; }
-  bukaKartu(`<div class="match"><div class="hatiBesar">💎</div><h2>Kartu Eksekutif aktif!</h2>
-    <p>Sekarang kamu bisa melihat siapa yang menyukaimu, masuk Lounge Eksekutif lewat lift lobi, dan memakai Setelan Emas, Mahkota Emas & Halo.</p>
+// Keuntungan tiap tingkat (dipakai toko & kartu perayaan)
+export const MANFAAT = {
+  vip: ['💘 Lihat siapa yang diam-diam menyukaimu', '🍸 Masuk Lounge Eksekutif lewat lift lobi', '👔 Barang emas: Setelan, Sepatu, Mahkota Emas & Halo', '😎 Paket stiker VIP', '👥 Grup obrolan sampai 30 anggota & bikin 5 grup', '💎 Nama & lencana VIP'],
+  vvip: ['✅ Semua keuntungan VIP', '📷 Lihat Instagram tamu walau disembunyikan', '👑 Paket stiker VVIP (termasuk stiker Direktur)', '👥 Grup sampai 100 anggota & bikin 10 grup', '💌 Sapa Direktur tanpa jeda 5 menit', '✨ Cincin ungu di kaki, nama VVIP & paling atas di daftar online'],
+};
+function rayakanVip(t = 'vip') {
+  const nama = t === 'vvip' ? 'VVIP 👑' : 'VIP 💎';
+  K.efekLokal && K.efekLokal('kembangapi');
+  if (kartuTerbuka()) { toast(`${nama} aktif! Selamat menikmati.`, 4500); return; }
+  bukaKartu(`<div class="match"><div class="hatiBesar">${t === 'vvip' ? '👑' : '💎'}</div><h2>${nama} aktif!</h2>
+    <ul class="manfaat">${MANFAAT[t].map(m => `<li>${esc(m)}</li>`).join('')}</ul>
     <div class="baris"><button class="btn" type="button" id="vL">Ke Lounge Eksekutif</button><button class="btn putih" type="button" id="vN">Nanti</button></div></div>`, {
     pasang(i) { i.querySelector('#vL').onclick = () => { tutupKartu(); pergiKe('lounge'); }; i.querySelector('#vN').onclick = tutupKartu; },
   });
@@ -212,7 +228,7 @@ function pengingatAcara() {
 }
 export function pergiKe(lok) {
   const l = LOKASI[lok]; if (!l) return;
-  if (l.vip && !vipSaya()) { bukaHub('toko'); toast('Lounge Eksekutif khusus pemegang Kartu Eksekutif 💎'); return; }
+  if (l.vip && !vipSaya()) { bukaHub('toko'); toast('Lounge Eksekutif khusus VIP & VVIP 💎'); return; }
   K.pindah(l.x, l.z, l.r);
 }
 
@@ -262,7 +278,7 @@ export function bukaHub(tab = 'tugas') {
     ? `<h2>👑 Level ∞ <span class="pillTj" style="--w:#b8860b">Direktur</span></h2><div class="bilah"><i style="width:100%"></i></div><p class="kecil">EXP tak terbatas · semua outfit & aksesoris terbuka</p>`
     : !resmi()
       ? `<h2>👀 Pengunjung</h2><p class="kecil">Lihat-lihat dulu. <button type="button" class="mini" id="hD">📝 Daftar jadi tamu</button> untuk mengerjakan tugas, ikut acara, dan kumpulkan EXP.</p>`
-      : `<h2>⭐ Level ${lv}${vipSaya() ? ' <span class="pillTj" style="--w:#b8860b">💎 Eksekutif</span>' : ''}</h2>
+      : `<h2>⭐ Level ${lv}${vipSaya() ? ' <span class="pillTj" style="--w:#b8860b">💎 VIP</span>' : ''}</h2>
     <div class="bilah" role="progressbar" aria-valuemin="${a}" aria-valuemax="${b}" aria-valuenow="${ex}"><i style="width:${Math.min(100, (ex - a) / (b - a) * 100).toFixed(1)}%"></i></div>
     <p class="kecil">${fmt(ex)} EXP · ${fmt(b - ex)} EXP lagi ke Level ${lv + 1}</p>`;
   bukaKartu(`<div class="hub">${atas}

@@ -1,14 +1,15 @@
 // =====================================================================
 //  Toko & pembayaran: top up Diamond, Lemari Diamond (beli outfit),
-//  Kartu Eksekutif/EXP, donasi, papan donatur, dan status pesanan.
+//  VIP/EXP, donasi, papan donatur, dan status pesanan.
 //  Pembayaran otomatis (Midtrans: QRIS/VA BCA/BRI/e-wallet) langsung masuk,
 //  atau manual: QRIS/transfer BCA/BRI dengan NOMINAL UNIK, lalu
 //  diverifikasi Direktur di Dashboard (Toko & Pesanan).
 // =====================================================================
-import { PAKAIAN, SLOT } from '../js/pakaian.js?v=202611260100';
-import { CFG, LS, esc, fmt, bersih, rupiah, IKON_DM, kodeTamu, hash } from '../js/common.js?v=202611260100';
-import { K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611260100';
-import * as P from './progres.js?v=202611260100';
+import { PAKAIAN, SLOT } from '../js/pakaian.js?v=202611260150';
+import { LANGGANAN } from '../js/common.js?v=202611260150';
+import { CFG, LS, esc, fmt, bersih, rupiah, IKON_DM, kodeTamu, hash } from '../js/common.js?v=202611260150';
+import { K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611260150';
+import * as P from './progres.js?v=202611260150';
 
 const BAYAR = () => CFG.pembayaran || {};
 const resmi = () => !!(K.resmi && K.resmi());
@@ -46,10 +47,14 @@ export function tabToko() {
       <div class="gridPaket">${dp.map(p => `<button type="button" class="paketDm" data-dm="${esc(p.id)}" ${buka ? '' : 'disabled'}><b>${IKON_DM} ${fmt(p.diamond)}</b><span>${rupiah(p.harga)}</span>${p.ket ? `<small>${esc(p.ket)}</small>` : ''}</button>`).join('')}</div>
       <h3>👗 Lemari Diamond</h3>
       <div class="daftar">${barang.map(x => { const punya = P.punyaBarang(x.id); return `<div><span><b>${esc(x.nama)}</b> <small>${SLOT[x.slot].ikon} ${esc(x.jenis)}</small><br><small>${punya ? '✅ sudah kamu miliki · pakai di Ruang Loker' : `${IKON_DM} ${fmt(x.dm)}`}</small></span>${punya ? '' : `<button type="button" class="mini" data-barang="${esc(x.id)}">Beli</button>`}</div>`; }).join('')}</div>
-      <div class="vipKartu"><b>💎 Kartu Eksekutif & EXP</b>
-        <ul><li>💘 Lihat <b>siapa</b> yang diam-diam menyukaimu</li><li>🍸 Akses <b>Lounge Eksekutif</b> lewat lift lobi</li><li>👔 Setelan Emas, Sepatu Emas, Mahkota Emas & Halo</li></ul>
-        ${P.vipSaya() && !dir ? `<p>Aktif sampai <b>${esc(tanggalJam(K.vip[K.L.uid].sampai))}</b> WIB</p>` : ''}</div>
-      <div class="daftar">${pk.map(p => `<div><span><b>${esc(p.nama)}</b> · ${rupiah(p.harga)}<br><small>${esc(p.ket || '')}</small></span><button type="button" class="mini" data-paket="${esc(p.id)}" ${buka ? '' : 'disabled'}>Beli</button></div>`).join('')}</div>
+      <h3 id="langganan">💎 VIP & 👑 VVIP</h3>
+      ${dir ? '<p class="kecil">👑 Direktur otomatis mendapat semua fitur VVIP.</p>' : P.vipSaya() ? `<p>Kamu <b>${P.vvipSaya() ? 'VVIP 👑' : 'VIP 💎'}</b> sampai <b>${esc(tanggalJam(K.vip[K.L.uid].sampai))}</b> WIB</p>` : ''}
+      <div class="gridLangganan">${LANGGANAN.map(l => `<div class="kartuLangganan ${l.id}"><b>${l.ikon} ${esc(l.nama)}</b><span>${IKON_DM} ${fmt(l.diamond)} / ${l.hari} hari</span>
+        <ul>${P.MANFAAT[l.id].map(m => `<li>${esc(m)}</li>`).join('')}</ul>
+        ${dir ? '' : `<button type="button" class="btn ${l.id === 'vvip' ? '' : 'putih'}" data-langganan="${l.id}" ${l.id === 'vip' && P.vvipSaya() ? 'disabled' : ''}>${P.tingkat(K.L.uid) === l.id ? 'Perpanjang' : l.id === 'vvip' && P.vipSaya() ? 'Upgrade ke VVIP' : 'Beli'}</button>`}</div>`).join('')}</div>
+      <p class="kecil">${IKON_DM} 300 = paket Diamond Rp25.000 · ${IKON_DM} 650 = paket Diamond Rp50.000. Top up Diamond dulu di atas, lalu beli VIP/VVIP di sini.</p>
+      <h3>⭐ EXP</h3>
+      <div class="daftar">${pk.filter(p => !p.sembunyi).map(p => `<div><span><b>${esc(p.nama)}</b> · ${rupiah(p.harga)}<br><small>${esc(p.ket || '')}</small></span><button type="button" class="mini" data-paket="${esc(p.id)}" ${buka ? '' : 'disabled'}>Beli</button></div>`).join('')}</div>
       <h3>🎁 Donasi</h3>
       <p class="kecil">Dukung kantor supaya tetap gratis dan makin seru. Nominal bebas.</p>
       <div class="baris"><button class="btn" type="button" id="tDonasi" ${buka ? '' : 'disabled'}>Donasi sekarang</button></div>
@@ -60,6 +65,7 @@ export function tabToko() {
       el.querySelectorAll('[data-dm]').forEach(b => b.onclick = () => { const p = dp.find(x => x.id === b.dataset.dm); bukaBayar({ jenis: 'diamond', paket: p.id, nama: `${fmt(p.diamond)} Diamond`, harga: p.harga }); });
       el.querySelectorAll('[data-paket]').forEach(b => b.onclick = () => { const p = pk.find(x => x.id === b.dataset.paket); bukaBayar({ jenis: 'paket', paket: p.id, nama: p.nama, harga: p.harga }); });
       el.querySelectorAll('[data-barang]').forEach(b => b.onclick = () => bukaBeliBarang(b.dataset.barang));
+      el.querySelectorAll('[data-langganan]').forEach(b => b.onclick = () => bukaBeliLangganan(b.dataset.langganan));
       const d = el.querySelector('#tDonasi'); if (d) d.onclick = bukaDonasi;
       muatPesananKu(el.querySelector('#pKu'));
     },
@@ -181,6 +187,34 @@ export function bukaDonasi() {
         if (n < min) { el.querySelector('#dE').textContent = `Minimal ${rupiah(min)}.`; return; }
         if (n > 10000000) { el.querySelector('#dE').textContent = 'Maksimal Rp10.000.000 per donasi.'; return; }
         bukaBayar({ jenis: 'donasi', paket: 'donasi', nama: 'Donasi', harga: n, pesan: bersih(el.querySelector('#dP').value, 100), tampil: el.querySelector('#dT').checked });
+      };
+    },
+  });
+}
+
+// ---------------------------------------------------------------- BELI VIP / VVIP DENGAN DIAMOND
+export function bukaBeliLangganan(id) {
+  if (!resmi()) { K.bukaDaftar(); return; }
+  const l = LANGGANAN.find(x => x.id === id); if (!l) return;
+  if (id === 'vip' && P.vvipSaya()) { toast('Kamu sudah VVIP 👑'); return; }
+  const saldo = P.saldoDiamond(), cukup = saldo >= l.diamond, upgrade = id === 'vvip' && P.tingkat(K.L.uid) === 'vip';
+  bukaKartu(`<h2>${l.ikon} ${esc(l.nama)} · ${l.hari} hari</h2>
+    <p>Harga: <b>${IKON_DM} ${fmt(l.diamond)}</b> · Saldo kamu: <b>${IKON_DM} ${fmt(saldo)}</b></p>
+    <ul class="manfaat">${P.MANFAAT[id].map(m => `<li>${esc(m)}</li>`).join('')}</ul>
+    ${upgrade ? '<p class="kecil">Sisa masa VIP-mu tetap dihitung: masa aktif VVIP ditambahkan setelahnya.</p>' : ''}
+    <p class="kecil">${cukup ? 'Masa aktif langsung bertambah setelah dibeli.' : `Diamond kamu kurang ${fmt(l.diamond - saldo)}. Top up dulu yuk.`}</p>
+    <div class="baris">${cukup ? `<button class="btn" type="button" id="lB">Beli ${IKON_DM} ${fmt(l.diamond)}</button>` : '<button class="btn" type="button" id="lT">Top up Diamond</button>'}<button class="btn putih" type="button" id="lN">Batal</button></div>`, {
+    pasang(el) {
+      el.querySelector('#lN').onclick = tutupKartu;
+      const t = el.querySelector('#lT'); if (t) t.onclick = () => P.bukaHub('toko');
+      const b = el.querySelector('#lB');
+      if (b) b.onclick = async () => {
+        b.disabled = true;
+        try {
+          const r = await K.L.beliLangganan(id, l.diamond, l.hari);
+          if (!r.ok) { toast('Diamond kamu kurang.'); b.disabled = false; return; }
+          tutupKartu(); toast(`${l.ikon} ${l.nama} aktif sampai ${tanggalJam(r.sampai)} WIB`, 4000);
+        } catch (e) { console.warn(e); toast('Pembelian gagal. Coba lagi.'); b.disabled = false; }
       };
     },
   });
