@@ -78,7 +78,8 @@ if (require.main === module) (async () => {
     const s = await sesi(b);
     for (let k = 0; k < 40 && !(await s.p.evaluate(() => __kantor.K.lain.has('t2'))); k++) await maju(s, 250);
     console.log('t2 ada:', await s.p.evaluate(() => __kantor.K.lain.has('t2')));
-    await ev(s, () => { const o = __kantor.K.lain.get('t2'); if (o) Object.assign(o, { zd: 8, mb: 'INFP', ll: 1, tj: 'jodoh' }); });
+    await ev(s, () => { const m = __kantor.K.lain, get0 = m.get.bind(m), data = { zd: 8, mb: 'INFP', ll: 1, tj: 'jodoh' };
+      m.get = k => { const o = get0(k); if (k !== 't2') return o; return o ? Object.assign(o, data) : { uid: 't2', nama: 'dimas.p', ...data }; }; });
     await ev(s, () => { const L = __kantor.L, t = L.db.now(); L.db.set('speedDating', { buka: true, ronde: { no: 1, mulai: t - 4000, durasi: 180, pasangan: { urina: 't2', t2: 'urina' } } }); });
     await maju(s, 400);
     const P = ['hai! kamu suka kopi juga? ☕', 'iyaa tim kopi susu 😆', 'kencan pertama impianmu apa?', 'nonton + makan boba sih 🥹'];
