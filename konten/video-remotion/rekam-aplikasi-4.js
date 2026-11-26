@@ -44,7 +44,7 @@ async function rekam(s, nama, detik, aksi = async () => {}) {
   console.log('ok', nama);
 }
 const foto = (s, nama) => s.p.screenshot({ path: `${OUT}/${nama}.png` }).then(() => console.log('foto', nama));
-const klik = (s, sel) => s.p.click(sel, { force: true, timeout: 2000 }).catch(e => console.log('klik gagal', sel, e.message.split('\n')[0]));
+const klik = (s, sel) => s.p.evaluate(sel => { const e = document.querySelector(sel); if (!e) return false; e.click(); return true; }, sel).then(ok => { if (!ok) console.log('klik gagal', sel, 'tidak ada'); });
 const ev = (s, f, a) => s.p.evaluate(f, a).catch(e => console.log('eval gagal', e.message.split('\n')[0]));
 
 module.exports = { sesi, maju, tutup, rekam, foto, klik, ev, FPS };
