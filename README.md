@@ -74,6 +74,11 @@ Dipakai untuk **💠 Diamond**, **Kartu Eksekutif/EXP**, dan **🎁 donasi**. Ua
 
 Cara manual ini tetap tersedia sebagai cadangan. Supaya **tidak perlu standby menyetujui**, aktifkan pembayaran otomatis di bawah.
 
+### 🛡️ Aturan Firebase (otomatis)
+Aturan keamanan ditulis per fitur di `alat/aturan/` (lihat `alat/aturan/README.md`) dan digabung menjadi `database.rules.json`.
+Setiap merge ke `main` yang mengubah aturan **dipasang ke Firebase otomatis** oleh GitHub Actions,
+asalkan secret `FIREBASE_DB_SECRET` sudah diisi di GitHub → Settings → Secrets and variables → Actions.
+
 ### ⚡ Pembayaran otomatis (Midtrans): diamond langsung masuk
 Pembeli memilih **⚡ Bayar otomatis** → halaman bayar Midtrans (semua metode yang aktif di akun Midtrans-mu: QRIS, VA bank, GoPay, dll.) → begitu lunas, Midtrans mengabari server situs (`/api/bayar/notifikasi`) dan **Diamond / VIP (Rp25.000) / VVIP (Rp50.000) / EXP / donasi (nominal bebas, min. Rp5.000) masuk sendiri dalam beberapa detik**. Tidak dibayar dalam 60 menit → batal sendiri. Uang masuk ke saldo Midtrans, lalu dicairkan ke rekeningmu (biaya Midtrans ± 0,7% QRIS, ± Rp4.000 per VA).
 
