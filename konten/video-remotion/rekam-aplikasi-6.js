@@ -41,9 +41,9 @@ const ketik = (s, sel, teks, i, i0, i1) => {
       return L.db.update('', {
         ['grup/' + g]: { nama: 'Pejuang Jomblo', ikon: '💘', pemilik: 'urina', t, anggota },
         ['grupku/urina/' + g]: { nama: 'Pejuang Jomblo', ikon: '💘', pemilik: 'urina', t, m: 'Grup dibuat', dari: 'urina' },
-        ['grupPesan/' + g + '/a1']: { uid: 'urina', n: 'Rina', m: 'Rina membuat grup Pejuang Jomblo 💘', t: t - 60000, sis: true },
-        ['grupPesan/' + g + '/a2']: { uid: 't2', n: 'dimas.p', m: 'akhirnya ada grup buat kita 😭', t: t - 50000 },
-        ['grupPesan/' + g + '/a3']: { uid: 't3', n: 'nadia.r', m: 'nama grupnya relate parah', t: t - 40000 },
+        ['grupPesan/' + g + '/-00a1']: { uid: 'urina', n: 'Rina', m: 'Rina membuat grup Pejuang Jomblo 💘', t: t - 60000, sis: true },
+        ['grupPesan/' + g + '/-00a2']: { uid: 't2', n: 'dimas.p', m: 'akhirnya ada grup buat kita 😭', t: t - 50000 },
+        ['grupPesan/' + g + '/-00a3']: { uid: 't3', n: 'nadia.r', m: 'nama grupnya relate parah', t: t - 40000 },
       });
     });
     await maju(s, 400);
