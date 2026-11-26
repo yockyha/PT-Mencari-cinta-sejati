@@ -22,7 +22,7 @@ export async function onRequestPost({ request, env }) {
     const orderId = 'MCS-' + Date.now().toString(36).toUpperCase() + '-' + crypto.getRandomValues(new Uint32Array(1))[0].toString(36).toUpperCase();
     await db.set('pesanan/' + orderId, {
       uid, n, paket: it.paket, jenis: it.jenis, nama: it.nama, nominal: it.harga, metode: 'otomatis', kode: orderId, status: 'menunggu', t: TS,
-      ...(it.jenis === 'donasi' ? { pesan: String(b.pesan || '').slice(0, 100), tampil: b.tampil !== false } : {}),
+      ...(it.jenis === 'donasi' ? { pesan: String(b.pesan || '').slice(0, 100), tampil: b.tampil !== false, nt: String(b.nt || n).trim().slice(0, 20) } : {}),
     });
     const asal = new URL(request.url).origin;
     const trx = await buatTransaksi(env, { orderId, harga: it.harga, nama: it.nama, paket: it.paket, pelanggan: n, kembaliKe: asal + '/kantor/?bayar=selesai' });

@@ -3,8 +3,8 @@
 //  ajakan ngobrol, obrolan pribadi, suka & match, laporan, dan
 //  alat Direktur/Staf. Struktur data ini sama dengan database.rules.json.
 // =====================================================================
-import { TS } from './db.js?v=202611260636';
-import { CFG, bersih, sensor, rupiah, kodeTamu, ucapanDonasi } from './common.js?v=202611260636';
+import { TS, kunciBaru } from './db.js?v=202611260649';
+import { CFG, bersih, sensor, rupiah, kodeTamu, ucapanDonasi, namaPapan } from './common.js?v=202611260649';
 
 export function buatLayanan(db) {
   const uid = db.uid;
@@ -176,7 +176,7 @@ export function buatLayanan(db) {
       if (!p) throw new Error('Paket ' + v.paket + ' tidak ada di config.js');
       let pesan;
       if (v.jenis === 'diamond') { await L.beriDiamond(v.uid, p.diamond); pesan = `💠 ${p.diamond} Diamond sudah masuk ke akunmu. Selamat belanja di Lemari Diamond!`; }
-      else if (v.jenis === 'donasi') { await L.catatDonatur(v.uid, v.n, v.nominal, v.tampil); pesan = ucapanDonasi(v.nominal); }
+      else if (v.jenis === 'donasi') { await L.catatDonatur(v.uid, v.nt || v.n, v.nominal, v.tampil); await db.set('papanDonasi/' + kunciBaru(), { n: namaPapan(v), nominal: v.nominal, m: bersih(v.pesan || '', 100), t: TS }); pesan = ucapanDonasi(v.nominal); }
       else {
         if (p.exp) await L.beriExp(v.uid, p.exp);
         if (p.vipHari) {

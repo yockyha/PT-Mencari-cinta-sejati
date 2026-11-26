@@ -54,3 +54,7 @@ export function ucapanDonasi(n) {
   const t = tingkatDonasi(n), rpS = 'Rp' + Number(n).toLocaleString('id-ID');
   return `${t.ikon} Donasi ${rpS} diterima! Kamu resmi jadi ${t.gelar} PT MCS. Seluruh karyawan & tamu berterima kasih, semoga cinta sejatimu cepat ketemu 💖`;
 }
+
+// Nama yang tampil di Papan Donasi (nt = nama pilihan donatur; tampil=false → anonim)
+export const ANONIM_DONASI = 'Orang Baik 🤍';
+export const namaPapan = v => (v && v.tampil === false ? ANONIM_DONASI : String((v && (v.nt || v.n)) || 'Tamu').trim().slice(0, 20) || 'Tamu');
