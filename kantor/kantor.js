@@ -3,20 +3,20 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611260219';
-import { bukaDB } from '../js/db.js?v=202611260219';
-import { buatLayanan } from '../js/layanan.js?v=202611260219';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611260219';
-import * as Sosial from './sosial.js?v=202611260219';
-import * as Direktur from './direktur.js?v=202611260219';
-import * as Prog from './progres.js?v=202611260219';
-import * as Game from './game.js?v=202611260219';
-import * as Bayar from './bayar.js?v=202611260219';
-import * as Meja from './meja.js?v=202611260219';
-import * as Karyawan from './karyawan.js?v=202611260219';
-import * as Hadir from './hadir.js?v=202611260219';
-import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611260219';
-import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611260219';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611260236';
+import { bukaDB } from '../js/db.js?v=202611260236';
+import { buatLayanan } from '../js/layanan.js?v=202611260236';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611260236';
+import * as Sosial from './sosial.js?v=202611260236';
+import * as Direktur from './direktur.js?v=202611260236';
+import * as Prog from './progres.js?v=202611260236';
+import * as Game from './game.js?v=202611260236';
+import * as Bayar from './bayar.js?v=202611260236';
+import * as Meja from './meja.js?v=202611260236';
+import * as Karyawan from './karyawan.js?v=202611260236';
+import * as Hadir from './hadir.js?v=202611260236';
+import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611260236';
+import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611260236';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
@@ -862,7 +862,7 @@ let posTerakhir = '', posWaktu = 0;
 function kirimPosisi(t) {
   if (!L || !prof || !prof.tj || K.terkunci || !resmi()) return;
   const p = {
-    n: prof.n, tj: prof.tj, s: prof.tj === 'jodoh' ? (prof.s || '') : '', b: prof.b || '', g: prof.g || '', ig: prof.igSembunyi ? '' : (prof.ig || ''),
+    n: prof.n, tj: prof.tj, s: prof.tj === 'jodoh' ? (prof.s || '') : '', b: prof.b || '', g: prof.g || '', ig: '', // ig, TikTok & nama lengkap tidak dikirim ke publik (ada di profilPribadi)
     l: Prog.lookAman(saya.look), lv: Prog.level(), x: +saya.x.toFixed(2), z: +saya.z.toFixed(2), r: +saya.r.toFixed(2), a: saya.a, mj: saya.meja || '',
   };
   const k = `${p.x},${p.z},${p.r},${p.a},${p.mj}`;
@@ -946,28 +946,34 @@ function formulir(p) {
       <div class="tjPilih" role="radiogroup">
         ${Object.entries(TUJUAN).map(([k, v]) => `<label class="tjKartu" style="--w:${v.warna}"><input type="radio" name="tj" value="${k}" ${k === tj ? 'checked' : ''}><span><b>${v.ikon}</b>${v.nama}</span></label>`).join('')}
       </div>
-      <label for="dN">Nama panggilan *</label>
+      <label for="dN">Nama karakter * <small class="kecil">(tampil di atas karaktermu)</small></label>
       <input id="dN" maxlength="20" placeholder="contoh: Raka" value="${esc(p.n || '')}">
+      <label for="dNl">Nama lengkap * <small class="kecil">(🔒 privat)</small></label>
+      <input id="dNl" maxlength="60" placeholder="sesuai KTP" autocomplete="name" value="${esc(p.nl || '')}">
       <div class="dua">
-        <div><label for="dU">Umur *</label><input id="dU" type="number" inputmode="numeric" min="${UM.umurMin || 13}" max="99" value="${p.umur || ''}"></div>
+        <div><label for="dU">Umur *</label><input id="dU" type="number" inputmode="numeric" min="18" max="99" value="${p.umur || ''}"></div>
         <div><label for="dG">Jenis kelamin</label><select id="dG">${Object.entries(GENDER).map(([k, v]) => `<option value="${k}" ${k === (p.g || '') ? 'selected' : ''}>${v}</option>`).join('')}</select></div>
         <div><label for="dK">Kota *</label><input id="dK" maxlength="40" placeholder="contoh: Bandung" value="${esc(p.kota || '')}"></div>
         <div id="bS"><label for="dS">Status hati</label><select id="dS">${STATUS.map(x => `<option ${x === p.s ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></div>
       </div>
       ${WF ? `<div class="syaratFollow"><b>📌 Syarat di-ACC Direktur</b>
-        <ol><li>Follow ${akunSosial()}</li><li>Komen <b>"${esc(WF.komen || 'DAFTAR')}"</b> di postingan terbaru</li><li>Tulis username Instagram-mu di bawah (Direktur mengecek follow & komenmu dari sini)</li></ol>
+        <ol><li>Follow ${akunSosial()}</li><li>Komen <b>"${esc(WF.komen || 'DAFTAR')} ${esc(kodeTamu(L.uid))}"</b> di postingan terbaru, <b>dari akun yang kamu tulis di bawah</b></li><li>Kode <b>${esc(kodeTamu(L.uid))}</b> itu khusus untukmu: Direktur mencocokkan komen tersebut untuk memastikan akun Instagram/TikTok-nya benar milikmu</li></ol>
         <div class="baris">${CFG.instagram ? `<a class="btn putih mini" href="https://www.instagram.com/${encodeURIComponent(CFG.instagram)}/" target="_blank" rel="noopener">📷 Buka Instagram</a>` : ''}${CFG.tiktok ? `<a class="btn putih mini" href="https://www.tiktok.com/@${encodeURIComponent(CFG.tiktok)}" target="_blank" rel="noopener">🎵 Buka TikTok</a>` : ''}</div></div>` : ''}
-      <label for="dI">Username Instagram${WF ? ' *' : ' (opsional, membantu verifikasi)'}</label>
-      <input id="dI" maxlength="31" placeholder="@username" autocapitalize="none" autocorrect="off" value="${esc(p.ig ? '@' + p.ig : '')}">
+      <div class="dua">
+        <div><label for="dI">Username Instagram *</label><input id="dI" maxlength="31" placeholder="@username" autocapitalize="none" autocorrect="off" value="${esc(p.ig ? '@' + p.ig : '')}"></div>
+        <div><label for="dT">Username TikTok</label><input id="dT" maxlength="25" placeholder="@username (opsional)" autocapitalize="none" autocorrect="off" value="${esc(p.tt ? '@' + p.tt : '')}"></div>
+      </div>
+      <p class="kecil">🔒 Nama lengkap, Instagram & TikTok hanya bisa dilihat Direktur dan tamu VVIP. Tamu lain harus minta izinmu dulu.</p>
       <label for="dB">Tentang aku *</label>
       <textarea id="dB" maxlength="100" rows="2" placeholder="contoh: suka kopi, musik indie, dan jalan sore">${esc(p.b || '')}</textarea>
       <label for="dA2">Kenapa ingin bergabung? *</label>
       <textarea id="dA2" maxlength="200" rows="2" placeholder="contoh: pengen nambah teman ngobrol di malam hari">${esc(p.alasan || '')}</textarea>
-      ${WF ? `<label class="cek"><input type="checkbox" id="dF"> Aku sudah follow ${akunSosial()} dan komen "${esc(WF.komen || 'DAFTAR')}"</label>` : ''}
+      ${WF ? `<label class="cek"><input type="checkbox" id="dF"> Aku sudah follow ${akunSosial()} dan komen "${esc(WF.komen || 'DAFTAR')} ${esc(kodeTamu(L.uid))}"</label>` : ''}
+      <label class="cek"><input type="checkbox" id="d18"> Aku berusia <b>18 tahun ke atas</b></label>
       <label class="cek"><input type="checkbox" id="dA"> Data di atas benar, dan aku akan sopan, tidak melecehkan, tidak spam, serta tidak menyebar data pribadi orang lain</label>
       <p class="err" id="dE"></p>
       <div class="baris"><button class="btn" type="submit">Kirim pendaftaran</button><button class="btn putih" type="button" id="dL">Lihat-lihat dulu</button></div>
-      <p class="kecil">* wajib. Umur minimal ${UM.umurMin || 13} tahun; khusus Cari Jodoh minimal ${UM.umurMinJodoh || 18} tahun.</p>
+      <p class="kecil">* wajib. Khusus <b>18 tahun ke atas</b>.</p>
     </form>`, {
     pasang(isi) {
       isi.querySelector('#dL').onclick = tutupKartu;
@@ -977,17 +983,21 @@ function formulir(p) {
         e.preventDefault();
         const E = isi.querySelector('#dE'), v = id => isi.querySelector(id).value;
         const tjBaru = isi.querySelector('input[name=tj]:checked')?.value;
-        const d = { n: bersih(v('#dN'), 20), tj: tjBaru, umur: Math.round(+v('#dU')), g: v('#dG'), kota: bersih(v('#dK'), 40), s: tjBaru === 'jodoh' ? v('#dS') : '', ig: igBersih(v('#dI')), b: bersih(v('#dB'), 100), alasan: bersih(v('#dA2'), 200) };
+        const igMentah = v('#dI').trim().replace(/^@+/, ''), ttMentah = v('#dT').trim().replace(/^@+/, '');
+        const d = { n: bersih(v('#dN'), 20), nl: bersih(v('#dNl'), 60), tj: tjBaru, umur: Math.round(+v('#dU')), g: v('#dG'), kota: bersih(v('#dK'), 40), s: tjBaru === 'jodoh' ? v('#dS') : '', ig: igBersih(igMentah), tt: ttBersih(ttMentah), b: bersih(v('#dB'), 100), alasan: bersih(v('#dA2'), 200) };
         const salah = !TUJUAN[d.tj] ? 'Pilih tujuan datang dulu.'
-          : d.n.length < 2 ? 'Nama panggilan minimal 2 huruf.'
-          : !(d.umur >= (UM.umurMin || 13) && d.umur <= 99) ? `Umur minimal ${UM.umurMin || 13} tahun.`
-          : d.tj === 'jodoh' && d.umur < (UM.umurMinJodoh || 18) ? `Cari Jodoh khusus ${UM.umurMinJodoh || 18} tahun ke atas. Kamu bisa pilih Cari Teman atau Mau Curhat.`
+          : d.n.length < 2 ? 'Nama karakter minimal 2 huruf.'
+          : d.nl.length < 3 || !/[a-zA-Z]/.test(d.nl) ? 'Tulis nama lengkapmu (minimal 3 huruf).'
+          : !(d.umur >= 18 && d.umur <= 99) ? 'Maaf, kantor ini khusus 18 tahun ke atas.'
+          : !isi.querySelector('#d18').checked ? 'Centang pernyataan umur 18 tahun ke atas.'
           : d.kota.length < 2 ? 'Isi kota tempat tinggalmu.'
           : d.b.length < 10 ? 'Ceritakan sedikit tentang dirimu (minimal 10 huruf).'
           : d.alasan.length < 10 ? 'Tulis alasan bergabung (minimal 10 huruf).'
-          : WF && d.ig.length < 2 ? 'Tulis username Instagram-mu supaya Direktur bisa mengecek follow & komenmu.'
+          : !igMentah ? 'Tulis username Instagram-mu.'
+          : igMentah.toLowerCase() !== d.ig || !igSah(d.ig) ? 'Username Instagram tidak valid. Hanya huruf, angka, titik & garis bawah (maks. 30), tanpa titik di awal/akhir atau titik ganda.'
+          : ttMentah && (ttMentah.toLowerCase() !== d.tt || !ttSah(d.tt)) ? 'Username TikTok tidak valid. Hanya huruf, angka, titik & garis bawah (2–24), tidak diakhiri titik.'
           : WF && !isi.querySelector('#dF').checked ? `Follow ${CFG.instagram ? '@' + CFG.instagram : 'akun kami'} & komen "${WF.komen || 'DAFTAR'}" dulu, lalu centang ya.`
-          : [d.n, d.ig, d.b, d.alasan, d.kota].some(kasar) ? 'Pakai kata-kata yang lebih sopan ya.'
+          : [d.n, d.nl, d.ig, d.tt, d.b, d.alasan, d.kota].some(kasar) ? 'Pakai kata-kata yang lebih sopan ya.'
           : !isi.querySelector('#dA').checked ? 'Centang pernyataan di bawah dulu ya.' : '';
         if (salah) { E.textContent = salah; return; }
         E.textContent = 'Mengirim…';
@@ -997,6 +1007,7 @@ function formulir(p) {
           if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission().catch(() => {});
           await L.daftarAkses(d);
           prof = { ...(prof || {}), ...d, look: saya.look }; simpanProfil(prof);
+          L.simpanPribadi(d).catch(() => {});
           perbaruiTombolProfil();
           tutupKartu();
           bukaKartu(`<div class="match"><div class="hatiBesar">📨</div><h2>Pendaftaran terkirim!</h2><p>Direktur akan meninjau formulirmu. Kamu akan dapat kabar di sini begitu disetujui. Sambil menunggu, silakan jalan-jalan melihat kantor.</p><div class="baris"><button class="btn" type="button" id="kO">Oke</button></div></div>`, { pasang(i) { i.querySelector('#kO').onclick = tutupKartu; } });
@@ -1017,20 +1028,25 @@ function bukaUbahData() {
         ${p.tj === 'jodoh' ? `<div><label for="uS">Status hati</label><select id="uS">${STATUS.map(x => `<option ${x === p.s ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></div>` : ''}
       </div>
       <label for="uB">Tentang aku</label><textarea id="uB" maxlength="100" rows="2">${esc(p.b || '')}</textarea>
-      <label for="uI">Username Instagram</label><input id="uI" maxlength="31" value="${esc(p.ig ? '@' + p.ig : '')}" autocapitalize="none">
-      <label class="cek"><input type="checkbox" id="uP" ${p.igSembunyi ? 'checked' : ''}> 🔒 Sembunyikan Instagram-ku dari tamu lain</label>
-      <p class="kecil">Kalau disembunyikan, tamu lain harus <b>minta izin</b> dulu untuk melihatnya. Direktur dan tamu VVIP tetap bisa melihat.</p>
+      <label for="uNl">Nama lengkap 🔒</label><input id="uNl" maxlength="60" value="${esc(p.nl || '')}" autocomplete="name">
+      <div class="dua"><div><label for="uI">Instagram 🔒</label><input id="uI" maxlength="31" value="${esc(p.ig ? '@' + p.ig : '')}" autocapitalize="none"></div>
+      <div><label for="uT">TikTok 🔒</label><input id="uT" maxlength="25" value="${esc(p.tt ? '@' + p.tt : '')}" autocapitalize="none" placeholder="opsional"></div></div>
+      <p class="kecil">🔒 Nama lengkap, Instagram & TikTok hanya terlihat oleh Direktur dan tamu VVIP. Tamu lain harus <b>minta izin</b> dulu, dan kamu bisa mencabut izinnya kapan saja.</p>
       <p class="err" id="uE"></p>
       <div class="baris"><button class="btn" type="submit">Simpan</button></div>
     </form>`, {
     pasang(isi) {
       isi.querySelector('#fU').onsubmit = e => {
         e.preventDefault();
-        const b = bersih(isi.querySelector('#uB').value, 100), ig = igBersih(isi.querySelector('#uI').value);
-        if (kasar(b) || kasar(ig)) { isi.querySelector('#uE').textContent = 'Pakai kata-kata yang lebih sopan ya.'; return; }
-        prof = { ...prof, b, ig, g: isi.querySelector('#uG').value, s: isi.querySelector('#uS')?.value || prof.s, igSembunyi: isi.querySelector('#uP').checked };
-        simpanProfil(prof); posWaktu = 0; tutupKartu(); toast(prof.igSembunyi ? 'Data tersimpan ✔ Instagram-mu sekarang disembunyikan 🔒' : 'Data tersimpan ✔');
-        L.simpanPrivasiIg(prof.ig, prof.igSembunyi).catch(e => console.warn(e));
+        const b = bersih(isi.querySelector('#uB').value, 100), igM = isi.querySelector('#uI').value.trim().replace(/^@+/, ''), ttM = isi.querySelector('#uT').value.trim().replace(/^@+/, '');
+        const ig = igBersih(igM), tt = ttBersih(ttM), nl = bersih(isi.querySelector('#uNl').value, 60);
+        if (!ig || ig !== igM.toLowerCase() || !igSah(ig)) { isi.querySelector('#uE').textContent = 'Username Instagram tidak valid.'; return; }
+        if (ttM && (tt !== ttM.toLowerCase() || !ttSah(tt))) { isi.querySelector('#uE').textContent = 'Username TikTok tidak valid.'; return; }
+        if (nl.length < 3) { isi.querySelector('#uE').textContent = 'Tulis nama lengkapmu.'; return; }
+        if (kasar(b) || kasar(ig) || kasar(tt) || kasar(nl)) { isi.querySelector('#uE').textContent = 'Pakai kata-kata yang lebih sopan ya.'; return; }
+        prof = { ...prof, b, ig, tt, nl, g: isi.querySelector('#uG').value, s: isi.querySelector('#uS')?.value || prof.s };
+        simpanProfil(prof); posWaktu = 0; tutupKartu(); toast('Data tersimpan ✔');
+        L.simpanPribadi(prof, true).catch(e => console.warn(e));
       };
     },
   });
@@ -1055,7 +1071,7 @@ function terapkanAkses() {
     Prog.lapor('tur_daftar');
     if (dir) Hadir.direkturMasuk();
     // simpan pengaturan privasi Instagram sekali per sesi (supaya data ig ada di profilPribadi)
-    if (!terapkanAkses.privasi) { terapkanAkses.privasi = true; L.simpanPrivasiIg(prof?.ig || '', !!prof?.igSembunyi).catch(() => {}); }
+    if (!terapkanAkses.privasi) { terapkanAkses.privasi = true; L.simpanPribadi(prof || {}).catch(() => {}); }
   }
   K._resmiLama = !!(a || dir);
   $('chatI').placeholder = resmi() ? 'Tulis pesan… (Enter)' : '👀 Daftar dulu untuk ikut ngobrol';

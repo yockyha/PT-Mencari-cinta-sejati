@@ -2,13 +2,13 @@
 //  Interaksi antar-tamu: profil, ajak ngobrol (pribadi), suka & match,
 //  papan curhat, daftar orang di kantor, lapor & sembunyikan.
 // =====================================================================
-import { TUJUAN, GENDER, LS, bersih, esc, fmt, kasar, igBersih } from '../js/common.js?v=202611260219';
-import { TS } from '../js/db.js?v=202611260219';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611260219';
-import * as Prog from './progres.js?v=202611260219';
-import * as Suara from './suara.js?v=202611260219';
-import * as Grup from './grup.js?v=202611260219';
-import * as Stiker from './stiker.js?v=202611260219';
+import { TUJUAN, GENDER, LS, bersih, esc, fmt, kasar, igBersih } from '../js/common.js?v=202611260236';
+import { TS } from '../js/db.js?v=202611260236';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611260236';
+import * as Prog from './progres.js?v=202611260236';
+import * as Suara from './suara.js?v=202611260236';
+import * as Grup from './grup.js?v=202611260236';
+import * as Stiker from './stiker.js?v=202611260236';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const siap = () => { if (!K.resmi()) { toast('👀 Kamu masih pengunjung. Daftar dulu untuk berinteraksi.'); K.bukaDaftar(); return false; } if (K.terkunci) { toast('Kamu belum bisa berinteraksi sekarang.'); return false; } return true; };
@@ -102,7 +102,7 @@ export function bukaProfil(o) {
   Prog.lapor('tur_profil');
   bukaKartu(`<h2>${peran === 'direktur' ? '👑 ' : peran === 'staf' ? '🛡 ' : ''}${esc(nama)}</h2>
     <p>${pillTujuan(o.tj)} ${peran ? `<span class="pillTj" style="--w:${peran === 'direktur' ? '#c8901a' : '#3a6ea5'}">${peran === 'direktur' ? 'Direktur Utama' : (o.jabatan || 'Staf kantor')}</span>` : ''}</p>
-    <p>${o.gd ? `${GENDER[o.gd]}<br>` : ''}${o.s && o.tj === 'jodoh' ? `💗 Status: <b>${esc(o.s)}</b><br>` : ''}${o.mj ? `🪑 Lagi nongkrong di meja <b>${esc(o.mj)}</b><br>` : ''}${o.b ? `“${esc(o.b)}”<br>` : ''}<span id="pIg">${o.ig ? tautanIg(o.ig) : ''}</span>
+    <p>${o.gd ? `${GENDER[o.gd]}<br>` : ''}${o.s && o.tj === 'jodoh' ? `💗 Status: <b>${esc(o.s)}</b><br>` : ''}${o.mj ? `🪑 Lagi nongkrong di meja <b>${esc(o.mj)}</b><br>` : ''}${o.b ? `“${esc(o.b)}”<br>` : ''}<span id="pIg"></span>
     ${o.npc ? '<br><span class="kecil">Tamu NPC (mode lokal)</span>' : ''}</p>
     <div class="baris">
       <button class="btn putih" type="button" id="pS">👋 Sapa</button>
@@ -142,7 +142,7 @@ export function bukaProfil(o) {
           else if (o.npc) setTimeout(() => botBalas(L.ruang(L.uid, uid), uid, 'match'), 1200);
         } catch (e) { toast('Gagal. Coba lagi.'); }
       };
-      if (!o.npc && !o.ig) muatIg(o, isi.querySelector('#pIg'));
+      if (!o.npc) muatIg(o, isi.querySelector('#pIg'));
       isi.querySelector('#pR').onclick = () => bukaLapor(o);
       isi.querySelector('#pH').onclick = () => {
         K.sembunyi.add(uid); LS.set('sembunyi', [...K.sembunyi]);
@@ -150,26 +150,28 @@ export function bukaProfil(o) {
         K.segarkanOrang(); gambarUndangan(); tutupKartu();
         toast(`${nama} disembunyikan. Chat & ajakannya tidak akan muncul lagi.`, 3200);
       };
-      const pm = isi.querySelector('#pM'); if (pm) pm.onclick = () => import('./direktur.js?v=202611260219').then(D => D.bukaModerasiOrang(o));
+      const pm = isi.querySelector('#pM'); if (pm) pm.onclick = () => import('./direktur.js?v=202611260236').then(D => D.bukaModerasiOrang(o));
     },
   });
 }
 
 // ---------------------------------------------------------------- INSTAGRAM & IZIN
 const tautanIg = ig => `📷 <a href="https://www.instagram.com/${encodeURIComponent(ig)}/" target="_blank" rel="noopener">@${esc(ig)}</a>`;
+const tautanTt = tt => `🎵 <a href="https://www.tiktok.com/@${encodeURIComponent(tt)}" target="_blank" rel="noopener">@${esc(tt)}</a>`;
+// Data pribadi (nama lengkap, Instagram, TikTok): terlihat oleh Direktur, VVIP & yang diizinkan
 async function muatIg(o, el) {
   const L = K.L, uid = o.uid;
-  const priv = await L.db.get('privasi/' + uid).catch(() => null);
-  const hasil = await L.db.get(`profilPribadi/${uid}/ig`).then(v => ({ ok: true, v }), () => ({ ok: false }));
+  const hasil = await L.db.get('profilPribadi/' + uid).then(v => ({ ok: true, v: v || {} }), () => ({ ok: false }));
   if (!el.isConnected) return;
-  const ig = hasil.ok && igBersih(hasil.v || '');
-  if (ig) {
-    const kenapa = priv && priv.ig === 'sembunyi' ? (K.peran[L.uid] === 'direktur' ? ' <small>(disembunyikan · terlihat karena kamu Direktur)</small>' : Prog.vvipSaya() ? ' <small>(disembunyikan · terlihat karena kamu VVIP 👑)</small>' : ' <small>(kamu diizinkan 🔓)</small>') : '';
-    el.innerHTML = tautanIg(ig) + kenapa; return;
+  if (hasil.ok) {
+    const v = hasil.v, ig = igBersih(v.ig || ''), tt = String(v.tt || '').replace(/[^a-z0-9._]/g, ''), nl = bersih(v.nl || '', 60);
+    if (!ig && !tt && !nl) return;
+    const kenapa = K.peran[L.uid] === 'direktur' ? 'kamu Direktur' : Prog.vvipSaya() ? 'kamu VVIP 👑' : 'kamu diizinkan';
+    el.innerHTML = `<span class="dataPribadi">${nl ? `🪪 ${esc(nl)}<br>` : ''}${ig ? tautanIg(ig) + '<br>' : ''}${tt ? tautanTt(tt) + '<br>' : ''}<small class="kecil">🔓 Data pribadi · terlihat karena ${kenapa}</small></span>`;
+    return;
   }
-  if (hasil.ok || !priv || priv.ig !== 'sembunyi') return; // memang tidak punya ig
   const diminta = (LS.get('mintaIg', {}) || {})[uid];
-  el.innerHTML = `📷 Instagram disembunyikan 🔒 ${diminta ? '<small>· menunggu izin…</small>' : '<button type="button" class="mini putih" id="pIgM">Minta izin lihat</button>'}<br><small class="kecil">VVIP 👑 bisa langsung melihat.</small>`;
+  el.innerHTML = `🔒 Nama lengkap & akun sosmed disembunyikan ${diminta ? '<small>· menunggu izin…</small>' : '<button type="button" class="mini putih" id="pIgM">Minta izin lihat</button>'}<br><small class="kecil">Direktur & VVIP 👑 bisa langsung melihat.</small>`;
   const b = el.querySelector('#pIgM');
   if (b) b.onclick = async () => {
     if (!siap()) return;
@@ -190,11 +192,11 @@ function gambarMintaIg() {
   for (const [u, v] of l) {
     if (gambarMintaIg.lihat?.[u] === v.t) continue;
     (gambarMintaIg.lihat ||= {})[u] = v.t;
-    if (!K.L || $('kartu').hidden === false) { toast(`📷 ${bersih(v.n, 30)} minta izin melihat Instagram-mu. Buka profilmu untuk menjawab.`, 4500); continue; }
-    bukaKartu(`<h2>📷 Minta izin</h2><p><b>${esc(bersih(v.n, 30))}</b> ingin melihat Instagram-mu yang kamu sembunyikan.</p>
+    if (!K.L || $('kartu').hidden === false) { toast(`🔒 ${bersih(v.n, 30)} minta izin melihat data pribadimu. Buka profilmu untuk menjawab.`, 4500); continue; }
+    bukaKartu(`<h2>🔒 Minta izin</h2><p><b>${esc(bersih(v.n, 30))}</b> ingin melihat <b>nama lengkap, Instagram & TikTok</b>-mu.</p>
       <div class="baris"><button class="btn" type="button" id="iY">Izinkan</button><button class="btn putih" type="button" id="iT">Tolak</button></div>`, {
       pasang(i) {
-        i.querySelector('#iY').onclick = () => L.izinkanIg(u, true).then(() => { tutupKartu(); toast(`${bersih(v.n, 30)} sekarang bisa melihat Instagram-mu 🔓`); });
+        i.querySelector('#iY').onclick = () => L.izinkanIg(u, true).then(() => { tutupKartu(); toast(`${bersih(v.n, 30)} sekarang bisa melihat data pribadimu 🔓`); });
         i.querySelector('#iT').onclick = () => L.izinkanIg(u, false).then(() => { tutupKartu(); toast('Permintaan ditolak.'); });
       },
     });
@@ -210,7 +212,7 @@ function pantauIzin() {
       if (v !== true) return;
       const mm = LS.get('mintaIg', {}) || {}; delete mm[u]; LS.set('mintaIg', mm);
       const o = orangDariUid(u), n = o?.nama || (K.tamu.find(x => x.uid === u) || {}).n || 'Seseorang';
-      toast(`🔓 ${n} mengizinkanmu melihat Instagram-nya`, 4500); tulisLog('', `🔓 ${n} mengizinkanmu melihat Instagram-nya`, 'sys');
+      toast(`🔓 ${n} mengizinkanmu melihat data pribadinya`, 4500); tulisLog('', `🔓 ${n} mengizinkanmu melihat data pribadinya`, 'sys');
       pantauIzinAktif[u](); delete pantauIzinAktif[u];
     });
   }
@@ -242,7 +244,7 @@ export function bukaProfilSaya() {
     ${p.b ? `<p>“${esc(p.b)}”</p>` : ''}
     <p>⭐ Level <b>${Prog.level()}</b> · ${fmt(Prog.totalExp())} EXP ${Prog.vvipSaya() ? '· <span class="pillTj" style="--w:#7b3ec9">👑 VVIP</span>' : Prog.vipSaya() ? '· <span class="pillTj" style="--w:#b8860b">💎 VIP</span>' : ''} <button type="button" class="mini" id="mVip">${Prog.vipSaya() ? 'Langganan' : '💎 Jadi VIP / VVIP'}</button></p>
     ${p.tj === 'jodoh' ? `<p>💘 <b>${fmt(K.disukai || 0)}</b> orang diam-diam menyukaimu.</p><div id="mPenyuka">${Prog.vipSaya() ? '<p class="kecil">Memuat…</p>' : '<p class="kecil">Mau tahu siapa saja? <button type="button" class="mini" id="mV">💎 Lihat dengan VIP</button></p>'}</div>` : ''}
-    ${p.igSembunyi ? '<div id="mIzin"><p class="kecil">🔒 Instagram-mu disembunyikan.</p></div>' : ''}
+    <div id="mIzin"><p class="kecil">🔒 Data pribadimu (nama lengkap, Instagram, TikTok) hanya terlihat Direktur & VVIP.</p></div>
     <div class="baris"><button class="btn" type="button" id="mU">Ubah data</button><button class="btn putih" type="button" id="mO">💬 Obrolan</button><a class="btn putih" href="../idcard/index.html">Kartu Tamu</a></div>
     ${K.sembunyi.size ? `<p class="kecil tautan">${K.sembunyi.size} orang kamu sembunyikan. <button type="button" id="mS">Tampilkan lagi</button></p>` : ''}`, {
     pasang(isi) {
@@ -251,8 +253,8 @@ export function bukaProfilSaya() {
       const iz = isi.querySelector('#mIzin');
       if (iz) L.db.get('izinIg/' + L.uid).then(o => {
         const u = Object.keys(o || {});
-        if (!u.length) { iz.innerHTML = '<p class="kecil">🔒 Instagram-mu disembunyikan. Belum ada yang kamu izinkan melihatnya.</p>'; return; }
-        iz.innerHTML = `<p class="kecil">🔓 Yang boleh melihat Instagram-mu:</p><div class="daftar">${u.map(x => `<div><span>${esc((K.tamu.find(t => t.uid === x) || {}).n || orangDariUid(x)?.nama || 'Tamu')}</span><button type="button" class="mini merah" data-cabut="${esc(x)}">Cabut</button></div>`).join('')}</div>`;
+        if (!u.length) { iz.innerHTML = '<p class="kecil">🔒 Data pribadimu (nama lengkap, Instagram, TikTok) hanya terlihat Direktur & VVIP. Belum ada tamu lain yang kamu izinkan.</p>'; return; }
+        iz.innerHTML = `<p class="kecil">🔓 Tamu yang boleh melihat data pribadimu:</p><div class="daftar">${u.map(x => `<div><span>${esc((K.tamu.find(t => t.uid === x) || {}).n || orangDariUid(x)?.nama || 'Tamu')}</span><button type="button" class="mini merah" data-cabut="${esc(x)}">Cabut</button></div>`).join('')}</div>`;
         iz.querySelectorAll('[data-cabut]').forEach(b => b.onclick = () => L.izinkanIg(b.dataset.cabut, false).then(() => { b.closest('div').remove(); toast('Izin dicabut.'); }));
       }).catch(() => {});
       const mv = isi.querySelector('#mV'); if (mv) mv.onclick = () => Prog.bukaHub('toko');

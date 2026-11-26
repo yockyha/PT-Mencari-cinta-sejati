@@ -3,10 +3,10 @@
 //  arah, acara terjadwal, peringkat, toko (EXP & VIP),
 //  dan notifikasi dari Direktur.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611260219';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611260219';
-import * as Bayar from './bayar.js?v=202611260219';
-import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611260219';
+import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611260236';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611260236';
+import * as Bayar from './bayar.js?v=202611260236';
+import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611260236';
 
 // ---------------------------------------------------------------- DATA TUGAS
 const RUANG_TUJUAN = { jodoh: 'kafe', teman: 'meja', curhat: 'taman' };
@@ -120,8 +120,8 @@ function naikLevel(lv) {
 }
 // Keuntungan tiap tingkat (dipakai toko & kartu perayaan)
 export const MANFAAT = {
-  vip: ['💘 Lihat siapa yang diam-diam menyukaimu', '🍸 Masuk Lounge Eksekutif lewat lift lobi', '👔 Barang emas: Setelan, Sepatu, Mahkota Emas & Halo', '😎 Paket stiker VIP', '👥 Grup obrolan sampai 30 anggota & bikin 5 grup', '💎 Nama & lencana VIP'],
-  vvip: ['✅ Semua keuntungan VIP', '📷 Lihat Instagram tamu walau disembunyikan', '👑 Paket stiker VVIP (termasuk stiker Direktur)', '👥 Grup sampai 100 anggota & bikin 10 grup', '💌 Sapa Direktur tanpa jeda 5 menit', '✨ Cincin ungu di kaki, nama VVIP & paling atas di daftar online'],
+  vip: ['💘 Lihat siapa yang diam-diam menyukaimu', '🍸 Masuk Lounge Eksekutif lewat lift lobi', '👔 Barang emas: Setelan, Sepatu, Mahkota Emas & Halo', '😎 Paket stiker VIP', '👥 Bikin grup obrolan (sampai 30 anggota, 5 grup)', '💎 Nama & lencana VIP'],
+  vvip: ['✅ Semua keuntungan VIP', '🪪 Lihat nama lengkap, Instagram & TikTok tamu tanpa minta izin', '👑 Paket stiker VVIP (termasuk stiker Direktur)', '👥 Grup sampai 100 anggota & bikin 10 grup', '💌 Sapa Direktur tanpa jeda 5 menit', '✨ Cincin ungu di kaki, nama VVIP & paling atas di daftar online'],
 };
 function rayakanVip(t = 'vip') {
   const nama = t === 'vvip' ? 'VVIP 👑' : 'VIP 💎';

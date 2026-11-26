@@ -1,10 +1,10 @@
 // Utilitas bersama untuk semua halaman.
-import PAKET from '../paket.js?v=202611260219';
-import { PAKAIAN, SLOT } from './pakaian.js?v=202611260219';
+import PAKET from '../paket.js?v=202611260236';
+import { PAKAIAN, SLOT } from './pakaian.js?v=202611260236';
 export const CFG = Object.assign({
   namaPT: 'PT Mencari Cinta Sejati', singkatan: 'PT MCS', instagram: '', instagramNama: '', tiktok: '', wajibFollow: null,
   kuota: 10000, firebase: null, mading: [], domainLogin: 'ptmcs.id', direkturDemo: null,
-  pendaftaran: { umurMin: 13, umurMinJodoh: 18 }, toko: { paket: [] },
+  pendaftaran: { umurMin: 18, umurMinJodoh: 18 }, toko: { paket: [] },
   pembayaran: { qris: '', bank: [], kodeUnik: true }, diamond: { paket: [] }, donasi: { min: 5000, saran: [] },
 }, window.PT_CONFIG || {});
 // Harga paket selalu dari paket.js (sama dengan yang dipakai server pembayaran)
@@ -51,6 +51,11 @@ export function sensor(s) {
 }
 
 export const bersih = (s, max) => (s || '').replace(/[\u0000-\u001f<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, max);
+// Format username: Instagram 1–30 (huruf kecil, angka, titik, garis bawah; tanpa titik di awal/akhir & titik ganda),
+// TikTok 2–24 (huruf, angka, titik, garis bawah; tidak diakhiri titik)
+export const igSah = u => /^(?!\.)(?!.*\.\.)(?!.*\.$)[a-z0-9._]{1,30}$/.test(u || '') && !/^[0-9._]+$/.test(u);
+export const ttBersih = s => (s || '').trim().replace(/^@+/, '').toLowerCase().replace(/[^a-z0-9._]/g, '').slice(0, 24);
+export const ttSah = u => /^(?!.*\.$)[a-z0-9._]{2,24}$/.test(u || '') && !/^[0-9._]+$/.test(u);
 export const igBersih = s => (s || '').trim().replace(/^@+/, '').toLowerCase().replace(/[^a-z0-9._]/g, '').slice(0, 30);
 
 export function hash(s) {

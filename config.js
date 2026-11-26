@@ -31,7 +31,7 @@ window.PT_CONFIG = {
 
   // Pendaftaran tamu
   pendaftaran: {
-    umurMin: 13,        // umur minimal untuk Cari Teman / Mau Curhat
+    umurMin: 18,        // umur minimal semua tamu (dijaga juga oleh aturan Firebase)
     umurMinJodoh: 18,   // umur minimal untuk Cari Jodoh
   },
 
