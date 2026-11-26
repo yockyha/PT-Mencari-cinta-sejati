@@ -55,8 +55,8 @@ SUB = 130  # di atas: menutupi bar status aplikasi, bukan kartu fiturnya
 # 0 hook: angka berhitung
 g('video', 'klip/drone.mp4', 0, 0, 1, gelap=0.45, kecepatan=0.9, nama='Drone kantor (redup)')
 e('hitung', 0, 0, 1, dict(dari=0, ke=ANGGOTA, detik=round(DURASI[0] * 0.75, 2), atas='belum SEHARI 😳', label='orang join 💘', y=420), nama='Angka anggota')
-t('sub', 'Gila… belum *sehari,*', 0, 0, 0.45, y=1330)
-t('sub', 'yang join udah *hampir 150!*', 0, 0.45, 1, y=1330)
+t('sub', 'Gila… belum *sehari,*', 0, 0, 0.44, y=1330)
+t('sub', 'yang join udah *hampir 150!*', 0, 0.44, 1, y=1330)
 for i in range(8):
     sfx(f'Tik hitung {i + 1}', 'pop', f(0.15 + i * DURASI[0] * 0.75 / 8), 8, 0.18)
 sfx('Ding angka', 'levelup', f(0.15 + DURASI[0] * 0.75), 33, 0.3)
@@ -70,15 +70,15 @@ sfx('Cap antre', 'cap', waktu(1, 0.05, 1)[0], 18, 0.4)
 # 2 pertanyaan
 g('foto', 'foto/meja.png', 2, 0, 1, zoom=1.1, nama='Kantor dari atas')
 t('judul', 'Emang di dalem', 2, 0.02, 1, kecil='ngapain aja? 🤔', y=520)
-t('sub', 'Nih, yang *baru-baru!* 👇', 2, 0.45, 1, y=1330)
+t('sub', 'Nih, yang *baru-baru!* 👇', 2, 0.6, 1, y=1330)
 sfx('Whoosh judul', 'whoosh', det(2, 0) - 3, 18, 0.3)
 
 # 3 speed dating
 klip('klip/sd.mp4', 3, 0, 1, 6.9, trim=0.2, nama='Speed dating')
 chip('💘 SPEED DATING', 3)
 t('sub', 'Ikut *speed dating:* dipasangin acak,', 3, 0, 0.4, y=SUB)
-t('sub', 'ngobrol *3 menit,*', 3, 0.4, 0.7, y=SUB)
-t('sub', 'terus pilih… *lanjut* atau *skip?*', 3, 0.7, 1, y=SUB)
+t('sub', 'ngobrol *3 menit,*', 3, 0.4, 0.62, y=SUB)
+t('sub', 'terus pilih… *lanjut* atau *skip?*', 3, 0.62, 1, y=SUB)
 sfx('Timer habis', 'notif', det(3, DURASI[3] * 0.78), 30, 0.25)
 
 # 4 menfess
@@ -103,8 +103,8 @@ t('sub', 'sampai *lomba makan kerupuk!*', 6, 0.5, 1, y=SUB)
 # 7 Amplop Cinta
 klip('klip/amplop.mp4', 7, 0, 1, 4.2, trim=0.3, nama='Amplop Cinta')
 chip('🎁 AMPLOP CINTA', 7)
-t('sub', 'Buka *Amplop Cinta,*', 7, 0, 0.45, y=SUB)
-t('sub', 'siapa tau dapet *hadiah langka!* ✨', 7, 0.45, 1, y=SUB)
+t('sub', 'Buka *Amplop Cinta,*', 7, 0, 0.41, y=SUB)
+t('sub', 'siapa tau dapet *hadiah langka!* ✨', 7, 0.41, 1, y=SUB)
 sfx('Hadiah', 'levelup', det(7, DURASI[7] * 0.5), 33, 0.3)
 
 # 8 Ruang Direktur
@@ -140,8 +140,8 @@ t('stiker', 'JOMBLO ALERT 🚨', 11, 0.02, 0.53, warna='#ff4f7b', y=240)
 t('sub', '*Tag temen* kalian yang', 11, 0, 0.25, y=470)
 t('sub', 'udah *kelamaan jomblo!* 😭', 11, 0.25, 0.53, y=470)
 t('stiker', 'KOMEN YUK 👇', 11, 0.53, 1, warna='#ffd23f', y=240)
-t('sub', 'Terus komen, mau kita', 11, 0.53, 0.8, y=470)
-t('sub', 'bahas *apa lagi?*', 11, 0.8, 1, y=470)
+t('sub', 'Terus komen, mau kita', 11, 0.53, 0.78, y=470)
+t('sub', 'bahas *apa lagi?*', 11, 0.78, 1, y=470)
 sfx('Geser komentar', 'geser', det(11, 0), 18, 0.8); sfx('Pop stiker', 'pop', det(11, 0.1), 15, 0.35)
 kirim = D8 * 0.08 + len('@temenku_jomblo sini 😭') / 9
 sfx('Ketik tag', 'ketik', det(11, D8 * 0.08), 40, 1.0); sfx('Ketuk kirim', 'ketuk', det(11, kirim + 0.2), 12, 0.45); sfx('Pop terkirim', 'pop', det(11, kirim + 0.35), 15, 0.3)
