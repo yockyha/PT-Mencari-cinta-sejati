@@ -5,7 +5,7 @@
 //  makan, melambai, ngetik).
 // =====================================================================
 import * as THREE from 'three';
-import { BARANG, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2 } from '../js/pakaian.js?v=202611252330';
+import { BARANG, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2 } from '../js/pakaian.js?v=202611260100';
 
 const GEO = new THREE.BoxGeometry(1, 1, 1);
 const _mat = {};
@@ -165,6 +165,8 @@ export function buatKarakter(look, { peran = 'tamu', bawa = '' } = {}) {
     part(0.04, 0.3, 0.02, -0.09, 1.3, 0.172, M('#3a6ea5')); part(0.04, 0.3, 0.02, 0.09, 1.3, 0.172, M('#3a6ea5'));
     part(0.17, 0.21, 0.03, 0, 1.1, 0.178, putih); part(0.17, 0.06, 0.035, 0, 1.18, 0.18, M('#3a6ea5')); part(0.07, 0.07, 0.035, 0, 1.08, 0.181, M('#f6d2b8'));
   } else if (peran === 'direktur') {
+    const cincin = new THREE.Mesh(new THREE.RingGeometry(0.5, 0.72, 32), new THREE.MeshBasicMaterial({ color: '#ffd23f', transparent: true, opacity: 0.75, side: THREE.DoubleSide, depthWrite: false }));
+    cincin.rotation.x = -Math.PI / 2; cincin.position.y = 0.03; g.add(cincin);
     const h = hatiKecil(0.04, '#ffd23f'); h.position.set(0.17, 1.32, depan + 0.02); tubuh.add(h);
   } else if (peran === 'tamu') {
     part(0.13, 0.09, 0.02, -0.15, 1.3, depan + 0.012, putih); part(0.13, 0.03, 0.025, -0.15, 1.33, depan + 0.014, M('#ff4f7b'));

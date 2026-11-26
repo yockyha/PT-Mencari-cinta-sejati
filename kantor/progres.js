@@ -3,10 +3,10 @@
 //  arah, acara terjadwal, peringkat, toko (EXP & Kartu Eksekutif),
 //  dan notifikasi dari Direktur.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611252330';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611252330';
-import * as Bayar from './bayar.js?v=202611252330';
-import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611252330';
+import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611260100';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611260100';
+import * as Bayar from './bayar.js?v=202611260100';
+import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611260100';
 
 // ---------------------------------------------------------------- DATA TUGAS
 const RUANG_TUJUAN = { jodoh: 'kafe', teman: 'meja', curhat: 'taman' };
@@ -81,7 +81,7 @@ export function mulai() {
     for (const [id, n] of Object.entries(v || {})) {
       if (!n) continue;
       tulisLog('', '📬 ' + bersih(n.m, 200), 'sys');
-      bukaKartu(`<h2>📬 Pesan dari Direktur</h2><p>${esc(bersih(n.m, 200))}</p><div class="baris"><button class="btn" type="button" id="nOk">Oke</button></div>`, { pasang(i) { i.querySelector('#nOk').onclick = tutupKartu; } });
+      tampilNotif(n);
       L.hapusNotif(id);
     }
   });
@@ -154,6 +154,26 @@ export function lapor(id, n = 1) {
   if (sudah(k)) return;
   if (h.target) { const kh = 'hit_' + k; const c = (LS.get(kh, 0) || 0) + n; LS.set(kh, c); if (c < h.target) return; }
   menunggu.add(k); tambah(h.exp, k, '✅ ' + h.nama); segarArah();
+}
+
+// Kartu notifikasi sesuai jenisnya; juga notifikasi sistem HP/komputer bila tab sedang di belakang
+function tampilNotif(n) {
+  const m = esc(bersih(n.m, 200));
+  if (document.hidden && 'Notification' in window && Notification.permission === 'granted') {
+    try { new Notification(n.j === 'acc' ? '🎉 Kamu di-ACC Direktur!' : n.j === 'balasSapa' ? '👑 Direktur membalas sapaanmu' : '📬 Pesan dari Direktur', { body: bersih(n.m, 200), icon: '../favicon.svg' }); } catch (e) {}
+  }
+  if (n.j === 'acc') {
+    const tj = K.prof && K.prof.tj, ke = RUANG_TUJUAN[tj];
+    K.efekLokal && K.efekLokal('kembangapi');
+    return bukaKartu(`<div class="match"><div class="hatiBesar">🎉</div><h2>Kamu di-ACC Direktur!</h2><p>${m}</p>
+      <p class="kecil">Sekarang kamu bisa chat, ajak ngobrol pribadi, ikut acara, ganti baju di Ruang Loker, dan kumpulkan EXP.</p>
+      <div class="baris">${ke ? `<button class="btn" type="button" id="nKe">Antar ke ${esc(LOKASI[ke].nama)}</button>` : ''}<button class="btn putih" type="button" id="nOk">Oke</button></div></div>`, {
+      pasang(i) { i.querySelector('#nOk').onclick = tutupKartu; const b = i.querySelector('#nKe'); if (b) b.onclick = () => { tutupKartu(); pergiKe(ke); }; },
+    });
+  }
+  const judul = n.j === 'balasSapa' ? '👑 Direktur membalas sapaanmu' : n.j === 'hadiah' ? '🎁 Hadiah dari Direktur' : '📬 Pesan dari Direktur';
+  if (n.j === 'hadiah' || n.j === 'balasSapa') K.efekLokal && K.efekLokal('hati', 30);
+  bukaKartu(`<h2>${judul}</h2><p style="font-size:18px">${m}</p><div class="baris"><button class="btn" type="button" id="nOk">Oke</button></div>`, { pasang(i) { i.querySelector('#nOk').onclick = tutupKartu; } });
 }
 
 // ---------------------------------------------------------------- POSISI: kunjungan ruangan & absen acara
