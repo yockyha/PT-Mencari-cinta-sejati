@@ -16,14 +16,17 @@ export default {
   toko: [
     // tidak dijual lagi (diganti VIP/VVIP dengan Diamond); tetap ada supaya pesanan lama bisa diproses
     { id: 'vip30', nama: 'Kartu Eksekutif 30 hari', harga: 5000, vipHari: 30, sembunyi: true, ket: 'Lihat siapa yang menyukaimu, Lounge Eksekutif, outfit & nama emas' },
+    // VIP/VVIP dibayar langsung dengan uang (tampil di kartu VIP/VVIP di Toko). Sama dengan 300/650 Diamond.
+    { id: 'vip30d', nama: 'VIP 30 hari', harga: 25000, vipHari: 30, tingkat: 'vip', sembunyi: true },
+    { id: 'vvip30d', nama: 'VVIP 30 hari', harga: 50000, vipHari: 30, tingkat: 'vvip', sembunyi: true },
     { id: 'exp100', nama: '100 EXP', harga: 5000, exp: 100, ket: 'Langsung naik ±2 level untuk pemula' },
     { id: 'exp300', nama: '300 EXP', harga: 12000, exp: 300, ket: 'Buka Jas & Dasi, Gaun Pesta, dan lainnya' },
     { id: 'exp1000', nama: '1.000 EXP', harga: 35000, exp: 1000, ket: 'Buka hampir semua outfit & aksesoris' },
   ],
   // Langganan dibeli dengan Diamond (30 hari). 300 💠 = paket Rp25.000, 650 💠 = paket Rp50.000
   langganan: [
-    { id: 'vip', nama: 'VIP', ikon: '💎', diamond: 300, hari: 30 },
-    { id: 'vvip', nama: 'VVIP', ikon: '👑', diamond: 650, hari: 30 },
+    { id: 'vip', nama: 'VIP', ikon: '💎', diamond: 300, hari: 30, paketUang: 'vip30d' },
+    { id: 'vvip', nama: 'VVIP', ikon: '👑', diamond: 650, hari: 30, paketUang: 'vvip30d' },
   ],
   // Donasi (nominal bebas)
   donasi: { min: 5000, maks: 10000000, saran: [10000, 25000, 50000, 100000] },
@@ -32,7 +35,7 @@ export default {
 // Hitung item pesanan dari data yang dikirim pembeli. Mengembalikan null bila tidak sah.
 export function hitungItem(P, { jenis, paket, nominal }) {
   if (jenis === 'diamond') { const p = P.diamond.find(x => x.id === paket); return p ? { jenis, paket: p.id, nama: `${p.diamond} Diamond`, harga: p.harga, diamond: p.diamond } : null; }
-  if (jenis === 'paket') { const p = P.toko.find(x => x.id === paket); return p ? { jenis, paket: p.id, nama: p.nama, harga: p.harga, exp: p.exp || 0, vipHari: p.vipHari || 0 } : null; }
+  if (jenis === 'paket') { const p = P.toko.find(x => x.id === paket); return p ? { jenis, paket: p.id, nama: p.nama, harga: p.harga, exp: p.exp || 0, vipHari: p.vipHari || 0, tingkat: p.tingkat || '' } : null; }
   if (jenis === 'donasi') { const n = Math.round(+nominal || 0); return n >= P.donasi.min && n <= P.donasi.maks ? { jenis, paket: 'donasi', nama: 'Donasi', harga: n } : null; }
   return null;
 }

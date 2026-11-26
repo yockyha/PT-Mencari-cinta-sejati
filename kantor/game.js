@@ -2,9 +2,9 @@
 //  Mini-game "Tangkap Hati": 30 detik menangkap hati yang jatuh.
 //  💗 +1 · 💖 +3 · 💔 −2. EXP diberikan untuk 3 permainan pertama tiap hari.
 // =====================================================================
-import { LS, fmt, bersih, hariIni } from '../js/common.js?v=202611260150';
-import { $, K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611260150';
-import * as P from './progres.js?v=202611260150';
+import { LS, fmt, bersih, hariIni } from '../js/common.js?v=202611260212';
+import { $, K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611260212';
+import * as P from './progres.js?v=202611260212';
 
 const DURASI = 30;
 let main = false;

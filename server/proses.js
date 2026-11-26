@@ -23,11 +23,18 @@ export async function lunasi(db, id, v, metodeBayar) {
     pesan = `Terima kasih atas donasi ${rp(it.harga)}! 💖 Dukunganmu sangat berarti untuk kantor.`;
   } else {
     if (it.exp) await db.atomik('expBeli/' + v.uid, x => (+x || 0) + it.exp);
-    if (it.vipHari) await db.atomik('vip/' + v.uid, x => ({ sampai: Math.max(sekarang, (x && x.sampai) || 0) + it.vipHari * 86400e3 }));
-    pesan = `Pembelian ${it.nama} berhasil. Terima kasih sudah mendukung kantor! 💖`;
+    // tingkat: paket VVIP menaikkan ke vvip; paket VIP tidak menurunkan VVIP yang masih aktif
+    let tingkatAkhir = '';
+    if (it.vipHari) tingkatAkhir = (await db.atomik('vip/' + v.uid, x => {
+      const aktif = x && x.sampai > sekarang;
+      const tingkat = it.tingkat === 'vvip' || (aktif && x.tingkat === 'vvip') ? 'vvip' : 'vip';
+      return { sampai: Math.max(sekarang, (x && x.sampai) || 0) + it.vipHari * 86400e3, tingkat };
+    })).baru.tingkat;
+    if (it.tingkat) pesan = tingkatAkhir === 'vvip' && it.tingkat === 'vip' ? `👑 Masa aktif VVIP-mu bertambah ${it.vipHari} hari. Terima kasih!` : `${tingkatAkhir === 'vvip' ? '👑 VVIP' : '💎 VIP'} kamu aktif ${it.vipHari} hari. Selamat menikmati semua fiturnya!`;
+    else pesan = `Pembelian ${it.nama} berhasil. Terima kasih sudah mendukung kantor! 💖`;
   }
   await db.push('riwayat', { uid: v.uid, n: v.n, paket: it.paket, jenis: it.jenis, nama: it.nama, harga: it.harga, metode: 'otomatis', bayar: String(metodeBayar || '').slice(0, 30), kode: id, oleh: 'otomatis', t: TS });
-  await db.push('notif/' + v.uid, { m: pesan, t: TS });
+  await db.push('notif/' + v.uid, { m: pesan, t: TS, j: it.jenis === 'donasi' ? 'donasi' : 'bayar' });
   await db.hapus('pesanan/' + id);
 }
 

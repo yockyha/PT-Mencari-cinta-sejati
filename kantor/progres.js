@@ -3,10 +3,10 @@
 //  arah, acara terjadwal, peringkat, toko (EXP & VIP),
 //  dan notifikasi dari Direktur.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611260150';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611260150';
-import * as Bayar from './bayar.js?v=202611260150';
-import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611260150';
+import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611260212';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611260212';
+import * as Bayar from './bayar.js?v=202611260212';
+import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611260212';
 
 // ---------------------------------------------------------------- DATA TUGAS
 const RUANG_TUJUAN = { jodoh: 'kafe', teman: 'meja', curhat: 'taman' };
@@ -187,8 +187,9 @@ function tampilNotif(n) {
       pasang(i) { i.querySelector('#nOk').onclick = tutupKartu; const b = i.querySelector('#nKe'); if (b) b.onclick = () => { tutupKartu(); pergiKe(ke); }; },
     });
   }
-  const judul = n.j === 'balasSapa' ? '👑 Direktur membalas sapaanmu' : n.j === 'hadiah' ? '🎁 Hadiah dari Direktur' : '📬 Pesan dari Direktur';
-  if (n.j === 'hadiah' || n.j === 'balasSapa') K.efekLokal && K.efekLokal('hati', 30);
+  const judul = n.j === 'balasSapa' ? '👑 Direktur membalas sapaanmu' : n.j === 'hadiah' ? '🎁 Hadiah dari Direktur' : n.j === 'bayar' ? '✅ Pembayaran berhasil' : n.j === 'donasi' ? '💖 Donasi diterima' : '📬 Pesan dari Direktur';
+  if (n.j === 'hadiah' || n.j === 'balasSapa' || n.j === 'donasi') K.efekLokal && K.efekLokal('hati', 30);
+  if (n.j === 'bayar') K.efekLokal && K.efekLokal('kembangapi', 50);
   bukaKartu(`<h2>${judul}</h2><p style="font-size:18px">${m}</p><div class="baris"><button class="btn" type="button" id="nOk">Oke</button></div>`, { pasang(i) { i.querySelector('#nOk').onclick = tutupKartu; } });
 }
 

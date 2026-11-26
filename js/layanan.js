@@ -3,8 +3,8 @@
 //  ajakan ngobrol, obrolan pribadi, suka & match, laporan, dan
 //  alat Direktur/Staf. Struktur data ini sama dengan database.rules.json.
 // =====================================================================
-import { TS } from './db.js?v=202611260150';
-import { CFG, bersih, sensor, rupiah } from './common.js?v=202611260150';
+import { TS } from './db.js?v=202611260212';
+import { CFG, bersih, sensor, rupiah } from './common.js?v=202611260212';
 
 export function buatLayanan(db) {
   const uid = db.uid;
@@ -168,7 +168,11 @@ export function buatLayanan(db) {
       else if (v.jenis === 'donasi') { await L.catatDonatur(v.uid, v.n, v.nominal, v.tampil); pesan = `Terima kasih atas donasi ${rupiah(v.nominal)}! 💖 Dukunganmu sangat berarti untuk kantor.`; }
       else {
         if (p.exp) await L.beriExp(v.uid, p.exp);
-        if (p.vipHari) await L.beriVip(v.uid, p.vipHari);
+        if (p.vipHari) {
+          const lama = (await db.get('vip/' + v.uid).catch(() => null)) || {};
+          const vvipAktif = lama.sampai > db.now() && lama.tingkat === 'vvip';
+          await L.beriVip(v.uid, p.vipHari, p.tingkat === 'vvip' || vvipAktif ? 'vvip' : 'vip');
+        }
         pesan = `Pembelian ${p.nama} disetujui. Terima kasih sudah mendukung ${CFG.namaPT}! 💖`;
       }
       await L.catatRiwayat({ uid: v.uid, n: v.n, paket: v.paket, jenis: v.jenis || 'paket', nama: v.nama || p.nama, harga: v.nominal || p.harga, metode: v.metode || '', kode: v.kode || '' });

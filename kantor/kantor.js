@@ -3,20 +3,20 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611260150';
-import { bukaDB } from '../js/db.js?v=202611260150';
-import { buatLayanan } from '../js/layanan.js?v=202611260150';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611260150';
-import * as Sosial from './sosial.js?v=202611260150';
-import * as Direktur from './direktur.js?v=202611260150';
-import * as Prog from './progres.js?v=202611260150';
-import * as Game from './game.js?v=202611260150';
-import * as Bayar from './bayar.js?v=202611260150';
-import * as Meja from './meja.js?v=202611260150';
-import * as Karyawan from './karyawan.js?v=202611260150';
-import * as Hadir from './hadir.js?v=202611260150';
-import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611260150';
-import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611260150';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611260212';
+import { bukaDB } from '../js/db.js?v=202611260212';
+import { buatLayanan } from '../js/layanan.js?v=202611260212';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611260212';
+import * as Sosial from './sosial.js?v=202611260212';
+import * as Direktur from './direktur.js?v=202611260212';
+import * as Prog from './progres.js?v=202611260212';
+import * as Game from './game.js?v=202611260212';
+import * as Bayar from './bayar.js?v=202611260212';
+import * as Meja from './meja.js?v=202611260212';
+import * as Karyawan from './karyawan.js?v=202611260212';
+import * as Hadir from './hadir.js?v=202611260212';
+import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611260212';
+import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611260212';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
@@ -1588,7 +1588,7 @@ async function mulai() {
   K.renderer = renderer;
   K.bukaLangganan = () => { Prog.bukaHub('toko'); setTimeout(() => document.querySelector('#kartu #langganan')?.scrollIntoView({ behavior: 'smooth' }), 80); };
   K.efekLokal = Hadir.efekLokal; K.bukaPanel = Direktur.bukaPanel; K.panggilKaryawan = () => Karyawan.panggil(saya);
-  Sosial.mulai(); Direktur.mulai(); Prog.mulai(); Hadir.mulai();
+  Sosial.mulai(); Direktur.mulai(); Prog.mulai(); Hadir.mulai(); Bayar.cekServer();
   hitungOnline();
   setTimeout(() => {
     Bayar.kembaliDariBayar();

@@ -5,22 +5,28 @@
 //  atau manual: QRIS/transfer BCA/BRI dengan NOMINAL UNIK, lalu
 //  diverifikasi Direktur di Dashboard (Toko & Pesanan).
 // =====================================================================
-import { PAKAIAN, SLOT } from '../js/pakaian.js?v=202611260150';
-import { LANGGANAN } from '../js/common.js?v=202611260150';
-import { CFG, LS, esc, fmt, bersih, rupiah, IKON_DM, kodeTamu, hash } from '../js/common.js?v=202611260150';
-import { K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611260150';
-import * as P from './progres.js?v=202611260150';
+import { PAKAIAN, SLOT } from '../js/pakaian.js?v=202611260212';
+import { LANGGANAN } from '../js/common.js?v=202611260212';
+import { CFG, LS, esc, fmt, bersih, rupiah, IKON_DM, kodeTamu, hash } from '../js/common.js?v=202611260212';
+import { K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611260212';
+import * as P from './progres.js?v=202611260212';
 
 const BAYAR = () => CFG.pembayaran || {};
 const resmi = () => !!(K.resmi && K.resmi());
 
 // Metode pembayaran yang benar-benar diisi di config.js
 // Pembayaran otomatis (Midtrans) hanya jalan di mode online, lewat /api/bayar/buat
-export const otomatisAktif = () => BAYAR().otomatis === 'midtrans' && K.L && K.L.mode === 'online' && !!K.L.db.idToken;
+// Aktif bila config.js memilih 'midtrans' ATAU server melaporkan kunci Midtrans sudah dipasang di Cloudflare
+let serverSiap = false;
+export function cekServer() {
+  if (!K.L || K.L.mode !== 'online') return;
+  fetch('/api/bayar/status', { cache: 'no-store' }).then(r => (r.ok ? r.json() : null)).then(d => { serverSiap = !!(d && d.aktif); }).catch(() => {});
+}
+export const otomatisAktif = () => (BAYAR().otomatis === 'midtrans' || serverSiap) && K.L && K.L.mode === 'online' && !!K.L.db.idToken;
 
 export function metodeAktif() {
   const b = BAYAR(), m = [];
-  if (otomatisAktif()) m.push({ id: 'otomatis', nama: '⚡ Bayar otomatis', ket: 'QRIS, VA BCA/BRI, GoPay, ShopeePay. Langsung masuk tanpa menunggu', otomatis: true });
+  if (otomatisAktif()) m.push({ id: 'otomatis', nama: '⚡ Bayar otomatis', ket: 'QRIS, transfer bank (VA), GoPay & e-wallet. Langsung masuk tanpa menunggu', otomatis: true });
   if (b.qris) m.push({ id: 'qris', nama: 'QRIS', ket: 'Scan dari m-banking atau e-wallet apa pun' });
   for (const x of b.bank || []) if (x && x.nomor) m.push({ id: String(x.bank).toLowerCase(), nama: 'Transfer ' + x.bank, ket: `${x.nomor} a.n. ${x.atasNama || ''}`, data: x });
   if (CFG.toko && CFG.toko.linkBayar) m.push({ id: 'lain', nama: 'Lainnya', ket: 'Saweria / Trakteer / dll.' });
@@ -51,8 +57,8 @@ export function tabToko() {
       ${dir ? '<p class="kecil">👑 Direktur otomatis mendapat semua fitur VVIP.</p>' : P.vipSaya() ? `<p>Kamu <b>${P.vvipSaya() ? 'VVIP 👑' : 'VIP 💎'}</b> sampai <b>${esc(tanggalJam(K.vip[K.L.uid].sampai))}</b> WIB</p>` : ''}
       <div class="gridLangganan">${LANGGANAN.map(l => `<div class="kartuLangganan ${l.id}"><b>${l.ikon} ${esc(l.nama)}</b><span>${IKON_DM} ${fmt(l.diamond)} / ${l.hari} hari</span>
         <ul>${P.MANFAAT[l.id].map(m => `<li>${esc(m)}</li>`).join('')}</ul>
-        ${dir ? '' : `<button type="button" class="btn ${l.id === 'vvip' ? '' : 'putih'}" data-langganan="${l.id}" ${l.id === 'vip' && P.vvipSaya() ? 'disabled' : ''}>${P.tingkat(K.L.uid) === l.id ? 'Perpanjang' : l.id === 'vvip' && P.vipSaya() ? 'Upgrade ke VVIP' : 'Beli'}</button>`}</div>`).join('')}</div>
-      <p class="kecil">${IKON_DM} 300 = paket Diamond Rp25.000 · ${IKON_DM} 650 = paket Diamond Rp50.000. Top up Diamond dulu di atas, lalu beli VIP/VVIP di sini.</p>
+        ${dir ? '' : `<button type="button" class="btn ${l.id === 'vvip' ? '' : 'putih'}" data-langganan="${l.id}" ${l.id === 'vip' && P.vvipSaya() ? 'disabled' : ''}>${IKON_DM} ${P.tingkat(K.L.uid) === l.id ? 'Perpanjang' : l.id === 'vvip' && P.vipSaya() ? 'Upgrade' : 'Beli'} pakai Diamond</button>${(() => { const pu = pk.find(p => p.id === l.paketUang); return pu && !(l.id === 'vip' && P.vvipSaya()) ? `<button type="button" class="btn putih" data-paket="${esc(pu.id)}" ${buka ? '' : 'disabled'}>💳 Bayar ${rupiah(pu.harga)}</button>` : ''; })()}`}</div>`).join('')}</div>
+      <p class="kecil">Bayar langsung (💳) atau pakai Diamond: ${IKON_DM} 300 = paket Rp25.000, ${IKON_DM} 650 = paket Rp50.000.</p>
       <h3>⭐ EXP</h3>
       <div class="daftar">${pk.filter(p => !p.sembunyi).map(p => `<div><span><b>${esc(p.nama)}</b> · ${rupiah(p.harga)}<br><small>${esc(p.ket || '')}</small></span><button type="button" class="mini" data-paket="${esc(p.id)}" ${buka ? '' : 'disabled'}>Beli</button></div>`).join('')}</div>
       <h3>🎁 Donasi</h3>
