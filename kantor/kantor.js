@@ -3,28 +3,28 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611261340';
-import { bukaDB } from '../js/db.js?v=202611261340';
-import { buatLayanan } from '../js/layanan.js?v=202611261340';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611261340';
-import * as Sosial from './sosial.js?v=202611261340';
-import * as Direktur from './direktur.js?v=202611261340';
-import * as Prog from './progres.js?v=202611261340';
-import * as Game from './game.js?v=202611261340';
-import * as Bayar from './bayar.js?v=202611261340';
-import * as Meja from './meja.js?v=202611261340';
-import * as Karyawan from './karyawan.js?v=202611261340';
-import * as Hadir from './hadir.js?v=202611261340';
-import * as Foto from './foto.js?v=202611261340';
-import * as Seru from './seru.js?v=202611261340';
-import * as Speed from './speeddating.js?v=202611261340';
-import * as Aktivitas from './aktivitas.js?v=202611261340';
-import * as Komunitas from './komunitas.js?v=202611261340';
-import * as RuangDir from './ruangdir.js?v=202611261340';
-import * as Gedung from './gedung.js?v=202611261340';
-import * as PapanInfo from './papaninfo.js?v=202611261340';
-import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611261340';
-import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611261340';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611261448';
+import { bukaDB } from '../js/db.js?v=202611261448';
+import { buatLayanan } from '../js/layanan.js?v=202611261448';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611261448';
+import * as Sosial from './sosial.js?v=202611261448';
+import * as Direktur from './direktur.js?v=202611261448';
+import * as Prog from './progres.js?v=202611261448';
+import * as Game from './game.js?v=202611261448';
+import * as Bayar from './bayar.js?v=202611261448';
+import * as Meja from './meja.js?v=202611261448';
+import * as Karyawan from './karyawan.js?v=202611261448';
+import * as Hadir from './hadir.js?v=202611261448';
+import * as Foto from './foto.js?v=202611261448';
+import * as Seru from './seru.js?v=202611261448';
+import * as Speed from './speeddating.js?v=202611261448';
+import * as Aktivitas from './aktivitas.js?v=202611261448';
+import * as Komunitas from './komunitas.js?v=202611261448';
+import * as RuangDir from './ruangdir.js?v=202611261448';
+import * as Gedung from './gedung.js?v=202611261448';
+import * as PapanInfo from './papaninfo.js?v=202611261448';
+import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611261448';
+import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611261448';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
@@ -1671,7 +1671,8 @@ function bukaPhotobooth() {
   bukaKartu(`<h2>📸 Photobooth</h2><p class="kecil">Pilih bingkai. ${n ? `Ada <b>${n} orang</b> di dekatmu, bisa foto bareng!` : 'Ajak teman berdiri di dekatmu untuk foto bareng.'}</p>
     <div class="sw teks">${Object.entries(BINGKAI).map(([k, v], i) => `<button type="button" data-b="${k}" class="${i ? '' : 'on'}">${v}</button>`).join('')}</div>
     <label class="cek"><input type="checkbox" id="pbG" ${n ? 'checked' : ''}> Foto bareng orang di sekitarku</label>
-    <div class="baris"><button class="btn" type="button" id="pbF">📸 Jepret!</button></div>`, {
+    <div class="baris"><button class="btn" type="button" id="pbF">📸 Jepret!</button><a class="btn putih" href="../template/" target="_blank" rel="noopener">📸 Template Story</a></div>
+    <p class="kecil">Habis jepret, tempel fotomu di <b>Template Story Date Night</b> lalu posting dengan tag @jodohonline.company #DateNightJodohonline 💘</p>`, {
     pasang(el) {
       let b = 'merek';
       el.querySelectorAll('[data-b]').forEach(x => x.onclick = () => { b = x.dataset.b; el.querySelectorAll('[data-b]').forEach(y => y.classList.toggle('on', y === x)); });
