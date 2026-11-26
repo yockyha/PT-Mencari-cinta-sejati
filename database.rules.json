@@ -303,6 +303,99 @@
         ".validate": "newData.val() === now"
       }
     },
+    "streak": {
+      ".read": true,
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+        ".validate": "newData.child('t').val() === now && newData.child('n').isNumber() && ((!data.exists() && newData.child('n').val() === 1) || (data.exists() && now - data.child('t').val() >= 43200000 && ((now - data.child('t').val() < 194400000 && newData.child('n').val() === data.child('n').val() + 1) || (now - data.child('t').val() >= 194400000 && newData.child('n').val() === 1))))"
+      }
+    },
+    "amplop": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('peran/' + auth.uid).val() === 'direktur')",
+        ".write": "auth != null && auth.uid === $uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+        ".validate": "newData.child('t').val() === now && newData.child('n').isNumber() && ((newData.child('tg').val() === now && (!data.exists() || !data.child('tg').exists() || now - data.child('tg').val() >= 72000000)) || ((data.exists() && newData.child('tg').val() === data.child('tg').val() || (!data.exists() && newData.child('tg').val() === 0)) && newData.parent().parent().child('diamond/' + $uid).val() === root.child('diamond/' + $uid).val() - 30))"
+      }
+    },
+    "menfess": {
+      ".read": "auth != null",
+      ".indexOn": [
+        "t"
+      ],
+      "$id": {
+        ".write": "auth != null && ((!data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && (!root.child('menfessT/' + auth.uid).exists() || root.child('menfessT/' + auth.uid).val() < now - 600000) && newData.parent().parent().child('menfessT/' + auth.uid).val() === now && newData.parent().parent().child('menfessPengirim/' + $id).val() === auth.uid) || (data.exists() && !newData.exists() && (root.child('menfessPengirim/' + $id).val() === auth.uid || root.child('peran/' + auth.uid).exists())))",
+        ".validate": "data.exists() || newData.hasChildren(['m', 't'])",
+        "m": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 280 && (!data.exists() || data.val() === newData.val())"
+        },
+        "ke": {
+          ".validate": "newData.isString() && (!data.exists() || data.val() === newData.val())"
+        },
+        "keN": {
+          ".validate": "newData.isString() && newData.val().length <= 30 && (!data.exists() || data.val() === newData.val())"
+        },
+        "t": {
+          ".validate": "(!data.exists() && newData.val() === now) || data.val() === newData.val()"
+        },
+        "n": {
+          ".write": "auth != null && root.child('menfessPengirim/' + $id).val() === auth.uid && newData.exists()",
+          ".validate": "newData.isString() && newData.val().length <= 30 && newData.val() === root.child('anggota/' + auth.uid + '/n').val()"
+        },
+        "s": {
+          "$u": {
+            ".write": "auth != null && auth.uid === $u && (!newData.exists() || ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())))",
+            ".validate": "newData.val() === true"
+          }
+        },
+        "$lain": {
+          ".validate": false
+        }
+      }
+    },
+    "menfessPengirim": {
+      ".read": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$id": {
+        ".write": "auth != null && ((!data.exists() && newData.val() === auth.uid) || (!newData.exists() && (data.val() === auth.uid || root.child('peran/' + auth.uid).exists())))",
+        ".validate": "newData.isString()"
+      }
+    },
+    "menfessT": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.val() === now"
+      }
+    },
+    "menfessKu": {
+      "$ke": {
+        ".read": "auth != null && auth.uid === $ke",
+        "$id": {
+          ".write": "auth != null && ((newData.exists() && newData.parent().parent().parent().child('menfessPengirim/' + $id).val() === auth.uid) || (!newData.exists() && (auth.uid === $ke || root.child('menfessPengirim/' + $id).val() === auth.uid || root.child('peran/' + auth.uid).exists())))",
+          ".validate": "newData.child('t').val() === now"
+        }
+      }
+    },
+    "speedDating": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'"
+    },
+    "sdAntre": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid && (!newData.exists() || (((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && root.child('anggota/' + auth.uid + '/tj').val() === 'jodoh'))",
+        ".validate": "newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('t').val() === now"
+      }
+    },
+    "sdChat": {
+      ".read": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$room": {
+        ".read": "auth != null && ($room.beginsWith(auth.uid + '_') || $room.endsWith('_' + auth.uid)) && root.child('speedDating/ronde/pasangan/' + auth.uid).val() === $room.replace(auth.uid, '').replace('_', '')",
+        "$id": {
+          ".write": "auth != null && ($room.beginsWith(auth.uid + '_') || $room.endsWith('_' + auth.uid)) && root.child('speedDating/ronde/pasangan/' + auth.uid).val() === $room.replace(auth.uid, '').replace('_', '') && !data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+          ".validate": "newData.child('uid').val() === auth.uid && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('m').isString() && newData.child('m').val().length > 0 && newData.child('m').val().length <= 200 && newData.child('t').val() === now"
+        }
+      }
+    },
     "undangan": {
       "$ke": {
         ".read": "auth != null && auth.uid === $ke",
@@ -458,7 +551,7 @@
       ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
       "$uid": {
         ".read": "auth != null && auth.uid === $uid",
-        ".write": "auth != null && auth.uid === $uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && newData.isNumber() && newData.val() >= 0 && newData.val() < data.val()",
+        ".write": "auth != null && auth.uid === $uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && newData.isNumber() && newData.val() >= 0 && (newData.val() < data.val() || (newData.parent().parent().child('streak/' + $uid).child('t').val() === now && newData.parent().parent().child('streak/' + $uid).child('n').val() % 7 === 0 && ((!data.exists() && newData.val() === 20) || (data.exists() && newData.val() === data.val() + 20))))",
         ".validate": "newData.isNumber() && newData.val() >= 0"
       }
     },
@@ -467,7 +560,7 @@
       ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
       "$uid": {
         "$item": {
-          ".write": "auth != null && auth.uid === $uid && !data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && root.child('katalog/' + $item + '/harga').exists() && newData.parent().parent().parent().child('diamond/' + $uid).val() === root.child('diamond/' + $uid).val() - root.child('katalog/' + $item + '/harga').val()",
+          ".write": "auth != null && auth.uid === $uid && !data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && ((root.child('katalog/' + $item + '/harga').exists() && newData.parent().parent().parent().child('diamond/' + $uid).val() === root.child('diamond/' + $uid).val() - root.child('katalog/' + $item + '/harga').val()) || ($item.beginsWith('gc') && newData.parent().parent().parent().child('amplop/' + $uid + '/t').val() === now))",
           ".validate": "newData.val() === true"
         }
       }

@@ -3,10 +3,10 @@
 //  arah, acara terjadwal, peringkat, toko (EXP & VIP),
 //  dan notifikasi dari Direktur.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611260304';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611260304';
-import * as Bayar from './bayar.js?v=202611260304';
-import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611260304';
+import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611260350';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611260350';
+import * as Bayar from './bayar.js?v=202611260350';
+import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611260350';
 
 // ---------------------------------------------------------------- DATA TUGAS
 const RUANG_TUJUAN = { jodoh: 'kafe', teman: 'meja', curhat: 'taman' };
@@ -53,7 +53,7 @@ export const saldoDiamond = () => P.diamond || 0;
 export const daftarDonatur = () => P.donatur || {};
 // Seragam (khusus) hanya untuk perannya: 'staf' → staf & Direktur, 'direktur' → Direktur, 'npc' → karyawan NPC saja
 const bolehKhusus = o => o.khusus === 'staf' ? !!(K.L && K.peran[K.L.uid]) : o.khusus === 'direktur' ? direkturSaya() : false;
-const boleh = o => !!o && (o.khusus ? bolehKhusus(o) : direkturSaya() || (o.dm ? punyaBarang(o.id) : o.vip ? vipSaya() : level() >= o.lv));
+const boleh = o => !!o && (o.khusus ? bolehKhusus(o) : direkturSaya() || (o.dm || o.gacha ? punyaBarang(o.id) : o.vip ? vipSaya() : level() >= o.lv));
 export const bolehBarang = id => !id || boleh(BARANG[id]);
 // penampilan yang boleh dikirim ke orang lain: barang terkunci diganti bawaan
 export function lookAman(look) {
@@ -193,6 +193,21 @@ function tampilNotif(n) {
   bukaKartu(`<h2>${judul}</h2><p style="font-size:18px">${m}</p><div class="baris"><button class="btn" type="button" id="nOk">Oke</button></div>`, { pasang(i) { i.querySelector('#nOk').onclick = tutupKartu; } });
 }
 
+// Tab Harian: streak, amplop, menfess, speed dating, mood
+function tabHarian() {
+  const st = K.streakSaya ? K.streakSaya() : 0, h = ((Math.max(1, st) - 1) % 7) + 1;
+  return {
+    html: `<div class="kotakHarian"><b>🔥 Streak ${fmt(st)} hari</b><div class="streakBaris">${[1, 2, 3, 4, 5, 6, 7].map(i => `<span class="${st && i <= h ? 'on' : ''}">${i === 7 ? '💠' : '🔥'}<small>H${i}</small></span>`).join('')}</div><p class="kecil">Check-in otomatis tiap kamu datang. Tiap kelipatan 7 hari: +20 💠 Diamond.</p></div>
+      <div class="kuasaGrid">
+        <button type="button" data-h="amplop">🎁 Amplop Cinta<small>1× gratis tiap hari, isinya acak</small></button>
+        <button type="button" data-h="menfess">📮 Menfess<small>Kirim pesan anonim</small></button>
+        <button type="button" data-h="speed">💘 Speed Dating<small>Kenalan 3 menit, pilih ❤</small></button>
+        <button type="button" data-h="mood">😶‍🌫️ Mood<small>Tampil di atas kepalamu</small></button>
+      </div>`,
+    pasang(el) { el.querySelectorAll('[data-h]').forEach(b => b.onclick = () => K.bukaHarian && K.bukaHarian(b.dataset.h)); },
+  };
+}
+
 // ---------------------------------------------------------------- POSISI: kunjungan ruangan & absen acara
 export function cekPosisi(x, z) {
   if (!K.L || !K.prof || !K.prof.tj || K.terkunci || !resmi()) return;
@@ -271,10 +286,10 @@ function aksiTugas(t) {
 }
 
 // ---------------------------------------------------------------- PUSAT TAMU (hub)
-const TAB = [['tugas', '📋 Tugas'], ['acara', '📅 Acara'], ['peringkat', '🏆 Peringkat'], ['toko', '💎 Toko']];
+const TAB = [['harian', '🎁 Harian'], ['tugas', '📋 Tugas'], ['acara', '📅 Acara'], ['peringkat', '🏆 Peringkat'], ['toko', '💎 Toko']];
 export function bukaHub(tab = 'tugas') {
   const lv = level(), ex = totalExp(), a = ambangLevel(lv), b = ambangLevel(lv + 1);
-  const isi = { tugas: tabTugas, acara: tabAcara, peringkat: tabPeringkat, toko: tabToko }[tab]();
+  const isi = { harian: tabHarian, tugas: tabTugas, acara: tabAcara, peringkat: tabPeringkat, toko: tabToko }[tab]();
   const atas = direkturSaya()
     ? `<h2>👑 Level ∞ <span class="pillTj" style="--w:#b8860b">Direktur</span></h2><div class="bilah"><i style="width:100%"></i></div><p class="kecil">EXP tak terbatas · semua outfit & aksesoris terbuka</p>`
     : !resmi()

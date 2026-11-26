@@ -3,21 +3,23 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611260304';
-import { bukaDB } from '../js/db.js?v=202611260304';
-import { buatLayanan } from '../js/layanan.js?v=202611260304';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611260304';
-import * as Sosial from './sosial.js?v=202611260304';
-import * as Direktur from './direktur.js?v=202611260304';
-import * as Prog from './progres.js?v=202611260304';
-import * as Game from './game.js?v=202611260304';
-import * as Bayar from './bayar.js?v=202611260304';
-import * as Meja from './meja.js?v=202611260304';
-import * as Karyawan from './karyawan.js?v=202611260304';
-import * as Hadir from './hadir.js?v=202611260304';
-import * as Foto from './foto.js?v=202611260304';
-import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611260304';
-import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611260304';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611260350';
+import { bukaDB } from '../js/db.js?v=202611260350';
+import { buatLayanan } from '../js/layanan.js?v=202611260350';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611260350';
+import * as Sosial from './sosial.js?v=202611260350';
+import * as Direktur from './direktur.js?v=202611260350';
+import * as Prog from './progres.js?v=202611260350';
+import * as Game from './game.js?v=202611260350';
+import * as Bayar from './bayar.js?v=202611260350';
+import * as Meja from './meja.js?v=202611260350';
+import * as Karyawan from './karyawan.js?v=202611260350';
+import * as Hadir from './hadir.js?v=202611260350';
+import * as Foto from './foto.js?v=202611260350';
+import * as Seru from './seru.js?v=202611260350';
+import * as Speed from './speeddating.js?v=202611260350';
+import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611260350';
+import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611260350';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
@@ -213,6 +215,10 @@ function bangunDunia() {
   K.gambarJadwal = () => jadwal.ulang();
   setInterval(() => jadwal.ulang(), 60000);
   titikAksi.push({ x: -10, z: 11.6, r: 1.8, label: 'Lihat jadwal acara', aksi: () => Prog.bukaHub('acara') });
+  // kotak menfess (kotak surat merah) di lobi
+  kotak(0.7, 1.0, 0.5, 6.5, 0, 18.9, '#c0392b', { tab: true }); kotak(0.78, 0.12, 0.58, 6.5, 1.0, 18.9, '#8e1f14'); kotak(0.4, 0.05, 0.02, 6.5, 0.8, 18.64, '#2a1420');
+  bidangTeks(0.66, 0.24, 0, kanvas(256, 96, (x, w, h) => { x.fillStyle = '#fff6ef'; bulat(x, 0, 0, w, h, 14); x.fill(); x.fillStyle = '#c0392b'; x.font = FD(40); x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('📮 MENFESS', w / 2, h / 2 + 2, w - 12); }), 6.5, 0.5, 18.64, Math.PI);
+  titikAksi.push({ x: 6.5, z: 17.9, r: 1.4, label: 'Kotak Menfess 📮', aksi: () => Seru.bukaMenfess() });
   // dinding foto (galeri tamu) di dinding barat lobi
   dindingFoto();
   titikAksi.push({ x: -22.3, z: 15, r: 2.3, label: 'Lihat Dinding Foto 🖼️', aksi: () => Foto.bukaGaleri() });
@@ -654,7 +660,7 @@ function pasangKarakterSaya() {
   saya.look = lookV2(prof?.look || lookAcakV2(Math.floor(Math.random() * 1e6), prof?.g === 'co' ? 'l' : prof?.g === 'ce' ? 'p' : ''), prof?.g);
   const peran = !resmi() ? 'pengunjung' : peranOrang(L.uid);
   saya.g = buatKarakter(peran === 'direktur' ? saya.look : Prog.lookAman(saya.look), { peran, tingkat: resmi() ? Prog.tingkat(L.uid) : '' });
-  saya.label = prof && prof.tj && resmi() ? labelNama(teksLabel(prof.n, prof.tj, L.uid, Prog.level()), gayaPeran(L.uid)) : labelNama('👀 Pengunjung');
+  saya.label = prof && prof.tj && resmi() ? labelNama(hiasLabel(teksLabel(prof.n, prof.tj, L.uid, Prog.level()), prof.md | 0, Seru.streakSaya()), gayaPeran(L.uid)) : labelNama('👀 Pengunjung');
   saya.g.add(saya.label);
   if (lama) { if (saya.gel) { lama.remove(saya.gel); saya.g.add(saya.gel); } scene.remove(lama); }
   scene.add(saya.g);
@@ -853,6 +859,8 @@ const lain = K.lain; // uid -> {g, nama, tj, ...}
 
 const ikonPeran = uid => (K.peran[uid] === 'direktur' ? '👑 ' : K.peran[uid] === 'staf' ? '🛡 ' : '');
 const gayaPeran = uid => (K.peran[uid] === 'direktur' ? 'direktur' : K.peran[uid] === 'staf' ? 'staf' : Prog.isVvip(uid) ? 'vvip' : Prog.isVip(uid) ? 'vip' : '');
+// hiasan label: mood & streak 🔥 (≥3 hari)
+const hiasLabel = (teks, md, st) => teks + (st >= 3 ? ` 🔥${st}` : '') + (Seru.MOOD[md] ? ' · ' + Seru.MOOD[md].split(' ')[0] : '');
 const teksLabel = (n, tj, uid, lv = 1) => (ikonPeran(uid) || (Prog.isVvip(uid) ? '✨VVIP ' : Prog.isVip(uid) ? '💎 ' : (TUJUAN[tj]?.ikon || '') + ' ')) + n + (lv > 1 && K.peran[uid] !== 'direktur' ? ' ⭐' + lv : '');
 
 function sinkronLain(obj) {
@@ -864,16 +872,16 @@ function sinkronLain(obj) {
     ada.add(uid);
     let o = lain.get(uid);
     const nm = bersih(p.n || 'Tamu', 20), tj = tujuanAman(p.tj), lv = clamp(p.lv | 0, 1, 99);
-    const kunci = JSON.stringify(p.l || {}) + '|' + nm + '|' + tj + '|' + (K.peran[uid] || '') + '|' + lv + '|' + Prog.tingkat(uid);
+    const kunci = JSON.stringify(p.l || {}) + '|' + nm + '|' + tj + '|' + (K.peran[uid] || '') + '|' + lv + '|' + Prog.tingkat(uid) + '|' + (p.md | 0) + '|' + (p.st | 0);
     if (!o || o.kunci !== kunci) {
       const g = buatKarakter(lookV2(p.l, p.g), { peran: peranOrang(uid), tingkat: Prog.tingkat(uid) });
-      g.add(labelNama(teksLabel(nm, tj, uid, lv), gayaPeran(uid)));
+      g.add(labelNama(hiasLabel(teksLabel(nm, tj, uid, lv), p.md | 0, p.st | 0), gayaPeran(uid)));
       const baru = { g, kunci, uid, x: +p.x || 0, z: +p.z || 0, r: +p.r || 0, gel: null, gelT: 0 };
       if (o) { scene.remove(o.g); Object.assign(baru, { x: o.x, z: o.z, r: o.r, gel: o.gel, gelT: o.gelT }); if (o.gel) g.add(o.gel); }
       o = baru; scene.add(g); lain.set(uid, o);
     }
     Object.assign(o, {
-      nama: nm, tj, lv, s: bersih(p.s, 20), b: bersih(p.b, 100), gd: GENDER[p.g] ? p.g : '', ig: igBersih(p.ig), mj: bersih(p.mj, 30),
+      nama: nm, tj, lv, s: bersih(p.s, 20), b: bersih(p.b, 100), gd: GENDER[p.g] ? p.g : '', ig: igBersih(p.ig), mj: bersih(p.mj, 30), zd: Number.isInteger(p.zd) ? p.zd : -1, mb: bersih(p.mb, 4), ll: Number.isInteger(p.ll) ? p.ll : -1, lg: bersih(p.lg, 40), md: p.md | 0, st: p.st | 0,
       tx: +p.x || 0, tz: +p.z || 0, tr: +p.r || 0, ta: p.a | 0,
     });
   }
@@ -892,6 +900,7 @@ function kirimPosisi(t) {
   if (!L || !prof || !prof.tj || K.terkunci || !resmi()) return;
   const p = {
     n: prof.n, tj: prof.tj, s: prof.tj === 'jodoh' ? (prof.s || '') : '', b: prof.b || '', g: prof.g || '', ig: '', // ig, TikTok & nama lengkap tidak dikirim ke publik (ada di profilPribadi)
+    zd: Number.isInteger(prof.zd) ? prof.zd : -1, mb: prof.mb || '', ll: Number.isInteger(prof.ll) ? prof.ll : -1, lg: prof.lg || '', md: prof.md | 0, st: Seru.streakSaya(),
     l: Prog.lookAman(saya.look), lv: Prog.level(), x: +saya.x.toFixed(2), z: +saya.z.toFixed(2), r: +saya.r.toFixed(2), a: saya.a, mj: saya.meja || '',
   };
   const k = `${p.x},${p.z},${p.r},${p.a},${p.mj}`;
@@ -1057,6 +1066,13 @@ function bukaUbahData() {
         ${p.tj === 'jodoh' ? `<div><label for="uS">Status hati</label><select id="uS">${STATUS.map(x => `<option ${x === p.s ? 'selected' : ''}>${esc(x)}</option>`).join('')}</select></div>` : ''}
       </div>
       <label for="uB">Tentang aku</label><textarea id="uB" maxlength="100" rows="2">${esc(p.b || '')}</textarea>
+      <div class="dua">
+        <div><label for="uZ">Zodiak</label><select id="uZ"><option value="-1">—</option>${Seru.ZODIAK.map((z, i) => `<option value="${i}" ${p.zd === i ? 'selected' : ''}>${z}</option>`).join('')}</select></div>
+        <div><label for="uM">MBTI</label><select id="uM"><option value="">—</option>${Seru.MBTI.map(m => `<option ${p.mb === m ? 'selected' : ''}>${m}</option>`).join('')}</select></div>
+        <div><label for="uL">Love language</label><select id="uL"><option value="-1">—</option>${Seru.LOVE.map((l, i) => `<option value="${i}" ${p.ll === i ? 'selected' : ''}>${l}</option>`).join('')}</select></div>
+        <div><label for="uLg">Lagu favorit</label><input id="uLg" maxlength="40" placeholder="judul – penyanyi" value="${esc(p.lg || '')}"></div>
+      </div>
+      <p class="kecil">✨ Zodiak, MBTI & love language dipakai untuk menghitung <b>kecocokan</b> dengan tamu lain.</p>
       <label for="uNl">Nama lengkap 🔒</label><input id="uNl" maxlength="60" value="${esc(p.nl || '')}" autocomplete="name">
       <div class="dua"><div><label for="uI">Instagram 🔒</label><input id="uI" maxlength="31" value="${esc(p.ig ? '@' + p.ig : '')}" autocapitalize="none"></div>
       <div><label for="uT">TikTok 🔒</label><input id="uT" maxlength="25" value="${esc(p.tt ? '@' + p.tt : '')}" autocapitalize="none" placeholder="opsional"></div></div>
@@ -1073,7 +1089,8 @@ function bukaUbahData() {
         if (ttM && (tt !== ttM.toLowerCase() || !ttSah(tt))) { isi.querySelector('#uE').textContent = 'Username TikTok tidak valid.'; return; }
         if (nl.length < 3) { isi.querySelector('#uE').textContent = 'Tulis nama lengkapmu.'; return; }
         if (kasar(b) || kasar(ig) || kasar(tt) || kasar(nl)) { isi.querySelector('#uE').textContent = 'Pakai kata-kata yang lebih sopan ya.'; return; }
-        prof = { ...prof, b, ig, tt, nl, g: isi.querySelector('#uG').value, s: isi.querySelector('#uS')?.value || prof.s };
+        const lg = bersih(isi.querySelector('#uLg').value, 40); if (kasar(lg)) { isi.querySelector('#uE').textContent = 'Pakai kata-kata yang lebih sopan ya.'; return; }
+        prof = { ...prof, b, ig, tt, nl, zd: +isi.querySelector('#uZ').value, mb: isi.querySelector('#uM').value, ll: +isi.querySelector('#uL').value, lg, g: isi.querySelector('#uG').value, s: isi.querySelector('#uS')?.value || prof.s };
         simpanProfil(prof); posWaktu = 0; tutupKartu(); toast('Data tersimpan ✔');
         L.simpanPribadi(prof, true).catch(e => console.warn(e));
       };
@@ -1099,6 +1116,7 @@ function terapkanAkses() {
     }
     Prog.lapor('tur_daftar');
     if (dir) Hadir.direkturMasuk();
+    if (!terapkanAkses.streak) { terapkanAkses.streak = true; setTimeout(() => Seru.cekStreak(), 3500); }
     // simpan pengaturan privasi Instagram sekali per sesi (supaya data ig ada di profilPribadi)
     if (!terapkanAkses.privasi) { terapkanAkses.privasi = true; L.simpanPribadi(prof || {}).catch(() => {}); }
   }
@@ -1126,7 +1144,7 @@ function bukaLoker() {
   const AWAL = { at: 'kaos', bw: 'chino', sp: 'sneakers' };
   let tab = 'at';
   const cocok = x => (x.g === 'u' || x.g === saya.look.s) && (!x.khusus || (x.khusus === 'staf' && staf) || (x.khusus === 'direktur' && dir));
-  const syarat = x => x.khusus ? (x.khusus === 'direktur' ? '👑' : '🪪') : x.dm ? '💠' + x.dm : x.vip ? '💎' : x.lv > 1 ? 'Lv' + x.lv : '';
+  const syarat = x => x.khusus ? (x.khusus === 'direktur' ? '👑' : '🪪') : x.gacha ? '🎁' : x.dm ? '💠' + x.dm : x.vip ? '💎' : x.lv > 1 ? 'Lv' + x.lv : '';
   const tombol = x => {
     const kunci = !Prog.bolehBarang(x.id), on = saya.look[x.slot] === x.id;
     return `<button type="button" data-id="${x.id}" class="${on ? 'on' : ''} ${kunci ? 'kunci' : ''}">${esc(x.nama)}${syarat(x) ? ` <small>${kunci ? '🔒 ' : ''}${syarat(x)}</small>` : ''}</button>`;
@@ -1164,6 +1182,7 @@ function bukaLoker() {
           const x = BARANG[b.dataset.id];
           if (!Prog.bolehBarang(x.id)) {
             if (x.dm) { Bayar.bukaBeliBarang(x.id); return; }
+            if (x.gacha) { toast(`${x.nama} edisi Amplop Cinta 🎁 Buka amplop di menu ⭐ Level → Harian.`, 4000); return; }
             toast(x.vip ? `${x.nama} khusus VIP & VVIP 💎` : `${x.nama} terbuka di Level ${x.lv}. Kumpulkan EXP dari tugas & acara, atau beli EXP di Toko.`, 3600);
             return;
           }
@@ -1537,7 +1556,8 @@ function langkah() {
     saya.a = 1; saya.cepat = lari ? 1.5 : 1;
     // kamera mengikuti arah hadap (jeda sebentar setelah pemain memutar kamera sendiri)
     if (kamIkut && seret === null && !cubit && t - seretT > 900) kam.yaw = sudutLerp(kam.yaw, saya.r, Math.min(1, dt * (lari ? 3 : 2.2)));
-  } else if (!saya.duduk) { saya.lambai = Math.max(0, (saya.lambai || 0) - dt); saya.a = saya.lambai > 0 ? 5 : 0; }
+  } else if (!saya.duduk) { saya.lambai = Math.max(0, (saya.lambai || 0) - dt); saya.emoteT = Math.max(0, (saya.emoteT || 0) - dt); saya.a = saya.emoteT > 0 ? saya.emoteA : saya.lambai > 0 ? 5 : 0; }
+  if (besar > 0.12) saya.emoteT = 0;
 
   // pemain sendiri
   if (saya.g) {
@@ -1550,7 +1570,7 @@ function langkah() {
     if (d > 8) { o.x = o.tx; o.z = o.tz; }
     else { const k = Math.min(1, dt * 8); o.x += (o.tx - o.x) * k; o.z += (o.tz - o.z) * k; }
     o.r = sudutLerp(o.r, o.tr, Math.min(1, dt * 10));
-    const a = o.ta === 2 ? 2 : (d > 0.05 || o.ta === 1 ? (d > 0.02 ? 1 : 0) : 0);
+    const a = o.ta === 2 ? 2 : o.ta >= 5 && d < 0.05 ? o.ta : (d > 0.05 || o.ta === 1 ? (d > 0.02 ? 1 : 0) : 0);
     o.g.position.set(o.x, 0, o.z); o.g.rotation.y = o.r; pose(o.g, a, dt);
   }
   // bot
@@ -1650,8 +1670,12 @@ async function mulai() {
   K.renderer = renderer;
   K.bukaLangganan = () => { Prog.bukaHub('toko'); setTimeout(() => document.querySelector('#kartu #langganan')?.scrollIntoView({ behavior: 'smooth' }), 80); };
   K.efekLokal = Hadir.efekLokal; K.bukaPanel = Direktur.bukaPanel; K.panggilKaryawan = () => Karyawan.panggil(saya);
-  K.Foto = Foto;
-  Sosial.mulai(); Direktur.mulai(); Prog.mulai(); Hadir.mulai(); Bayar.cekServer(); Foto.mulai();
+  K.Foto = Foto; K.BARANG = BARANG;
+  K.simpanProfil = () => { simpanProfil(prof); posWaktu = 0; };
+  K.streakSaya = Seru.streakSaya;
+  K.bukaHarian = k => ({ amplop: Seru.bukaAmplop, menfess: () => Seru.bukaMenfess(), speed: Speed.buka, mood: Seru.bukaMood })[k]();
+  K.emote = (a, dur) => { berdiri(); saya.emoteA = a; saya.emoteT = dur; posWaktu = 0; };
+  Sosial.mulai(); Direktur.mulai(); Prog.mulai(); Hadir.mulai(); Bayar.cekServer(); Foto.mulai(); Seru.mulai(); Seru.pasangEmote(); Speed.mulai();
   hitungOnline();
   setTimeout(() => {
     Bayar.kembaliDariBayar();

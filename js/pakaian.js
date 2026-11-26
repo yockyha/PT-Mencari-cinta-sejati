@@ -6,6 +6,7 @@
 //   kp/mt/tl/lh/tg/ef = id aksesoris kepala, mata, telinga, leher, tangan, efek ('' = tidak pakai)
 //  Syarat barang: lv (level), vip (Kartu Eksekutif), dm (harga Diamond; id = kunci katalog),
 //  khusus ('staf' | 'direktur' | 'npc') = seragam yang tidak bisa dipakai tamu.
+//  gacha = edisi Amplop Cinta (hanya dari amplop).
 //  g: 'u' semua, 'l' laki-laki, 'p' perempuan.
 // =====================================================================
 export const SLOT = {
@@ -50,6 +51,7 @@ export const PAKAIAN = [
   B('dressBunga', 'Dress Bunga', 'at', 'Dress & Gaun', 'p', { lv: 2 }, { warna: true, gaun: 'pendek' }),
   B('gaun', 'Gaun Pesta', 'at', 'Dress & Gaun', 'p', { lv: 5 }, { warna: true, gaun: 'panjang' }),
   B('kebaya', 'Kebaya', 'at', 'Dress & Gaun', 'p', { lv: 6 }, { warna: true, gaun: 'kebaya' }),
+  B('gcHoodieNeon', 'Hoodie Neon', 'at', 'Hoodie & Sweater', 'u', { gacha: true }),
   B('seragam', 'Seragam Karyawan', 'at', 'Seragam', 'u', { khusus: 'staf' }),
   B('jasDir', 'Jas Direktur', 'at', 'Seragam', 'u', { khusus: 'direktur' }),
   B('ob', 'Seragam OB', 'at', 'Seragam', 'u', { khusus: 'npc' }),
@@ -91,12 +93,14 @@ export const PAKAIAN = [
   B('bunga', 'Mahkota Bunga', 'kp', 'Mahkota', 'u', { lv: 5 }),
   B('mahkota', 'Mahkota Emas', 'kp', 'Mahkota', 'u', { vip: true }),
   B('halo', 'Halo', 'kp', 'Mahkota', 'u', { vip: true }),
+  B('gcBandoHati', 'Bando Hati', 'kp', 'Hijab & Rambut', 'u', { gacha: true }),
   B('helm', 'Helm', 'kp', 'Topi', 'u', { khusus: 'npc' }),
   B('topiOb', 'Topi Kerja', 'kp', 'Topi', 'u', { khusus: 'npc' }),
   B('kacamata', 'Kacamata', 'mt', 'Kacamata', 'u', { lv: 1 }),
   B('hitam', 'Kacamata Hitam', 'mt', 'Kacamata', 'u', { lv: 2 }),
   B('bulat', 'Kacamata Bulat', 'mt', 'Kacamata', 'u', { lv: 4 }),
   B('a12', 'Kacamata Hati', 'mt', 'Kacamata', 'u', { dm: 60 }),
+  B('gcKacamataBintang', 'Kacamata Bintang', 'mt', 'Kacamata', 'u', { gacha: true }),
   B('headset', 'Headset', 'tl', 'Audio', 'u', { lv: 1 }),
   B('antingBulat', 'Anting Bulat', 'tl', 'Anting', 'p', { lv: 2 }),
   B('tindik', 'Anting Tindik', 'tl', 'Anting', 'l', { lv: 3 }),
@@ -114,6 +118,7 @@ export const PAKAIAN = [
   B('sayap', 'Sayap Cupid', 'ef', 'Efek', 'u', { lv: 7 }),
   B('aura', 'Aura Hati', 'ef', 'Efek', 'u', { lv: 9 }),
   B('a13', 'Balon Hati', 'ef', 'Efek', 'u', { dm: 90 }),
+  B('gcSayapKupu', 'Sayap Kupu-kupu', 'ef', 'Efek', 'u', { gacha: true }),
 ];
 export const BARANG = Object.fromEntries(PAKAIAN.map(x => [x.id, x]));
 
