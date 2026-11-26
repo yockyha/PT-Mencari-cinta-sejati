@@ -6,11 +6,11 @@
 //   - efek untuk semua orang (hujan hati, kembang api, hujan bunga,
 //     undangan berkumpul) yang hanya bisa dipicu Direktur
 // =====================================================================
-import { LOKASI, LS, bersih, esc, fmt } from '../js/common.js?v=202611262230';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog } from './ui.js?v=202611262230';
-import * as Musik from './musik.js?v=202611262230';
-import * as Prog from './progres.js?v=202611262230';
-import * as Karyawan from './karyawan.js?v=202611262230';
+import { LOKASI, LS, bersih, esc, fmt } from '../js/common.js?v=202611262240';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog } from './ui.js?v=202611262240';
+import * as Musik from './musik.js?v=202611262240';
+import * as Prog from './progres.js?v=202611262240';
+import * as Karyawan from './karyawan.js?v=202611262240';
 
 export const SAPA = {
   halo: { ikon: '👋', teks: 'Halo, Direktur!' },

@@ -8,11 +8,11 @@
 //                 + permainan khusus (putar destinasi, roda random, dll)
 //  Data: mejaChat/<meja>, mejaPapan/<meja>, mejaVote/<meja>/<hari>/<uid>
 // =====================================================================
-import { LS, bersih, esc, hariIni, sensor } from '../js/common.js?v=202611262230';
-import { TS } from '../js/db.js?v=202611262230';
-import { K, toast, bukaKartu, tutupKartu, jam, tanggalJam } from './ui.js?v=202611262230';
-import * as Prog from './progres.js?v=202611262230';
-import * as Sosial from './sosial.js?v=202611262230';
+import { LS, bersih, esc, hariIni, sensor } from '../js/common.js?v=202611262240';
+import { TS } from '../js/db.js?v=202611262240';
+import { K, toast, bukaKartu, tutupKartu, jam, tanggalJam } from './ui.js?v=202611262240';
+import * as Prog from './progres.js?v=202611262240';
+import * as Sosial from './sosial.js?v=202611262240';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const cari = q => encodeURIComponent(q);
