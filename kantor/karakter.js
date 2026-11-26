@@ -5,7 +5,7 @@
 //  makan, melambai, ngetik).
 // =====================================================================
 import * as THREE from 'three';
-import { BARANG, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2 } from '../js/pakaian.js?v=202611260649';
+import { BARANG, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2 } from '../js/pakaian.js?v=202611260740';
 
 const GEO = new THREE.BoxGeometry(1, 1, 1);
 const _mat = {};
@@ -168,7 +168,7 @@ export function buatKarakter(look, { peran = 'tamu', bawa = '', tingkat = '' } =
     part(0.17, 0.21, 0.03, 0, 1.1, 0.178, putih); part(0.17, 0.06, 0.035, 0, 1.18, 0.18, M('#3a6ea5')); part(0.07, 0.07, 0.035, 0, 1.08, 0.181, M('#f6d2b8'));
   } else if (peran === 'direktur') {
     const cincin = new THREE.Mesh(new THREE.RingGeometry(0.5, 0.72, 32), new THREE.MeshBasicMaterial({ color: '#ffd23f', transparent: true, opacity: 0.75, side: THREE.DoubleSide, depthWrite: false }));
-    cincin.rotation.x = -Math.PI / 2; cincin.position.y = 0.03; g.add(cincin);
+    cincin.rotation.x = -Math.PI / 2; cincin.position.y = 0.03; cincin.name = 'cincinKaki'; g.add(cincin);
     const h = hatiKecil(0.04, '#ffd23f'); h.position.set(0.17, 1.32, depan + 0.02); tubuh.add(h);
   } else if (peran === 'tamu') {
     part(0.13, 0.09, 0.02, -0.15, 1.3, depan + 0.012, putih); part(0.13, 0.03, 0.025, -0.15, 1.33, depan + 0.014, M('#ff4f7b'));
@@ -177,7 +177,7 @@ export function buatKarakter(look, { peran = 'tamu', bawa = '', tingkat = '' } =
   // VVIP: cincin ungu di kaki
   if (tingkat === 'vvip' && peran !== 'direktur') {
     const c = new THREE.Mesh(new THREE.RingGeometry(0.5, 0.7, 32), new THREE.MeshBasicMaterial({ color: '#b36bff', transparent: true, opacity: 0.7, side: THREE.DoubleSide, depthWrite: false }));
-    c.rotation.x = -Math.PI / 2; c.position.y = 0.03; g.add(c);
+    c.rotation.x = -Math.PI / 2; c.position.y = 0.03; c.name = 'cincinKaki'; g.add(c);
   }
 
   // ------------------------------------------------ LENGAN
@@ -329,7 +329,7 @@ export function buatKarakter(look, { peran = 'tamu', bawa = '', tingkat = '' } =
   return g;
 }
 
-// a: 0 diam, 1 jalan, 2 duduk, 3 ngepel/menyapu, 4 makan/minum, 5 melambai, 6 ngetik (duduk)
+// a: 0 diam, 1 jalan, 2 duduk, 3 ngepel/menyapu, 4 makan/minum, 5 melambai, 6 ngetik (duduk), 12 tidur
 export function pose(ch, a, dt, cepat = 1, paksaDuduk = false) {
   const u = ch.userData;
   if (a === 1) u.fase += dt * 9 * cepat; else u.fase += dt;
@@ -358,6 +358,15 @@ export function pose(ch, a, dt, cepat = 1, paksaDuduk = false) {
   u.tubuh.position.y = lerp(u.tubuh.position.y, duduk ? -0.31 : (a === 1 ? Math.abs(Math.cos(u.fase)) * 0.05 : loncat));
   u.tubuh.rotation.x = lerp(u.tubuh.rotation.x, a === 3 ? 0.18 : 0);
   if (a === 0) u.kepala.rotation.y = Math.sin(u.fase * 0.4) * 0.15; else u.kepala.rotation.y = lerp(u.kepala.rotation.y, 0);
+  // 12 = tidur telentang (kepala ke arah belakang karakter); dipanggil setelah posisi diatur pemanggil
+  if (ch.rotation.order !== 'YXZ') ch.rotation.order = 'YXZ';
+  const tidur = a === 12;
+  if (tidur || ch.rotation.x) ch.rotation.x = lerp(ch.rotation.x, tidur ? -Math.PI / 2 : 0);
+  if (Math.abs(ch.rotation.x) < 0.01 && !tidur) ch.rotation.x = 0;
+  if (tidur) { ch.position.y = 0.72; u.kepala.rotation.y = 0; }
+  if (u.aura) u.aura.visible = !tidur;
+  if (!u.cincin) u.cincin = ch.children.filter(c => c.name === 'cincinKaki');
+  for (const c of u.cincin) c.visible = !tidur;
   if (u.sayap) { const f = Math.sin(performance.now() / 170) * 0.3; u.sayap[0].rotation.y = -0.5 - f; u.sayap[1].rotation.y = 0.5 + f; }
   if (u.aura) u.aura.rotation.y += (dt || 0.016) * 1.6;
   if (u.pet) { u.pet.position.y = a === 1 ? Math.abs(Math.sin(u.fase * 1.3)) * 0.08 : 0; u.pet.rotation.y = a === 1 ? 0 : Math.sin(u.fase * 0.5) * 0.4; }

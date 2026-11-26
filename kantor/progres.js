@@ -3,10 +3,10 @@
 //  arah, acara terjadwal, peringkat, toko (EXP & VIP),
 //  dan notifikasi dari Direktur.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611260649';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611260649';
-import * as Bayar from './bayar.js?v=202611260649';
-import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611260649';
+import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611260740';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611260740';
+import * as Bayar from './bayar.js?v=202611260740';
+import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611260740';
 
 // ---------------------------------------------------------------- DATA TUGAS
 const RUANG_TUJUAN = { jodoh: 'kafe', teman: 'meja', curhat: 'taman' };
@@ -254,6 +254,8 @@ function pengingatAcara() {
 export function pergiKe(lok) {
   const l = LOKASI[lok]; if (!l) return;
   if (l.vip && !vipSaya()) { bukaHub('toko'); toast('Lounge Eksekutif khusus VIP & VVIP 💎'); return; }
+  if (l.gedung && K.gedungBuka && !K.gedungBuka(l.gedung)) { K.pindah(l.x, l.z, l.r); K.lihatProyek && K.lihatProyek(l.gedung); return; }
+  if (lok === 'direktur' && K.bolehRuangDir && !K.bolehRuangDir()) { K.pindah(12.5, 16, -Math.PI / 2); K.ketukDir && K.ketukDir(); return; }
   K.pindah(l.x, l.z, l.r);
 }
 
