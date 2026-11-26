@@ -5,9 +5,9 @@
 //  Paket: f_ gratis, v_ VIP (VIP & VVIP), w_ VVIP. Direktur: semua.
 // =====================================================================
 import * as THREE from 'three';
-import { esc } from '../js/common.js?v=202611260555';
-import { K, toast } from './ui.js?v=202611260555';
-import { buatKarakter, pose } from './karakter.js?v=202611260555';
+import { esc } from '../js/common.js?v=202611260636';
+import { K, toast } from './ui.js?v=202611260636';
+import { buatKarakter, pose } from './karakter.js?v=202611260636';
 
 const S = o => ({ v: 2, k: 1, r: 0, w: 0, wa: 0, wb: 0, at: 'kaos', bw: 'chino', sp: 'sneakers', kp: '', mt: '', tl: '', lh: '', tg: '', ef: '', ...o });
 // [id, tulisan, penampilan, pose (0 diam, 4 minum/makan, 5 melambai), peran, bawaan, warna tulisan]

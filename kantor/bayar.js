@@ -5,11 +5,11 @@
 //  atau manual: QRIS/transfer BCA/BRI dengan NOMINAL UNIK, lalu
 //  diverifikasi Direktur di Dashboard (Toko & Pesanan).
 // =====================================================================
-import { PAKAIAN, SLOT } from '../js/pakaian.js?v=202611260555';
-import { LANGGANAN } from '../js/common.js?v=202611260555';
-import { CFG, LS, esc, fmt, bersih, rupiah, IKON_DM, kodeTamu, hash } from '../js/common.js?v=202611260555';
-import { K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611260555';
-import * as P from './progres.js?v=202611260555';
+import { PAKAIAN, SLOT } from '../js/pakaian.js?v=202611260636';
+import { LANGGANAN, TINGKAT_DONASI, tingkatDonasi } from '../js/common.js?v=202611260636';
+import { CFG, LS, esc, fmt, bersih, rupiah, IKON_DM, kodeTamu, hash } from '../js/common.js?v=202611260636';
+import { K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611260636';
+import * as P from './progres.js?v=202611260636';
 
 const BAYAR = () => CFG.pembayaran || {};
 const resmi = () => !!(K.resmi && K.resmi());
@@ -64,7 +64,7 @@ export function tabToko() {
       <h3>🎁 Donasi</h3>
       <p class="kecil">Dukung kantor supaya tetap gratis dan makin seru. Nominal bebas.</p>
       <div class="baris"><button class="btn" type="button" id="tDonasi" ${buka ? '' : 'disabled'}>Donasi sekarang</button></div>
-      ${donatur.length ? `<h3>🏅 Papan Donatur</h3><ol class="peringkat">${donatur.map(([u, d]) => `<li class="${u === K.L.uid ? 'saya' : ''}"><span>${esc(bersih(d.n, 20))}</span><b>${rupiah(d.total)}</b></li>`).join('')}</ol>` : ''}
+      ${donatur.length ? `<h3>🏅 Papan Donatur</h3><ol class="peringkat">${donatur.map(([u, d]) => `<li class="${u === K.L.uid ? 'saya' : ''}"><span>${tingkatDonasi(d.total || 0).ikon} ${esc(bersih(d.n, 20))}</span><b>${rupiah(d.total)}</b></li>`).join('')}</ol>` : ''}
       <h3>🧾 Pesananku</h3><div id="pKu"><p class="kecil">${pesananKu().length ? 'Memuat…' : 'Belum ada pesanan.'}</p></div>
       <p class="kecil">Kode tamu kamu: <code>${esc(kodeTamu(K.L.uid))}</code></p>`,
     pasang(el) {
@@ -140,7 +140,7 @@ export function kembaliDariBayar() {
   if (q.get('bayar') !== 'selesai') return;
   history.replaceState(null, '', location.pathname + location.hash);
   const st = q.get('transaction_status');
-  toast(st === 'settlement' || st === 'capture' ? '✅ Pembayaran berhasil! Diamond/paketmu masuk dalam beberapa detik.'
+  toast(st === 'settlement' || st === 'capture' ? '✅ Pembayaran berhasil! Diamond/paket/gelar donaturmu muncul dalam beberapa detik.'
     : st === 'pending' ? '⏳ Pembayaran belum selesai. Selesaikan dulu ya, nanti masuk otomatis.'
       : '🧾 Terima kasih! Kalau sudah bayar, item masuk otomatis dalam beberapa detik.', 5200);
 }
@@ -181,14 +181,21 @@ function langkahBayar(item, m) {
 export function bukaDonasi() {
   if (!resmi()) { K.bukaDaftar(); return; }
   const D = CFG.donasi || {}, min = D.min || 5000;
-  bukaKartu(`<h2>🎁 Donasi untuk kantor</h2><p>Donasimu dipakai untuk biaya server dan acara. Terima kasih! 💖</p>
+  bukaKartu(`<h2>💖 Traktir Kantor Cinta</h2>
+    <p>PT Mencari Cinta Sejati <b>gratis untuk semua tamu</b>, tanpa iklan. Lampunya tetap nyala karena ada orang baik sepertimu. Donasimu membayar server, domain, dan hadiah acara supaya makin banyak orang bisa ketemu teman & jodohnya di sini.</p>
+    <ul class="manfaat">${TINGKAT_DONASI.slice().reverse().map(t => `<li>${t.ikon} <b>${t.min ? rupiah(t.min) + '+' : 'Berapa pun'}</b>: ${esc(t.gelar)}</li>`).join('')}</ul>
     <div class="sw teks">${(D.saran || []).map(n => `<button type="button" data-n="${n}">${rupiah(n)}</button>`).join('')}</div>
     <label for="dN">Nominal (min. ${rupiah(min)})</label><input id="dN" type="number" inputmode="numeric" min="${min}" step="1000" value="${(D.saran || [])[0] || min}">
-    <label for="dP">Pesan (opsional)</label><input id="dP" maxlength="100" placeholder="contoh: semangat terus kantornya!">
+    <p class="artiDonasi" id="dA" aria-live="polite"></p>
+    <label for="dP">Pesan (opsional)</label><input id="dP" maxlength="100" placeholder="contoh: semoga semua tamu ketemu jodohnya!">
     <label class="cek"><input type="checkbox" id="dT" checked> Tampilkan namaku di Papan Donatur</label>
-    <p class="err" id="dE"></p><div class="baris"><button class="btn" type="button" id="dL">Lanjut bayar →</button></div>`, {
+    <p class="err" id="dE"></p><div class="baris"><button class="btn" type="button" id="dL">💖 Donasi sekarang</button></div>
+    <p class="kecil">Donasi bersifat sukarela dan tidak bisa dikembalikan. Namamu dan gelarmu muncul di Papan Donatur di Toko.</p>`, {
     pasang(el) {
-      el.querySelectorAll('[data-n]').forEach(b => b.onclick = () => { el.querySelector('#dN').value = b.dataset.n; });
+      const arti = () => { const n = Math.round(+el.querySelector('#dN').value || 0), t = tingkatDonasi(n);
+        el.querySelector('#dA').innerHTML = n >= min ? `${t.ikon} <b>${esc(t.gelar)}</b>: ${esc(t.arti)}` : ''; };
+      el.querySelectorAll('[data-n]').forEach(b => b.onclick = () => { el.querySelector('#dN').value = b.dataset.n; arti(); });
+      el.querySelector('#dN').oninput = arti; arti();
       el.querySelector('#dL').onclick = () => {
         const n = Math.round(+el.querySelector('#dN').value || 0);
         if (n < min) { el.querySelector('#dE').textContent = `Minimal ${rupiah(min)}.`; return; }

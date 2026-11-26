@@ -1,5 +1,5 @@
 // Memasukkan barang ke akun pembeli setelah pembayaran lunas.
-import PAKET, { hitungItem } from '../paket.js';
+import PAKET, { hitungItem, ucapanDonasi } from '../paket.js';
 import { TS } from './firebase.js';
 
 const rp = n => 'Rp' + Number(n || 0).toLocaleString('id-ID');
@@ -20,7 +20,7 @@ export async function lunasi(db, id, v, metodeBayar) {
     pesan = `💠 ${it.diamond} Diamond sudah masuk ke akunmu. Selamat belanja di Lemari Diamond!`;
   } else if (it.jenis === 'donasi') {
     await db.atomik('donatur/' + v.uid, x => ({ n: String(v.n || 'Tamu').slice(0, 20), total: ((x && x.total) || 0) + it.harga, kali: ((x && x.kali) || 0) + 1, tampil: v.tampil !== false, t: sekarang }));
-    pesan = `Terima kasih atas donasi ${rp(it.harga)}! 💖 Dukunganmu sangat berarti untuk kantor.`;
+    pesan = ucapanDonasi(it.harga);
   } else {
     if (it.exp) await db.atomik('expBeli/' + v.uid, x => (+x || 0) + it.exp);
     // tingkat: paket VVIP menaikkan ke vvip; paket VIP tidak menurunkan VVIP yang masih aktif
