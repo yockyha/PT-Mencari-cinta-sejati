@@ -671,6 +671,13 @@
       ".read": true,
       ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'"
     },
+    "papanDonasi": {
+      ".read": true,
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$id": {
+        ".validate": "newData.child('n').isString() && newData.child('n').val().length <= 20 && newData.child('nominal').isNumber() && newData.child('m').isString() && newData.child('m').val().length <= 100 && newData.child('t').isNumber()"
+      }
+    },
     "riwayat": {
       ".read": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
       ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'"

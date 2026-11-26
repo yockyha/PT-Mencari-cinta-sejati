@@ -39,3 +39,22 @@ export function hitungItem(P, { jenis, paket, nominal }) {
   if (jenis === 'donasi') { const n = Math.round(+nominal || 0); return n >= P.donasi.min && n <= P.donasi.maks ? { jenis, paket: 'donasi', nama: 'Donasi', harga: n } : null; }
   return null;
 }
+
+// Narasi donasi: arti nominal (tampil saat memilih) & ucapan terima kasih (notifikasi setelah lunas).
+// Dipakai tampilan donasi DAN server, jadi kata-katanya cukup diubah di sini. Ucapan maks. ±170 huruf.
+export const TINGKAT_DONASI = [
+  { min: 100000, ikon: '👑', gelar: 'Pahlawan Kantor', arti: 'Biaya server sebulan penuh + modal fitur baru. Kantor ini berdiri karena orang sepertimu.' },
+  { min: 50000, ikon: '💐', gelar: 'Sponsor Kantor', arti: 'Biaya server seminggu tertutup. Lampu kantor tetap nyala buat semua tamu.' },
+  { min: 25000, ikon: '🎉', gelar: 'Pendukung Acara', arti: 'Cukup buat modal satu acara: Speed Dating, Nobar, atau kuis berhadiah.' },
+  { min: 10000, ikon: '🍰', gelar: 'Teman Baik Kantor', arti: 'Setara camilan sore satu divisi. Server & domain aman beberapa hari.' },
+  { min: 0, ikon: '☕', gelar: 'Penyemangat Kantor', arti: 'Setara traktir kopi tim kantor. Server tetap nyala seharian.' },
+];
+export const tingkatDonasi = n => TINGKAT_DONASI.find(t => n >= t.min);
+export function ucapanDonasi(n) {
+  const t = tingkatDonasi(n), rpS = 'Rp' + Number(n).toLocaleString('id-ID');
+  return `${t.ikon} Donasi ${rpS} diterima! Kamu resmi jadi ${t.gelar} PT MCS. Seluruh karyawan & tamu berterima kasih, semoga cinta sejatimu cepat ketemu 💖`;
+}
+
+// Nama yang tampil di Papan Donasi (nt = nama pilihan donatur; tampil=false → anonim)
+export const ANONIM_DONASI = 'Orang Baik 🤍';
+export const namaPapan = v => (v && v.tampil === false ? ANONIM_DONASI : String((v && (v.nt || v.n)) || 'Tamu').trim().slice(0, 20) || 'Tamu');

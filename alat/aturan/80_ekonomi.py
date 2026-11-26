@@ -22,6 +22,9 @@ def pasang(r):
       ".validate": "newData.val() === true"}}}
     r["katalog"] = {".read": True, ".write": f"{A} && {DIR}", "$item": {".validate": "newData.child('harga').isNumber() && newData.child('harga').val() > 0"}}
     r["donatur"] = {".read": True, ".write": f"{A} && {DIR}"}
+    # PAPAN DONASI (papan besar di lobi): ditulis server pembayaran / Direktur saat donasi lunas
+    r["papanDonasi"] = {".read": True, ".write": f"{A} && {DIR}", "$id": {
+      ".validate": "newData.child('n').isString() && newData.child('n').val().length <= 20 && newData.child('nominal').isNumber() && newData.child('m').isString() && newData.child('m').val().length <= 100 && newData.child('t').isNumber()"}}
     r["riwayat"] = D()
     r["notif"] = {".read": f"{A} && {DIR}", "$uid": {".read": f"{A} && auth.uid === $uid", "$id": {
       ".write": f"{A} && ((newData.exists() && {STAF}) || (!newData.exists() && (auth.uid === $uid || {DIR})))",

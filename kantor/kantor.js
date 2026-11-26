@@ -3,25 +3,25 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611260555';
-import { bukaDB } from '../js/db.js?v=202611260555';
-import { buatLayanan } from '../js/layanan.js?v=202611260555';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611260555';
-import * as Sosial from './sosial.js?v=202611260555';
-import * as Direktur from './direktur.js?v=202611260555';
-import * as Prog from './progres.js?v=202611260555';
-import * as Game from './game.js?v=202611260555';
-import * as Bayar from './bayar.js?v=202611260555';
-import * as Meja from './meja.js?v=202611260555';
-import * as Karyawan from './karyawan.js?v=202611260555';
-import * as Hadir from './hadir.js?v=202611260555';
-import * as Foto from './foto.js?v=202611260555';
-import * as Seru from './seru.js?v=202611260555';
-import * as Speed from './speeddating.js?v=202611260555';
-import * as Aktivitas from './aktivitas.js?v=202611260555';
-import * as Komunitas from './komunitas.js?v=202611260555';
-import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611260555';
-import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611260555';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611260649';
+import { bukaDB } from '../js/db.js?v=202611260649';
+import { buatLayanan } from '../js/layanan.js?v=202611260649';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611260649';
+import * as Sosial from './sosial.js?v=202611260649';
+import * as Direktur from './direktur.js?v=202611260649';
+import * as Prog from './progres.js?v=202611260649';
+import * as Game from './game.js?v=202611260649';
+import * as Bayar from './bayar.js?v=202611260649';
+import * as Meja from './meja.js?v=202611260649';
+import * as Karyawan from './karyawan.js?v=202611260649';
+import * as Hadir from './hadir.js?v=202611260649';
+import * as Foto from './foto.js?v=202611260649';
+import * as Seru from './seru.js?v=202611260649';
+import * as Speed from './speeddating.js?v=202611260649';
+import * as Aktivitas from './aktivitas.js?v=202611260649';
+import * as Komunitas from './komunitas.js?v=202611260649';
+import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611260649';
+import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611260649';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
@@ -217,6 +217,14 @@ function bangunDunia() {
   K.gambarJadwal = () => jadwal.ulang();
   setInterval(() => jadwal.ulang(), 60000);
   titikAksi.push({ x: -10, z: 11.6, r: 1.8, label: 'Lihat jadwal acara', aksi: () => Prog.bukaHub('acara') });
+  // PAPAN DONASI besar di belakang meja resepsionis (langsung terlihat dari pintu masuk)
+  for (const x of [-2.85, 2.85]) kotak(0.16, 3.75, 0.16, x, 0, 10.12, '#d4a017', { tab: true });
+  kotak(5.7, 2.75, 0.14, 0, 0.92, 10.06, '#2a1420');
+  kotak(5.9, 0.16, 0.22, 0, 3.67, 10.08, '#d4a017');
+  papanDonasiKV = kanvas(1140, 540, gambarPapanDonasi);
+  bidangTeks(5.5, 2.6, 0, papanDonasiKV, 0, 2.3, 10.15);
+  for (const x of [-3.7, 3.7]) titikAksi.push({ x, z: 11.2, r: 1.5, label: '💖 Lihat Papan Donasi', aksi: () => Bayar.bukaPapanDonasi() });
+  titikAksi.push({ x: 0, z: 15.3, r: 1.2, label: '💖 Lihat Papan Donasi', aksi: () => Bayar.bukaPapanDonasi() });
   // photobooth (lobi timur): latar warna-warni + pilihan bingkai, bisa foto bareng
   kotak(3.2, 2.6, 0.12, 11.2, 0, 19.75, '#ff8fab'); kotak(3.4, 0.2, 0.2, 11.2, 2.6, 19.75, '#ffd23f');
   bidangTeks(3, 2.3, 0, kanvas(600, 460, (c, w, h) => { const g = c.createLinearGradient(0, 0, w, h); g.addColorStop(0, '#ff8fab'); g.addColorStop(1, '#ffd23f'); c.fillStyle = g; c.fillRect(0, 0, w, h); c.font = '60px sans-serif'; for (let i = 0; i < 24; i++) c.fillText(['💗', '✨', '💘'][i % 3], (i * 113) % w, 60 + (i * 71) % h); c.fillStyle = '#fff'; c.font = FD(56); c.textAlign = 'center'; c.fillText('📸 PHOTOBOOTH', w / 2, h - 40); }), 11.2, 1.35, 19.68, Math.PI);
@@ -1345,7 +1353,40 @@ function bukaKoin() {
 let airLompat = 0;
 
 // ---------------------------------------------------------------- BENDA INTERAKTIF
-let layarNobar = null, laguKV = null, dekor = null, dekorJenis = null;
+let layarNobar = null, laguKV = null, dekor = null, dekorJenis = null, papanDonasiKV = null;
+// gambar Papan Donasi: donasi terbaru (nama, nominal, kata-kata) + donatur teratas
+function gambarPapanDonasi(c, w, h) {
+  const g = c.createLinearGradient(0, 0, 0, h); g.addColorStop(0, '#3a1a2b'); g.addColorStop(1, '#22101a'); c.fillStyle = g; c.fillRect(0, 0, w, h);
+  c.strokeStyle = '#ffd23f'; c.lineWidth = 6; bulat(c, 8, 8, w - 16, h - 16, 18); c.stroke();
+  c.textAlign = 'center'; c.fillStyle = '#ffd23f'; c.font = FD(50); c.fillText('💖 PAPAN DONASI 💖', w / 2, 66);
+  c.fillStyle = '#ffb3c6'; c.font = FB(22, 800); c.fillText('Terima kasih orang-orang baik yang menjaga kantor ini tetap buka untuk semua', w / 2, 100, w - 60);
+  const l = Bayar.daftarPapan ? Bayar.daftarPapan() : [];
+  if (!l.length) {
+    c.fillStyle = '#fff'; c.font = FB(34, 900); c.fillText('Belum ada donasi', w / 2, 280);
+    c.fillStyle = '#ffb3c6'; c.font = FB(26, 800); c.fillText('Jadilah nama pertama di papan ini ✨ (Toko → Donasi)', w / 2, 330, w - 60); return;
+  }
+  // kiri: 4 donasi terbaru
+  c.textAlign = 'left';
+  l.slice(0, 4).forEach(([, d], i) => {
+    const t = Bayar.tingkatDonasi(d.nominal || 0), Y = 122 + i * 102, baru = Date.now() - (d.t || 0) < 3600e3;
+    c.fillStyle = baru ? '#ff4f7b' : 'rgba(255,246,239,.09)'; bulat(c, 26, Y, 740, 92, 14); c.fill();
+    c.fillStyle = '#fff'; c.font = FB(30, 900); c.fillText(`${t.ikon} ${d.n}`, 44, Y + 38, 470);
+    c.textAlign = 'right'; c.fillStyle = '#ffd23f'; c.font = FD(32); c.fillText(rpTeks(d.nominal), 750, Y + 38); c.textAlign = 'left';
+    c.fillStyle = baru ? '#fff6ef' : '#ffb3c6'; c.font = FB(22, 700);
+    c.fillText(d.m ? `“${d.m}”` : t.gelar, 44, Y + 74, 700);
+  });
+  // kanan: donatur teratas (total)
+  const top = Object.values(Prog.daftarDonatur ? Prog.daftarDonatur() : {}).filter(d => d && d.tampil !== false).sort((a, b) => (b.total || 0) - (a.total || 0)).slice(0, 5);
+  c.fillStyle = 'rgba(255,210,63,.12)'; bulat(c, 790, 122, 322, 394, 14); c.fill();
+  c.textAlign = 'center'; c.fillStyle = '#ffd23f'; c.font = FD(30); c.fillText('🏆 TERATAS', 951, 164);
+  c.textAlign = 'left';
+  (top.length ? top : []).forEach((d, i) => {
+    const Y = 214 + i * 62;
+    c.fillStyle = '#fff'; c.font = FB(24, 900); c.fillText(`${['🥇', '🥈', '🥉', '4.', '5.'][i]} ${d.n}`, 808, Y, 290);
+    c.fillStyle = '#ffb3c6'; c.font = FB(20, 800); c.fillText(rpTeks(d.total), 846, Y + 26, 250);
+  });
+}
+const rpTeks = n => 'Rp' + Number(n || 0).toLocaleString('id-ID');
 function bukaPhotobooth() {
   const n = [...lain.values()].filter(o => Math.hypot(o.x - saya.x, o.z - saya.z) < 3.5).length;
   bukaKartu(`<h2>📸 Photobooth</h2><p class="kecil">Pilih bingkai. ${n ? `Ada <b>${n} orang</b> di dekatmu, bisa foto bareng!` : 'Ajak teman berdiri di dekatmu untuk foto bareng.'}</p>
@@ -1746,7 +1787,7 @@ async function mulai() {
   K.bukaHarian = k => ({ amplop: Seru.bukaAmplop, menfess: () => Seru.bukaMenfess(), speed: Speed.buka, mood: Seru.bukaMood, season: Komunitas.bukaSeason, kuis: Aktivitas.bukaKuis, kerupuk: Aktivitas.bukaKerupuk, kisah: Komunitas.bukaKisah, undang: Komunitas.bukaUndang, lencana: Komunitas.bukaLencana, kamar: () => Komunitas.bukaKamar() })[k]();
   K.Aktivitas = Aktivitas; K.Komunitas = Komunitas; K.kirimEfek = Hadir.kirimEfek;
   K.emote = (a, dur) => { berdiri(); saya.emoteA = a; saya.emoteT = dur; posWaktu = 0; };
-  Sosial.mulai(); Direktur.mulai(); Prog.mulai(); Hadir.mulai(); Bayar.cekServer(); Foto.mulai(); Seru.mulai(); Seru.pasangEmote(); Speed.mulai(); Aktivitas.mulai(); Komunitas.mulai(); setTimeout(dekorMusim, 1500);
+  Sosial.mulai(); Direktur.mulai(); Prog.mulai(); Hadir.mulai(); Bayar.cekServer(); Foto.mulai(); Seru.mulai(); Seru.pasangEmote(); Speed.mulai(); Aktivitas.mulai(); Komunitas.mulai(); Bayar.mulaiPapan(() => papanDonasiKV && papanDonasiKV.ulang()); setInterval(() => papanDonasiKV && papanDonasiKV.ulang(), 30000); setTimeout(dekorMusim, 1500);
   hitungOnline();
   setTimeout(() => {
     Bayar.kembaliDariBayar();
