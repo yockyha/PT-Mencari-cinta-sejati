@@ -1,0 +1,615 @@
+{
+ "versi": 1,
+ "fps": 30,
+ "lebar": 1080,
+ "tinggi": 1920,
+ "durasi": 1272,
+ "vo": null,
+ "lapis": [
+  {
+   "id": "e1",
+   "track": "elemen",
+   "jenis": "kotakdm",
+   "mulai": 0,
+   "durasi": 114,
+   "props": {
+    "akun": "Chat",
+    "pesan": "Keluarga Besar 🙏|Om Budi: Selamat pagi, semoga berkah…|2j\nKerja Kelompok PKN|siapa yang ngerjain bab 3??|5j\nAlumni SD 2010|📎 undangan_nikahan.pdf|1h\nGrup RT 05|Iuran kebersihan bulan ini…|3h",
+    "jeda": 0.47,
+    "sensor": false
+   },
+   "nama": "Daftar grup membosankan"
+  },
+  {
+   "id": "t2",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "POV: grup chat lu isinya cuma",
+   "mulai": 0,
+   "durasi": 57,
+   "y": 1450
+  },
+  {
+   "id": "t3",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "*grup keluarga* sama *kerja kelompok…* 🫠",
+   "mulai": 57,
+   "durasi": 57,
+   "y": 1450
+  },
+  {
+   "id": "g4",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/drone.mp4",
+   "mulai": 114,
+   "durasi": 138,
+   "gelap": 0.4,
+   "kecepatan": 0.8,
+   "nama": "Kantor jodoh"
+  },
+  {
+   "id": "t5",
+   "track": "teks",
+   "jenis": "stiker",
+   "teks": "NEW FEATURE 🔥",
+   "mulai": 117,
+   "durasi": 135,
+   "warna": "#ff4f7b",
+   "y": 360
+  },
+  {
+   "id": "t6",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Sekarang lu bisa bikin *grup sendiri!*",
+   "mulai": 114,
+   "durasi": 62,
+   "y": 1330
+  },
+  {
+   "id": "t7",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Kayak grup WA, tapi isinya *satu frekuensi* 🤝",
+   "mulai": 176,
+   "durasi": 76,
+   "y": 1330
+  },
+  {
+   "id": "g8",
+   "track": "gambar",
+   "jenis": "foto",
+   "src": "foto/levelup.png",
+   "mulai": 252,
+   "durasi": 102,
+   "zoom": 1.08,
+   "nama": "Level up"
+  },
+  {
+   "id": "t9",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "⭐ LV.7+|💎 VIP|👑 VVIP",
+   "mulai": 257,
+   "durasi": 97,
+   "nyala": "0,1,2",
+   "y": 560,
+   "masuk": "pop"
+  },
+  {
+   "id": "t10",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Syaratnya: udah *Level 7,*",
+   "mulai": 252,
+   "durasi": 51,
+   "y": 1330
+  },
+  {
+   "id": "t11",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "atau lu *VIP / VVIP* 💅",
+   "mulai": 303,
+   "durasi": 51,
+   "y": 1330
+  },
+  {
+   "id": "g12",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/gbuat.mp4",
+   "mulai": 354,
+   "durasi": 162,
+   "trim": 0.4,
+   "kecepatan": 1.0,
+   "nama": "Bikin grup"
+  },
+  {
+   "id": "t13",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "＋ BIKIN GRUP",
+   "mulai": 357,
+   "durasi": 159,
+   "nyala": "0",
+   "y": 1690,
+   "masuk": "pop"
+  },
+  {
+   "id": "t14",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Tinggal bikin, kasih nama *sesuka lu.*",
+   "mulai": 354,
+   "durasi": 73,
+   "y": 130
+  },
+  {
+   "id": "t15",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "*\"Pejuang Jomblo\"*, bebas, *no debat!*",
+   "mulai": 427,
+   "durasi": 89,
+   "y": 130
+  },
+  {
+   "id": "g16",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/gundang.mp4",
+   "mulai": 516,
+   "durasi": 114,
+   "trim": 0.4,
+   "kecepatan": 1.053,
+   "nama": "Terima undangan"
+  },
+  {
+   "id": "t17",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "📨 UNDANG BESTIE",
+   "mulai": 518,
+   "durasi": 112,
+   "nyala": "0",
+   "y": 1690,
+   "masuk": "pop"
+  },
+  {
+   "id": "t18",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Undang *bestie* lu, tinggal klik *gabung.*",
+   "mulai": 516,
+   "durasi": 114,
+   "y": 130
+  },
+  {
+   "id": "g19",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/gchat.mp4",
+   "mulai": 630,
+   "durasi": 150,
+   "trim": 0.2,
+   "kecepatan": 1.24,
+   "nama": "Chat grup + stiker"
+  },
+  {
+   "id": "t20",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "😂 STIKER KARAKTER",
+   "mulai": 633,
+   "durasi": 147,
+   "nyala": "0",
+   "y": 1690,
+   "masuk": "pop"
+  },
+  {
+   "id": "t21",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Chat-an *rame-rame,*",
+   "mulai": 630,
+   "durasi": 60,
+   "y": 130
+  },
+  {
+   "id": "t22",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "spam *stiker* yang lucunya kebangetan!",
+   "mulai": 690,
+   "durasi": 90,
+   "y": 130
+  },
+  {
+   "id": "g23",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/drone.mp4",
+   "mulai": 780,
+   "durasi": 204,
+   "gelap": 0.5,
+   "kecepatan": 0.6,
+   "trim": 1.0,
+   "nama": "Kantor (redup)"
+  },
+  {
+   "id": "t24",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "⭐ LV.7 · 2 GRUP · 10 ORANG",
+   "mulai": 784,
+   "durasi": 200,
+   "nyala": "0",
+   "y": 420,
+   "masuk": "pop",
+   "ukuran": 44
+  },
+  {
+   "id": "t25",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "💎 VIP · 5 GRUP · 30 ORANG",
+   "mulai": 845,
+   "durasi": 139,
+   "nyala": "0",
+   "y": 590,
+   "masuk": "pop",
+   "ukuran": 44
+  },
+  {
+   "id": "t26",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "👑 VVIP · 10 GRUP · 100 ORANG",
+   "mulai": 902,
+   "durasi": 82,
+   "nyala": "0",
+   "y": 760,
+   "masuk": "pop",
+   "ukuran": 44
+  },
+  {
+   "id": "t27",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Level 7: *2 grup,* 10 orang.",
+   "mulai": 780,
+   "durasi": 61,
+   "y": 1330
+  },
+  {
+   "id": "t28",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "VIP: *5 grup,* 30 orang.",
+   "mulai": 841,
+   "durasi": 57,
+   "y": 1330
+  },
+  {
+   "id": "t29",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "VVIP? Sampe *100 orang!* Gila sih 🤯",
+   "mulai": 898,
+   "durasi": 86,
+   "y": 1330
+  },
+  {
+   "id": "g30",
+   "track": "gambar",
+   "jenis": "foto",
+   "src": "foto/tugas.png",
+   "mulai": 984,
+   "durasi": 73,
+   "zoom": 1.06,
+   "nama": "Tugas harian"
+  },
+  {
+   "id": "g31",
+   "track": "gambar",
+   "jenis": "foto",
+   "src": "foto/levelup.png",
+   "mulai": 1057,
+   "durasi": 59,
+   "zoom": 1.06,
+   "nama": "Naik level"
+  },
+  {
+   "id": "t32",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Belum Level 7? *Santai…*",
+   "mulai": 984,
+   "durasi": 53,
+   "y": 130
+  },
+  {
+   "id": "t33",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "tetep bisa *diundang,* sambil *grinding EXP!*",
+   "mulai": 1037,
+   "durasi": 79,
+   "y": 130
+  },
+  {
+   "id": "g34",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/drone.mp4",
+   "mulai": 1116,
+   "durasi": 156,
+   "gelap": 0.45,
+   "kecepatan": 0.6,
+   "trim": 0.5,
+   "nama": "Latar penutup"
+  },
+  {
+   "id": "e35",
+   "track": "elemen",
+   "jenis": "komentar",
+   "mulai": 1116,
+   "durasi": 156,
+   "props": {
+    "komentar": "penonton1|grup \"Korban PHP\" 😭|1m|20\npenonton2|\"Bangun Tidur Langsung Galau\"|2m|11\npenonton3|@temen yuk bikin \"Geng Rebahan\"|3m|7\npenonton4|\"Sobat Ambyar Garis Keras\" 😆|4m|4",
+    "ketik": "@bestie grup kita namanya apa? 😭",
+    "ketikDetik": 0.42,
+    "akunSaya": "lu",
+    "sensor": true
+   },
+   "masuk": "geser-atas",
+   "nama": "Komentar: tag bestie"
+  },
+  {
+   "id": "t36",
+   "track": "teks",
+   "jenis": "stiker",
+   "teks": "TAG BESTIE LU 👇",
+   "mulai": 1119,
+   "durasi": 75,
+   "warna": "#ff4f7b",
+   "y": 240
+  },
+  {
+   "id": "t37",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Jadi… *circle lu* siapa aja nih?",
+   "mulai": 1116,
+   "durasi": 78,
+   "y": 470
+  },
+  {
+   "id": "t38",
+   "track": "teks",
+   "jenis": "stiker",
+   "teks": "KOMEN YUK 💬",
+   "mulai": 1194,
+   "durasi": 78,
+   "warna": "#ffd23f",
+   "y": 240
+  },
+  {
+   "id": "t39",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Komen *nama grup paling absurd!*",
+   "mulai": 1194,
+   "durasi": 78,
+   "y": 470
+  },
+  {
+   "id": "t40",
+   "track": "teks",
+   "jenis": "akun",
+   "teks": "@jodohonline.company",
+   "mulai": 114,
+   "durasi": 240,
+   "masuk": "none",
+   "y": 150,
+   "x": 130
+  }
+ ],
+ "sfx": [
+  {
+   "id": "s1",
+   "nama": "Notif 1",
+   "src": "sfx/notif.mp3",
+   "mulai": 0,
+   "durasi": 15,
+   "volume": 0.2
+  },
+  {
+   "id": "s2",
+   "nama": "Notif 2",
+   "src": "sfx/notif.mp3",
+   "mulai": 14,
+   "durasi": 15,
+   "volume": 0.2
+  },
+  {
+   "id": "s3",
+   "nama": "Notif 3",
+   "src": "sfx/notif.mp3",
+   "mulai": 28,
+   "durasi": 15,
+   "volume": 0.2
+  },
+  {
+   "id": "s4",
+   "nama": "Notif 4",
+   "src": "sfx/notif.mp3",
+   "mulai": 43,
+   "durasi": 15,
+   "volume": 0.2
+  },
+  {
+   "id": "s5",
+   "nama": "Whoosh",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 111,
+   "durasi": 18,
+   "volume": 0.3
+  },
+  {
+   "id": "s6",
+   "nama": "Pop stiker",
+   "src": "sfx/pop.mp3",
+   "mulai": 116,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s7",
+   "nama": "Level up",
+   "src": "sfx/levelup.mp3",
+   "mulai": 255,
+   "durasi": 33,
+   "volume": 0.3
+  },
+  {
+   "id": "s8",
+   "nama": "Pop ＋ BIKIN GRUP",
+   "src": "sfx/pop.mp3",
+   "mulai": 357,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s9",
+   "nama": "Ketik nama",
+   "src": "sfx/ketik.mp3",
+   "mulai": 378,
+   "durasi": 40,
+   "volume": 0.8
+  },
+  {
+   "id": "s10",
+   "nama": "Pop 📨 UNDANG BESTIE",
+   "src": "sfx/pop.mp3",
+   "mulai": 518,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s11",
+   "nama": "Ketuk gabung",
+   "src": "sfx/ketuk.mp3",
+   "mulai": 567,
+   "durasi": 12,
+   "volume": 0.45
+  },
+  {
+   "id": "s12",
+   "nama": "Pop 😂 STIKER KARAKTER",
+   "src": "sfx/pop.mp3",
+   "mulai": 633,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s13",
+   "nama": "Pop chat",
+   "src": "sfx/pop.mp3",
+   "mulai": 652,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s14",
+   "nama": "Pop chat",
+   "src": "sfx/pop.mp3",
+   "mulai": 675,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s15",
+   "nama": "Pop chat",
+   "src": "sfx/pop.mp3",
+   "mulai": 698,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s16",
+   "nama": "Pop batas 1",
+   "src": "sfx/pop.mp3",
+   "mulai": 784,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s17",
+   "nama": "Pop batas 2",
+   "src": "sfx/pop.mp3",
+   "mulai": 845,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s18",
+   "nama": "Pop batas 3",
+   "src": "sfx/pop.mp3",
+   "mulai": 902,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s19",
+   "nama": "Wow",
+   "src": "sfx/levelup.mp3",
+   "mulai": 902,
+   "durasi": 33,
+   "volume": 0.3
+  },
+  {
+   "id": "s20",
+   "nama": "Geser komentar",
+   "src": "sfx/geser.mp3",
+   "mulai": 1116,
+   "durasi": 18,
+   "volume": 0.8
+  },
+  {
+   "id": "s21",
+   "nama": "Ketik tag",
+   "src": "sfx/ketik.mp3",
+   "mulai": 1128,
+   "durasi": 40,
+   "volume": 1.0
+  },
+  {
+   "id": "s22",
+   "nama": "Ketuk kirim",
+   "src": "sfx/ketuk.mp3",
+   "mulai": 1241,
+   "durasi": 12,
+   "volume": 0.45
+  },
+  {
+   "id": "s23",
+   "nama": "Pop terkirim",
+   "src": "sfx/pop.mp3",
+   "mulai": 1246,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s24",
+   "nama": "Pop stiker 2",
+   "src": "sfx/pop.mp3",
+   "mulai": 1194,
+   "durasi": 15,
+   "volume": 0.35
+  }
+ ]
+}
