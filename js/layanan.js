@@ -3,8 +3,8 @@
 //  ajakan ngobrol, obrolan pribadi, suka & match, laporan, dan
 //  alat Direktur/Staf. Struktur data ini sama dengan database.rules.json.
 // =====================================================================
-import { TS } from './db.js?v=202611260432';
-import { CFG, bersih, sensor, rupiah, kodeTamu } from './common.js?v=202611260432';
+import { TS } from './db.js?v=202611260437';
+import { CFG, bersih, sensor, rupiah, kodeTamu } from './common.js?v=202611260437';
 
 export function buatLayanan(db) {
   const uid = db.uid;
@@ -212,7 +212,8 @@ export function buatLayanan(db) {
       const lama = ganti ? {} : ((await db.get('profilPribadi/' + uid).catch(() => null)) || {});
       const ambil = k => (ganti ? d[k] || '' : lama[k] || d[k] || '');
       await db.set('profilPribadi/' + uid, { nl: ambil('nl'), ig: ambil('ig'), tt: ambil('tt'), t: TS });
-      await db.update('tamu/' + uid, { ig: '' }).catch(() => {});
+      const ada = await db.get('tamu/' + uid + '/ig').catch(() => null);
+      if (ada) await db.update('tamu/' + uid, { ig: '' }).catch(() => {});
     },
     mintaIzinIg(pemilik, n) { return db.set(`izinIgMinta/${pemilik}/${uid}`, { n, t: TS }); },
     izinkanIg(peminta, ya) { return Promise.all([db.set(`izinIg/${uid}/${peminta}`, ya ? true : null), db.set(`izinIgMinta/${uid}/${peminta}`, null)]); },
