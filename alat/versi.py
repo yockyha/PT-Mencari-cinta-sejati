@@ -4,7 +4,7 @@
 import pathlib, re, time
 
 AKAR = pathlib.Path(__file__).resolve().parent.parent
-FILE = [*AKAR.glob('*.html'), *AKAR.glob('kantor/*'), *AKAR.glob('dashboard/*'), *AKAR.glob('idcard/*'), *AKAR.glob('js/*.js')]
+FILE = [*AKAR.glob('*.html'), *AKAR.glob('kantor/*'), *AKAR.glob('dashboard/*'), *AKAR.glob('idcard/*'), *AKAR.glob('info/*'), *AKAR.glob('js/*.js')]
 VERSI = time.strftime('%Y%m%d%H%M')
 POLA = re.compile(r"""(from\s*|import\(\s*|src=)(['"])((?!https?:)[^'"?]+?\.js)(\?v=[^'"]*)?\2""")
 

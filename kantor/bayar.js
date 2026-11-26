@@ -5,11 +5,11 @@
 //  atau manual: QRIS/transfer BCA/BRI dengan NOMINAL UNIK, lalu
 //  diverifikasi Direktur di Dashboard (Toko & Pesanan).
 // =====================================================================
-import { PAKAIAN, SLOT } from '../js/pakaian.js?v=202611260437';
-import { LANGGANAN } from '../js/common.js?v=202611260437';
-import { CFG, LS, esc, fmt, bersih, rupiah, IKON_DM, kodeTamu, hash } from '../js/common.js?v=202611260437';
-import { K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611260437';
-import * as P from './progres.js?v=202611260437';
+import { PAKAIAN, SLOT } from '../js/pakaian.js?v=202611260555';
+import { LANGGANAN } from '../js/common.js?v=202611260555';
+import { CFG, LS, esc, fmt, bersih, rupiah, IKON_DM, kodeTamu, hash } from '../js/common.js?v=202611260555';
+import { K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611260555';
+import * as P from './progres.js?v=202611260555';
 
 const BAYAR = () => CFG.pembayaran || {};
 const resmi = () => !!(K.resmi && K.resmi());
@@ -100,7 +100,8 @@ export function bukaBayar(item) {
   const metode = metodeAktif();
   if (!metode.length) { toast('Pembayaran belum dibuka. Coba lagi nanti ya.'); return; }
   bukaKartu(`<h2>💳 ${esc(item.nama)}</h2><p>Harga: <b>${rupiah(item.harga)}</b>. Pilih cara bayar:</p>
-    <div class="metode">${metode.map(m => `<button type="button" data-m="${m.id}"><b>${esc(m.nama)}</b><small>${esc(m.ket)}</small></button>`).join('')}</div>`, {
+    <div class="metode">${metode.map(m => `<button type="button" data-m="${m.id}"><b>${esc(m.nama)}</b><small>${esc(m.ket)}</small></button>`).join('')}</div>
+    <p class="kecil">Dengan membayar kamu menyetujui <a href="../info/syarat.html" target="_blank" rel="noopener">Syarat &amp; Ketentuan</a> dan <a href="../info/refund.html" target="_blank" rel="noopener">Kebijakan Pengembalian Dana</a>.</p>`, {
     pasang(el) { el.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { const m = metode.find(x => x.id === b.dataset.m); if (m.otomatis) bayarOtomatis(item, b); else langkahBayar(item, m); }); },
   });
 }
