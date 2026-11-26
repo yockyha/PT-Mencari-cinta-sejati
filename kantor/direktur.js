@@ -3,12 +3,12 @@
 //  Semua tindakan juga dijaga database.rules.json di server, jadi
 //  tamu biasa tidak bisa memakainya walau mengutak-atik browser.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, fmt, esc, bersih, kodeTamu } from '../js/common.js?v=202611260649';
-import * as Prog from './progres.js?v=202611260649';
-import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611260649';
-import * as Hadir from './hadir.js?v=202611260649';
-import * as Speed from './speeddating.js?v=202611260649';
-import { TS } from '../js/db.js?v=202611260649';
+import { CFG, TUJUAN, LOKASI, fmt, esc, bersih, kodeTamu } from '../js/common.js?v=202611260740';
+import * as Prog from './progres.js?v=202611260740';
+import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611260740';
+import * as Hadir from './hadir.js?v=202611260740';
+import * as Speed from './speeddating.js?v=202611260740';
+import { TS } from '../js/db.js?v=202611260740';
 
 let laporan = {}, saran = {}, larangan = {}, pesanan = {}, lepas = [], tabAktif = '';
 const peranku = () => K.L && K.peran[K.L.uid];
@@ -99,6 +99,8 @@ function kuasa() {
         <button type="button" data-k="exp">🎁 Bagi 20 EXP<small>Untuk ${fmt(tamu.length)} tamu yang online</small></button>
         <button type="button" data-k="karyawan">🫡 Panggil karyawan<small>Semua karyawan berkumpul di sekitarmu</small></button>
         <button type="button" data-k="loker">👔 Lemari Direktur<small>Semua baju terbuka untukmu</small></button>
+        <button type="button" data-k="pintu">🚪 Pintu Ruanganmu<small>Ketukan tamu, izin masuk, buka/tutup</small></button>
+        <button type="button" data-k="suite">🛏️ Ke suite Direktur<small>Kerja, tidur, nonton TV, olahraga</small></button>
       </div>
       ${Speed.htmlKendali()}
       <h3>🎉 Dekorasi musiman</h3><select id="msS">${[['otomatis', 'Otomatis sesuai tanggal'], ['tidak', 'Tanpa dekorasi'], ['valentine', '💘 Valentine'], ['ramadan', '🌙 Ramadan'], ['17an', '🇮🇩 17 Agustus'], ['halloween', '🎃 Halloween'], ['natal', '🎄 Natal & Tahun Baru']].map(([k, n]) => `<option value="${k}" ${(K.setelan?.musim || 'otomatis') === k ? 'selected' : ''}>${n}</option>`).join('')}</select>
@@ -114,6 +116,8 @@ function kuasa() {
         if (['hati', 'kembangapi', 'bunga'].includes(k)) { Hadir.kirimEfek(k).then(() => tutupKartu()).catch(gagal); return; }
         if (k === 'karyawan') { tutupKartu(); K.panggilKaryawan(); toast('🫡 Karyawan sedang menuju ke tempatmu'); return; }
         if (k === 'loker') { tutupKartu(); Prog.pergiKe('loker'); return; }
+        if (k === 'pintu') { K.panelPintuDir(); return; }
+        if (k === 'suite') { tutupKartu(); K.pindah(25.5, 18.2, Math.PI); return; }
         if (k === 'exp') {
           if (!tamu.length) { toast('Belum ada tamu online.'); return; }
           if (Date.now() - bagiT < 600000) { toast('Bagi EXP bisa lagi 10 menit setelah yang terakhir.'); return; }
@@ -193,7 +197,7 @@ function orang() {
       <h3>Sedang dikeluarkan</h3>
       ${diusir.length ? `<div class="daftar">${diusir.map(([u, b]) => `<div><span>${esc(b.n || namaDari(u))}<br><small>${b.sampai > now + 3650 * 86400e3 ? 'diblokir' : 'sampai ' + esc(tanggalJam(b.sampai))} · ${esc(b.alasan || '')}</small></span><button type="button" class="mini putih" data-ampun="${esc(u)}">Ampuni</button></div>`).join('')}</div>` : '<p class="kecil">Tidak ada.</p>'}`,
     pasang(isi) {
-      isi.querySelectorAll('[data-lihat]').forEach(b => b.onclick = () => import('./sosial.js?v=202611260649').then(S => S.bukaProfil(o.find(x => x.uid === b.dataset.lihat))));
+      isi.querySelectorAll('[data-lihat]').forEach(b => b.onclick = () => import('./sosial.js?v=202611260740').then(S => S.bukaProfil(o.find(x => x.uid === b.dataset.lihat))));
       isi.querySelectorAll('[data-mod]').forEach(b => b.onclick = () => bukaModerasiOrang(o.find(x => x.uid === b.dataset.mod)));
       isi.querySelectorAll('[data-ampun]').forEach(b => b.onclick = () => {
         const u = b.dataset.ampun;

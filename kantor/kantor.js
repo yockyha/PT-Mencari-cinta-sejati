@@ -3,25 +3,27 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611260649';
-import { bukaDB } from '../js/db.js?v=202611260649';
-import { buatLayanan } from '../js/layanan.js?v=202611260649';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611260649';
-import * as Sosial from './sosial.js?v=202611260649';
-import * as Direktur from './direktur.js?v=202611260649';
-import * as Prog from './progres.js?v=202611260649';
-import * as Game from './game.js?v=202611260649';
-import * as Bayar from './bayar.js?v=202611260649';
-import * as Meja from './meja.js?v=202611260649';
-import * as Karyawan from './karyawan.js?v=202611260649';
-import * as Hadir from './hadir.js?v=202611260649';
-import * as Foto from './foto.js?v=202611260649';
-import * as Seru from './seru.js?v=202611260649';
-import * as Speed from './speeddating.js?v=202611260649';
-import * as Aktivitas from './aktivitas.js?v=202611260649';
-import * as Komunitas from './komunitas.js?v=202611260649';
-import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611260649';
-import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611260649';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611260740';
+import { bukaDB } from '../js/db.js?v=202611260740';
+import { buatLayanan } from '../js/layanan.js?v=202611260740';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611260740';
+import * as Sosial from './sosial.js?v=202611260740';
+import * as Direktur from './direktur.js?v=202611260740';
+import * as Prog from './progres.js?v=202611260740';
+import * as Game from './game.js?v=202611260740';
+import * as Bayar from './bayar.js?v=202611260740';
+import * as Meja from './meja.js?v=202611260740';
+import * as Karyawan from './karyawan.js?v=202611260740';
+import * as Hadir from './hadir.js?v=202611260740';
+import * as Foto from './foto.js?v=202611260740';
+import * as Seru from './seru.js?v=202611260740';
+import * as Speed from './speeddating.js?v=202611260740';
+import * as Aktivitas from './aktivitas.js?v=202611260740';
+import * as Komunitas from './komunitas.js?v=202611260740';
+import * as RuangDir from './ruangdir.js?v=202611260740';
+import * as Gedung from './gedung.js?v=202611260740';
+import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611260740';
+import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611260740';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
@@ -146,9 +148,9 @@ function bangunDunia() {
   // dinding luar
   dinding(-24, -20, 24, -20);
   dinding(-24, -20, -24, 20);
-  dinding(24, -20, 24, 20);
+  dinding(24, -20, 24, 12); // dinding timur (bagian selatannya jadi suite Direktur)
   dinding(-24, 20, -3, 20, { kaca: true });
-  dinding(3, 20, 24, 20, { kaca: true });
+  dinding(3, 20, 14, 20, { kaca: true });
   // pantry & taman
   dinding(14, -7, 14, 1); dinding(14, 4, 14, 12);
   dinding(14, -7, 17, -7); dinding(20, -7, 24, -7);
@@ -180,7 +182,7 @@ function bangunDunia() {
   kursiKantor(0, 11.9, 0, '#2a1420', false);
   sofa(-9, 16.5, 0); sofa(9, 16.5, 0);
   kotak(2.2, 0.4, 1, -9, 0, 14.6, '#c99a6b', { tab: true }); kotak(2.2, 0.4, 1, 9, 0, 14.6, '#c99a6b', { tab: true });
-  for (const [x, z] of [[-21.5, 18], [21.5, 18], [-21.5, 11.5], [21.5, 11.5], [-4.5, 18.5], [4.5, 18.5]]) pot(x, z);
+  for (const [x, z] of [[-21.5, 18], [-21.5, 11.5], [21.5, 11.5], [-4.5, 18.5], [4.5, 18.5]]) pot(x, z);
   // lift (hiasan)
   for (const x of [-20, -16.6]) {
     kotak(2.4, 2.5, 0.2, x, 0, 10.2, '#aeb6c2', { tab: true });
@@ -332,29 +334,7 @@ function bangunDunia() {
     x.fillStyle = '#fff'; x.font = FD(52); x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('👔 RUANG LOKER', w / 2, h / 2 + 3, w - 20);
   }), -14.85, 2.25, 5, Math.PI / 2);
 
-  // ---- RUANG DIREKTUR (sudut tenggara lobi)
-  lantai(14, 12, 24, 20, '#4a2f45', 0.034);
-  dinding(14, 12, 24, 12);
-  dinding(14, 12, 14, 15, { kaca: true }); dinding(14, 17, 14, 20, { kaca: true });
-  kotak(1.3, 0.76, 3.2, 20.6, 0, 16, '#5b3a2a', { tab: true });
-  kotak(1.45, 0.07, 3.35, 20.6, 0.76, 16, '#2a1420');
-  kotak(0.5, 0.34, 0.06, 20.9, 0.83, 15.1, '#333a44');
-  kotak(0.18, 0.3, 0.18, 20.4, 0.83, 17.2, '#f2b33d'); kotak(0.3, 0.06, 0.3, 20.4, 0.83, 17.2, '#5b3a2a'); // piala
-  kursiKantor(21.9, 16, -Math.PI / 2, '#f2b33d', false);
-  kursiKantor(19.2, 15.2, Math.PI / 2, '#2a1420'); kursiKantor(19.2, 16.8, Math.PI / 2, '#2a1420');
-  kotak(0.5, 2.0, 2.8, 23.6, 0, 16, '#6b4630', { tab: true }); // lemari arsip
-  titikAksi.push({ x: 22.6, z: 13.6, r: 1.3, label: 'Lihat arsip kantor 🗄', aksi: bukaArsip });
-  titikAksi.push({ x: 19.4, z: 17.9, r: 1.0, label: 'Lihat piala 🏆', aksi: () => Prog.bukaHub('peringkat') });
-  bidangTeks(2.6, 0.62, 0, kanvas(512, 120, (x, w, h) => {
-    x.fillStyle = '#2a1420'; bulat(x, 0, 0, w, h, 20); x.fill();
-    x.fillStyle = '#f2b33d'; x.font = FD(46); x.textAlign = 'center'; x.textBaseline = 'middle';
-    x.fillText('👑 DIREKTUR UTAMA', w / 2, h / 2 + 2, w - 24);
-  }), 23.3, 2.35, 16, -Math.PI / 2);
-  bidangTeks(2.4, 0.46, 0, kanvas(512, 96, (x, w, h) => {
-    x.fillStyle = '#f2b33d'; bulat(x, 0, 0, w, h, 18); x.fill();
-    x.fillStyle = '#2a1420'; x.font = FD(48); x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('RUANG DIREKTUR', w / 2, h / 2 + 3, w - 20);
-  }), 13.85, 2.35, 16, -Math.PI / 2);
-  titikAksi.push({ x: 18.6, z: 16, r: 2.8, label: 'Meja Direktur', aksi: () => Direktur.bukaMeja() });
+  ruangDirektur();
 
   // ---- LOUNGE EKSEKUTIF (taman belakang, khusus VIP)
   lantai(-12, -70, 12, -54, '#3b2b3f', 0.03);
@@ -393,6 +373,7 @@ function bangunDunia() {
     const x = Math.cos(a) * r, z = Math.sin(a) * r * 0.85;
     if (z > 46 && z < 68) continue;
     if (Math.abs(x) < 6 && z > 20) continue;
+    if (x > -82 && x < -30 && z > -28 && z < 28) continue; // lahan Taman Cinta
     pohon(x, z, 1 + (i % 4) * 0.2);
   }
   for (const x of [-8, 8]) for (const z of [26, 34, 42]) pohon(x, z, 0.8);
@@ -403,9 +384,171 @@ function bangunDunia() {
     kotak(12, h, 10, x, 0, 78, TET[i % TET.length], { tab: true });
     for (let f = 2; f < h - 1; f += 3) kotak(10, 1.1, 10.1, x, f, 78, '#8fbcd9');
   }
+  // gedung baru (Taman Cinta, dst.): dibangun sesuai jadwal di kantor/gedung.js
+  Gedung.pasang({ THREE, scene, M, GEO, kanvas, FD, FB, bulat, lantai, tabrak, kursi, titikAksi, ambilFoto: (j, l) => ambilFoto(j, l), buatKarakter, pose, bentukHati, naik: () => !!naikBianglala, mulaiNaik: o => { berdiri(); naikBianglala = { ...o, t0: performance.now() }; } });
   // batas dunia
   tabrak.push({ x1: -100, x2: 100, z1: 50, z2: 51 });
   tabrak.push({ x1: -100, x2: -99, z1: -100, z2: 51 }, { x1: 99, x2: 100, z1: -100, z2: 51 }, { x1: -100, x2: 100, z1: -100, z2: -99 });
+}
+
+// ---------------------------------------------------------------- RUANG DIREKTUR (suite mewah)
+// Lounge tamu (x 14–21) · kantor Direktur (21–28.6) · kamar pribadi (28.6–34). Tamu masuk harus seizin Direktur.
+const pintuDir = { ki: null, ka: null, b: 0, tab: { x1: 13.85, x2: 14.15, z1: 15, z2: 17 } };
+const suite = { globe: null, putarGlobe: 0, ikan: [], makanIkan: 0, layarTv: null, tvNyala: false, sabuk: null };
+const kursiDir = { x: 26.55, z: 16, r: -Math.PI / 2, y: 0.5, khusus: 'dir' };
+function sofaMewah(x, z, hadap, warna = '#5b1530') {
+  kotak(3.0, 0.42, 1.0, x, 0, z, warna, { tab: true });
+  kotak(3.0, 0.75, 0.28, x, 0.42, z - hadap * 0.36, warna);
+  kotak(3.04, 0.05, 0.3, x, 1.17, z - hadap * 0.36, '#d4a017');
+  for (const dx of [-1.38, 1.38]) kotak(0.26, 0.38, 1.0, x + dx, 0.42, z, warna);
+  for (const dx of [-0.75, 0.75]) kotak(0.5, 0.36, 0.14, x + dx, 0.5, z - hadap * 0.2, '#f2b33d'); // bantal
+  for (const dx of [-0.8, 0, 0.8]) kursi.push({ x: x + dx, z: z + hadap * 0.05, r: hadap > 0 ? 0 : Math.PI, y: 0.45 });
+}
+function lampuGantung(x, z, y = 2.55) {
+  const g = new THREE.Group();
+  const cincin = new THREE.Mesh(new THREE.TorusGeometry(0.55, 0.05, 8, 24), M('#d4a017')); cincin.rotation.x = Math.PI / 2; g.add(cincin);
+  for (let i = 0; i < 8; i++) { const a = i / 8 * Math.PI * 2, b = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 6), new THREE.MeshBasicMaterial({ color: '#fff2c4' })); b.position.set(Math.cos(a) * 0.55, -0.12, Math.sin(a) * 0.55); g.add(b); }
+  const k = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 8), new THREE.MeshBasicMaterial({ color: '#ffe9a8' })); k.position.y = -0.25; g.add(k);
+  g.position.set(x, y, z); scene.add(g);
+}
+function ruangDirektur() {
+  // lantai, dinding & karpet
+  lantai(14, 12, 34, 20, '#2e1b28', 0.034);
+  lantai(15, 13, 20.6, 19, '#7a1f3d', 0.04); lantai(15.2, 13.2, 20.4, 18.8, '#8e2a4a', 0.042);
+  lantai(21.6, 13, 28.2, 19, '#4a2234', 0.04);
+  lantai(29.2, 12.8, 33.8, 19.2, '#ead8c8', 0.04);
+  dinding(14, 12, 34, 12, { warna: '#f3e3d3' });
+  dinding(34, 12, 34, 20, { warna: '#f3e3d3' });
+  dinding(14, 20, 28.6, 20, { kaca: true });
+  dinding(28.6, 20, 34, 20, { warna: '#f3e3d3' });
+  dinding(14, 12, 14, 15, { kaca: true }); dinding(14, 17, 14, 20, { kaca: true });
+  for (const x of [14.5, 21.2, 28.2, 33.6]) kotak(0.2, 2.7, 0.2, x, 0, 12.15, '#d4a017'); // pilar emas
+  // pintu ganda (terbuka sendiri hanya untuk yang diizinkan)
+  pintuDir.ki = kotak(0.1, 2.3, 1.0, 14, 0, 15.5, '#3d1d12'); pintuDir.ka = kotak(0.1, 2.3, 1.0, 14, 0, 16.5, '#3d1d12');
+  for (const p of [pintuDir.ki, pintuDir.ka]) { const h = new THREE.Mesh(GEO, M('#d4a017')); h.scale.set(1.6, 0.12, 0.06); h.position.set(0, -0.05, 0); p.add(h); }
+  tabrak.push(pintuDir.tab);
+  kotak(0.3, 0.2, 2.4, 14, 2.3, 16, '#d4a017');
+  bidangTeks(2.4, 0.46, 0, kanvas(512, 96, (x, w, h) => {
+    x.fillStyle = '#f2b33d'; bulat(x, 0, 0, w, h, 18); x.fill();
+    x.fillStyle = '#2a1420'; x.font = FD(46); x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('👑 RUANG DIREKTUR', w / 2, h / 2 + 3, w - 20);
+  }), 13.85, 2.75, 16, -Math.PI / 2);
+  titikAksi.push({ x: 12.9, z: 16, r: 1.5, label: '✊ Ketuk pintu Direktur', aksi: () => RuangDir.ketuk(), syarat: () => !RuangDir.bolehMasuk() });
+  titikAksi.push({ x: 15.1, z: 16, r: 1.0, label: '🚪 Atur pintu & tamu', aksi: () => RuangDir.bukaPanelIzin(), syarat: () => direkturSaya() });
+
+  // LOUNGE TAMU: sofa kulit berhadapan, meja kopi kaca, akuarium
+  sofaMewah(17.8, 13.25, 1); sofaMewah(17.8, 18.75, -1);
+  kotak(1.7, 0.36, 0.8, 17.8, 0, 16, '#d4a017', { tab: true });
+  kotak(1.9, 0.04, 1.0, 17.8, 0.36, 16, '#bfe9ff', { mat: new THREE.MeshLambertMaterial({ color: 0xbfe9ff, transparent: true, opacity: 0.55 }) });
+  kotak(0.16, 0.28, 0.16, 17.8, 0.4, 16, '#ffffff'); bentukBunga(17.8, 0.72, 16);
+  lampuGantung(17.8, 16);
+  kotak(1.9, 0.62, 0.55, 21.0, 0, 12.55, '#2a1420', { tab: true });
+  kotak(1.8, 0.9, 0.5, 21.0, 0.62, 12.55, '#57b8ff', { mat: new THREE.MeshBasicMaterial({ color: 0x3fa9f5, transparent: true, opacity: 0.55 }) });
+  kotak(1.9, 0.06, 0.55, 21.0, 1.52, 12.55, '#d4a017');
+  for (let i = 0; i < 6; i++) {
+    const f = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.16, 6), new THREE.MeshBasicMaterial({ color: ['#ff8a3d', '#ffd23f', '#ff4f7b'][i % 3] }));
+    f.rotation.z = Math.PI / 2; f.position.set(21, 0.85 + (i % 3) * 0.22, 12.55); scene.add(f); suite.ikan.push({ m: f, fase: i * 1.7, y: f.position.y });
+  }
+  titikAksi.push({ x: 21.0, z: 13.5, r: 1.2, label: '🐠 Kasih makan ikan', aksi: () => { suite.makanIkan = 6; K.emote(4, 2.5); toast('🐠 Ikan-ikan Direktur kegirangan!'); } });
+  pot(14.8, 12.8); pot(14.8, 19.2); pot(27.9, 19.2, false);
+
+  // KANTOR DIREKTUR: meja kayu jati berlis emas, kursi singgasana, rak buku
+  kotak(1.4, 0.78, 3.4, 25.2, 0, 16, '#4a2618', { tab: true });
+  kotak(1.6, 0.07, 3.6, 25.2, 0.78, 16, '#2a1420'); kotak(1.62, 0.03, 3.62, 25.2, 0.85, 16, '#d4a017');
+  kotak(0.04, 0.55, 3.0, 24.49, 0.12, 16, '#d4a017');
+  for (const dz of [-0.45, 0.45]) { kotak(0.05, 0.42, 0.72, 25.75, 0.95, 16 + dz, '#1b1b1b'); kotak(0.01, 0.36, 0.66, 25.785, 0.98, 16 + dz, '#8fd3ff', { mat: new THREE.MeshBasicMaterial({ color: '#8fd3ff' }) }); }
+  kotak(0.36, 0.02, 0.6, 25.35, 0.87, 16, '#333a44'); // keyboard
+  kotak(0.18, 0.3, 0.18, 25.0, 0.86, 14.7, '#f2b33d'); kotak(0.3, 0.06, 0.3, 25.0, 0.86, 14.7, '#5b3a2a'); // piala
+  suite.globe = new THREE.Mesh(new THREE.SphereGeometry(0.2, 16, 12), M('#3a8fd9')); suite.globe.position.set(25.0, 1.15, 17.35); scene.add(suite.globe);
+  const benua = new THREE.Mesh(new THREE.SphereGeometry(0.205, 8, 6), M('#4caf50', { flatShading: true, transparent: true, opacity: 0.85 })); benua.scale.set(1, 0.9, 0.6); suite.globe.add(benua);
+  kotak(0.06, 0.12, 0.06, 25.0, 0.86, 17.35, '#d4a017');
+  bidangTeks(1.3, 0.3, 0, kanvas(400, 92, (x, w, h) => { x.fillStyle = '#d4a017'; bulat(x, 0, 0, w, h, 10); x.fill(); x.fillStyle = '#2a1420'; x.font = FD(40); x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('DIREKTUR UTAMA', w / 2, h / 2 + 2, w - 16); }), 24.46, 0.55, 16, -Math.PI / 2);
+  // kursi singgasana Direktur (hanya Direktur yang bisa duduk)
+  kotak(0.75, 0.5, 0.75, 26.55, 0, 16, '#7a1f3d', { tab: true }); kotak(0.2, 1.5, 0.85, 26.95, 0.45, 16, '#7a1f3d');
+  kotak(0.22, 0.1, 0.95, 26.95, 1.95, 16, '#d4a017'); for (const dz of [-0.42, 0.42]) kotak(0.7, 0.25, 0.1, 26.6, 0.5, 16 + dz, '#d4a017');
+  kursi.push(kursiDir);
+  kursiKantor(23.7, 15.3, Math.PI / 2, '#7a1f3d'); kursiKantor(23.7, 16.7, Math.PI / 2, '#7a1f3d');
+  titikAksi.push({ x: 23.0, z: 16, r: 1.5, label: 'Meja Direktur', aksi: () => Direktur.bukaMeja() });
+  titikAksi.push({ x: 26.0, z: 17.3, r: 1.3, label: '💼 Kerja di meja Direktur', aksi: kerjaDiMeja, syarat: () => direkturSaya() });
+  titikAksi.push({ x: 24.4, z: 17.6, r: 0.9, label: '🌐 Putar globe', aksi: () => { suite.putarGlobe = 4; toast(acak(['🌐 Mau bulan madu ke mana nanti? 😉', '🌐 Cinta tidak kenal jarak!', '🌐 Tamu kita datang dari seluruh Indonesia 🇮🇩'])); } });
+  lampuGantung(25.2, 16);
+  // rak buku pemisah kamar
+  for (const [z1, z2] of [[12.15, 15.1], [16.9, 19.85]]) {
+    const zc = (z1 + z2) / 2, d = z2 - z1;
+    kotak(0.5, 2.5, d, 28.6, 0, zc, '#4a2618', { tab: true });
+    for (let rak = 0; rak < 4; rak++) for (let i = 0; i < Math.floor(d / 0.22); i++) kotak(0.36, 0.38 + (i % 3) * 0.05, 0.16, 28.36, 0.18 + rak * 0.58, z1 + 0.15 + i * 0.22, ['#ff4f7b', '#3a6ea5', '#f2b33d', '#2f9e6e', '#8e5cc9', '#fff6ef'][(i + rak * 2) % 6]);
+  }
+  titikAksi.push({ x: 27.8, z: 13.6, r: 1.0, label: '📚 Baca buku', aksi: () => { K.emote(4, 4); toast('📚 ' + acak(['"Cinta itu bukan menemukan orang sempurna, tapi melihat orang tak sempurna dengan sempurna."', '"Jodoh tidak ke mana, tapi tetap harus dicari."', '"Kantor yang baik dimulai dari pemimpin yang peduli."', '"Bahagia itu sederhana: ngopi, ngobrol, dan didengarkan."']), 5200); } });
+  bidangTeks(3.4, 0.6, 0, kanvas(600, 106, (x, w, h) => { x.fillStyle = '#2a1420'; bulat(x, 0, 0, w, h, 20); x.fill(); x.strokeStyle = '#d4a017'; x.lineWidth = 6; bulat(x, 4, 4, w - 8, h - 8, 16); x.stroke(); x.fillStyle = '#f2b33d'; x.font = FD(50); x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('👑 DIREKTUR UTAMA', w / 2, h / 2 + 3, w - 30); }), 25.2, 2.3, 12.17);
+
+  // KAMAR PRIBADI: kasur king size, nakas & lampu, TV, mini bar, treadmill
+  kotak(2.7, 0.4, 2.5, 32.45, 0, 16, '#4a2618', { tab: true });
+  kotak(2.6, 0.22, 2.36, 32.45, 0.4, 16, '#fff6ef');
+  kotak(1.7, 0.07, 2.4, 31.9, 0.6, 16, '#7a1f3d'); kotak(0.12, 0.075, 2.42, 32.7, 0.6, 16, '#d4a017');
+  for (const dz of [-0.55, 0.55]) kotak(0.42, 0.16, 0.85, 33.4, 0.62, 16 + dz, '#ffffff');
+  kotak(0.2, 1.5, 2.7, 33.88, 0, 16, '#d4a017'); kotak(0.06, 1.0, 2.4, 33.76, 0.45, 16, '#b03060');
+  for (const dz of [-1.75, 1.75]) {
+    kotak(0.55, 0.55, 0.55, 33.45, 0, 16 + dz, '#4a2618', { tab: true });
+    kotak(0.08, 0.3, 0.08, 33.45, 0.55, 16 + dz, '#d4a017');
+    const l = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.2, 0.24, 12), new THREE.MeshBasicMaterial({ color: '#ffe9a8' })); l.position.set(33.45, 1.0, 16 + dz); scene.add(l);
+  }
+  titikAksi.push({ x: 31.0, z: 14.3, r: 1.3, label: '🛏️ Tidur di kasur', aksi: tidur, syarat: () => direkturSaya() });
+  // TV dinding
+  kotak(2.3, 1.3, 0.08, 31.3, 1.0, 12.2, '#111111');
+  suite.layarTv = kanvas(512, 280, (c, w, h) => {
+    if (!suite.tvNyala) { c.fillStyle = '#0b0b0e'; c.fillRect(0, 0, w, h); c.fillStyle = '#2a2a33'; c.font = FB(22, 800); c.textAlign = 'center'; c.fillText('MCS TV', w / 2, h / 2); return; }
+    const t = performance.now() / 1000, g = c.createLinearGradient(0, 0, w, h);
+    g.addColorStop(0, `hsl(${(t * 40) % 360},70%,45%)`); g.addColorStop(1, `hsl(${(t * 40 + 120) % 360},70%,35%)`); c.fillStyle = g; c.fillRect(0, 0, w, h);
+    c.fillStyle = '#fff'; c.font = FD(40); c.textAlign = 'center'; c.fillText('💘 Drama Cinta Kantor', w / 2, 110, w - 30);
+    c.font = FB(24, 800); c.fillText(['Episode 1: Tatapan di Pantry', 'Episode 2: Kopi yang Tertukar', 'Episode 3: Lift Macet Berdua'][Math.floor(t / 6) % 3], w / 2, 160, w - 30);
+    c.fillStyle = '#ff3355'; c.beginPath(); c.arc(30, 30, 8, 0, 7); c.fill();
+  });
+  bidangTeks(2.15, 1.17, 0, suite.layarTv, 31.3, 1.65, 12.26);
+  titikAksi.push({ x: 31.3, z: 13.4, r: 1.0, label: '📺 Nonton TV', aksi: nontonTv, syarat: () => direkturSaya() });
+  // mini bar & kulkas
+  kotak(1.9, 1.0, 0.6, 30.7, 0, 19.45, '#2a1420', { tab: true }); kotak(2.0, 0.06, 0.66, 30.7, 1.0, 19.45, '#d4a017');
+  for (let i = 0; i < 5; i++) kotak(0.1, 0.32, 0.1, 30.0 + i * 0.3, 1.06, 19.6, ['#2f9e6e', '#c0392b', '#3a6ea5', '#f2b33d', '#8e5cc9'][i]);
+  kotak(0.3, 0.35, 0.28, 31.4, 1.06, 19.4, '#5b5f6a'); // mesin kopi
+  kotak(0.8, 1.7, 0.62, 32.4, 0, 19.45, '#dfe7ef', { tab: true }); kotak(0.04, 0.5, 0.04, 32.05, 0.9, 19.12, '#9aa3ad');
+  titikAksi.push({ x: 30.7, z: 18.5, r: 1.2, label: '☕ Bikin kopi spesial', aksi: () => { berdiri(); saya.r = 0; K.emote(4, 6); toast('☕ Kopi spesial Direktur siap. Nikmati sambil memantau kantor 👑', 3800); }, syarat: () => direkturSaya() });
+  // treadmill
+  kotak(0.75, 0.08, 1.7, 29.7, 0, 14.0, '#2b2d42'); suite.sabuk = kotak(0.6, 0.02, 1.5, 29.7, 0.08, 14.0, '#3d3f52');
+  for (const dx of [-0.32, 0.32]) kotak(0.05, 1.1, 0.05, 29.7 + dx, 0, 13.25, '#9aa3ad');
+  kotak(0.7, 0.08, 0.2, 29.7, 1.1, 13.25, '#2b2d42');
+  titikAksi.push({ x: 29.7, z: 15.2, r: 1.0, label: '🏃 Olahraga di treadmill', aksi: () => { berdiri(); saya.x = 29.7; saya.z = 14.2; saya.r = Math.PI; saya.cepat = 1.2; K.emote(1, 25); toast('🏃 Semangat olahraga, Direktur! Badan sehat, cinta pun kuat 💪', 3600); }, syarat: () => direkturSaya() });
+  lampuGantung(31.4, 16, 2.6);
+}
+function direkturSaya() { return !!(L && K.peran[L.uid] === 'direktur'); }
+function kerjaDiMeja() {
+  if (kursiDir.oleh && kursiDir.oleh !== saya) return;
+  duduk(kursiDir); saya.a = 6;
+  toast('💼 Kamu bekerja di meja Direktur. Ketuk "Meja Direktur" untuk membuka panel.', 3200);
+}
+function tidur() {
+  berdiri(); saya.x = 31.35; saya.z = 16; saya.r = -Math.PI / 2; K.emote(12, 1e6);
+  toast('💤 Selamat istirahat, Direktur. Gerak sedikit untuk bangun.', 3600);
+}
+function nontonTv() {
+  berdiri(); suite.tvNyala = true; saya.x = 31.3; saya.z = 14.95; saya.r = Math.PI; K.emote(2, 1e6);
+  toast('📺 MCS TV menyala. Gerak untuk berhenti menonton.', 3000);
+}
+function bentukBunga(x, y, z) {
+  for (let i = 0; i < 5; i++) { const b = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 6), new THREE.MeshBasicMaterial({ color: ['#ff4f7b', '#ffd23f', '#ff8fab'][i % 3] })); b.position.set(x + Math.cos(i * 1.26) * 0.09, y + (i % 2) * 0.06, z + Math.sin(i * 1.26) * 0.09); scene.add(b); }
+}
+// animasi suite (dipanggil tiap frame)
+function animasiSuite(dt, t) {
+  const boleh = RuangDir.bolehMasuk();
+  pintuDir.tab.x1 = boleh ? 9999 : 13.85; pintuDir.tab.x2 = boleh ? 9999 : 14.15;
+  const target = boleh && Math.hypot(saya.x - 14, saya.z - 16) < 3.4 ? 1 : 0;
+  pintuDir.b += (target - pintuDir.b) * Math.min(1, dt * 6);
+  if (pintuDir.ki) { pintuDir.ki.position.z = 15.5 - pintuDir.b * 0.95; pintuDir.ka.position.z = 16.5 + pintuDir.b * 0.95; }
+  if (Math.hypot(saya.x - 25, saya.z - 16) > 22) return; // jauh: tidak perlu animasi isi ruangan
+  suite.putarGlobe = Math.max(0, suite.putarGlobe - dt); if (suite.globe) suite.globe.rotation.y += dt * (0.3 + suite.putarGlobe * 3);
+  suite.makanIkan = Math.max(0, suite.makanIkan - dt);
+  for (const f of suite.ikan) { f.fase += dt * (1 + suite.makanIkan); f.m.position.x = 21 + Math.sin(f.fase * 0.7) * 0.75; f.m.position.y = f.y + Math.sin(f.fase * 1.3) * 0.06; f.m.rotation.y = Math.cos(f.fase * 0.7) > 0 ? 0 : Math.PI; }
+  if (suite.tvNyala && !(saya.emoteA === 2 && saya.emoteT > 0)) suite.tvNyala = false;
+  if (suite.tvNyala || suite._tvTadi) { if (t - (suite.tvT || 0) > 120) { suite.tvT = t; suite.layarTv.ulang(); } }
+  suite._tvTadi = suite.tvNyala;
+  if (suite.sabuk && saya.emoteA === 1 && saya.emoteT > 0) suite.sabuk.material.color.setHSL(0, 0, 0.18 + (Math.sin(t / 60) + 1) * 0.04);
 }
 
 // ---------------------------------------------------------------- perabot
@@ -575,28 +718,56 @@ function dindingFoto() {
 }
 
 // ---- buku tamu (dinding utara)
-let dindingKV = null;
+let dindingKV = null, sambutBaru = null, jmlTamuLama = -1, dindingT = 0;
 function dindingKaryawan() {
   kotak(19.6, 2.5, 0.12, 3, 0.1, -19.8, '#2a1420');
-  dindingKV = kanvas(2048, 262, (c, w, h) => {
-    const daftar = K.tamu || [];
-    c.fillStyle = '#2a1420'; c.fillRect(0, 0, w, h);
-    c.fillStyle = '#ffd23f'; c.font = FD(40); c.textAlign = 'center';
-    c.fillText(`📖 BUKU TAMU · ${fmt(daftar.length)} TAMU SUDAH DATANG`, w / 2, 44);
-    const nama = daftar.slice(-200).map(k => (TUJUAN[k.tj]?.ikon || '') + ' ' + k.n);
-    const px = nama.length < 30 ? 34 : nama.length < 80 ? 24 : 15;
-    c.font = FB(px, 800); c.textAlign = 'left';
-    let x = 16, y = 70 + px * 1.3;
-    const pal = ['#ffb3c6', '#ffffff', '#8fd3ff', '#ffe08a', '#b9f3c9'];
-    nama.forEach(n => {
-      const tw = c.measureText(n).width + 30;
-      if (x + tw > w - 10) { x = 16; y += px * 1.45; }
-      if (y > h - 8) return;
-      c.fillStyle = pal[hash(n) % pal.length]; c.fillText(n, x, y); x += tw;
-    });
-    if (!nama.length) { c.fillStyle = '#ffb3c6'; c.font = FB(28, 800); c.textAlign = 'center'; c.fillText('Masih kosong. Isi buku tamu & namamu langsung terpasang di sini', w / 2, 150); }
-  });
+  kotak(19.9, 0.12, 0.2, 3, 2.6, -19.78, '#3a3f4a'); kotak(19.9, 0.12, 0.2, 3, 0.04, -19.78, '#3a3f4a'); // bingkai monitor
+  dindingKV = kanvas(2048, 262, gambarHujanNama);
   bidangTeks(19.2, 2.3, 0, dindingKV, 3, 1.35, -19.72);
+}
+// Monitor Buku Tamu: nama tamu turun seperti hujan di layar monitoring. Makin ramai, makin cepat bergantian.
+function gambarHujanNama(c, w, h) {
+  const daftar = K.tamu || [], N = daftar.length, now = performance.now() / 1000;
+  if (jmlTamuLama >= 0 && N > jmlTamuLama) sambutBaru = { n: daftar[N - 1].n, s: now };
+  jmlTamuLama = N;
+  c.fillStyle = '#0d0a10'; c.fillRect(0, 0, w, h);
+  // kepala monitor
+  const HD = 46;
+  c.fillStyle = '#1b1220'; c.fillRect(0, 0, w, HD);
+  c.textBaseline = 'middle'; c.textAlign = 'left';
+  c.fillStyle = Math.sin(now * 4) > 0 ? '#ff3355' : '#7a1a2a'; c.beginPath(); c.arc(24, HD / 2, 8, 0, 7); c.fill();
+  c.fillStyle = '#ff6b8a'; c.font = FB(22, 900); c.fillText('LIVE', 40, HD / 2 + 1);
+  c.fillStyle = '#ffd23f'; c.font = FD(32); c.fillText(`📖 BUKU TAMU · ${fmt(N)} TAMU SUDAH DATANG`, 110, HD / 2 + 2);
+  c.textAlign = 'right';
+  if (sambutBaru && now - sambutBaru.s < 12) { c.fillStyle = '#b9f3c9'; c.font = FB(24, 900); c.fillText(`✨ Selamat datang, ${sambutBaru.n}!`, w - 20, HD / 2 + 1, 760); }
+  else { c.fillStyle = '#8f7a99'; c.font = FB(20, 800); c.fillText(N ? `terbaru: ${daftar.slice(-3).reverse().map(k => k.n).join(' · ')}` : 'monitoring tamu', w - 20, HD / 2 + 1, 900); }
+  c.textBaseline = 'alphabetic';
+  if (!N) { c.fillStyle = '#ffb3c6'; c.font = FB(28, 800); c.textAlign = 'center'; c.fillText('Masih kosong. Isi buku tamu & namamu langsung muncul di monitor ini', w / 2, 160); return; }
+  // hujan nama: tiap kolom aliran nama yang turun; ramai = lebih banyak kolom & lebih cepat
+  const C = N < 12 ? 8 : N < 60 ? 12 : 16, cw = w / C, L = 5, gap = 36, atas = HD + 4, tinggi = h - atas;
+  const laju = 1 + Math.min(1.5, N / 300), siklus = tinggi + L * gap;
+  const pal = ['#ffb3c6', '#8fd3ff', '#ffe08a', '#b9f3c9', '#d7b8ff'];
+  c.save(); c.beginPath(); c.rect(0, atas, w, tinggi); c.clip();
+  c.textAlign = 'center';
+  for (let k = 0; k < C; k++) {
+    const v = (34 + ((k * 53) % 7) * 9) * laju, fase = (k * 97) % siklus;
+    const jalan = now * v + fase, pos = jalan % siklus, putaran = Math.floor(jalan / siklus);
+    const x = k * cw + cw / 2;
+    for (let j = 0; j < L; j++) {
+      const y = atas + pos - j * gap;
+      if (y < atas - 4 || y > h + gap) continue;
+      const idx = ((putaran * C * L + k * L + j) * 7919 + k) % N, tm = daftar[N - 1 - idx];
+      const kepala = j === 0;
+      c.globalAlpha = kepala ? 1 : Math.max(0.12, 0.85 - j * 0.17);
+      c.font = FB(kepala ? 21 : 18, kepala ? 900 : 800);
+      if (kepala) { c.shadowColor = '#ff4f7b'; c.shadowBlur = 14; c.fillStyle = '#ffffff'; } else { c.shadowBlur = 0; c.fillStyle = pal[hash(tm.n) % pal.length]; }
+      c.fillText((TUJUAN[tm.tj]?.ikon || '') + ' ' + tm.n, x, y, cw - 10);
+    }
+  }
+  c.restore(); c.globalAlpha = 1; c.shadowBlur = 0;
+  // garis scan monitor
+  c.fillStyle = 'rgba(255,255,255,.035)'; for (let y = atas; y < h; y += 4) c.fillRect(0, y, w, 1);
+  const sapu = atas + ((now * 60) % tinggi); c.fillStyle = 'rgba(255,79,123,.06)'; c.fillRect(0, sapu, w, 18);
 }
 
 // ---- papan curhat (taman)
@@ -1353,6 +1524,7 @@ function bukaKoin() {
 let airLompat = 0;
 
 // ---------------------------------------------------------------- BENDA INTERAKTIF
+let naikBianglala = null; // { cx, cz, cy, r, lama, t0 }
 let layarNobar = null, laguKV = null, dekor = null, dekorJenis = null, papanDonasiKV = null;
 // gambar Papan Donasi: donasi terbaru (nama, nominal, kata-kata) + donatur teratas
 function gambarPapanDonasi(c, w, h) {
@@ -1539,7 +1711,7 @@ Object.entries(LOKASI).forEach(([k, l]) => {
   $('tempat').appendChild(b);
 });
 function pindah(x, z, r) {
-  berdiri();
+  berdiri(); saya.emoteT = 0; naikBianglala = null;
   saya.x = x; saya.z = z; geser(saya);
   if (r !== undefined) { saya.r = r; kam.yaw = r; }
   kam.x = saya.x; kam.z = saya.z;
@@ -1552,6 +1724,8 @@ function kursiDekat() {
   let best = null, bd = 1.0;
   for (const k of kursi) {
     if (k.oleh && k.oleh !== saya) continue;
+    if (k.khusus === 'dir' && !direkturSaya()) continue;
+    if (k.syaratDuduk && !k.syaratDuduk()) continue;
     if ([...lain.values()].some(o => o.ta === 2 && Math.hypot(o.tx - k.x, o.tz - k.z) < 0.3)) continue;
     const d = Math.hypot(k.x - saya.x, k.z - saya.z);
     if (d < bd) { bd = d; best = k; }
@@ -1575,7 +1749,7 @@ function duduk(k) {
 let aksiSekarang = null;
 function perbaruiAksi() {
   let pilih = null, bd = 1e9;
-  for (const t of titikAksi) { const d = Math.hypot(t.x - saya.x, t.z - saya.z); if (d < t.r && d < bd) { bd = d; pilih = t; } }
+  for (const t of titikAksi) { if (t.syarat && !t.syarat()) continue; const d = Math.hypot(t.x - saya.x, t.z - saya.z); if (d < t.r && d < bd) { bd = d; pilih = t; } }
   // karyawan terdekat (kalau tidak sedang di depan benda lain, atau benar-benar di sebelahnya)
   const kw = Karyawan.terdekat(saya.x, saya.z, pilih ? 1.3 : 2.6);
   if (kw && !kw.kurir) pilih = { label: `Tanya ${kw.n} ${kw.ikon}`, aksi: () => Karyawan.ketuk(kw) };
@@ -1668,8 +1842,14 @@ function langkah() {
   if (besar > 0.12) saya.emoteT = 0;
 
   // pemain sendiri
+  if (naikBianglala && besar > 0.12) { const n = naikBianglala; naikBianglala = null; saya.x = n.cx + 4; saya.z = n.cz; toast('🎡 Turun dari bianglala'); }
+  if (naikBianglala && (t - naikBianglala.t0) / 1000 > naikBianglala.lama) { const n = naikBianglala; naikBianglala = null; saya.x = n.cx + 4; saya.z = n.cz; toast('🎡 Satu putaran selesai. Seru kan?'); }
   if (saya.g) {
     saya.g.position.set(saya.x, 0, saya.z); saya.g.rotation.y = saya.r;
+    if (naikBianglala) {
+      const p = naikBianglala.pos();
+      saya.g.position.set(p.x, p.y - 1.42, p.z); saya.g.rotation.y = Math.PI / 2; saya.a = 2;
+    }
     pose(saya.g, saya.a, dt, saya.cepat || 1);
   }
   // pemain lain (interpolasi)
@@ -1692,21 +1872,27 @@ function langkah() {
 
   // hiasan
   for (const h of hatiBesar) h.rotation.y += dt * 0.8;
+  animasiSuite(dt, t);
+  Gedung.update(dt, t, saya);
   if (airHati) { airLompat = Math.max(0, airLompat - dt); airHati.rotation.y += dt * (1.2 + airLompat * 8); airHati.position.y = 1.5 + Math.sin(t / 600) * 0.12 + airLompat * 0.6; }
 
   // kamera
   const k = 1 - Math.exp(-dt * 10);
-  kam.x += (saya.x - kam.x) * k; kam.z += (saya.z - kam.z) * k;
+  const kx = naikBianglala ? saya.g.position.x : saya.x, kz = naikBianglala ? saya.g.position.z : saya.z;
+  kam.x += (kx - kam.x) * k; kam.z += (kz - kam.z) * k;
+  kam.y += ((naikBianglala ? saya.g.position.y + 1.4 : 1.4) - kam.y) * k;
   const cp = Math.cos(kam.pitch);
   camera.position.set(kam.x - Math.sin(kam.yaw) * cp * kam.jarak, kam.y + Math.sin(kam.pitch) * kam.jarak, kam.z - Math.cos(kam.yaw) * cp * kam.jarak);
   camera.lookAt(kam.x, kam.y, kam.z);
   matahari.position.set(kam.x + 28, 46, kam.z + 22); matahari.target.position.set(kam.x, 0, kam.z);
 
+  if (dindingKV && t - dindingT > 70 && Math.abs(saya.z + 19.8) < 26 && Math.abs(saya.x - 3) < 34) { dindingT = t; dindingKV.ulang(); } // monitor buku tamu bergerak saat terlihat
   if (t - waktuLangit > 30000) { waktuLangit = t; aturWaktu(); }
   if (t - cekT > 1000) {
     cekT = t;
     Prog.cekPosisi(saya.x, saya.z);
     if (L && lokasiDi(saya.x, saya.z) === 'lounge' && !Prog.vipSaya() && !K.peran[L.uid]) { pindah(0, -51.8, 0); toast('VIPmu sudah tidak aktif.'); }
+    if (L && lokasiDi(saya.x, saya.z) === 'direktur' && !RuangDir.bolehMasuk()) { pindah(12.5, 16, -Math.PI / 2); toast('🚪 Ruang Direktur privat. Ketuk pintu dulu, nanti Direktur yang membukakan.', 3600); }
   }
   perbaruiAksi();
   kirimPosisi(t);
@@ -1787,7 +1973,9 @@ async function mulai() {
   K.bukaHarian = k => ({ amplop: Seru.bukaAmplop, menfess: () => Seru.bukaMenfess(), speed: Speed.buka, mood: Seru.bukaMood, season: Komunitas.bukaSeason, kuis: Aktivitas.bukaKuis, kerupuk: Aktivitas.bukaKerupuk, kisah: Komunitas.bukaKisah, undang: Komunitas.bukaUndang, lencana: Komunitas.bukaLencana, kamar: () => Komunitas.bukaKamar() })[k]();
   K.Aktivitas = Aktivitas; K.Komunitas = Komunitas; K.kirimEfek = Hadir.kirimEfek;
   K.emote = (a, dur) => { berdiri(); saya.emoteA = a; saya.emoteT = dur; posWaktu = 0; };
-  Sosial.mulai(); Direktur.mulai(); Prog.mulai(); Hadir.mulai(); Bayar.cekServer(); Foto.mulai(); Seru.mulai(); Seru.pasangEmote(); Speed.mulai(); Aktivitas.mulai(); Komunitas.mulai(); Bayar.mulaiPapan(() => papanDonasiKV && papanDonasiKV.ulang()); setInterval(() => papanDonasiKV && papanDonasiKV.ulang(), 30000); setTimeout(dekorMusim, 1500);
+  K.gedungBuka = Gedung.sudahBuka; K.lihatProyek = Gedung.lihatProyek;
+  K.bolehRuangDir = RuangDir.bolehMasuk; K.ketukDir = RuangDir.ketuk; K.panelPintuDir = RuangDir.bukaPanelIzin;
+  Sosial.mulai(); Direktur.mulai(); Prog.mulai(); Hadir.mulai(); Bayar.cekServer(); Foto.mulai(); Seru.mulai(); Seru.pasangEmote(); Speed.mulai(); Aktivitas.mulai(); Komunitas.mulai(); RuangDir.mulai(); Bayar.mulaiPapan(() => papanDonasiKV && papanDonasiKV.ulang()); setInterval(() => papanDonasiKV && papanDonasiKV.ulang(), 30000); setTimeout(dekorMusim, 1500);
   hitungOnline();
   setTimeout(() => {
     Bayar.kembaliDariBayar();
