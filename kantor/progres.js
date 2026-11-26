@@ -3,10 +3,10 @@
 //  arah, acara terjadwal, peringkat, toko (EXP & VIP),
 //  dan notifikasi dari Direktur.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611260350';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611260350';
-import * as Bayar from './bayar.js?v=202611260350';
-import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611260350';
+import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611260432';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611260432';
+import * as Bayar from './bayar.js?v=202611260432';
+import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611260432';
 
 // ---------------------------------------------------------------- DATA TUGAS
 const RUANG_TUJUAN = { jodoh: 'kafe', teman: 'meja', curhat: 'taman' };
@@ -53,7 +53,7 @@ export const saldoDiamond = () => P.diamond || 0;
 export const daftarDonatur = () => P.donatur || {};
 // Seragam (khusus) hanya untuk perannya: 'staf' → staf & Direktur, 'direktur' → Direktur, 'npc' → karyawan NPC saja
 const bolehKhusus = o => o.khusus === 'staf' ? !!(K.L && K.peran[K.L.uid]) : o.khusus === 'direktur' ? direkturSaya() : false;
-const boleh = o => !!o && (o.khusus ? bolehKhusus(o) : direkturSaya() || (o.dm || o.gacha ? punyaBarang(o.id) : o.vip ? vipSaya() : level() >= o.lv));
+const boleh = o => !!o && (o.khusus ? bolehKhusus(o) : direkturSaya() || (o.dm || o.gacha || o.season ? punyaBarang(o.id) : o.vip ? vipSaya() : level() >= o.lv));
 export const bolehBarang = id => !id || boleh(BARANG[id]);
 // penampilan yang boleh dikirim ke orang lain: barang terkunci diganti bawaan
 export function lookAman(look) {
@@ -157,6 +157,8 @@ async function proses() {
   jalan = false;
 }
 
+// poin Season Pass = jumlah tugas harian selesai di bulan itu (kunci tugas: h<YYYYMMDD>_<id>)
+export const poinMusim = ms => [...P.selesai].filter(k => k.startsWith('h' + ms)).length;
 export function hadiah(n, label) { if (K.L && n > 0) tambah(n, null, label); }
 
 // Laporkan aktivitas: otomatis memberi EXP bila tugas terkait belum selesai
@@ -203,6 +205,13 @@ function tabHarian() {
         <button type="button" data-h="menfess">📮 Menfess<small>Kirim pesan anonim</small></button>
         <button type="button" data-h="speed">💘 Speed Dating<small>Kenalan 3 menit, pilih ❤</small></button>
         <button type="button" data-h="mood">😶‍🌫️ Mood<small>Tampil di atas kepalamu</small></button>
+        <button type="button" data-h="season">🎟️ Season Pass<small>Hadiah tiap tier bulan ini</small></button>
+        <button type="button" data-h="kuis">🧠 Kuis & Tebak Lagu<small>Juara mingguan</small></button>
+        <button type="button" data-h="kerupuk">🍘 Lomba Kerupuk<small>Ketuk secepatnya!</small></button>
+        <button type="button" data-h="lencana">🏅 Lencana & Jabatan<small>Pamerkan gelarmu</small></button>
+        <button type="button" data-h="kamar">🏠 Kamar Saya<small>Hias kamarmu sendiri</small></button>
+        <button type="button" data-h="kisah">💞 Kisah Sukses<small>Pasangan dari kantor ini</small></button>
+        <button type="button" data-h="undang">🎟️ Ajak Teman<small>Berdua dapat 50 💠</small></button>
       </div>`,
     pasang(el) { el.querySelectorAll('[data-h]').forEach(b => b.onclick = () => K.bukaHarian && K.bukaHarian(b.dataset.h)); },
   };
@@ -344,10 +353,16 @@ function tabPeringkat() {
   const lv = [...semua].map(u => ({ u, e: ((P.expSemua[u] || {}).n || 0) + (P.beliSemua[u] || 0) })).sort((a, b) => b.e - a.e).slice(0, 10);
   const me = K.L.uid;
   return {
-    html: `<h3>🎮 Juara Tangkap Hati hari ini</h3>
+    html: `${K.rajaHati && K.rajaHati.uid ? `<div class="cocok"><b>👑 Raja/Ratu Hati minggu ini: ${esc(bersih(K.rajaHati.n, 20))}</b><br><small class="kecil">Skor Tangkap Hati tertinggi minggu lalu (${fmt(K.rajaHati.s)})</small></div>` : ''}
+      <h3>🧠 Juara Kuis minggu ini</h3><div id="pkKuis"><p class="kecil">Memuat…</p></div>
+      <h3>🎮 Juara Tangkap Hati hari ini</h3>
       ${skor.length ? `<ol class="peringkat">${skor.map(([u, v]) => `<li class="${u === me ? 'saya' : ''}"><span>${esc(bersih(v.n, 20))}</span><b>${fmt(v.s)}</b></li>`).join('')}</ol>` : '<p class="kecil">Belum ada yang main hari ini. Jadilah juara pertama di mesin arcade lobi!</p>'}
       <h3>⭐ Tamu dengan level tertinggi</h3>
       ${lv.length ? `<ol class="peringkat">${lv.map(x => `<li class="${x.u === me ? 'saya' : ''}"><span>${isVip(x.u) ? '💎 ' : ''}${esc(namaUid(x.u))}</span><b>Lv ${levelDari(x.e)}</b></li>`).join('')}</ol>` : '<p class="kecil">Belum ada data.</p>'}`,
+    pasang(el) {
+      const box = el.querySelector('#pkKuis');
+      K.L.db.get('lomba/kuis/' + K.Aktivitas.mingguIni(K.L.db.now())).then(o => { const l = Object.entries(o || {}).sort((a, b) => b[1].s - a[1].s).slice(0, 5); box.innerHTML = l.length ? `<ol class="peringkat">${l.map(([u, v]) => `<li class="${u === me ? 'saya' : ''}"><span>${esc(bersih(v.n, 20))}</span><b>${fmt(v.s)}</b></li>`).join('')}</ol>` : '<p class="kecil">Belum ada. Main kuis di Ruang Rapat!</p>'; }).catch(() => { box.innerHTML = ''; });
+    },
   };
 }
 

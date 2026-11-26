@@ -3,8 +3,8 @@
 //  ajakan ngobrol, obrolan pribadi, suka & match, laporan, dan
 //  alat Direktur/Staf. Struktur data ini sama dengan database.rules.json.
 // =====================================================================
-import { TS } from './db.js?v=202611260350';
-import { CFG, bersih, sensor, rupiah } from './common.js?v=202611260350';
+import { TS } from './db.js?v=202611260432';
+import { CFG, bersih, sensor, rupiah, kodeTamu } from './common.js?v=202611260432';
 
 export function buatLayanan(db) {
   const uid = db.uid;
@@ -35,6 +35,17 @@ export function buatLayanan(db) {
       };
       if (peran === 'staf') upd[`peran/${target}`] = 'staf';
       await db.update('', upd);
+      // kode undangan: pengundang & tamu baru masing-masing dapat 50 Diamond
+      if (d.ref) {
+        const semua = (await db.get('tamu').catch(() => null)) || {};
+        const pengundang = Object.keys(semua).find(u => u !== target && kodeTamu(u) === String(d.ref).toUpperCase());
+        if (pengundang) {
+          await L.beriDiamond(pengundang, 50).catch(() => {});
+          await L.beriDiamond(target, 50).catch(() => {});
+          L.kirimNotif(pengundang, `🎟️ ${d.n} daftar pakai kode undanganmu dan sudah di-ACC! Kamu dapat 50 💠 Diamond.`, 'hadiah');
+          L.kirimNotif(target, '🎟️ Bonus kode undangan: kamu dapat 50 💠 Diamond. Selamat datang!', 'hadiah');
+        }
+      }
       return L.kirimNotif(target, peran === 'staf'
         ? `Selamat ${d.n}! Pendaftaranmu diterima dan kamu diangkat menjadi Staf 🛡`
         : `Selamat ${d.n}! Pendaftaranmu diterima. Kamu resmi menjadi tamu. Selamat bersenang-senang 💖`, 'acc');

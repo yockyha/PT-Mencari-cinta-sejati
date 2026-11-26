@@ -1,6 +1,6 @@
-import { CFG, TUJUAN, STATUS, bersih, igBersih, kasar, hash, fmt, esc, profil, simpanProfil } from '../js/common.js?v=202611260350';
-import { bukaDB } from '../js/db.js?v=202611260350';
-import { buatLayanan } from '../js/layanan.js?v=202611260350';
+import { CFG, TUJUAN, STATUS, bersih, igBersih, kasar, hash, fmt, esc, profil, simpanProfil } from '../js/common.js?v=202611260432';
+import { bukaDB } from '../js/db.js?v=202611260432';
+import { buatLayanan } from '../js/layanan.js?v=202611260432';
 
 const $ = id => document.getElementById(id);
 const cv = $('kartu'), x = cv.getContext('2d');
@@ -128,7 +128,7 @@ $('f').addEventListener('submit', async e => {
   $('buat').disabled = false;
   gambar(); siap = true;
   try { localStorage.setItem('ptmcs_kartuDicetak', 'true'); } catch (e) {}
-  $('unduh').disabled = false;
+  $('unduh').disabled = false; $('story').disabled = false;
   $('bagi').hidden = !navigator.canShare;
   st.className = 'status ok';
   st.textContent = nomor ? `Selamat! Kamu tamu ke-${fmt(nomor)}. Namamu sudah tercatat di Buku Tamu.` : 'Kartu tamu siap diunduh.';
@@ -140,6 +140,24 @@ $('unduh').addEventListener('click', async () => {
   const b = await blob(); const a = document.createElement('a');
   a.href = URL.createObjectURL(b); a.download = namaFile(); a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+});
+// Versi IG Story (1080×1920): kartu di tengah + ajakan & alamat situs
+function kanvasStory() {
+  const S = document.createElement('canvas'); S.width = 1080; S.height = 1920;
+  const y = S.getContext('2d'), g = y.createLinearGradient(0, 0, 1080, 1920);
+  g.addColorStop(0, '#ff4f7b'); g.addColorStop(1, '#ffd23f'); y.fillStyle = g; y.fillRect(0, 0, 1080, 1920);
+  y.fillStyle = 'rgba(255,255,255,.18)'; for (let i = 0; i < 30; i++) { y.font = `${40 + (i % 4) * 20}px sans-serif`; y.fillText('💗', (i * 173) % 1080, 120 + (i * 311) % 1800); }
+  y.fillStyle = '#fff'; y.textAlign = 'center'; y.font = '700 64px Fredoka, Nunito, sans-serif'; y.fillText('Aku resmi jadi tamu! 💘', 540, 190);
+  const w = 800, h = w * cv.height / cv.width; y.save(); y.shadowColor = 'rgba(42,20,32,.35)'; y.shadowBlur = 40; y.drawImage(cv, (1080 - w) / 2, 260, w, h); y.restore();
+  y.fillStyle = '#2a1420'; y.font = '900 46px Nunito, sans-serif'; y.fillText('Gabung juga di kantor virtualnya:', 540, 260 + h + 110);
+  y.fillStyle = '#fff'; y.font = '900 58px Nunito, sans-serif'; y.fillText(location.host + '/daftar', 540, 260 + h + 190, 1000);
+  return S;
+}
+$('story').addEventListener('click', async () => {
+  const b = await new Promise(r => kanvasStory().toBlob(r, 'image/png'));
+  const f = new File([b], namaFile().replace('.png', '-story.png'), { type: 'image/png' });
+  if (navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f], title: 'Kartu Tamu' }).catch(() => {}); return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = f.name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
 });
 $('bagi').addEventListener('click', async () => {
   const f = new File([await blob()], namaFile(), { type: 'image/png' });

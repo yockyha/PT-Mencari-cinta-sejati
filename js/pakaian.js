@@ -6,15 +6,15 @@
 //   kp/mt/tl/lh/tg/ef = id aksesoris kepala, mata, telinga, leher, tangan, efek ('' = tidak pakai)
 //  Syarat barang: lv (level), vip (Kartu Eksekutif), dm (harga Diamond; id = kunci katalog),
 //  khusus ('staf' | 'direktur' | 'npc') = seragam yang tidak bisa dipakai tamu.
-//  gacha = edisi Amplop Cinta (hanya dari amplop).
+//  gacha = edisi Amplop Cinta (hanya dari amplop). season = hadiah Season Pass Premium.
 //  g: 'u' semua, 'l' laki-laki, 'p' perempuan.
 // =====================================================================
 export const SLOT = {
   at: { nama: 'Atasan', ikon: '👕' }, bw: { nama: 'Bawahan', ikon: '👖' }, sp: { nama: 'Sepatu', ikon: '👟' },
   kp: { nama: 'Kepala', ikon: '🎩' }, mt: { nama: 'Mata', ikon: '👓' }, tl: { nama: 'Telinga', ikon: '💎' },
-  lh: { nama: 'Leher', ikon: '📿' }, tg: { nama: 'Tangan', ikon: '⌚' }, ef: { nama: 'Efek', ikon: '✨' },
+  lh: { nama: 'Leher', ikon: '📿' }, tg: { nama: 'Tangan', ikon: '⌚' }, ef: { nama: 'Efek', ikon: '✨' }, pt: { nama: 'Hewan peliharaan', ikon: '🐾' },
 };
-export const SLOT_AKS = ['kp', 'mt', 'tl', 'lh', 'tg', 'ef'];
+export const SLOT_AKS = ['kp', 'mt', 'tl', 'lh', 'tg', 'ef', 'pt'];
 export const WARNA_BAJU = ['#ff4f7b', '#ffffff', '#3a6ea5', '#2f9e6e', '#f2b33d', '#8e5cc9', '#2b2d42', '#ff8fab', '#c0392b', '#8fd3ff', '#b9f3c9', '#e8d5b5'];
 export const WARNA_CELANA = ['#2b2d42', '#4a4e69', '#6b4f3a', '#1d3557', '#cfc6b8', '#3a6ea5', '#7a7f8a', '#ff8fab', '#ffffff', '#2f6e4e'];
 export const KULIT = ['#f6d2b8', '#e8b48f', '#c98e62', '#a36a43', '#6f4428'];
@@ -51,6 +51,7 @@ export const PAKAIAN = [
   B('dressBunga', 'Dress Bunga', 'at', 'Dress & Gaun', 'p', { lv: 2 }, { warna: true, gaun: 'pendek' }),
   B('gaun', 'Gaun Pesta', 'at', 'Dress & Gaun', 'p', { lv: 5 }, { warna: true, gaun: 'panjang' }),
   B('kebaya', 'Kebaya', 'at', 'Dress & Gaun', 'p', { lv: 6 }, { warna: true, gaun: 'kebaya' }),
+  B('ssJaket', 'Jaket Season', 'at', 'Jaket', 'u', { season: true }),
   B('gcHoodieNeon', 'Hoodie Neon', 'at', 'Hoodie & Sweater', 'u', { gacha: true }),
   B('seragam', 'Seragam Karyawan', 'at', 'Seragam', 'u', { khusus: 'staf' }),
   B('jasDir', 'Jas Direktur', 'at', 'Seragam', 'u', { khusus: 'direktur' }),
@@ -93,6 +94,7 @@ export const PAKAIAN = [
   B('bunga', 'Mahkota Bunga', 'kp', 'Mahkota', 'u', { lv: 5 }),
   B('mahkota', 'Mahkota Emas', 'kp', 'Mahkota', 'u', { vip: true }),
   B('halo', 'Halo', 'kp', 'Mahkota', 'u', { vip: true }),
+  B('ssTopi', 'Topi Season', 'kp', 'Topi', 'u', { season: true }),
   B('gcBandoHati', 'Bando Hati', 'kp', 'Hijab & Rambut', 'u', { gacha: true }),
   B('helm', 'Helm', 'kp', 'Topi', 'u', { khusus: 'npc' }),
   B('topiOb', 'Topi Kerja', 'kp', 'Topi', 'u', { khusus: 'npc' }),
@@ -119,6 +121,11 @@ export const PAKAIAN = [
   B('aura', 'Aura Hati', 'ef', 'Efek', 'u', { lv: 9 }),
   B('a13', 'Balon Hati', 'ef', 'Efek', 'u', { dm: 90 }),
   B('gcSayapKupu', 'Sayap Kupu-kupu', 'ef', 'Efek', 'u', { gacha: true }),
+  // hewan peliharaan yang mengikuti karakter
+  B('pKelinci', 'Kelinci', 'pt', 'Hewan', 'u', { lv: 8 }),
+  B('pAyam', 'Ayam Jago', 'pt', 'Hewan', 'u', { lv: 12 }),
+  B('pKucing', 'Kucing Oranye', 'pt', 'Hewan', 'u', { dm: 80 }),
+  B('pAnjing', 'Anjing Corgi', 'pt', 'Hewan', 'u', { dm: 80 }),
 ];
 export const BARANG = Object.fromEntries(PAKAIAN.map(x => [x.id, x]));
 
@@ -126,7 +133,7 @@ export const BARANG = Object.fromEntries(PAKAIAN.map(x => [x.id, x]));
 const LAMA_O = ['kemeja', 'hoodie', 'denim', 'jas', 'gaun', 'kulit', 'emas', 'o7', 'o8', 'o9'];
 const LAMA_A = [null, ['mt', 'kacamata'], ['kp', 'topi'], ['kp', 'pita'], ['tl', 'headset'], ['mt', 'hitam'], ['kp', 'bando'], ['kp', 'bunga'], ['ef', 'sayap'], ['ef', 'aura'], ['kp', 'mahkota'], ['kp', 'halo'], ['mt', 'a12'], ['ef', 'a13'], ['kp', 'a14']];
 const int = (v, n, d = 0) => (Number.isInteger(v) && v >= 0 && v < n ? v : d);
-const KOSONG = { kp: '', mt: '', tl: '', lh: '', tg: '', ef: '' };
+const KOSONG = { kp: '', mt: '', tl: '', lh: '', tg: '', ef: '', pt: '' };
 
 export function lookV2(l, gender = '') {
   l = l && typeof l === 'object' ? l : {};
