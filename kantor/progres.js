@@ -3,10 +3,10 @@
 //  arah, acara terjadwal, peringkat, toko (EXP & VIP),
 //  dan notifikasi dari Direktur.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611261340';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611261340';
-import * as Bayar from './bayar.js?v=202611261340';
-import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611261340';
+import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611261448';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611261448';
+import * as Bayar from './bayar.js?v=202611261448';
+import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611261448';
 
 // ---------------------------------------------------------------- DATA TUGAS
 const RUANG_TUJUAN = { jodoh: 'kafe', teman: 'meja', curhat: 'taman' };
@@ -335,6 +335,7 @@ function tabAcara() {
   const kartu = ([id, a], sedang) => `<div class="acara ${sedang ? 'live' : ''}"><b>${sedang ? '🔴 LIVE · ' : ''}${esc(a.judul)}</b>
       <small>${esc(LOKASI[a.lokasi]?.nama || '')} · ${esc(tanggalJam(a.mulai))} WIB · ${a.durasi} menit${a.exp ? ` · 🎁 ${a.exp} EXP` : ''}</small>
       ${a.isi ? `<p>${esc(a.isi)}</p>` : ''}
+      ${/date night/i.test(a.judul) ? '<div class="baris"><button type="button" class="mini putih" data-tpl>📸 Template Story</button></div>' : ''}
       <div class="baris kecil"><span>👥 ${jml(P.ikut, id)} ikut${sedang ? ` · ${jml(P.hadir, id)} hadir` : ''}</span>
       ${sedang ? `<button type="button" class="mini" data-datang="${esc(a.lokasi)}">Datang sekarang</button>` : `<button type="button" class="mini ${P.ikut[id]?.[uid] ? 'putih' : ''}" data-ikut="${esc(id)}">${P.ikut[id]?.[uid] ? '✓ Ikut (batal)' : 'Ikut'}</button>`}</div></div>`;
   return {
@@ -342,6 +343,7 @@ function tabAcara() {
       ${nanti.length ? `<h3>Akan datang</h3>${nanti.slice(0, 8).map(x => kartu(x, false)).join('')}` : (live.length ? '' : '<p>Belum ada acara terjadwal. Pantau terus, Direktur sering bikin acara seru!</p>')}
       <p class="kecil">Tekan <b>Ikut</b> untuk diingatkan 10 menit sebelum mulai. Datang ke ruangannya saat acara berlangsung untuk absen otomatis & dapat EXP.</p>`,
     pasang(el) {
+      el.querySelectorAll('[data-tpl]').forEach(b => b.onclick = () => window.open('../template/', '_blank', 'noopener'));
       el.querySelectorAll('[data-ikut]').forEach(b => b.onclick = () => { if (!resmi()) { K.bukaDaftar(); return; } const id = b.dataset.ikut, ya = !(P.ikut[id] && P.ikut[id][uid]); K.L.ikutAcara(id, ya).then(() => { (P.ikut[id] ||= {})[uid] = ya || undefined; if (!ya) delete P.ikut[id][uid]; toast(ya ? 'Kamu akan diingatkan sebelum acara mulai ⏰' : 'Batal ikut.'); bukaHub('acara'); }).catch(() => toast('Gagal. Coba lagi.')); });
       el.querySelectorAll('[data-datang]').forEach(b => b.onclick = () => { tutupKartu(); pergiKe(b.dataset.datang); });
     },
