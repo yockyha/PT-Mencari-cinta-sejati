@@ -47,12 +47,10 @@ const isiDateNight = () => {
   }
   if (ingin('hujan')) {
     const s = await baru();
-    await ev(s, () => { const K = __kantor; K.pindah(0, 12, Math.PI); Object.assign(K.kam, { yaw: 0.1, pitch: 0.3, jarak: 8 }); });
+    await ev(s, () => { const K = __kantor; K.pindah(-4, 16, Math.PI * 0.9); Object.assign(K.kam, { yaw: Math.PI * 0.9 + 0.5, pitch: 0.42, jarak: 11 }); });
     await maju(s, 1500);
-    await rekam(s, 'hujan', 4.5, async (i) => {
-      if (i === 5) await ev(s, () => __kantor.K.efekLokal('hati', 90));
-      if (i === 60) await ev(s, () => __kantor.K.efekLokal('hati', 60));
-    });
+    // efek CSS berjalan dengan waktu nyata, jadi dipicu sedikit-sedikit tiap frame agar hujannya terlihat terus
+    await rekam(s, 'hujan', 4.5, async (i) => { if (i >= 3) await ev(s, () => __kantor.K.efekLokal('hati', 5)); });
     await s.ctx.close();
   }
   if (ingin('taman')) {
@@ -67,10 +65,7 @@ const isiDateNight = () => {
     const s = await baru();
     await ev(s, () => { const K = __kantor; K.pindah(0, 12, Math.PI); Object.assign(K.kam, { yaw: -0.15, pitch: 0.28, jarak: 7 }); });
     await maju(s, 1500);
-    await rekam(s, 'raja', 4, async (i) => {
-      if (i === 5) await ev(s, () => __kantor.K.efekLokal('kembangapi', 70));
-      if (i === 55) await ev(s, () => __kantor.K.efekLokal('kembangapi', 50));
-    });
+    await rekam(s, 'raja', 4, async (i) => { if (i >= 3) await ev(s, () => __kantor.K.efekLokal('kembangapi', 4)); });
     await s.ctx.close();
   }
   await b.close();
