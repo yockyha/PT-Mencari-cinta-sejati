@@ -248,6 +248,61 @@
         }
       }
     },
+    "fotoProfil": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && ((auth.uid === $uid && (!newData.exists() || ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
+        ".validate": "newData.child('d').isString() && newData.child('d').val().length <= 40000 && newData.child('d').val().beginsWith('data:image/jpeg;base64,') && newData.child('t').val() === now"
+      }
+    },
+    "galeri": {
+      ".read": "auth != null",
+      ".indexOn": [
+        "t"
+      ],
+      "$id": {
+        ".write": "auth != null && ((!data.exists() && newData.child('uid').val() === auth.uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && (!root.child('galeriKu/' + auth.uid).exists() || root.child('galeriKu/' + auth.uid).val() < now - 60000) && newData.parent().parent().child('galeriKu/' + auth.uid).val() === now) || (data.exists() && !newData.exists() && (data.child('uid').val() === auth.uid || root.child('peran/' + auth.uid).exists())))",
+        ".validate": "data.exists() || (newData.child('uid').val() === auth.uid && newData.hasChildren(['n', 'th', 't']))",
+        "uid": {
+          ".validate": "!data.exists() || data.val() === newData.val()"
+        },
+        "n": {
+          ".validate": "newData.isString() && newData.val().length <= 30 && (!data.exists() || data.val() === newData.val())"
+        },
+        "c": {
+          ".validate": "newData.isString() && newData.val().length <= 100 && (!data.exists() || data.val() === newData.val())"
+        },
+        "th": {
+          ".validate": "newData.isString() && newData.val().length <= 30000 && newData.val().beginsWith('data:image/jpeg;base64,') && (!data.exists() || data.val() === newData.val())"
+        },
+        "t": {
+          ".validate": "(!data.exists() && newData.val() === now) || data.val() === newData.val()"
+        },
+        "s": {
+          "$u": {
+            ".write": "auth != null && auth.uid === $u && (!newData.exists() || ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())))",
+            ".validate": "newData.val() === true"
+          }
+        },
+        "$lain": {
+          ".validate": false
+        }
+      }
+    },
+    "galeriData": {
+      ".read": "auth != null",
+      "$id": {
+        ".write": "auth != null && ((!data.exists() && newData.exists() && newData.parent().parent().child('galeri/' + $id + '/uid').val() === auth.uid && !root.child('galeri/' + $id).exists()) || (!newData.exists() && (root.child('galeri/' + $id + '/uid').val() === auth.uid || root.child('peran/' + auth.uid).exists())))",
+        ".validate": "newData.child('d').isString() && newData.child('d').val().length <= 220000 && newData.child('d').val().beginsWith('data:image/jpeg;base64,')"
+      }
+    },
+    "galeriKu": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.val() === now"
+      }
+    },
     "undangan": {
       "$ke": {
         ".read": "auth != null && auth.uid === $ke",
