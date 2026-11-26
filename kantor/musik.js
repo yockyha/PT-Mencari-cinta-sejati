@@ -59,14 +59,42 @@ export async function rekam(kunci, detik = 16, efek = null) {
   [ctx, master, busM, busS, gema, noise, jalan] = simpanCtx; Object.assign(atur, simpanAtur);
   return hasil;
 }
+// iOS: suara Web Audio dibisukan saat tombol senyap aktif, kecuali sesi audio diset "playback".
+// Triknya: putar elemen <audio> senyap yang berulang + navigator.audioSession (Safari 17+).
+let senyap = null;
+function wavSenyap() {
+  const n = 800, b = new Uint8Array(44 + n), v = new DataView(b.buffer), s = (o, x) => [...x].forEach((c, i) => v.setUint8(o + i, c.charCodeAt(0)));
+  s(0, 'RIFF'); v.setUint32(4, 36 + n, true); s(8, 'WAVE'); s(12, 'fmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+  v.setUint32(24, 8000, true); v.setUint32(28, 8000, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true); s(36, 'data'); v.setUint32(40, n, true); b.fill(128, 44);
+  let bin = ''; b.forEach(x => { bin += String.fromCharCode(x); }); return 'data:audio/wav;base64,' + btoa(bin);
+}
+function bukaKunciIOS() {
+  try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch { /* */ }
+  try {
+    if (!senyap) { senyap = new Audio(wavSenyap()); senyap.loop = true; senyap.setAttribute('playsinline', ''); senyap.volume = 0.01; }
+    const j = senyap.play(); if (j && j.catch) j.catch(() => {});
+  } catch { /* */ }
+  try { const b = ctx.createBuffer(1, 1, 22050), s = ctx.createBufferSource(); s.buffer = b; s.connect(ctx.destination); s.start(0); } catch { /* */ }
+}
 export function pasang() {
-  const mulai = () => { if (siapkan()) { ['pointerdown', 'keydown', 'touchstart'].forEach(e => removeEventListener(e, mulai, true)); } };
-  ['pointerdown', 'keydown', 'touchstart'].forEach(e => addEventListener(e, mulai, true));
-  document.addEventListener('visibilitychange', () => { if (!ctx) return; if (document.hidden) ctx.suspend(); else ctx.resume(); });
+  // coba nyalakan di setiap ketukan sampai benar-benar jalan (Safari kadang menolak sentuhan pertama)
+  const EV = ['pointerdown', 'pointerup', 'touchstart', 'touchend', 'mousedown', 'click', 'keydown'];
+  const mulai = () => {
+    if (!siapkan()) return;
+    if (ctx.state !== 'running') { bukaKunciIOS(); const r = ctx.resume(); if (r && r.then) r.then(cek, () => {}); }
+    else { if (!senyap) bukaKunciIOS(); cek(); }
+  };
+  const cek = () => { if (ctx && ctx.state === 'running' && senyap) EV.forEach(e => removeEventListener(e, mulai, true)); };
+  EV.forEach(e => addEventListener(e, mulai, true));
+  document.addEventListener('visibilitychange', () => {
+    if (!ctx) return;
+    if (document.hidden) { ctx.suspend(); if (senyap) senyap.pause(); }
+    else { ctx.resume(); if (senyap) senyap.play().catch(() => {}); EV.forEach(e => addEventListener(e, mulai, true)); } // pasang lagi: iOS kadang perlu ketukan setelah kembali
+  });
   // klik halus untuk tombol antarmuka
   addEventListener('click', e => { if (e.target.closest && e.target.closest('button, .btn, .pill, .mini, a.btn')) sfx('klik'); }, true);
 }
-export const aktif = () => !!ctx;
+export const aktif = () => !!(ctx && ctx.state === 'running');
 
 // ---------------------------------------------------------------- INSTRUMEN
 function env(g, t, a, puncak, lama, akhir = 0.0008) { g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(puncak, t + a); g.gain.exponentialRampToValueAtTime(akhir, t + a + lama); }

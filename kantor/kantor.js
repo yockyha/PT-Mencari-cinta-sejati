@@ -3,30 +3,30 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611262230';
-import { bukaDB } from '../js/db.js?v=202611262230';
-import { buatLayanan } from '../js/layanan.js?v=202611262230';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611262230';
-import * as Sosial from './sosial.js?v=202611262230';
-import * as Direktur from './direktur.js?v=202611262230';
-import * as Prog from './progres.js?v=202611262230';
-import * as Game from './game.js?v=202611262230';
-import * as Bayar from './bayar.js?v=202611262230';
-import * as Meja from './meja.js?v=202611262230';
-import * as Karyawan from './karyawan.js?v=202611262230';
-import * as Hadir from './hadir.js?v=202611262230';
-import * as Foto from './foto.js?v=202611262230';
-import * as Seru from './seru.js?v=202611262230';
-import * as Speed from './speeddating.js?v=202611262230';
-import * as Aktivitas from './aktivitas.js?v=202611262230';
-import * as Komunitas from './komunitas.js?v=202611262230';
-import * as RuangDir from './ruangdir.js?v=202611262230';
-import * as Gedung from './gedung.js?v=202611262230';
-import * as PapanInfo from './papaninfo.js?v=202611262230';
-import * as Musik from './musik.js?v=202611262230';
-import * as Suara from './suara.js?v=202611262230';
-import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611262230';
-import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611262230';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611262240';
+import { bukaDB } from '../js/db.js?v=202611262240';
+import { buatLayanan } from '../js/layanan.js?v=202611262240';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611262240';
+import * as Sosial from './sosial.js?v=202611262240';
+import * as Direktur from './direktur.js?v=202611262240';
+import * as Prog from './progres.js?v=202611262240';
+import * as Game from './game.js?v=202611262240';
+import * as Bayar from './bayar.js?v=202611262240';
+import * as Meja from './meja.js?v=202611262240';
+import * as Karyawan from './karyawan.js?v=202611262240';
+import * as Hadir from './hadir.js?v=202611262240';
+import * as Foto from './foto.js?v=202611262240';
+import * as Seru from './seru.js?v=202611262240';
+import * as Speed from './speeddating.js?v=202611262240';
+import * as Aktivitas from './aktivitas.js?v=202611262240';
+import * as Komunitas from './komunitas.js?v=202611262240';
+import * as RuangDir from './ruangdir.js?v=202611262240';
+import * as Gedung from './gedung.js?v=202611262240';
+import * as PapanInfo from './papaninfo.js?v=202611262240';
+import * as Musik from './musik.js?v=202611262240';
+import * as Suara from './suara.js?v=202611262240';
+import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611262240';
+import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611262240';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
@@ -917,11 +917,13 @@ $('btnMusik').onclick = () => {
     <input type="range" id="mMV" min="0" max="1" step="0.05" value="${A.mv}" aria-label="Volume musik">
     <label class="cek"><input type="checkbox" id="mS" ${A.s ? 'checked' : ''}> 🔔 Efek suara (duduk, pesan, chat, game…)</label>
     <input type="range" id="mSV" min="0" max="1" step="0.05" value="${A.sv}" aria-label="Volume efek suara">
-    ${Musik.aktif() ? '' : '<p class="kecil">🔈 Suara menyala setelah kamu mengetuk layar sekali.</p>'}</div>`, {
+    <div class="baris"><button class="btn putih" type="button" id="mT">🔊 Tes suara</button></div>
+    <p class="kecil" id="mK">${Musik.aktif() ? '🟢 Suara aktif.' : '🔈 Ketuk tombol Tes suara untuk menyalakan.'} Tidak terdengar? Naikkan volume HP. Di iPhone/iPad pastikan volume media tidak nol.</p></div>`, {
     pasang(el) {
       const ubah = () => { Musik.setel({ m: el.querySelector('#mM').checked, mv: +el.querySelector('#mMV').value, s: el.querySelector('#mS').checked, sv: +el.querySelector('#mSV').value }); segarTombolMusik(); };
       el.querySelectorAll('input').forEach(i => i.oninput = i.onchange = ubah);
       el.querySelector('#mSV').onchange = () => { ubah(); Musik.sfx('pesan'); };
+      el.querySelector('#mT').onclick = () => setTimeout(() => { Musik.sfx('level'); el.querySelector('#mK').textContent = Musik.aktif() ? '🟢 Suara aktif. Kalau masih tidak terdengar, naikkan volume HP.' : '⚠️ Browser belum mengizinkan suara. Ketuk sekali lagi.'; }, 150);
     },
   });
 };
