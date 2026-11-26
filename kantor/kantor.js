@@ -3,19 +3,19 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611251741';
-import { bukaDB } from '../js/db.js?v=202611251741';
-import { buatLayanan } from '../js/layanan.js?v=202611251741';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611251741';
-import * as Sosial from './sosial.js?v=202611251741';
-import * as Direktur from './direktur.js?v=202611251741';
-import * as Prog from './progres.js?v=202611251741';
-import * as Game from './game.js?v=202611251741';
-import * as Bayar from './bayar.js?v=202611251741';
-import * as Meja from './meja.js?v=202611251741';
-import * as Karyawan from './karyawan.js?v=202611251741';
-import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611251741';
-import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611251741';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611252330';
+import { bukaDB } from '../js/db.js?v=202611252330';
+import { buatLayanan } from '../js/layanan.js?v=202611252330';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611252330';
+import * as Sosial from './sosial.js?v=202611252330';
+import * as Direktur from './direktur.js?v=202611252330';
+import * as Prog from './progres.js?v=202611252330';
+import * as Game from './game.js?v=202611252330';
+import * as Bayar from './bayar.js?v=202611252330';
+import * as Meja from './meja.js?v=202611252330';
+import * as Karyawan from './karyawan.js?v=202611252330';
+import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611252330';
+import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611252330';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
@@ -350,6 +350,7 @@ function bangunDunia() {
   // ---- LUAR KANTOR
   patungHati(-14, 32); patungHati(14, 32);
   for (const x of [-14, 14]) titikAksi.push({ x, z: 29.4, r: 2.2, label: '📸 Foto di patung hati', aksi: () => ambilFoto('Foto di Patung Hati', [x, 32]) });
+  titikAksi.push({ x: 0, z: 28.6, r: 2.6, label: '📸 Foto di depan kantor', aksi: () => ambilFoto('Foto di Depan Kantor', [0, 20]) });
   titikAksi.push({ x: 0, z: -66.2, r: 1.4, label: '📸 Foto di lounge', aksi: () => ambilFoto('Foto di Lounge Eksekutif', [0, -69]) });
   for (let i = 0; i < 26; i++) {
     const a = i / 26 * Math.PI * 2, r = 44 + (i % 3) * 5;
@@ -1290,24 +1291,56 @@ function rambuBasah(x, z, detik = 12) {
   g.position.set(x, 0, z); scene.add(g);
   setTimeout(() => scene.remove(g), detik * 1000);
 }
-// 📸 foto: kamera di depan karakter, karakter melambai, hasil bisa disimpan
+// 📸 foto: kamera di depan karakter, karakter melambai, hasil bisa disimpan / dibagikan.
+// Dirender ke render target sendiri (4:5, ukuran IG) lalu dibaca piksel demi piksel,
+// supaya hasilnya tidak hitam di Safari/iPhone.
+const kamFoto = new THREE.PerspectiveCamera(46, 4 / 5, 0.1, 300);
+let fotoUrl = '';
 function ambilFoto(judul, latar) {
   if (!saya.g) return;
   berdiri();
   if (latar) { saya.r = Math.atan2(saya.x - latar[0], saya.z - latar[1]); saya.g.rotation.y = saya.r; }
-  const d = 3.6, cx = saya.x + Math.sin(saya.r) * d, cz = saya.z + Math.cos(saya.r) * d;
+  saya.g.position.set(saya.x, 0, saya.z);
   for (let i = 0; i < 12; i++) pose(saya.g, 5, 0.06);
-  const lama = camera.position.clone();
-  camera.position.set(cx, 1.5, cz); camera.lookAt(saya.x, 1.55, saya.z);
-  renderer.render(scene, camera);
-  let url = '';
-  try { url = renderer.domElement.toDataURL('image/jpeg', 0.9); } catch (e) {}
-  camera.position.copy(lama);
+  const d = 4.8, W = 864, H = 1080;
+  kamFoto.position.set(saya.x + Math.sin(saya.r) * d, 1.55, saya.z + Math.cos(saya.r) * d);
+  kamFoto.lookAt(saya.x, 1.5, saya.z);
+  let blob = null;
+  const rt = new THREE.WebGLRenderTarget(W, H, { samples: 4 });
+  rt.texture.colorSpace = THREE.SRGBColorSpace;
+  try {
+    renderer.setRenderTarget(rt); renderer.render(scene, kamFoto);
+    const px = new Uint8Array(W * H * 4);
+    renderer.readRenderTargetPixels(rt, 0, 0, W, H, px);
+    renderer.setRenderTarget(null);
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    const x = c.getContext('2d'), img = x.createImageData(W, H);
+    for (let y = 0; y < H; y++) img.data.set(px.subarray((H - 1 - y) * W * 4, (H - y) * W * 4), y * W * 4); // balik atas-bawah
+    x.putImageData(img, 0, 0);
+    // bingkai merek
+    x.fillStyle = 'rgba(42,20,32,.82)'; x.fillRect(0, H - 92, W, 92);
+    x.fillStyle = '#ff4f7b'; x.font = FD(40); x.textAlign = 'left'; x.textBaseline = 'middle'; x.fillText('❤ ' + CFG.namaPT, 28, H - 58, W - 56);
+    x.fillStyle = '#fff6ef'; x.font = FB(24, 800); x.fillText(`${judul} · ${location.host || 'jodohonline.company'}`, 28, H - 24, W - 56);
+    fotoUrl && URL.revokeObjectURL(fotoUrl);
+    c.toBlob(bl => { blob = bl; tampil(); }, 'image/jpeg', 0.9);
+  } catch (e) { console.warn(e); renderer.setRenderTarget(null); toast('Kamera gagal dipakai di perangkat ini.'); }
+  rt.dispose();
   saya.lambai = 2.5;
-  if (!url) { toast('Kamera gagal dipakai di perangkat ini.'); return; }
-  bukaKartu(`<h2>📸 ${esc(judul)}</h2><img class="fotoHasil" src="${url}" alt="Fotomu di kantor PT Mencari Cinta Sejati">
-    <div class="baris"><a class="btn" href="${url}" download="jodohonline-foto.jpg">💾 Simpan foto</a><button class="btn putih" type="button" id="fU">Foto lagi</button></div>
-    <p class="kecil">Bagikan ke IG Story & tag @${esc(CFG.instagramNama || CFG.instagram || '')} ya!</p>`, { pasang(i) { i.querySelector('#fU').onclick = () => { tutupKartu(); setTimeout(() => ambilFoto(judul, latar), 100); }; } });
+  function tampil() {
+    if (!blob) { toast('Kamera gagal dipakai di perangkat ini.'); return; }
+    fotoUrl = URL.createObjectURL(blob);
+    const file = new File([blob], 'jodohonline-foto.jpg', { type: 'image/jpeg' });
+    const bisaShare = !!(navigator.canShare && navigator.canShare({ files: [file] }));
+    bukaKartu(`<h2>📸 ${esc(judul)}</h2><img class="fotoHasil" src="${fotoUrl}" alt="Fotomu di kantor PT Mencari Cinta Sejati">
+      <div class="baris">${bisaShare ? '<button class="btn" type="button" id="fB">📤 Simpan / Bagikan</button>' : ''}<a class="btn ${bisaShare ? 'putih' : ''}" href="${fotoUrl}" download="jodohonline-foto.jpg">💾 Unduh</a><button class="btn putih" type="button" id="fU">Foto lagi</button></div>
+      <p class="kecil">Di HP bisa juga <b>tekan lama fotonya → Simpan ke Foto</b>. Bagikan ke IG Story & tag @${esc(CFG.instagramNama || CFG.instagram || '')} ya!</p>`, {
+      pasang(i) {
+        i.querySelector('#fU').onclick = () => { tutupKartu(); setTimeout(() => ambilFoto(judul, latar), 100); };
+        const fb = i.querySelector('#fB');
+        if (fb) fb.onclick = () => navigator.share({ files: [file], title: CFG.namaPT, text: 'Fotoku di kantor ' + CFG.namaPT + ' 💘' }).catch(() => {});
+      },
+    });
+  }
 }
 
 // ---------------------------------------------------------------- LOKASI

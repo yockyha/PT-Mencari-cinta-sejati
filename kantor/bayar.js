@@ -5,10 +5,10 @@
 //  atau manual: QRIS/transfer BCA/BRI dengan NOMINAL UNIK, lalu
 //  diverifikasi Direktur di Dashboard (Toko & Pesanan).
 // =====================================================================
-import { PAKAIAN, SLOT } from '../js/pakaian.js?v=202611251741';
-import { CFG, LS, esc, fmt, bersih, rupiah, IKON_DM, kodeTamu, hash } from '../js/common.js?v=202611251741';
-import { K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611251741';
-import * as P from './progres.js?v=202611251741';
+import { PAKAIAN, SLOT } from '../js/pakaian.js?v=202611252330';
+import { CFG, LS, esc, fmt, bersih, rupiah, IKON_DM, kodeTamu, hash } from '../js/common.js?v=202611252330';
+import { K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611252330';
+import * as P from './progres.js?v=202611252330';
 
 const BAYAR = () => CFG.pembayaran || {};
 const resmi = () => !!(K.resmi && K.resmi());
