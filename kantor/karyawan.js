@@ -6,8 +6,8 @@
 //    (kurir datang ke lobi), istirahat, beres-beres; OB ngepel & menyapu.
 //  Disimulasikan di tiap perangkat (tidak lewat database).
 // =====================================================================
-import { CFG, LOKASI, esc } from '../js/common.js?v=202611252330';
-import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611252330';
+import { CFG, LOKASI, esc } from '../js/common.js?v=202611260100';
+import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611260100';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const jarak = (a, x, z) => Math.hypot(a.x - x, a.z - z);
@@ -295,6 +295,27 @@ export function ketuk(o) {
       isi.querySelectorAll('[data-antar]').forEach(b => b.onclick = () => { const s = STAF.find(x => x.id === b.dataset.antar); tutupKartu(); D.pindah(s.pos[0] + Math.sin(s.r) * 1.6, s.pos[1] + Math.cos(s.r) * 1.6, s.r + Math.PI); toast(`Ini ${s.n}, ketuk untuk tanya-tanya 😊`); });
       isi.querySelectorAll('[data-meja]').forEach(b => b.onclick = () => { tutupKartu(); D.fitur.keMeja(+b.dataset.meja); });
     },
+  });
+}
+
+// ---------------------------------------------------------------- MENYAMBUT DIREKTUR
+// karyawan di sekitar berhenti sebentar, menghadap & menyapa Direktur
+export function sambut(t) {
+  if (!D || !t) return;
+  for (const o of semua) {
+    if (o.kurir || jarak(o, t.x, t.z) > 18) continue;
+    o.tugas.unshift(tunggu(2.8, 5, acak(['Selamat datang, Direktur! 🙇', 'Pagi, Direktur! 🫡', 'Siap, Direktur! Semua aman 👍', 'Wah, Direktur datang! ✨']), t));
+  }
+}
+// Direktur memanggil semua karyawan berkumpul di sekitarnya
+export function panggil(t) {
+  if (!D || !t) return;
+  const l = semua.filter(o => !o.kurir);
+  l.forEach((o, i) => {
+    const a = (i / l.length) * Math.PI * 2;
+    lepasKursi(o); if (o.kursiPos) o.kursiPos.oleh = null;
+    o.tugas = [ke(t.x + Math.sin(a) * 2.6, t.z + Math.cos(a) * 2.6), tunggu(6, 5, acak(['Siap, Direktur! 🫡', 'Hadir! 🙋', 'Ada tugas apa, Direktur?', 'Siap laksanakan! 💪']), t)];
+    o.dipanggil = true;
   });
 }
 

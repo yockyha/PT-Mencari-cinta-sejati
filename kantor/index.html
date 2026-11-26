@@ -171,6 +171,26 @@ button,input,select{font:inherit}
 .lokerIsi .sw.teks button small{font-weight:700;opacity:.75}
 .lokerGender{margin-bottom:6px}
 .fotoHasil{width:100%;border:3px solid var(--ink);border-radius:14px;display:block}
+#dirDatang{position:fixed;top:calc(max(10px,env(safe-area-inset-top)) + 92px);left:50%;transform:translateX(-50%);z-index:9;width:min(520px,calc(100% - 20px));display:flex;gap:10px;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#2a1420,#5b3a2a);color:#ffd23f;border:3px solid #ffd23f;border-radius:18px;box-shadow:0 6px 0 var(--ink);padding:12px 14px;font:900 16px var(--body);animation:dirMasuk .5s cubic-bezier(.2,1.4,.4,1)}
+#dirDatang[hidden]{display:none}#dirDatang.keluar{opacity:0;transform:translate(-50%,-20px);transition:.35s}
+#dirDatang .btn{padding:6px 12px;font-size:14px;white-space:nowrap}
+@keyframes dirMasuk{from{transform:translate(-50%,-40px) scale(.9);opacity:0}}
+.sapaPill{animation:denyut 1.6s infinite}@keyframes denyut{50%{transform:scale(1.07)}}
+#sapaWadah{position:fixed;right:12px;top:calc(max(10px,env(safe-area-inset-top)) + 140px);z-index:9;display:flex;flex-direction:column;gap:8px;width:min(320px,calc(100% - 24px))}
+.sapaMasuk{position:relative;display:flex;gap:10px;align-items:flex-start;background:#fff6ef;border:3px solid #d4a017;border-radius:16px;box-shadow:0 4px 0 var(--ink);padding:10px 34px 10px 10px;animation:dirMasuk .45s cubic-bezier(.2,1.4,.4,1)}
+.sapaMasuk>b{font-size:34px;line-height:1}.sapaMasuk strong{display:block}.sapaMasuk span{font-size:13px;color:var(--muted)}
+.sapaMasuk p{margin:6px 0 0;display:flex;gap:6px}.sapaMasuk p button{font-size:18px;border:2px solid var(--ink);border-radius:10px;background:#fff;cursor:pointer;padding:2px 8px}
+.sapaMasuk .x{position:absolute;right:6px;top:6px;border:0;background:none;cursor:pointer;font-weight:900}
+.sapaMasuk.keluar{opacity:0;transform:translateX(30px);transition:.35s}
+#efekWadah{position:fixed;inset:0;pointer-events:none;z-index:20;overflow:hidden}
+#efekWadah span{position:absolute;top:-60px;animation:jatuh linear forwards}
+@keyframes jatuh{to{transform:translateY(calc(100vh + 80px)) rotate(360deg)}}
+.sapaGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.sapaGrid button{border:3px solid var(--ink);border-radius:14px;background:#fff;padding:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;font:800 13px var(--body);box-shadow:0 3px 0 var(--ink)}
+.sapaGrid button b{font-size:28px}.sapaGrid button:disabled{opacity:.5;cursor:not-allowed}
+.kuasaGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.kuasaGrid button{border:3px solid var(--ink);border-radius:14px;background:#fff6ef;padding:10px;cursor:pointer;text-align:left;font:800 14px var(--body);box-shadow:0 3px 0 var(--ink)}
+.kuasaGrid button small{display:block;font-weight:700;color:var(--muted);margin-top:3px}
 .dmForm{display:flex;gap:6px;margin-top:8px}
 .dmForm input{flex:1;min-width:0}
 .dmForm .btn{padding:6px 12px}
@@ -280,7 +300,7 @@ button,input,select{font:inherit}
 .tlpCatatan{color:#d9b8c4;margin-top:8px}
 @media (prefers-reduced-motion:reduce){.dmMerah{animation:none}}
 </style>
-<script src="../config.js?v=202611252330"></script>
+<script src="../config.js?v=202611260100"></script>
 <script type="importmap">{"imports":{"three":"../vendor/three.module.js"}}</script>
 </head>
 <body>
@@ -290,6 +310,7 @@ button,input,select{font:inherit}
   <a class="pill logo" href="../index.html" aria-label="Kembali ke beranda">♥<span class="lg"> PT MCS</span></a>
   <button id="online" class="pill" type="button" title="Lihat siapa saja di kantor"><i></i><span>…</span></button>
   <span class="isi"></span>
+  <button id="btnSapa" class="pill emas sapaPill" type="button" hidden>👋<span class="lg"> Sapa Direktur</span></button>
   <button id="btnPanel" class="pill emas" type="button" hidden>👑 Panel</button>
   <button id="btnLv" class="pill" type="button" title="Tugas, acara, peringkat & toko">⭐ Lv 1</button>
   <button id="btnObrolan" class="pill" type="button" aria-label="Obrolan pribadi">💬<b id="badge" hidden>0</b></button>
@@ -298,6 +319,9 @@ button,input,select{font:inherit}
 <nav id="tempat" aria-label="Pindah lokasi"></nav>
 <button id="arah" type="button" hidden></button>
 
+<div id="dirDatang" hidden role="status"><span></span><button type="button" class="btn">👋 Sapa</button></div>
+<div id="sapaWadah" aria-live="polite"></div>
+<div id="efekWadah" aria-hidden="true"></div>
 <div id="umum" hidden role="status"><span></span><button type="button" aria-label="Tutup pengumuman">✕</button></div>
 <div id="undangan" aria-live="polite"></div>
 <div id="log" aria-live="polite"></div>
@@ -313,6 +337,6 @@ button,input,select{font:inherit}
 <div id="tirai" hidden><div class="isi"></div></div>
 <div id="loading"><div><span class="hati">❤</span>Membuka pintu kantor…</div></div>
 
-<script type="module" src="kantor.js?v=202611252330"></script>
+<script type="module" src="kantor.js?v=202611260100"></script>
 </body>
 </html>

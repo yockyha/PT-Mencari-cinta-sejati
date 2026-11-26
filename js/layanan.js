@@ -3,8 +3,8 @@
 //  ajakan ngobrol, obrolan pribadi, suka & match, laporan, dan
 //  alat Direktur/Staf. Struktur data ini sama dengan database.rules.json.
 // =====================================================================
-import { TS } from './db.js?v=202611252330';
-import { CFG, bersih, sensor, rupiah } from './common.js?v=202611252330';
+import { TS } from './db.js?v=202611260100';
+import { CFG, bersih, sensor, rupiah } from './common.js?v=202611260100';
 
 export function buatLayanan(db) {
   const uid = db.uid;
@@ -37,7 +37,7 @@ export function buatLayanan(db) {
       await db.update('', upd);
       return L.kirimNotif(target, peran === 'staf'
         ? `Selamat ${d.n}! Pendaftaranmu diterima dan kamu diangkat menjadi Staf 🛡`
-        : `Selamat ${d.n}! Pendaftaranmu diterima. Kamu resmi menjadi tamu. Selamat bersenang-senang 💖`);
+        : `Selamat ${d.n}! Pendaftaranmu diterima. Kamu resmi menjadi tamu. Selamat bersenang-senang 💖`, 'acc');
     },
     tolakPendaftar(target, alasan) { return db.update('pendaftaran/' + target, { status: 'ditolak', alasanTolak: bersih(alasan, 160) }); },
     cabutAnggota(target) { return db.update('', { [`anggota/${target}`]: null, [`peran/${target}`]: null, [`online/${target}`]: null }); },
@@ -179,7 +179,10 @@ export function buatLayanan(db) {
       const dari = Math.max(db.now(), lama.sampai || 0);
       return db.set('vip/' + target, { sampai: dari + hari * 86400e3 });
     },
-    kirimNotif(target, m) { return db.push(`notif/${target}`, { m: bersih(m, 200), t: TS }); },
+    kirimNotif(target, m, j = '') { return db.push(`notif/${target}`, { m: bersih(m, 200), t: TS, ...(j ? { j } : {}) }); },
+    // sapaan khusus untuk Direktur (satu per tamu, paling cepat 5 menit sekali) & efek untuk semua dari Direktur
+    sapaDirektur(n, j) { return db.set('sapaDir/' + uid, { n, j, t: TS }); },
+    efek(jenis, n, lok = '') { return db.set('efek', { jenis, n, t: TS, ...(lok ? { lok } : {}) }); },
     hapusNotif(id) { return db.set(`notif/${uid}/${id}`, null).catch(() => {}); },
   };
   return L;

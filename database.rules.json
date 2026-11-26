@@ -155,6 +155,20 @@
         }
       }
     },
+    "efek": {
+      ".read": true,
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      ".validate": "newData.child('jenis').val().matches(/^(hati|kembangapi|bunga|kumpul)$/) && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('t').val() === now && (!newData.child('lok').exists() || (newData.child('lok').isString() && newData.child('lok').val().length <= 20))"
+    },
+    "sapaDir": {
+      ".read": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && newData.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && (!data.exists() || data.child('t').val() < now - 300000)",
+        ".validate": "newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('j').val().matches(/^(halo|hormat|bunga|kopi|makasih|semangat)$/) && newData.child('t').isNumber() && (newData.child('t').val() === now || root.child('peran/' + auth.uid).val() === 'direktur')"
+      }
+    },
     "undangan": {
       "$ke": {
         ".read": "auth != null && auth.uid === $ke",

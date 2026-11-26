@@ -3,11 +3,13 @@
 //  Semua tindakan juga dijaga database.rules.json di server, jadi
 //  tamu biasa tidak bisa memakainya walau mengutak-atik browser.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, fmt, esc, bersih, kodeTamu } from '../js/common.js?v=202611252330';
-import * as Prog from './progres.js?v=202611252330';
-import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611252330';
+import { CFG, TUJUAN, LOKASI, fmt, esc, bersih, kodeTamu } from '../js/common.js?v=202611260100';
+import * as Prog from './progres.js?v=202611260100';
+import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611260100';
+import * as Hadir from './hadir.js?v=202611260100';
+import { TS } from '../js/db.js?v=202611260100';
 
-let laporan = {}, saran = {}, larangan = {}, pesanan = {}, lepas = [], tabAktif = 'ringkas';
+let laporan = {}, saran = {}, larangan = {}, pesanan = {}, lepas = [], tabAktif = '';
 const peranku = () => K.L && K.peran[K.L.uid];
 const direktur = () => peranku() === 'direktur';
 const namaDari = uid => (K.lain.get(uid) || {}).nama || (K.tamu.find(t => t.uid === uid) || {}).n || (K.bot.find(b => b.uid === uid) || {}).nama || uid.slice(0, 8);
@@ -15,6 +17,7 @@ const gagal = e => { console.warn(e); toast('Gagal: kamu tidak punya izin untuk 
 
 export function mulai() {
   $('btnPanel').onclick = () => bukaPanel();
+  K.segarPanel = () => segar();
   perbaruiPeran();
 }
 
@@ -63,20 +66,83 @@ export function bukaMeja() {
 }
 
 // ---------------------------------------------------------------- PANEL
-const TAB = [['ringkas', 'Ringkasan'], ['acara', 'Acara', true], ['pesanan', 'Pesanan', true], ['orang', 'Pengunjung'], ['laporan', 'Laporan'], ['konten', 'Konten'], ['siaran', 'Siaran', true], ['tim', 'Tim', true], ['akun', 'Akun']];
+const TAB = [['kuasa', '👑 Kuasa', true], ['sapa', '👋 Sapaan', true], ['ringkas', 'Ringkasan'], ['acara', 'Acara', true], ['pesanan', 'Pesanan', true], ['orang', 'Pengunjung'], ['laporan', 'Laporan'], ['konten', 'Konten'], ['siaran', 'Siaran', true], ['tim', 'Tim', true], ['akun', 'Akun']];
 
-export function bukaPanel(tab = tabAktif) {
+export function bukaPanel(tab = tabAktif || (direktur() ? 'kuasa' : 'ringkas')) {
   if (!peranku()) { bukaMeja(); return; }
   tabAktif = tab;
-  const isiTab = { ringkas, acara: tabAcara, pesanan: tabPesanan, orang, laporan: tabLaporan, konten, siaran, tim, akun }[tab]();
+  if (!direktur() && (tab === 'kuasa' || tab === 'sapa')) tab = 'ringkas';
+  tabAktif = tab;
+  const isiTab = { kuasa, sapa: tabSapa, ringkas, acara: tabAcara, pesanan: tabPesanan, orang, laporan: tabLaporan, konten, siaran, tim, akun }[tab]();
   bukaKartu(`<div class="panelDir"><h2>${direktur() ? '👑 Panel Direktur' : '🛡 Panel Staf'}</h2>
-    <div class="sw teks tab">${TAB.filter(t => !t[2] || direktur()).map(([k, n]) => `<button type="button" data-tab="${k}" class="${k === tab ? 'on' : ''}">${n}${k === 'laporan' && Object.keys(laporan).length ? ` (${Object.keys(laporan).length})` : ''}${k === 'pesanan' && Object.keys(pesanan).length ? ` (${Object.keys(pesanan).length})` : ''}</button>`).join('')}</div>
+    <div class="sw teks tab">${TAB.filter(t => !t[2] || direktur()).map(([k, n]) => `<button type="button" data-tab="${k}" class="${k === tab ? 'on' : ''}">${n}${k === 'sapa' && sapaBaru() ? ` (${sapaBaru()})` : ''}${k === 'laporan' && Object.keys(laporan).length ? ` (${Object.keys(laporan).length})` : ''}${k === 'pesanan' && Object.keys(pesanan).length ? ` (${Object.keys(pesanan).length})` : ''}</button>`).join('')}</div>
     <div id="pIsi">${isiTab.html}</div></div>`, {
     pasang(isi) {
       isi.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => bukaPanel(b.dataset.tab));
       isiTab.pasang && isiTab.pasang(isi);
     },
   });
+}
+
+// ---------------------------------------------------------------- KUASA DIREKTUR (khusus Direktur)
+const sapaBaru = () => Object.values(Hadir.daftarSapaan()).filter(s => s && !s.dibalas).length;
+let bagiT = 0;
+function kuasa() {
+  const tamu = semuaOrang().filter(o => !o.npc && !K.peran[o.uid]);
+  return {
+    html: `<p class="kecil">Fitur ini hanya bisa dipakai Direktur. Efek & undangan langsung muncul di layar semua orang yang sedang di kantor.</p>
+      <div class="kuasaGrid">
+        <button type="button" data-k="hati">💗 Hujan hati<small>Semua layar dihujani hati</small></button>
+        <button type="button" data-k="kembangapi">🎆 Kembang api<small>Rayakan momen spesial</small></button>
+        <button type="button" data-k="bunga">🌸 Hujan bunga<small>Sambut tamu baru</small></button>
+        <button type="button" data-k="exp">🎁 Bagi 20 EXP<small>Untuk ${fmt(tamu.length)} tamu yang online</small></button>
+        <button type="button" data-k="karyawan">🫡 Panggil karyawan<small>Semua karyawan berkumpul di sekitarmu</small></button>
+        <button type="button" data-k="loker">👔 Lemari Direktur<small>Semua baju terbuka untukmu</small></button>
+      </div>
+      <h3>📣 Kumpulkan tamu</h3>
+      <p class="kecil">Kirim undangan ke semua tamu online untuk datang ke satu tempat.</p>
+      <div class="sw teks">${Object.entries(LOKASI).filter(([, l]) => !l.vip).map(([k, l]) => `<button type="button" data-lok="${k}">${esc(l.nama)}</button>`).join('')}</div>
+      <h3>🚀 Datangi tamu</h3>
+      ${tamu.length ? `<div class="daftar">${tamu.map(o => `<div><span>${TUJUAN[o.tj]?.ikon || ''} ${esc(o.nama)}${o.mj ? ` <small>· ${esc(o.mj)}</small>` : ''}</span><button type="button" class="mini" data-ke="${esc(o.uid)}">Datangi</button></div>`).join('')}</div>` : '<p class="kecil">Belum ada tamu online.</p>'}`,
+    pasang(isi) {
+      isi.querySelectorAll('[data-k]').forEach(b => b.onclick = async () => {
+        const k = b.dataset.k;
+        if (['hati', 'kembangapi', 'bunga'].includes(k)) { Hadir.kirimEfek(k).then(() => tutupKartu()).catch(gagal); return; }
+        if (k === 'karyawan') { tutupKartu(); K.panggilKaryawan(); toast('🫡 Karyawan sedang menuju ke tempatmu'); return; }
+        if (k === 'loker') { tutupKartu(); Prog.pergiKe('loker'); return; }
+        if (k === 'exp') {
+          if (!tamu.length) { toast('Belum ada tamu online.'); return; }
+          if (Date.now() - bagiT < 600000) { toast('Bagi EXP bisa lagi 10 menit setelah yang terakhir.'); return; }
+          bagiT = Date.now(); b.disabled = true;
+          let ok = 0;
+          for (const o of tamu) {
+            try {
+              const cur = await K.L.db.get('exp/' + o.uid);
+              await K.L.db.set('exp/' + o.uid, { n: ((cur && cur.n) || 0) + 20, t: TS });
+              await K.L.kirimNotif(o.uid, '🎁 Direktur membagikan +20 EXP untukmu! Terima kasih sudah meramaikan kantor 💖', 'hadiah');
+              ok++;
+            } catch (e) { console.warn(e); }
+          }
+          toast(`🎁 +20 EXP terkirim ke ${ok} tamu`); Hadir.efekLokal('hati', 30); b.disabled = false;
+        }
+      });
+      isi.querySelectorAll('[data-lok]').forEach(b => b.onclick = () => Hadir.kirimEfek('kumpul', b.dataset.lok).then(() => { tutupKartu(); Prog.pergiKe(b.dataset.lok); }).catch(gagal));
+      isi.querySelectorAll('[data-ke]').forEach(b => b.onclick = () => { const o = K.lain.get(b.dataset.ke); if (!o) return; tutupKartu(); K.pindah(o.x + 1.4, o.z + 1.4); toast(`🚀 Kamu mendatangi ${o.nama}`); });
+    },
+  };
+}
+
+function tabSapa() {
+  const l = Object.entries(Hadir.daftarSapaan()).filter(([, s]) => s && s.t).sort((a, b) => b[1].t - a[1].t);
+  return {
+    html: `<p class="kecil">Sapaan dari tamu (satu terbaru per tamu). Balas dengan satu ketukan; balasanmu muncul sebagai kartu di layar tamu.</p>
+      ${l.length ? `<div class="daftar">${l.map(([u, s]) => { const sp = Hadir.SAPA[s.j] || Hadir.SAPA.halo; return `<div><span>${sp.ikon} <b>${esc(bersih(s.n, 30))}</b> <small>${esc(sp.teks)} · ${esc(tanggalJam(s.t))}</small>${s.dibalas ? ' <small>✅ dibalas</small>' : ''}</span><span class="baris kecil" style="margin:0">${Hadir.BALAS.map(([e], i) => `<button type="button" class="mini putih" data-u="${esc(u)}" data-b="${i}">${e}</button>`).join('')}<button type="button" class="mini merah" data-hapus="${esc(u)}">×</button></span></div>`; }).join('')}</div>` : '<p>Belum ada sapaan.</p>'}`,
+    pasang(isi) {
+      const S = Hadir.daftarSapaan();
+      isi.querySelectorAll('[data-b]').forEach(b => b.onclick = () => Hadir.balasSapa(b.dataset.u, S[b.dataset.u], +b.dataset.b));
+      isi.querySelectorAll('[data-hapus]').forEach(b => b.onclick = () => K.L.db.set('sapaDir/' + b.dataset.hapus, null).catch(gagal));
+    },
+  };
 }
 
 function semuaOrang() {
@@ -120,7 +186,7 @@ function orang() {
       <h3>Sedang dikeluarkan</h3>
       ${diusir.length ? `<div class="daftar">${diusir.map(([u, b]) => `<div><span>${esc(b.n || namaDari(u))}<br><small>${b.sampai > now + 3650 * 86400e3 ? 'diblokir' : 'sampai ' + esc(tanggalJam(b.sampai))} · ${esc(b.alasan || '')}</small></span><button type="button" class="mini putih" data-ampun="${esc(u)}">Ampuni</button></div>`).join('')}</div>` : '<p class="kecil">Tidak ada.</p>'}`,
     pasang(isi) {
-      isi.querySelectorAll('[data-lihat]').forEach(b => b.onclick = () => import('./sosial.js?v=202611252330').then(S => S.bukaProfil(o.find(x => x.uid === b.dataset.lihat))));
+      isi.querySelectorAll('[data-lihat]').forEach(b => b.onclick = () => import('./sosial.js?v=202611260100').then(S => S.bukaProfil(o.find(x => x.uid === b.dataset.lihat))));
       isi.querySelectorAll('[data-mod]').forEach(b => b.onclick = () => bukaModerasiOrang(o.find(x => x.uid === b.dataset.mod)));
       isi.querySelectorAll('[data-ampun]').forEach(b => b.onclick = () => {
         const u = b.dataset.ampun;

@@ -3,19 +3,20 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611252330';
-import { bukaDB } from '../js/db.js?v=202611252330';
-import { buatLayanan } from '../js/layanan.js?v=202611252330';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611252330';
-import * as Sosial from './sosial.js?v=202611252330';
-import * as Direktur from './direktur.js?v=202611252330';
-import * as Prog from './progres.js?v=202611252330';
-import * as Game from './game.js?v=202611252330';
-import * as Bayar from './bayar.js?v=202611252330';
-import * as Meja from './meja.js?v=202611252330';
-import * as Karyawan from './karyawan.js?v=202611252330';
-import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611252330';
-import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611252330';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611260100';
+import { bukaDB } from '../js/db.js?v=202611260100';
+import { buatLayanan } from '../js/layanan.js?v=202611260100';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611260100';
+import * as Sosial from './sosial.js?v=202611260100';
+import * as Direktur from './direktur.js?v=202611260100';
+import * as Prog from './progres.js?v=202611260100';
+import * as Game from './game.js?v=202611260100';
+import * as Bayar from './bayar.js?v=202611260100';
+import * as Meja from './meja.js?v=202611260100';
+import * as Karyawan from './karyawan.js?v=202611260100';
+import * as Hadir from './hadir.js?v=202611260100';
+import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611260100';
+import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611260100';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
@@ -985,6 +986,8 @@ function formulir(p) {
         E.textContent = 'Mengirim…';
         try {
           if (WF) d.ikut = true;
+          // izin notifikasi supaya tahu saat di-ACC walau tab kantor sedang di belakang
+          if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission().catch(() => {});
           await L.daftarAkses(d);
           prof = { ...(prof || {}), ...d, look: saya.look }; simpanProfil(prof);
           perbaruiTombolProfil();
@@ -1031,14 +1034,16 @@ function terapkanAkses() {
   if (a || dir) {
     const n = a ? a.n : (prof?.n || 'Direktur'), tj = a ? a.tj : (prof?.tj || 'teman');
     if (!prof || prof.n !== n || prof.tj !== tj) { prof = { ...(prof || {}), n, tj, look: prof?.look || saya.look }; simpanProfil(prof); }
-    if (lama === false) {
+    if (lama === false && !dir) {
       tulisLog('', `🎉 Selamat ${n}! Kamu resmi menjadi tamu ${TUJUAN[tj].ikon} ${TUJUAN[tj].nama}.`, 'sys');
       const s = SARAN_RUANG[tj];
+      // kartu perayaan utama datang dari notifikasi ACC (progres.js); ini cadangan bila notifikasinya tidak ada
       setTimeout(() => { if (!$('kartu').hidden) return; bukaKartu(`<div class="match"><div class="hatiBesar">🎉</div><h2>Kamu resmi jadi tamu!</h2><p>Sekarang kamu bisa ngobrol, ajak orang ngobrol pribadi, ikut acara, dan kumpulkan EXP. Mau langsung ke ${s[0]}?</p>
         <div class="baris"><button class="btn" type="button" id="kS">Antar ke ${s[0]}</button><button class="btn putih" type="button" id="kN">Nanti</button></div></div>`, {
-        pasang(i) { i.querySelector('#kS').onclick = () => { tutupKartu(); pindah(s[1], s[2], s[3]); }; i.querySelector('#kN').onclick = tutupKartu; } }); }, 600);
+        pasang(i) { i.querySelector('#kS').onclick = () => { tutupKartu(); pindah(s[1], s[2], s[3]); }; i.querySelector('#kN').onclick = tutupKartu; } }); }, 2500);
     }
     Prog.lapor('tur_daftar');
+    if (dir) Hadir.direkturMasuk();
   }
   K._resmiLama = !!(a || dir);
   $('chatI').placeholder = resmi() ? 'Tulis pesan… (Enter)' : '👀 Daftar dulu untuk ikut ngobrol';
@@ -1539,7 +1544,7 @@ async function mulai() {
   K.segarkanOrang = () => { pasangKarakterSaya(); sinkronLain(K.onlineTerakhir); };
   window.__kantor = { L, saya, lain, bot, pindah, K }; // untuk debugging
   const urutKunci = o => Object.entries(o || {}).sort((a, b) => (a[0] < b[0] ? -1 : 1)).map(([k, v]) => ({ ...v, k }));
-  db.on('online', o => { K.onlineTerakhir = o; sinkronLain(o); Meja.orangBerubah(); });
+  db.on('online', o => { K.onlineTerakhir = o; sinkronLain(o); Meja.orangBerubah(); Hadir.onlineBerubah(); });
   db.on('chat', terimaChat, { limit: 30 });
   db.on('papan', o => { K.papanList = urutKunci(o); isiPapan = K.papanList; papanKV.ulang(); }, { limit: 10 });
   db.on('curhat', o => { K.curhatList = urutKunci(o); curhatKV.ulang(); Sosial.curhatBerubah(); }, { limit: 30 });
@@ -1547,7 +1552,7 @@ async function mulai() {
     const l = Object.values(o || {}).filter(k => k && k.n).map(k => ({ ...k, n: bersih(k.n, 20), ig: igBersih(k.ig), tj: tujuanAman(k.tj) }));
     K.tamu = l.sort((a, b) => (a.t || 0) - (b.t || 0)); dindingKV.ulang();
   });
-  db.on('peran', o => { K.peran = o || {}; Direktur.perbaruiPeran(); terapkanAkses(); K.segarkanOrang(); cekTirai(); });
+  db.on('peran', o => { K.peran = o || {}; Direktur.perbaruiPeran(); terapkanAkses(); K.segarkanOrang(); cekTirai(); Hadir.perbaruiPeran(); });
   db.on('anggota/' + L.uid, o => { K.anggotaSaya = o; terapkanAkses(); });
   db.on('pendaftaran/' + L.uid, o => { K.daftarku = o; perbaruiTombolProfil(); Prog.segarArah(); });
   db.on('mading', o => { const m = Array.isArray(o) ? o : (o ? Object.values(o) : null); K.mading = m && m.length ? m.filter(Boolean) : null; teksMading.ulang(); });
@@ -1566,7 +1571,8 @@ async function mulai() {
       arcade: () => Game.bukaArcade(), patung: () => pindah(-14, 29.4, Math.PI), keMeja: i => keKursiMeja(MEJA[i]), mejaKafe: () => keKursiMeja(MEJA_BUNDAR[0]),
     },
   });
-  Sosial.mulai(); Direktur.mulai(); Prog.mulai();
+  K.efekLokal = Hadir.efekLokal; K.bukaPanel = Direktur.bukaPanel; K.panggilKaryawan = () => Karyawan.panggil(saya);
+  Sosial.mulai(); Direktur.mulai(); Prog.mulai(); Hadir.mulai();
   hitungOnline();
   setTimeout(() => {
     Bayar.kembaliDariBayar();
