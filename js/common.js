@@ -1,6 +1,6 @@
 // Utilitas bersama untuk semua halaman.
-import PAKET from '../paket.js?v=202611260212';
-import { PAKAIAN, SLOT } from './pakaian.js?v=202611260212';
+import PAKET from '../paket.js?v=202611260219';
+import { PAKAIAN, SLOT } from './pakaian.js?v=202611260219';
 export const CFG = Object.assign({
   namaPT: 'PT Mencari Cinta Sejati', singkatan: 'PT MCS', instagram: '', instagramNama: '', tiktok: '', wajibFollow: null,
   kuota: 10000, firebase: null, mading: [], domainLogin: 'ptmcs.id', direkturDemo: null,
@@ -66,8 +66,10 @@ export function esc(s) {
 }
 
 // Profil karyawan yang tersimpan di browser ini
-export function profil() { return LS.get('profil', null); }
-export function simpanProfil(p) { LS.set('profil', p); }
+// Profil disimpan terpisah untuk mode tamu & mode Direktur (satu browser bisa dipakai keduanya)
+const kunciProfil = () => (LS.get('modeKantor') === 'direktur' ? 'profilDir' : 'profil');
+export function profil() { return LS.get(kunciProfil(), null); }
+export function simpanProfil(p) { LS.set(kunciProfil(), p); }
 
 // Jam Jakarta (0–24, desimal)
 export function jamJakarta() {

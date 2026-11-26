@@ -3,20 +3,20 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611260212';
-import { bukaDB } from '../js/db.js?v=202611260212';
-import { buatLayanan } from '../js/layanan.js?v=202611260212';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611260212';
-import * as Sosial from './sosial.js?v=202611260212';
-import * as Direktur from './direktur.js?v=202611260212';
-import * as Prog from './progres.js?v=202611260212';
-import * as Game from './game.js?v=202611260212';
-import * as Bayar from './bayar.js?v=202611260212';
-import * as Meja from './meja.js?v=202611260212';
-import * as Karyawan from './karyawan.js?v=202611260212';
-import * as Hadir from './hadir.js?v=202611260212';
-import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611260212';
-import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611260212';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611260219';
+import { bukaDB } from '../js/db.js?v=202611260219';
+import { buatLayanan } from '../js/layanan.js?v=202611260219';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611260219';
+import * as Sosial from './sosial.js?v=202611260219';
+import * as Direktur from './direktur.js?v=202611260219';
+import * as Prog from './progres.js?v=202611260219';
+import * as Game from './game.js?v=202611260219';
+import * as Bayar from './bayar.js?v=202611260219';
+import * as Meja from './meja.js?v=202611260219';
+import * as Karyawan from './karyawan.js?v=202611260219';
+import * as Hadir from './hadir.js?v=202611260219';
+import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611260219';
+import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611260219';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
@@ -1540,6 +1540,15 @@ function langkah() {
   renderer.render(scene, camera);
 }
 
+// ---------------------------------------------------------------- GANTI MODE: DIREKTUR ⇄ TAMU
+function pasangTombolAkun(db) {
+  const b = $('btnAkun'), dir = LS.get('modeKantor') === 'direktur';
+  b.hidden = db.mode !== 'online' || !LS.get('adaDirektur');
+  b.textContent = dir ? '👀 Jadi tamu' : '👑 Jadi Direktur';
+  b.title = dir ? 'Masuk kantor sebagai akun tamu di browser ini' : 'Masuk kantor sebagai Direktur';
+  b.onclick = () => { LS.set('modeKantor', dir ? 'tamu' : 'direktur'); L && L.pergi(); setTimeout(() => location.reload(), 150); };
+}
+
 // ---------------------------------------------------------------- MULAI
 async function mulai() {
   try { await Promise.race([document.fonts.load('700 20px Fredoka'), new Promise(r => setTimeout(r, 2500))]); await document.fonts.load('800 20px Nunito'); } catch (e) {}
@@ -1550,7 +1559,15 @@ async function mulai() {
   renderer.setAnimationLoop(langkah);
   setTimeout(() => { $('loading').classList.add('hilang'); }, 150);
 
-  const db = await bukaDB({ kantor: true });
+  // Mode Direktur atau mode tamu (sesi login terpisah, jadi akun tamu uji tidak tertimpa)
+  let db = null;
+  if (LS.get('modeKantor') === 'direktur' && LS.get('adaDirektur')) {
+    db = await bukaDB({ kantor: true, akun: 'direktur', anonim: false });
+    if (db.mode === 'online' && !db.uid) { LS.set('adaDirektur', false); LS.set('modeKantor', 'tamu'); db = null; }
+  }
+  if (!db) { if (LS.get('modeKantor') === 'direktur') LS.set('modeKantor', 'tamu'); db = await bukaDB({ kantor: true, paksaTamu: true }); }
+  pasangTombolAkun(db);
+  prof = profil();
   L = buatLayanan(db);
   mulaiChat = db.now();
   Object.assign(K, { L, saya, pindah, bicara, bukaDaftar, hitungOnline, berdiri, teksLabel, gayaPeran, resmi });

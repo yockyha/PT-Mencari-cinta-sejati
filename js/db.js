@@ -5,7 +5,7 @@
 //     tab-tab di browser yang sama saling tersambung lewat BroadcastChannel.
 //  Antarmuka: uid, mode, now(), set(), update(), push(), get(), on(), hapusSaatPutus()
 // =====================================================================
-import { CFG, LS, emailDari } from './common.js?v=202611260212';
+import { CFG, LS, emailDari } from './common.js?v=202611260219';
 
 export const TS = { '.sv': 'timestamp' };
 const FBV = '10.14.1';
@@ -139,11 +139,15 @@ class DBLokal {
 
 // ---------------------------------------------------------------- FIREBASE
 class DBFirebase {
-  static async buat(cfg, { anonim = true } = {}) {
+  // akun: '' = sesi tamu (aplikasi Firebase bawaan), 'direktur' = sesi Direktur terpisah,
+  // supaya login Direktur tidak menimpa akun tamu di browser yang sama.
+  // paksaTamu: kalau sesi bawaan ternyata akun email (login Direktur versi lama), ganti dengan tamu anonim.
+  static async buat(cfg, { anonim = true, akun = '', paksaTamu = false } = {}) {
     const [{ initializeApp }, A, D] = await Promise.all([import(fbUrl('app')), import(fbUrl('auth')), import(fbUrl('database'))]);
-    const app = initializeApp(cfg);
+    const app = akun ? initializeApp(cfg, akun) : initializeApp(cfg);
     const auth = A.getAuth(app);
     let user = await new Promise(r => { const un = A.onAuthStateChanged(auth, u => { un(); r(u); }); });
+    if (user && paksaTamu && !user.isAnonymous) { await A.signOut(auth); user = null; }
     if (!user && anonim) user = (await A.signInAnonymously(auth)).user;
     const db = new DBFirebase();
     Object.assign(db, { A, D, auth, rdb: D.getDatabase(app), uid: user ? user.uid : null, anon: user ? user.isAnonymous : true, email: (user && user.email) || '', mode: 'online', offset: 0 });

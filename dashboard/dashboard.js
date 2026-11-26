@@ -3,9 +3,9 @@
 //  Login username + kata sandi → ringkasan, persetujuan pendaftar,
 //  anggota, online, aktivitas, acara, toko, laporan, siaran & data.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, GENDER, BARANG_DIAMOND, IKON_DM, esc, fmt, bersih, levelDari, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611260212';
-import { bukaDB } from '../js/db.js?v=202611260212';
-import { buatLayanan } from '../js/layanan.js?v=202611260212';
+import { CFG, LS, TUJUAN, LOKASI, GENDER, BARANG_DIAMOND, IKON_DM, esc, fmt, bersih, levelDari, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611260219';
+import { bukaDB } from '../js/db.js?v=202611260219';
+import { buatLayanan } from '../js/layanan.js?v=202611260219';
 
 const $ = id => document.getElementById(id);
 let db = null, L = null;
@@ -44,11 +44,11 @@ const METODE = { otomatis: '⚡ Otomatis', qris: 'QRIS', bca: 'BCA', bri: 'BRI',
 
 // ---------------------------------------------------------------- MULAI
 (async function mulai() {
-  db = await bukaDB({ anonim: false });
+  db = await bukaDB({ anonim: false, akun: 'direktur' });
   $('lInfo').innerHTML = db.mode === 'lokal'
     ? `<b>Mode lokal (demo).</b> Login memakai <code>direkturDemo</code> di <code>config.js</code>${CFG.direkturDemo ? ` (username <code>${esc(CFG.direkturDemo.username)}</code>)` : ''}. Data hanya tersimpan di browser ini.`
     : `Username = bagian depan email akun Direktur di Firebase Authentication (contoh <code>yocky</code> untuk <code>yocky@${esc(CFG.domainLogin)}</code>), atau ketik email lengkap.`;
-  if (db.masukDashboard && db.uid && (await db.get('peran/' + db.uid).catch(() => null)) === 'direktur') return masukApp();
+  if (db.masukDashboard && db.uid && (await db.get('peran/' + db.uid).catch(() => null)) === 'direktur') { if (db.mode === 'online') LS.set('adaDirektur', true); return masukApp(); }
   tampilLogin();
 })().catch(e => { console.error(e); document.body.innerHTML = '<p style="padding:24px">Dashboard gagal dimuat. Coba muat ulang.</p>'; });
 
@@ -66,6 +66,7 @@ function tampilLogin() {
         return;
       }
       E.textContent = ''; $('lP').value = '';
+      LS.set('adaDirektur', true); LS.set('modeKantor', 'direktur');
       masukApp();
     } catch (err) { console.warn(err); E.textContent = 'Username atau kata sandi salah.'; }
   };
@@ -121,7 +122,7 @@ function navigasi() {
     ${MENU.map(([k, ik, n]) => `<button type="button" class="nav ${k === bagian ? 'on' : ''}" data-b="${k}"><span>${ik}</span><span>${n}</span>${hitung[k] ? `<span class="jml">${hitung[k]}</span>` : ''}</button>`).join('')}
     <div class="bawah"><a class="btn emas" href="../kantor/index.html" target="_blank" rel="noopener">🏢 Masuk kantor</a><button class="btn putih" type="button" id="bKeluar">Keluar</button></div>`;
   $('samping').querySelectorAll('[data-b]').forEach(b => b.onclick = () => { bagian = b.dataset.b; history.replaceState(null, '', '#' + bagian); gambar(true); scrollTo(0, 0); });
-  $('bKeluar').onclick = async () => { await db.keluar().catch(() => {}); location.reload(); };
+  $('bKeluar').onclick = async () => { await db.keluar().catch(() => {}); LS.set('adaDirektur', false); LS.set('modeKantor', 'tamu'); location.reload(); };
 }
 
 // ---------------------------------------------------------------- 📊 RINGKASAN
