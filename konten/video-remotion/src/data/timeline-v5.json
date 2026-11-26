@@ -3,8 +3,11 @@
  "fps": 30,
  "lebar": 1080,
  "tinggi": 1920,
- "durasi": 1428,
- "vo": null,
+ "durasi": 1602,
+ "vo": {
+  "src": "vo5.mp3",
+  "volume": 1
+ },
  "lapis": [
   {
    "id": "g1",
@@ -12,9 +15,9 @@
    "jenis": "video",
    "src": "klip/papan.mp4",
    "mulai": 0,
-   "durasi": 108,
+   "durasi": 123,
    "trim": 0.0,
-   "kecepatan": 1.111,
+   "kecepatan": 0.976,
    "nama": "Papan Informasi LED"
   },
   {
@@ -23,7 +26,7 @@
    "jenis": "stiker",
    "teks": "MALAM INI 💘",
    "mulai": 2,
-   "durasi": 106,
+   "durasi": 121,
    "warna": "#ff4f7b",
    "y": 330
   },
@@ -33,7 +36,7 @@
    "jenis": "sub",
    "teks": "Malam ini ada acara *spesial*",
    "mulai": 0,
-   "durasi": 59,
+   "durasi": 49,
    "y": 1330
   },
   {
@@ -41,8 +44,8 @@
    "track": "teks",
    "jenis": "sub",
    "teks": "di kantor jodoh… *DATE NIGHT!*",
-   "mulai": 59,
-   "durasi": 49,
+   "mulai": 49,
+   "durasi": 74,
    "y": 1330
   },
   {
@@ -50,10 +53,10 @@
    "track": "gambar",
    "jenis": "video",
    "src": "klip/jadwal.mp4",
-   "mulai": 108,
-   "durasi": 90,
+   "mulai": 123,
+   "durasi": 93,
    "trim": 0.3,
-   "kecepatan": 1.2,
+   "kecepatan": 1.161,
    "nama": "Jadwal Date Night"
   },
   {
@@ -61,8 +64,8 @@
    "track": "teks",
    "jenis": "chips",
    "teks": "🕢 JUMAT · 19.30 WIB",
-   "mulai": 110,
-   "durasi": 88,
+   "mulai": 125,
+   "durasi": 91,
    "nyala": "0",
    "y": 1690,
    "masuk": "pop"
@@ -72,8 +75,8 @@
    "track": "teks",
    "jenis": "sub",
    "teks": "Mulai jam *setengah delapan* malam!",
-   "mulai": 108,
-   "durasi": 90,
+   "mulai": 123,
+   "durasi": 93,
    "y": 130
   },
   {
@@ -81,8 +84,8 @@
    "track": "gambar",
    "jenis": "foto",
    "src": "foto/karakter.png",
-   "mulai": 198,
-   "durasi": 59,
+   "mulai": 216,
+   "durasi": 57,
    "zoom": 1.08,
    "nama": "Karakter"
   },
@@ -91,10 +94,10 @@
    "track": "gambar",
    "jenis": "video",
    "src": "klip/loker.mp4",
-   "mulai": 257,
-   "durasi": 109,
+   "mulai": 273,
+   "durasi": 171,
    "trim": 0.3,
-   "kecepatan": 1.154,
+   "kecepatan": 0.737,
    "nama": "Ganti outfit kencan"
   },
   {
@@ -102,8 +105,8 @@
    "track": "teks",
    "jenis": "chips",
    "teks": "19.30 · 👗 DANDAN KENCAN",
-   "mulai": 201,
-   "durasi": 165,
+   "mulai": 221,
+   "durasi": 223,
    "nyala": "0",
    "y": 1690,
    "masuk": "pop"
@@ -113,8 +116,8 @@
    "track": "teks",
    "jenis": "sub",
    "teks": "Mulai dari *dandan kencan.*",
-   "mulai": 198,
-   "durasi": 59,
+   "mulai": 216,
+   "durasi": 57,
    "y": 1330
   },
   {
@@ -122,8 +125,8 @@
    "track": "teks",
    "jenis": "sub",
    "teks": "Dress code: *merah, pink,* atau *formal!*",
-   "mulai": 257,
-   "durasi": 62,
+   "mulai": 273,
+   "durasi": 100,
    "y": 600
   },
   {
@@ -131,8 +134,8 @@
    "track": "teks",
    "jenis": "sub",
    "teks": "Outfit terbaik *dipuji Direktur!* 👑",
-   "mulai": 319,
-   "durasi": 47,
+   "mulai": 373,
+   "durasi": 71,
    "y": 600
   },
   {
@@ -140,10 +143,10 @@
    "track": "gambar",
    "jenis": "video",
    "src": "klip/hujan.mp4",
-   "mulai": 366,
-   "durasi": 69,
+   "mulai": 444,
+   "durasi": 85,
    "trim": 0.1,
-   "kecepatan": 1.558,
+   "kecepatan": 1.271,
    "nama": "Hujan hati di lobi"
   },
   {
@@ -151,8 +154,8 @@
    "track": "gambar",
    "jenis": "video",
    "src": "klip/direktur.mp4",
-   "mulai": 435,
-   "durasi": 57,
+   "mulai": 529,
+   "durasi": 69,
    "nama": "Direktur"
   },
   {
@@ -160,8 +163,8 @@
    "track": "teks",
    "jenis": "chips",
    "teks": "20.00 · 🎉 PEMBUKAAN",
-   "mulai": 369,
-   "durasi": 123,
+   "mulai": 447,
+   "durasi": 151,
    "nyala": "0",
    "y": 1690,
    "masuk": "pop"
@@ -171,8 +174,8 @@
    "track": "teks",
    "jenis": "sub",
    "teks": "Jam delapan, *pembukaan* sama Direktur.",
-   "mulai": 366,
-   "durasi": 69,
+   "mulai": 444,
+   "durasi": 85,
    "y": 1330
   },
   {
@@ -180,8 +183,8 @@
    "track": "teks",
    "jenis": "sub",
    "teks": "Yang hadir langsung *dapet EXP!*",
-   "mulai": 435,
-   "durasi": 57,
+   "mulai": 529,
+   "durasi": 69,
    "y": 1330
   },
   {
@@ -189,10 +192,10 @@
    "track": "gambar",
    "jenis": "video",
    "src": "klip/sd.mp4",
-   "mulai": 492,
-   "durasi": 138,
+   "mulai": 598,
+   "durasi": 170,
    "trim": 0.2,
-   "kecepatan": 1.5,
+   "kecepatan": 1.221,
    "nama": "Speed dating"
   },
   {
@@ -200,8 +203,8 @@
    "track": "teks",
    "jenis": "chips",
    "teks": "20.15 · ☕ SPEED DATING",
-   "mulai": 495,
-   "durasi": 135,
+   "mulai": 602,
+   "durasi": 166,
    "nyala": "0",
    "y": 1690,
    "masuk": "pop"
@@ -211,8 +214,8 @@
    "track": "teks",
    "jenis": "sub",
    "teks": "*Speed dating:* 3 menit per ronde.",
-   "mulai": 492,
-   "durasi": 76,
+   "mulai": 598,
+   "durasi": 119,
    "y": 130
   },
   {
@@ -220,8 +223,8 @@
    "track": "teks",
    "jenis": "sub",
    "teks": "Saling suka? *MATCH!* 💘",
-   "mulai": 568,
-   "durasi": 62,
+   "mulai": 717,
+   "durasi": 51,
    "y": 130
   },
   {
@@ -229,10 +232,10 @@
    "track": "gambar",
    "jenis": "video",
    "src": "klip/tod.mp4",
-   "mulai": 630,
-   "durasi": 96,
+   "mulai": 768,
+   "durasi": 101,
    "trim": 0.9,
-   "kecepatan": 0.938,
+   "kecepatan": 0.896,
    "nama": "Truth or dare berdua"
   },
   {
@@ -240,8 +243,8 @@
    "track": "teks",
    "jenis": "chips",
    "teks": "21.00 · 🎲 TRUTH OR DARE",
-   "mulai": 632,
-   "durasi": 94,
+   "mulai": 770,
+   "durasi": 99,
    "nyala": "0",
    "y": 1690,
    "masuk": "pop"
@@ -251,8 +254,8 @@
    "track": "teks",
    "jenis": "sub",
    "teks": "Udah match? Ajak main *truth or dare!*",
-   "mulai": 630,
-   "durasi": 96,
+   "mulai": 768,
+   "durasi": 101,
    "y": 130
   },
   {
@@ -260,10 +263,10 @@
    "track": "gambar",
    "jenis": "video",
    "src": "klip/taman5.mp4",
-   "mulai": 726,
-   "durasi": 180,
+   "mulai": 868,
+   "durasi": 196,
    "trim": 0.0,
-   "kecepatan": 0.833,
+   "kecepatan": 0.769,
    "nama": "Taman Cinta dibuka"
   },
   {
@@ -271,8 +274,8 @@
    "track": "teks",
    "jenis": "stiker",
    "teks": "BUKA PERDANA 🎡",
-   "mulai": 730,
-   "durasi": 176,
+   "mulai": 872,
+   "durasi": 192,
    "warna": "#ffd23f",
    "y": 330
   },
@@ -281,8 +284,8 @@
    "track": "teks",
    "jenis": "chips",
    "teks": "21.30 · 🎡 TAMAN CINTA",
-   "mulai": 730,
-   "durasi": 176,
+   "mulai": 872,
+   "durasi": 192,
    "nyala": "0",
    "y": 1690,
    "masuk": "pop"
@@ -292,8 +295,8 @@
    "track": "teks",
    "jenis": "sub",
    "teks": "Terus… *Taman Cinta* resmi dibuka!",
-   "mulai": 726,
-   "durasi": 72,
+   "mulai": 868,
+   "durasi": 69,
    "y": 1330
   },
   {
@@ -301,8 +304,8 @@
    "track": "teks",
    "jenis": "sub",
    "teks": "Naik *bianglala* berdua,",
-   "mulai": 798,
-   "durasi": 45,
+   "mulai": 937,
+   "durasi": 49,
    "y": 1330
   },
   {
@@ -310,8 +313,8 @@
    "track": "teks",
    "jenis": "sub",
    "teks": "lempar *koin harapan,* nonton di *bioskop!*",
-   "mulai": 843,
-   "durasi": 63,
+   "mulai": 986,
+   "durasi": 78,
    "y": 1330
   },
   {
@@ -319,10 +322,10 @@
    "track": "gambar",
    "jenis": "video",
    "src": "klip/raja.mp4",
-   "mulai": 906,
-   "durasi": 150,
+   "mulai": 1064,
+   "durasi": 180,
    "trim": 0.0,
-   "kecepatan": 0.8,
+   "kecepatan": 0.664,
    "nama": "Kembang api penobatan"
   },
   {
@@ -330,8 +333,8 @@
    "track": "teks",
    "jenis": "stiker",
    "teks": "RAJA & RATU KENCAN 👑",
-   "mulai": 909,
-   "durasi": 147,
+   "mulai": 1067,
+   "durasi": 177,
    "warna": "#ff4f7b",
    "y": 330
   },
@@ -340,8 +343,8 @@
    "track": "teks",
    "jenis": "chips",
    "teks": "22.00 · 💠 HADIAH DIAMOND",
-   "mulai": 909,
-   "durasi": 147,
+   "mulai": 1067,
+   "durasi": 177,
    "nyala": "0",
    "y": 1690,
    "masuk": "pop"
@@ -351,8 +354,8 @@
    "track": "teks",
    "jenis": "sub",
    "teks": "Penutupnya, penobatan *Raja & Ratu Kencan.*",
-   "mulai": 906,
-   "durasi": 75,
+   "mulai": 1064,
+   "durasi": 102,
    "y": 1330
   },
   {
@@ -360,8 +363,8 @@
    "track": "teks",
    "jenis": "sub",
    "teks": "Pasangan terpilih dapet *Diamond!* 💠",
-   "mulai": 981,
-   "durasi": 75,
+   "mulai": 1166,
+   "durasi": 78,
    "y": 1330
   },
   {
@@ -369,8 +372,8 @@
    "track": "gambar",
    "jenis": "video",
    "src": "klip/drone.mp4",
-   "mulai": 1056,
-   "durasi": 102,
+   "mulai": 1244,
+   "durasi": 104,
    "gelap": 0.45,
    "kecepatan": 0.8,
    "nama": "Drone (redup)"
@@ -379,12 +382,12 @@
    "id": "e38",
    "track": "elemen",
    "jenis": "hitung",
-   "mulai": 1056,
-   "durasi": 102,
+   "mulai": 1244,
+   "durasi": 104,
    "props": {
     "dari": 0,
     "ke": 230,
-    "detik": 2.04,
+    "detik": 2.09,
     "atas": "total semalam 🔥",
     "label": "EXP",
     "y": 440
@@ -396,8 +399,8 @@
    "track": "teks",
    "jenis": "sub",
    "teks": "Total bisa dapet *230 EXP* semalam!",
-   "mulai": 1056,
-   "durasi": 102,
+   "mulai": 1244,
+   "durasi": 104,
    "y": 1330
   },
   {
@@ -405,8 +408,8 @@
    "track": "gambar",
    "jenis": "foto",
    "src": "foto/story-1.png",
-   "mulai": 1158,
-   "durasi": 32,
+   "mulai": 1348,
+   "durasi": 29,
    "zoom": 1.04,
    "nama": "Template Story 1"
   },
@@ -415,8 +418,8 @@
    "track": "gambar",
    "jenis": "foto",
    "src": "foto/story-2.png",
-   "mulai": 1190,
-   "durasi": 31,
+   "mulai": 1377,
+   "durasi": 29,
    "zoom": 1.04,
    "nama": "Template Story 2"
   },
@@ -425,8 +428,8 @@
    "track": "gambar",
    "jenis": "foto",
    "src": "foto/story-3.png",
-   "mulai": 1221,
-   "durasi": 31,
+   "mulai": 1406,
+   "durasi": 29,
    "zoom": 1.04,
    "nama": "Template Story 3"
   },
@@ -435,8 +438,8 @@
    "track": "gambar",
    "jenis": "foto",
    "src": "foto/story-4.png",
-   "mulai": 1252,
-   "durasi": 32,
+   "mulai": 1435,
+   "durasi": 28,
    "zoom": 1.04,
    "nama": "Template Story 4"
   },
@@ -445,8 +448,8 @@
    "track": "teks",
    "jenis": "sub",
    "teks": "Posting momenmu pakai *template ini,*",
-   "mulai": 1158,
-   "durasi": 63,
+   "mulai": 1348,
+   "durasi": 69,
    "y": 130
   },
   {
@@ -454,16 +457,16 @@
    "track": "teks",
    "jenis": "sub",
    "teks": "terus *tag kita!* 📸",
-   "mulai": 1221,
-   "durasi": 63,
+   "mulai": 1417,
+   "durasi": 46,
    "y": 130
   },
   {
    "id": "e46",
    "track": "elemen",
    "jenis": "profil",
-   "mulai": 1284,
-   "durasi": 144,
+   "mulai": 1463,
+   "durasi": 139,
    "props": {
     "akun": "jodohonline.company",
     "nama": "jodohonline.company 💘",
@@ -473,7 +476,7 @@
     "pengikut": 0,
     "mengikuti": "0",
     "sensor": true,
-    "ketukDetik": 1.44
+    "ketukDetik": 1.38
    },
    "masuk": "geser-atas",
    "nama": "Profil IG: penutup"
@@ -483,8 +486,8 @@
    "track": "teks",
    "jenis": "sub",
    "teks": "Belum jadi tamu? *Daftar sekarang!*",
-   "mulai": 1284,
-   "durasi": 79,
+   "mulai": 1463,
+   "durasi": 93,
    "y": 1330
   },
   {
@@ -492,8 +495,8 @@
    "track": "teks",
    "jenis": "sub",
    "teks": "Sampai ketemu di *Date Night!* 💘",
-   "mulai": 1363,
-   "durasi": 65,
+   "mulai": 1556,
+   "durasi": 46,
    "y": 1330
   },
   {
@@ -502,7 +505,7 @@
    "jenis": "akun",
    "teks": "@jodohonline.company",
    "mulai": 0,
-   "durasi": 108,
+   "durasi": 123,
    "masuk": "none",
    "y": 150,
    "x": 130
@@ -521,7 +524,7 @@
    "id": "s2",
    "nama": "Whoosh",
    "src": "sfx/whoosh.mp3",
-   "mulai": 56,
+   "mulai": 87,
    "durasi": 18,
    "volume": 0.3
   },
@@ -529,7 +532,7 @@
    "id": "s3",
    "nama": "Pop 🕢 JUMAT · 19.30 WIB",
    "src": "sfx/pop.mp3",
-   "mulai": 110,
+   "mulai": 125,
    "durasi": 15,
    "volume": 0.3
   },
@@ -537,7 +540,7 @@
    "id": "s4",
    "nama": "Pop 19.30 · 👗 DANDAN KENCAN",
    "src": "sfx/pop.mp3",
-   "mulai": 201,
+   "mulai": 221,
    "durasi": 15,
    "volume": 0.3
   },
@@ -545,7 +548,7 @@
    "id": "s5",
    "nama": "Pop 20.00 · 🎉 PEMBUKAAN",
    "src": "sfx/pop.mp3",
-   "mulai": 369,
+   "mulai": 447,
    "durasi": 15,
    "volume": 0.3
   },
@@ -553,7 +556,7 @@
    "id": "s6",
    "nama": "Hujan hati",
    "src": "sfx/match.mp3",
-   "mulai": 372,
+   "mulai": 450,
    "durasi": 30,
    "volume": 0.3
   },
@@ -561,7 +564,7 @@
    "id": "s7",
    "nama": "Pop 20.15 · ☕ SPEED DATING",
    "src": "sfx/pop.mp3",
-   "mulai": 495,
+   "mulai": 602,
    "durasi": 15,
    "volume": 0.3
   },
@@ -569,7 +572,7 @@
    "id": "s8",
    "nama": "Pop 21.00 · 🎲 TRUTH OR DARE",
    "src": "sfx/pop.mp3",
-   "mulai": 632,
+   "mulai": 770,
    "durasi": 15,
    "volume": 0.3
   },
@@ -577,7 +580,7 @@
    "id": "s9",
    "nama": "Pop 21.30 · 🎡 TAMAN CINTA",
    "src": "sfx/pop.mp3",
-   "mulai": 730,
+   "mulai": 872,
    "durasi": 15,
    "volume": 0.3
   },
@@ -585,7 +588,7 @@
    "id": "s10",
    "nama": "Whoosh taman",
    "src": "sfx/whoosh.mp3",
-   "mulai": 723,
+   "mulai": 865,
    "durasi": 18,
    "volume": 0.3
   },
@@ -593,7 +596,7 @@
    "id": "s11",
    "nama": "Pop 22.00 · 💠 HADIAH DIAMOND",
    "src": "sfx/pop.mp3",
-   "mulai": 909,
+   "mulai": 1067,
    "durasi": 15,
    "volume": 0.3
   },
@@ -601,7 +604,7 @@
    "id": "s12",
    "nama": "Level up",
    "src": "sfx/levelup.mp3",
-   "mulai": 910,
+   "mulai": 1068,
    "durasi": 33,
    "volume": 0.3
   },
@@ -609,7 +612,7 @@
    "id": "s13",
    "nama": "Tik 1",
    "src": "sfx/pop.mp3",
-   "mulai": 1060,
+   "mulai": 1249,
    "durasi": 8,
    "volume": 0.18
   },
@@ -617,7 +620,7 @@
    "id": "s14",
    "nama": "Tik 2",
    "src": "sfx/pop.mp3",
-   "mulai": 1071,
+   "mulai": 1259,
    "durasi": 8,
    "volume": 0.18
   },
@@ -625,7 +628,7 @@
    "id": "s15",
    "nama": "Tik 3",
    "src": "sfx/pop.mp3",
-   "mulai": 1081,
+   "mulai": 1269,
    "durasi": 8,
    "volume": 0.18
   },
@@ -633,7 +636,7 @@
    "id": "s16",
    "nama": "Tik 4",
    "src": "sfx/pop.mp3",
-   "mulai": 1091,
+   "mulai": 1280,
    "durasi": 8,
    "volume": 0.18
   },
@@ -641,7 +644,7 @@
    "id": "s17",
    "nama": "Tik 5",
    "src": "sfx/pop.mp3",
-   "mulai": 1101,
+   "mulai": 1290,
    "durasi": 8,
    "volume": 0.18
   },
@@ -649,7 +652,7 @@
    "id": "s18",
    "nama": "Tik 6",
    "src": "sfx/pop.mp3",
-   "mulai": 1112,
+   "mulai": 1301,
    "durasi": 8,
    "volume": 0.18
   },
@@ -657,7 +660,7 @@
    "id": "s19",
    "nama": "Whip 1",
    "src": "sfx/whoosh.mp3",
-   "mulai": 1157,
+   "mulai": 1347,
    "durasi": 10,
    "volume": 0.18
   },
@@ -665,7 +668,7 @@
    "id": "s20",
    "nama": "Whip 2",
    "src": "sfx/whoosh.mp3",
-   "mulai": 1189,
+   "mulai": 1376,
    "durasi": 10,
    "volume": 0.18
   },
@@ -673,7 +676,7 @@
    "id": "s21",
    "nama": "Whip 3",
    "src": "sfx/whoosh.mp3",
-   "mulai": 1220,
+   "mulai": 1405,
    "durasi": 10,
    "volume": 0.18
   },
@@ -681,7 +684,7 @@
    "id": "s22",
    "nama": "Whip 4",
    "src": "sfx/whoosh.mp3",
-   "mulai": 1251,
+   "mulai": 1434,
    "durasi": 10,
    "volume": 0.18
   },
@@ -689,7 +692,7 @@
    "id": "s23",
    "nama": "Geser profil",
    "src": "sfx/geser.mp3",
-   "mulai": 1284,
+   "mulai": 1463,
    "durasi": 18,
    "volume": 0.8
   },
@@ -697,7 +700,7 @@
    "id": "s24",
    "nama": "Ketuk Ikuti",
    "src": "sfx/ketuk.mp3",
-   "mulai": 1325,
+   "mulai": 1503,
    "durasi": 12,
    "volume": 0.45
   },
@@ -705,7 +708,7 @@
    "id": "s25",
    "nama": "Notif",
    "src": "sfx/notif.mp3",
-   "mulai": 1329,
+   "mulai": 1507,
    "durasi": 25,
    "volume": 0.3
   }

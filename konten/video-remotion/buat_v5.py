@@ -52,9 +52,9 @@ ATAS, BAWAH = 130, 1330
 # 0 hook: Papan Informasi LED + stiker MALAM INI
 klip('klip/papan.mp4', 0, 0, 1, 4.0, nama='Papan Informasi LED')
 t('stiker', 'MALAM INI 💘', 0, 0.02, 1, warna='#ff4f7b', y=330)
-t('sub', 'Malam ini ada acara *spesial*', 0, 0, 0.55, y=BAWAH)
-t('sub', 'di kantor jodoh… *DATE NIGHT!*', 0, 0.55, 1, y=BAWAH)
-sfx('Pop stiker', 'pop', det(0, 0.05), 15, 0.35); sfx('Whoosh', 'whoosh', det(0, DURASI[0] * 0.55) - 3, 18, 0.3)
+t('sub', 'Malam ini ada acara *spesial*', 0, 0, 0.4, y=BAWAH)
+t('sub', 'di kantor jodoh… *DATE NIGHT!*', 0, 0.4, 1, y=BAWAH)
+sfx('Pop stiker', 'pop', det(0, 0.05), 15, 0.35); sfx('Whoosh', 'whoosh', det(0, 3.0) - 3, 18, 0.3)
 
 # 1 kapan: jadwal acara di aplikasi
 klip('klip/jadwal.mp4', 1, 0, 1, 3.6, trim=0.3, nama='Jadwal Date Night')
@@ -62,12 +62,12 @@ jam('🕢 JUMAT · 19.30 WIB', 1)
 t('sub', 'Mulai jam *setengah delapan* malam!', 1, 0, 1, y=ATAS)
 
 # 2 dandan kencan
-g('foto', 'foto/karakter.png', 2, 0, 0.35, zoom=1.08, nama='Karakter')
-klip('klip/loker.mp4', 2, 0.35, 1, 4.2, trim=0.3, nama='Ganti outfit kencan')
+g('foto', 'foto/karakter.png', 2, 0, 0.25, zoom=1.08, nama='Karakter')
+klip('klip/loker.mp4', 2, 0.25, 1, 4.2, trim=0.3, nama='Ganti outfit kencan')
 jam('19.30 · 👗 DANDAN KENCAN', 2)
-t('sub', 'Mulai dari *dandan kencan.*', 2, 0, 0.35, y=BAWAH)
-t('sub', 'Dress code: *merah, pink,* atau *formal!*', 2, 0.35, 0.72, y=600)
-t('sub', 'Outfit terbaik *dipuji Direktur!* 👑', 2, 0.72, 1, y=600)
+t('sub', 'Mulai dari *dandan kencan.*', 2, 0, 0.25, y=BAWAH)
+t('sub', 'Dress code: *merah, pink,* atau *formal!*', 2, 0.25, 0.69, y=600)
+t('sub', 'Outfit terbaik *dipuji Direktur!* 👑', 2, 0.69, 1, y=600)
 
 # 3 pembukaan: hujan hati + Direktur
 klip('klip/hujan.mp4', 3, 0, 0.55, 3.6, trim=0.1, nama='Hujan hati di lobi')
@@ -80,8 +80,8 @@ sfx('Hujan hati', 'match', det(3, 0.2), 30, 0.3)
 # 4 speed dating
 klip('klip/sd.mp4', 4, 0, 1, 6.9, trim=0.2, nama='Speed dating')
 jam('20.15 · ☕ SPEED DATING', 4)
-t('sub', '*Speed dating:* 3 menit per ronde.', 4, 0, 0.55, y=ATAS)
-t('sub', 'Saling suka? *MATCH!* 💘', 4, 0.55, 1, y=ATAS)
+t('sub', '*Speed dating:* 3 menit per ronde.', 4, 0, 0.7, y=ATAS)
+t('sub', 'Saling suka? *MATCH!* 💘', 4, 0.7, 1, y=ATAS)
 
 # 5 truth or dare
 klip('klip/tod.mp4', 5, 0, 1, 3.0, trim=0.9, nama='Truth or dare berdua')
@@ -92,17 +92,17 @@ t('sub', 'Udah match? Ajak main *truth or dare!*', 5, 0, 1, y=ATAS)
 klip('klip/taman5.mp4', 6, 0, 1, 5.0, nama='Taman Cinta dibuka')
 t('stiker', 'BUKA PERDANA 🎡', 6, 0.02, 1, warna='#ffd23f', y=330)
 jam('21.30 · 🎡 TAMAN CINTA', 6)
-t('sub', 'Terus… *Taman Cinta* resmi dibuka!', 6, 0, 0.4, y=BAWAH)
-t('sub', 'Naik *bianglala* berdua,', 6, 0.4, 0.65, y=BAWAH)
-t('sub', 'lempar *koin harapan,* nonton di *bioskop!*', 6, 0.65, 1, y=BAWAH)
+t('sub', 'Terus… *Taman Cinta* resmi dibuka!', 6, 0, 0.35, y=BAWAH)
+t('sub', 'Naik *bianglala* berdua,', 6, 0.35, 0.6, y=BAWAH)
+t('sub', 'lempar *koin harapan,* nonton di *bioskop!*', 6, 0.6, 1, y=BAWAH)
 sfx('Whoosh taman', 'whoosh', det(6, 0) - 3, 18, 0.3)
 
 # 7 Raja & Ratu Kencan
 klip('klip/raja.mp4', 7, 0, 1, 4.0, nama='Kembang api penobatan')
 t('stiker', 'RAJA & RATU KENCAN 👑', 7, 0.02, 1, warna='#ff4f7b', y=330)
 jam('22.00 · 💠 HADIAH DIAMOND', 7)
-t('sub', 'Penutupnya, penobatan *Raja & Ratu Kencan.*', 7, 0, 0.5, y=BAWAH)
-t('sub', 'Pasangan terpilih dapet *Diamond!* 💠', 7, 0.5, 1, y=BAWAH)
+t('sub', 'Penutupnya, penobatan *Raja & Ratu Kencan.*', 7, 0, 0.57, y=BAWAH)
+t('sub', 'Pasangan terpilih dapet *Diamond!* 💠', 7, 0.57, 1, y=BAWAH)
 sfx('Level up', 'levelup', det(7, 0.15), 33, 0.3)
 
 # 8 total EXP
@@ -116,15 +116,15 @@ for i in range(6):
 for i in range(4):
     g('foto', f'foto/story-{i + 1}.png', 9, i / 4, (i + 1) / 4, zoom=1.04, nama=f'Template Story {i + 1}')
     sfx(f'Whip {i + 1}', 'whoosh', waktu(9, i / 4, 1)[0] - 1, 10, 0.18)
-t('sub', 'Posting momenmu pakai *template ini,*', 9, 0, 0.5, y=ATAS)
-t('sub', 'terus *tag kita!* 📸', 9, 0.5, 1, y=ATAS)
+t('sub', 'Posting momenmu pakai *template ini,*', 9, 0, 0.6, y=ATAS)
+t('sub', 'terus *tag kita!* 📸', 9, 0.6, 1, y=ATAS)
 
 # 10 penutup: daftar
 bio = 'Kantor virtual buat cari jodoh, cari teman & curhat\nDaftar → di-ACC Direktur 👑'
 prof = dict(akun='jodohonline.company', nama='jodohonline.company 💘', bio=bio, tautan='jodohonline.company/daftar', postingan='5', pengikut=0, mengikuti='0', sensor=True)
 e('profil', 10, 0, 1, dict(prof, ketukDetik=round(DURASI[10] * 0.3, 2)), masuk='geser-atas', nama='Profil IG: penutup')
-t('sub', 'Belum jadi tamu? *Daftar sekarang!*', 10, 0, 0.55, y=BAWAH)
-t('sub', 'Sampai ketemu di *Date Night!* 💘', 10, 0.55, 1, y=BAWAH)
+t('sub', 'Belum jadi tamu? *Daftar sekarang!*', 10, 0, 0.67, y=BAWAH)
+t('sub', 'Sampai ketemu di *Date Night!* 💘', 10, 0.67, 1, y=BAWAH)
 sfx('Geser profil', 'geser', det(10, 0), 18, 0.8); sfx('Ketuk Ikuti', 'ketuk', det(10, DURASI[10] * 0.3) - 2, 12, 0.45); sfx('Notif', 'notif', det(10, DURASI[10] * 0.3) + 2, 25, 0.3)
 
 t('akun', '@jodohonline.company', 0, 0, 1, masuk='none', y=150, x=130)
