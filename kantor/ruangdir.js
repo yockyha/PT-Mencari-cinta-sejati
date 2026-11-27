@@ -4,10 +4,10 @@
 //  atau menolak. Direktur juga bisa membuka ruangan untuk semua orang.
 //  Data: ketukDir/<uid> {n,t} · izinDir/<uid> {sampai,n} · setelan/ruangDir
 // =====================================================================
-import { esc, bersih } from '../js/common.js?v=202611270848';
-import { TS } from '../js/db.js?v=202611270848';
-import { K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611270848';
-import * as Musik from './musik.js?v=202611270848';
+import { esc, bersih } from '../js/common.js?v=202611270858';
+import { TS } from '../js/db.js?v=202611270858';
+import { K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611270858';
+import * as Musik from './musik.js?v=202611270858';
 
 let izinSaya = null, ketukan = {}, izinSemua = {}, ketukSaya = 0, awalKetuk = true;
 const dir = () => !!(K.L && K.peran[K.L.uid] === 'direktur');
