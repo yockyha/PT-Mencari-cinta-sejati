@@ -3,13 +3,15 @@
 //  - Buat grup, undang tamu (harus diterima), keluar, keluarkan anggota
 //  - Batas: tamu biasa 10 anggota & 2 grup, VIP 30 & 5, VVIP 100 & 10
 //  - Direktur bisa melihat & masuk semua grup (moderasi)
-//  Data: grup/<id>, grupPesan/<id>, grupku/<uid>/<id>, grupUndangan/<uid>/<id>
+//  - Grup publik: semua tamu melihat grup yang ada & bisa MINTA GABUNG; pembuat grup ACC / tolak
+//  Data: grup/<id>, grupPesan/<id>, grupku/<uid>/<id>, grupUndangan/<uid>/<id>,
+//        grupPublik/<id> {nama,ikon,pemilik,pn,jml,maks,t}, grupMinta/<id>/<uid> {n,t}
 // =====================================================================
-import { LS, bersih, esc, fmt } from '../js/common.js?v=202611270824';
-import { TS, kunciBaru } from '../js/db.js?v=202611270824';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611270824';
-import * as Prog from './progres.js?v=202611270824';
-import * as Stiker from './stiker.js?v=202611270824';
+import { LS, bersih, esc, fmt } from '../js/common.js?v=202611270848';
+import { TS, kunciBaru } from '../js/db.js?v=202611270848';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611270848';
+import * as Prog from './progres.js?v=202611270848';
+import * as Stiker from './stiker.js?v=202611270848';
 
 const IKON = ['👥', '🎮', '🎵', '🍜', '✈️', '💘', '📚', '⚽', '🐱', '☕', '🎬', '🌙'];
 const BATAS = { '': { anggota: 10, grup: 2 }, vip: { anggota: 30, grup: 5 }, vvip: { anggota: 100, grup: 10 } };
@@ -17,18 +19,83 @@ const batas = () => (K.peran[K.L.uid] === 'direktur' ? { anggota: 999, grup: 99 
 const siap = () => { if (!K.resmi()) { toast('👀 Daftar dulu untuk ikut grup.'); K.bukaDaftar(); return false; } if (K.terkunci) { toast('Kamu belum bisa berinteraksi sekarang.'); return false; } return true; };
 const direktur = () => K.peran[K.L.uid] === 'direktur';
 
-let grupku = {}, undangan = {}, terbuka = null, lepasRuang = null, lepasInfo = null, layar = '';
-export const jumlahBaru = () => Object.entries(grupku).filter(([g, v]) => v && v.t > (LS.get('grupBaca', {})?.[g] || 0)).length + Object.keys(undangan).length;
+let grupku = {}, undangan = {}, publik = {}, minta = {}, mintaSaya = {}, awalPublik = true, pantauMinta = {}, terbuka = null, lepasRuang = null, lepasInfo = null, layar = '';
+export const jumlahBaru = () => Object.entries(grupku).filter(([g, v]) => v && v.t > (LS.get('grupBaca', {})?.[g] || 0)).length + Object.keys(undangan).length + jumlahMinta();
+const jumlahMinta = () => Object.values(minta).reduce((s, o) => s + Object.keys(o || {}).length, 0);
+const dirUid = uid => K.peran[uid] === 'direktur';
 
 export function mulai() {
   const L = K.L, db = L.db;
-  db.on('grupku/' + L.uid, o => { const lama = grupku; grupku = o || {}; for (const [g, v] of Object.entries(grupku)) if (v && lama[g] && v.t !== lama[g].t && g !== terbuka && v.dari !== L.uid) toast(`👥 Pesan baru di ${bersih(v.nama, 30)}`); K.segarBadge && K.segarBadge(); if (layar === 'daftar') K.bukaObrolanTab && K.bukaObrolanTab('grup'); });
+  try { mintaSaya = JSON.parse(localStorage.getItem('ptmcs_grupMinta') || '{}') || {}; } catch { mintaSaya = {}; }
+  // grup publik: tampil ke semua tamu; grup baru diumumkan ke yang sedang online
+  db.on('grupPublik', o => {
+    const lama = publik; publik = o || {};
+    if (!awalPublik) for (const [g, v] of Object.entries(publik)) if (v && !lama[g] && v.pemilik !== L.uid && Date.now() - (v.t || 0) < 600000) setTimeout(() => {
+      if (!publik[g]) return; // tulisan yang ditolak server ikut hilang
+      const d = dirUid(v.pemilik);
+      toast(d ? `👑 Direktur membuat grup ${bersih(v.nama, 30)}! Buka 💬 → Grup untuk minta gabung` : `👥 ${bersih(v.pn, 30)} membuat grup baru: ${bersih(v.nama, 30)}. Mau gabung? Buka 💬 → Grup`, 5200);
+      tulisLog('', `${d ? '👑' : '👥'} Grup baru: ${v.ikon || '👥'} ${bersih(v.nama, 30)} oleh ${bersih(v.pn, 30)}`, d ? 'dir' : 'sys');
+    }, 1500);
+    awalPublik = false;
+    for (const g of Object.keys(mintaSaya)) if (!publik[g]) delete mintaSaya[g];
+    if (layar === 'daftar') K.bukaObrolanTab && K.bukaObrolanTab('grup');
+  });
+  db.on('grupku/' + L.uid, o => { const lama = grupku; grupku = o || {}; pantauGrupSaya(); for (const [g, v] of Object.entries(grupku)) if (v && lama[g] && v.t !== lama[g].t && g !== terbuka && v.dari !== L.uid) toast(`👥 Pesan baru di ${bersih(v.nama, 30)}`); K.segarBadge && K.segarBadge(); if (layar === 'daftar') K.bukaObrolanTab && K.bukaObrolanTab('grup'); });
   db.on('grupUndangan/' + L.uid, o => {
     const lama = undangan; undangan = o || {};
-    for (const [g, v] of Object.entries(undangan)) if (v && !lama[g]) { toast(`👥 ${bersih(v.dari, 30)} mengundangmu ke grup ${bersih(v.nama, 30)}`, 4200); tulisLog('', `👥 Undangan grup: ${bersih(v.nama, 30)}`, 'sys'); }
+    for (const [g, v] of Object.entries(undangan)) if (v && !lama[g]) {
+      if (v.acc) { toast(`✅ Permintaan gabungmu ke ${bersih(v.nama, 30)} disetujui!`, 4200); delete mintaSaya[g]; gabung(g, true); continue; }
+      toast(`👥 ${bersih(v.dari, 30)} mengundangmu ke grup ${bersih(v.nama, 30)}`, 4200); tulisLog('', `👥 Undangan grup: ${bersih(v.nama, 30)}`, 'sys');
+    }
     K.segarBadge && K.segarBadge();
     if (layar === 'daftar') K.bukaObrolanTab && K.bukaObrolanTab('grup');
   });
+}
+
+// grup milik sendiri: pastikan terbit di grupPublik & pantau permintaan gabung
+function pantauGrupSaya() {
+  const L = K.L;
+  for (const [g, v] of Object.entries(grupku)) {
+    if (!v || v.pemilik !== L.uid || pantauMinta[g]) continue;
+    pantauMinta[g] = L.db.on('grupMinta/' + g, o => {
+      const lama = minta[g] || {}; minta[g] = o || {};
+      for (const [u, r] of Object.entries(minta[g])) if (r && !lama[u]) { toast(`🙋 ${bersih(r.n, 30)} minta gabung ke ${bersih(v.nama, 30)}. Buka 💬 → Grup untuk ACC`, 5000); }
+      K.segarBadge && K.segarBadge();
+      if (layar === 'daftar') K.bukaObrolanTab && K.bukaObrolanTab('grup');
+    });
+    terbitkan(g);
+  }
+}
+async function terbitkan(g) {
+  const L = K.L;
+  const o = await L.db.get('grup/' + g).catch(() => null); if (!o || o.pemilik !== L.uid) return;
+  const ada = await L.db.get('grupPublik/' + g).catch(() => null);
+  const jml = Object.keys(o.anggota || {}).length;
+  if (ada && ada.jml === jml) return;
+  L.db.set('grupPublik/' + g, { nama: bersih(o.nama, 30), ikon: o.ikon || '👥', pemilik: L.uid, pn: bersih(K.prof.n, 30), jml, maks: (ada && ada.maks) || batas().anggota, t: (ada && ada.t) || o.t || Date.now() }).catch(e => console.warn('grupPublik', e));
+}
+async function mintaGabung(g) {
+  if (!siap()) return;
+  const v = publik[g]; if (!v) return;
+  if (v.jml >= v.maks) { toast('Grupnya sudah penuh.'); return; }
+  try {
+    await K.L.db.set(`grupMinta/${g}/${K.L.uid}`, { n: bersih(K.prof.n, 30), t: TS });
+    mintaSaya[g] = Date.now(); try { localStorage.setItem('ptmcs_grupMinta', JSON.stringify(mintaSaya)); } catch { /* */ }
+    toast(`🙋 Permintaan terkirim. Tunggu ${dirUid(v.pemilik) ? 'Direktur' : bersih(v.pn, 30)} meng-ACC ya!`, 3800);
+    K.bukaObrolanTab && K.bukaObrolanTab('grup');
+  } catch (e) { toast('Gagal mengirim permintaan. Coba lagi sebentar.'); }
+}
+async function putuskan(g, u, setuju) {
+  const L = K.L, v = grupku[g], r = (minta[g] || {})[u]; if (!v) return;
+  try {
+    if (setuju) {
+      const o = await L.db.get('grup/' + g);
+      if (Object.keys((o && o.anggota) || {}).length >= batas().anggota) { toast('Grup sudah penuh.'); return; }
+      await L.db.set(`grupUndangan/${u}/${g}`, { nama: v.nama, ikon: v.ikon || '👥', pemilik: L.uid, dari: bersih(K.prof.n, 30), acc: true, t: TS });
+    }
+    await L.db.set(`grupMinta/${g}/${u}`, null);
+    toast(setuju ? `✅ ${bersih(r && r.n, 30)} di-ACC, sebentar lagi masuk grup` : 'Permintaan ditolak.');
+  } catch (e) { toast('Gagal.'); }
 }
 
 // ---------------------------------------------------------------- DAFTAR GRUP (dipasang di kartu Obrolan)
@@ -38,11 +105,27 @@ export function htmlDaftar() {
   const baca = LS.get('grupBaca', {}) || {};
   const und = Object.entries(undangan).filter(([, v]) => v);
   return `${und.length ? `<h3>📨 Undangan grup</h3><div class="daftar">${und.map(([g, v]) => `<div><span>${esc(v.ikon || '👥')} <b>${esc(bersih(v.nama, 30))}</b><br><small>dari ${esc(bersih(v.dari, 30))}</small></span><span class="baris kecil" style="margin:0"><button type="button" class="mini" data-gy="${esc(g)}">Gabung</button><button type="button" class="mini putih" data-gt="${esc(g)}">Tolak</button></span></div>`).join('')}</div>` : ''}
+    ${htmlMinta()}
     <div class="baris" style="margin-top:6px"><button class="btn" type="button" id="gBuat">＋ Buat grup${bolehBuatGrup() ? '' : ' 🔒'}</button>${direktur() ? '<button class="btn putih" type="button" id="gSemua">👑 Semua grup</button>' : ''}</div>
     ${l.length ? `<div class="daftar" style="margin-top:10px">${l.map(([g, v]) => `<div class="baris-ruang" data-g="${esc(g)}"><span>${v.t > (baca[g] || 0) && v.dari !== L.uid ? '<i class="titik"></i>' : ''}${esc(v.ikon || '👥')} <b>${esc(bersih(v.nama, 30))}</b><br><small>${v.m ? esc(bersih(v.m, 40)) + ' · ' : ''}${v.t ? esc(tanggalJam(v.t)) : ''}</small></span><button type="button" class="mini">Buka</button></div>`).join('')}</div>`
-      : `<p class="kecil">Belum ada grup. ${bolehBuatGrup() ? 'Buat grup lalu undang teman dari kantor, atau tunggu undangan.' : 'Membuat grup butuh 💎 VIP atau Level 7. Sambil itu, kamu bisa diundang teman ke grup mereka.'}</p>`}`;
+      : `<p class="kecil">Belum ada grup. ${bolehBuatGrup() ? 'Buat grup lalu undang teman dari kantor, atau tunggu undangan.' : 'Membuat grup butuh 💎 VIP atau Level 7. Sambil itu, kamu bisa diundang teman ke grup mereka atau minta gabung ke grup terbuka di bawah.'}</p>`}${htmlTerbuka()}`;
+}
+function htmlMinta() {
+  const l = Object.entries(minta).flatMap(([g, o]) => Object.entries(o || {}).filter(([, r]) => r).map(([u, r]) => [g, u, r]));
+  return l.length ? `<h3>🙋 Permintaan gabung (${l.length})</h3><div class="daftar">${l.map(([g, u, r]) => `<div><span><b>${esc(bersih(r.n, 30))}</b><br><small>ingin gabung ke ${esc(grupku[g]?.ikon || '👥')} ${esc(bersih(grupku[g]?.nama, 30))}</small></span><span class="baris kecil" style="margin:0"><button type="button" class="mini" data-acc="${esc(g)}|${esc(u)}">✅ ACC</button><button type="button" class="mini putih" data-tolak="${esc(g)}|${esc(u)}">Tolak</button></span></div>`).join('')}</div>` : '';
+}
+function htmlTerbuka() {
+  const l = Object.entries(publik).filter(([g, v]) => v && !grupku[g]).sort((a, b) => (dirUid(b[1].pemilik) - dirUid(a[1].pemilik)) || ((b[1].t || 0) - (a[1].t || 0)));
+  if (!l.length) return '';
+  return `<h3>🌐 Grup terbuka <small class="kecil">minta gabung, pembuat grup yang meng-ACC</small></h3><div class="daftar">${l.map(([g, v]) => {
+    const penuh = v.jml >= v.maks, d = dirUid(v.pemilik), tunggu = mintaSaya[g];
+    return `<div class="${d ? 'grupDir' : ''}"><span>${esc(v.ikon || '👥')} <b>${esc(bersih(v.nama, 30))}</b>${d ? ' <small class="lencanaDir">👑 Grup Direktur</small>' : ''}<br><small>oleh ${esc(bersih(v.pn, 30))} · ${v.maks >= 999 ? `${fmt(v.jml)} anggota · tanpa batas` : `${fmt(v.jml)}/${fmt(v.maks)} anggota`}</small></span>${penuh ? '<small>Penuh</small>' : tunggu ? '<small>⏳ Menunggu ACC</small>' : `<button type="button" class="mini" data-minta="${esc(g)}">🙋 Minta gabung</button>`}</div>`;
+  }).join('')}</div>`;
 }
 export function pasangDaftar(isi) {
+  isi.querySelectorAll('[data-minta]').forEach(b => b.onclick = () => { b.disabled = true; mintaGabung(b.dataset.minta); });
+  isi.querySelectorAll('[data-acc]').forEach(b => b.onclick = () => { b.disabled = true; const [g, u] = b.dataset.acc.split('|'); putuskan(g, u, true); });
+  isi.querySelectorAll('[data-tolak]').forEach(b => b.onclick = () => { b.disabled = true; const [g, u] = b.dataset.tolak.split('|'); putuskan(g, u, false); });
   layar = 'daftar';
   isi.querySelector('#gBuat').onclick = () => bukaBuat();
   const sm = isi.querySelector('#gSemua'); if (sm) sm.onclick = () => bukaSemua();
@@ -83,8 +166,9 @@ function bukaBuat() {
           await L.db.update('', {
             [`grup/${g}`]: { nama, ikon, pemilik: L.uid, t: TS, anggota: { [L.uid]: n } },
             [`grupku/${L.uid}/${g}`]: { nama, ikon, pemilik: L.uid, t: TS, m: 'Grup dibuat', dari: L.uid },
+            [`grupPublik/${g}`]: { nama, ikon, pemilik: L.uid, pn: n, jml: 1, maks: batas().anggota, t: TS },
           });
-          toast(`Grup ${nama} dibuat 🎉 Undang teman-temanmu!`);
+          toast(`Grup ${nama} dibuat 🎉 Tamu lain bisa melihat & minta gabung, atau undang langsung!`, 4200);
           bukaGrup(g, true);
         } catch (e) { console.warn(e); isi.querySelector('#gE').textContent = 'Gagal membuat grup.'; }
       };
@@ -92,7 +176,7 @@ function bukaBuat() {
   });
 }
 
-async function gabung(g) {
+async function gabung(g, otomatis = false) {
   if (!siap()) return;
   const L = K.L, u = undangan[g];
   try {
@@ -100,8 +184,16 @@ async function gabung(g) {
     await L.db.set(`grupku/${L.uid}/${g}`, { nama: bersih(u?.nama, 30) || 'Grup', ikon: u?.ikon || '👥', pemilik: u?.pemilik || '', t: TS, m: 'Kamu bergabung', dari: L.uid });
     await L.db.set(`grupUndangan/${L.uid}/${g}`, null);
     kirim(g, `👋 ${bersih(K.prof.n, 30)} bergabung`, '', true);
-    bukaGrup(g);
+    hitungUlang(g);
+    if (!otomatis || !document.getElementById('kartu').hidden) bukaGrup(g); else toast(`👥 Kamu sudah masuk grup ${bersih(u?.nama, 30)}. Buka 💬 → Grup`, 4200);
   } catch (e) { console.warn(e); toast('Gagal bergabung. Mungkin grupnya sudah dihapus.'); L.db.set(`grupUndangan/${L.uid}/${g}`, null).catch(() => {}); }
+}
+
+// perbarui jumlah anggota di kartu grup publik
+async function hitungUlang(g, kurang = 0) {
+  const L = K.L;
+  const o = await L.db.get('grup/' + g).catch(() => null); if (!o) return;
+  L.db.set(`grupPublik/${g}/jml`, Math.max(0, Object.keys(o.anggota || {}).length - kurang)).catch(() => {});
 }
 
 // ---------------------------------------------------------------- RUANG GRUP
@@ -129,7 +221,7 @@ export function bukaGrup(g, undangLangsung = false) {
       });
       lepasRuang = L.db.on('grupPesan/' + g, o => {
         const msgs = Object.entries(o || {}).sort((a, b) => (a[0] < b[0] ? -1 : 1)).map(([k, v]) => ({ ...v, k })).filter(m => !K.sembunyi.has(m.uid));
-        box.innerHTML = msgs.length ? msgs.map(m => m.sis ? `<p class="kecil sistem">${esc(m.m)}</p>` : `<div class="dm ${m.uid === L.uid ? 'saya' : ''} ${m.st ? 'stikerPesan' : ''}">${m.uid === L.uid ? '' : `<small><b>${esc(bersih(m.n, 30))}</b></small>`}${m.st ? Stiker.html(m.st) : `<span>${esc(m.m)}</span>`}<small>${esc(jam(m.t))}${direktur() && m.uid !== L.uid ? ` · <button type="button" class="tautan" data-hp="${esc(m.k)}">hapus</button>` : ''}</small></div>`).join('')
+        box.innerHTML = msgs.length ? msgs.map(m => m.sis ? `<p class="kecil sistem">${esc(m.m)}</p>` : `<div class="dm ${m.uid === L.uid ? 'saya' : ''} ${m.st ? 'stikerPesan' : ''} ${dirUid(m.uid) ? 'dmDir' : ''}">${dirUid(m.uid) ? '<small class="dirTag">👑 DIREKTUR UTAMA</small>' : m.uid === L.uid ? '' : `<small><b>${esc(bersih(m.n, 30))}</b></small>`}${m.st ? Stiker.html(m.st) : `<span>${esc(m.m)}</span>`}<small>${esc(jam(m.t))}${direktur() && m.uid !== L.uid ? ` · <button type="button" class="tautan" data-hp="${esc(m.k)}">hapus</button>` : ''}</small></div>`).join('')
           : '<p class="kecil">Belum ada pesan. Sapa anggota grup!</p>';
         Stiker.isiGambar(box);
         box.querySelectorAll('[data-hp]').forEach(b => b.onclick = () => L.db.set(`grupPesan/${g}/${b.dataset.hp}`, null).catch(() => toast('Gagal menghapus.')));
@@ -190,13 +282,14 @@ function bukaAnggota(g, o) {
         const n = o.anggota[bt.dataset.kick];
         if (!confirm(`Keluarkan ${n} dari grup?`)) return;
         await L.db.update('', { [`grup/${g}/anggota/${bt.dataset.kick}`]: null, [`grupku/${bt.dataset.kick}/${g}`]: null }).catch(() => toast('Gagal.'));
+        hitungUlang(g);
         kirim(g, `🚪 ${bersih(n, 30)} dikeluarkan dari grup`, '', true);
         bukaAnggota(g, { ...o, anggota: Object.fromEntries(anggota.filter(([u]) => u !== bt.dataset.kick)) });
       });
       const h = isi.querySelector('#aH');
       if (h) h.onclick = async () => {
         if (!confirm('Hapus grup ini beserta semua pesannya?')) return;
-        try { await L.db.update('', { [`grup/${g}`]: null, [`grupPesan/${g}`]: null, [`grupku/${L.uid}/${g}`]: null }); tutupKartu(); toast('Grup dihapus.'); } catch (e) { toast('Gagal menghapus grup.'); }
+        try { await L.db.update('', { [`grupPublik/${g}`]: null, [`grupMinta/${g}`]: null }).catch(() => {}); await L.db.update('', { [`grup/${g}`]: null, [`grupPesan/${g}`]: null, [`grupku/${L.uid}/${g}`]: null }); tutupKartu(); toast('Grup dihapus.'); } catch (e) { toast('Gagal menghapus grup.'); }
       };
     },
   });
@@ -207,6 +300,7 @@ async function keluar(g, o) {
   const L = K.L;
   try {
     await kirim(g, `🚪 ${bersih(K.prof.n, 30)} keluar dari grup`, '', true);
+    await hitungUlang(g, 1);
     await L.db.update('', { [`grup/${g}/anggota/${L.uid}`]: null, [`grupku/${L.uid}/${g}`]: null });
     tutupKartu(); toast('Kamu keluar dari grup.');
   } catch (e) { toast('Gagal keluar grup.'); }

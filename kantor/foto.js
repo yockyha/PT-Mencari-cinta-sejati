@@ -6,10 +6,10 @@
 //   galeriData/<id>         foto ukuran penuh (maks. ±960 px), diunduh saat dibuka
 //   galeriKu/<uid>          waktu unggah terakhir (dibatasi 1 foto / menit oleh aturan Firebase)
 // =====================================================================
-import { LS, bersih, esc, fmt, kasar, sensor } from '../js/common.js?v=202611270824';
-import { TS, kunciBaru } from '../js/db.js?v=202611270824';
-import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611270824';
-import * as Prog from './progres.js?v=202611270824';
+import { LS, bersih, esc, fmt, kasar, sensor } from '../js/common.js?v=202611270848';
+import { TS, kunciBaru } from '../js/db.js?v=202611270848';
+import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611270848';
+import * as Prog from './progres.js?v=202611270848';
 
 const siap = () => { if (!K.resmi()) { toast('👀 Daftar dulu untuk memakai foto.'); K.bukaDaftar(); return false; } if (K.terkunci) { toast('Kamu belum bisa berinteraksi sekarang.'); return false; } return true; };
 const staf = () => !!(K.L && K.peran[K.L.uid]);

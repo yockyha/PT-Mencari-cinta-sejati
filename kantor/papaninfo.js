@@ -5,9 +5,9 @@
 //  lampu LED berjalan, jam WIB, dan teks berjalan di bawah.
 //  Data: papanInfo/<id> { j: judul, m: isi, ik: ikon, w: warna, pin, t }
 // =====================================================================
-import { esc, bersih } from '../js/common.js?v=202611270824';
-import { TS, kunciBaru } from '../js/db.js?v=202611270824';
-import { K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611270824';
+import { esc, bersih } from '../js/common.js?v=202611270848';
+import { TS, kunciBaru } from '../js/db.js?v=202611270848';
+import { K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611270848';
 
 export const TEMA = {
   pink: { nama: 'Pink', c: '#ff4f7b' }, emas: { nama: 'Emas', c: '#ffd23f' }, biru: { nama: 'Biru', c: '#3a9bdc' },
@@ -107,8 +107,10 @@ export function buka(opsi = {}) {
       <label>Warna</label><div class="sw teks" id="piW">${Object.entries(TEMA).map(([k, v], i) => `<button type="button" data-w="${k}" class="${i ? '' : 'on'}" style="border-color:${v.c}">${esc(v.nama)}</button>`).join('')}</div>
       <label class="cek"><input type="checkbox" id="piP"> 📌 Sematkan (selalu tampil paling depan)</label>
       <p class="err" id="piE"></p><div class="baris"><button class="btn" type="button" id="piK">📢 Pasang di papan</button></div></details>` : ''}
+    <small class="dirTag">👑 RESMI DARI DIREKTUR UTAMA</small>
     ${l.length ? `<div class="daftar infoList">${l.map(([id, v]) => `<div style="border-left:6px solid ${(TEMA[v.w] || TEMA.pink).c};padding-left:10px"><span><b>${esc(v.ik || '📢')} ${esc(v.j)}</b>${v.pin ? ' <small>📌</small>' : ''}<br>${esc(v.m || '').replace(/\n/g, '<br>')}<br><small>${esc(tanggalJam(v.t))}</small></span>${d ? `<span class="aksiInfo"><button type="button" class="mini putih" data-pin="${esc(id)}" title="Sematkan / lepas">${v.pin ? '📍 Lepas' : '📌'}</button> <button type="button" class="mini putih" data-hps="${esc(id)}" aria-label="Hapus">🗑</button></span>` : ''}</div>`).join('')}</div>`
       : '<p class="kecil">Belum ada info. Pantau terus ya ✨</p>'}`, {
+    gaya: 'dir',
     pasang(el) {
       if (!d) return;
       let ik = IKON[0], w = 'pink';
