@@ -137,10 +137,10 @@ if (require.main === module) (async () => {
   // ---- 8. Bang Ojol antar pesanan Mbak Ayu ke lobi
   if (ingin('ojol')) {
     await ev(s, () => { const ayu = __kry.semua.find(o => o.id === 'ayu'); ayu.tugas = __kry.KEGIATAN.pesanMakan(ayu); });
-    await kamera(s, 0.6, 18.5, Math.PI + 0.1, 0.2, 9, 1.4);
-    // tunggu kurir muncul & mendekat ke halaman depan
-    for (let k = 0; k < 400; k++) { await maju(s, 100); const z = await s.p.evaluate(() => { const o = __kry.semua.find(o => o.kurir); return o ? o.z : 99; }); if (z < 31) break; }
-    await rekam(s, 'p_ojol', 9, async (i, t) => { await ev(s, ([t]) => { const o = __kry.semua.find(o => o.kurir); if (o) Object.assign(__kantor.kam, { yaw: Math.PI + 0.1 - Math.min(0.5, t * 0.06) }); }, [t]); });
+    await kamera(s, -2.2, 14.6, 0.35, 0.14, 7.5, 1.3);
+    // tunggu kurir muncul & masuk halaman depan, lalu rekam saat ia mendekat ke lobi
+    for (let k = 0; k < 600; k++) { await maju(s, 100); const z = await s.p.evaluate(() => { const o = __kry.semua.find(o => o.kurir); return o ? o.z : 99; }); if (z < 27) break; }
+    await rekam(s, 'p_ojol', 9.5, async (i, t) => { await ev(s, ([t]) => Object.assign(__kantor.kam, { yaw: 0.35 - Math.min(0.35, t * 0.05), jarak: 7.5 - Math.min(2, t * 0.25) }), [t]); });
   }
   // ---- 9. ngobrol berdua dekat pos Kak Laras (lobi barat), lalu tamu muncul → "Eh ada tamu! Sebentar ya 🏃"
   if (ingin('ngobrol')) {
