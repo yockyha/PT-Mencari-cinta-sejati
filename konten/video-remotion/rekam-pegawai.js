@@ -128,8 +128,9 @@ if (require.main === module) (async () => {
   // ---- 7. pintu Ruang Direktur: 2 GUARD, Mbak Citra antar berkas, Mas Ujang antar kopi
   if (ingin('direktur')) {
     await taruh(s, 'citra', 13.2, 14.2); await taruh(s, 'ujang', 12.6, 17.4);
-    await kamera(s, 16.0, 16.0, -Math.PI / 2, 0.18, 6.5, 1.3); await maju(s, 300);
+    await kamera(s, 13.8, 16.0, -Math.PI / 2, 0.16, 5.2, 1.3); await maju(s, 300);
     await rekam(s, 'p_direktur', 5, async (i) => {
+      await ev(s, () => { const K = __kantor; if (Math.hypot(K.saya.x - 13.8, K.saya.z - 16) > 0.05) K.pindah(13.8, 16.0, -Math.PI / 2); K.saya.g.visible = false; if (K.saya.label) K.saya.label.visible = false; Object.assign(K.kam, { yaw: -Math.PI / 2, pitch: 0.16, jarak: 5.2, y: 1.3 }); });
       if (i === 2) await tugas(s, 'citra', `[K.ke(16.3, 15.4), K.tunggu(4, 0, 'Pak/Bu Direktur, ini berkas tamu baru 📁', [20.6, 16])]`);
       if (i === 20) await tugas(s, 'ujang', `[{ fn: o => { o.bawaKini = ''; } }, K.ke(16.3, 16.8), K.tunggu(3, 0, 'Kopinya, Direktur ☕', [20.6, 16])]`);
     });
