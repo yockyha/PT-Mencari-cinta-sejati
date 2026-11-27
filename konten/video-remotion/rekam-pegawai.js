@@ -105,7 +105,7 @@ if (require.main === module) (async () => {
   // ---- 5. Mas Raka antar kopi (nampan) di Kafe Jodoh
   if (ingin('raka')) {
     await kamera(s, 21.5, 2.0, Math.PI, 0.2, 6.5, 1.3); await maju(s, 400);
-    await rekam(s, 'p_raka', 5, async (i) => { if (i === 2) await tugas(s, 'raka', `K.KEGIATAN.antarKopi(o)`); });
+    await rekam(s, 'p_raka', 5, async (i) => { await ev(s, () => { const S = __kantor.saya; S.g.visible = false; if (S.label) S.label.visible = false; }); if (i === 2) await tugas(s, 'raka', `K.KEGIATAN.antarKopi(o)`); });
   }
   // ---- 6. potongan cepat: Kak Nadia, Bang Dimas, Mbak Sari, Mas Bayu (kamera ditambat ke posisi pegawai setelah kegiatannya jalan)
   if (ingin('cepat')) {
