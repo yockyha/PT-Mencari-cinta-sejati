@@ -10,3 +10,7 @@
 - Akun: Instagram **@jodohonline.company**, TikTok **@jodohonline.id**.
 - Data angka (jumlah tamu, dll.) harus data asli dari Firebase (`/anggota` publik); pendaftar yang menunggu ACC hanya bisa dibaca Direktur.
 - VO dibuat pemilik (ElevenLabs akun sendiri) lalu dikirim; waktu adegan dipas ke jeda VO (`silencedetect`).
+
+## Status stok (`video-remotion/public/`)
+- Diperbarui dari situs terbaru 27 Nov 2026: klip `drone`, `jalan`, `r_kafe`, `r_meja`, `r_taman`, `r_lounge`, `loker`, `pintudir` (pintu Ruang Direktur + GUARD); foto `meja`, `karakter`, `tugas`, `toko`, `beranda`.
+- Masih versi LAMA (rekam ulang dulu sebelum dipakai): `direktur.mp4` (perlu sesi sebagai Direktur, karena Direktur hanya tampil saat online), `chat.mp4`, `game.mp4`, `diterima.mp4`, `dash_acc.mp4`, `formulir.mp4`, foto `levelup`, `rapat`, `airmancur`, `halaman`, `formulir`, `direktur.png` (tokoh cover lama).
