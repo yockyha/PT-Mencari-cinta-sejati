@@ -6,6 +6,7 @@ import {BalasKomentar} from '../ig/BalasKomentar';
 import {Browser} from '../ig/Browser';
 import {KotakDm, ObrolanDm} from '../ig/DmIg';
 import {Hitung} from '../ig/Hitung';
+import {KartuKenal} from '../ig/KartuKenal';
 import {KomentarIg} from '../ig/KomentarIg';
 import {ProfilIg} from '../ig/ProfilIg';
 import {TumpukanKomentar} from '../ig/TumpukanKomentar';
@@ -88,6 +89,7 @@ const Elemen = ({l}: {readonly l: Extract<Lapis, {track: 'elemen'}>}) => {
   if (l.jenis === 'kotakdm') return <KotakDm {...p} />;
   if (l.jenis === 'dm') return <ObrolanDm {...p} />;
   if (l.jenis === 'hitung') return <Hitung {...p} />;
+  if (l.jenis === 'kenal') return <KartuKenal {...p} />;
   return <Browser {...p} />;
 };
 

@@ -29,8 +29,8 @@ const uid = (p: string) => p + Math.random().toString(36).slice(2, 8);
 const detik = (f: number, fps: number) => (f / fps).toFixed(1).replace('.', ',') + ' d';
 const jam = (f: number, fps: number) => { const s = f / fps; return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}.${String(Math.floor((s % 1) * 10))}`; };
 
-const LABEL: Record<string, string> = {video: '🎬', foto: '🖼', tanya: '🙋', kotakdm: '📥', dm: '✉️', hitung: '🔢', balas: '💬', profil: '👤', komentar: '🗨', browser: '🌐', sub: 'Aa', judul: 'T', cap: '🔖', stiker: '⭐', chips: '🏷', akun: '@'};
-const NAMA_JENIS: Record<string, string> = {video: 'Klip video', foto: 'Foto', tanya: 'Tumpukan komentar', kotakdm: 'Kotak masuk DM', dm: 'Obrolan DM', hitung: 'Angka berhitung', balas: 'Balasan komentar', profil: 'Profil Instagram', komentar: 'Kolom komentar', browser: 'Browser HP', sub: 'Subtitle', judul: 'Judul', cap: 'Cap', stiker: 'Stiker', chips: 'Chip', akun: 'Nama akun'};
+const LABEL: Record<string, string> = {video: '🎬', foto: '🖼', tanya: '🙋', kotakdm: '📥', dm: '✉️', hitung: '🔢', kenal: '🪪', balas: '💬', profil: '👤', komentar: '🗨', browser: '🌐', sub: 'Aa', judul: 'T', cap: '🔖', stiker: '⭐', chips: '🏷', akun: '@'};
+const NAMA_JENIS: Record<string, string> = {video: 'Klip video', foto: 'Foto', tanya: 'Tumpukan komentar', kotakdm: 'Kotak masuk DM', dm: 'Obrolan DM', hitung: 'Angka berhitung', kenal: 'Kartu perkenalan tokoh', balas: 'Balasan komentar', profil: 'Profil Instagram', komentar: 'Kolom komentar', browser: 'Browser HP', sub: 'Subtitle', judul: 'Judul', cap: 'Cap', stiker: 'Stiker', chips: 'Chip', akun: 'Nama akun'};
 const labelLapis = (l: Lapis) => (l.track === 'teks' ? (l as LapisTeks).teks.replace(/\*/g, '') : l.nama || NAMA_JENIS[l.jenis]);
 
 function ujung(tl: Timeline) {
@@ -315,6 +315,7 @@ function PanelPustaka({pustaka, tl, frame, tambahLapis, tambahSfx, pasangVo, ung
     ['Kotak masuk DM', {track: 'elemen', jenis: 'kotakdm', durasi: 90, masuk: 'none', props: {akun: 'jodohonline.company', pesan: 'penonton1|kak udah di-ACC, terus ngapain? 😭|1m\npenonton2|bingung mau ngapain di kantornya|2m', jeda: 0.5, sensor: true}}],
     ['Obrolan DM', {track: 'elemen', jenis: 'dm', durasi: 120, masuk: 'none', props: {pengguna: 'penonton1', pesan: 'kiri|kak aku udah di-ACC 🥹\nkiri|terus abis join ngapain ya?\nkanan|sini aku jelasin 👇', jeda: 0.8, sensor: true}}],
     ['Angka berhitung (mis. jumlah anggota)', {track: 'elemen', jenis: 'hitung', durasi: 90, masuk: 'none', props: {dari: 0, ke: 119, detik: 1.6, atas: 'baru buka sehari', label: 'orang join 💘', y: 420}}],
+    ['Kartu perkenalan tokoh', {track: 'elemen', jenis: 'kenal', durasi: 60, masuk: 'none', props: {tokoh: 'foto/pegawai-ayu.png', tokoh2: '', nama: 'Mbak Ayu', jabatan: 'Resepsionis', ikon: '💁‍♀️', info: '📞 Angkat telepon\n🛵 Pesen makan online', warna: '#ff4f7b', nomor: '01', judulAtas: 'KENALIN 👋'}}],
     ['Balasan komentar', {track: 'elemen', jenis: 'balas', durasi: 90, masuk: 'none', props: {pengguna: 'penonton', komentar: 'tulis pertanyaan penonton', sensor: true}}],
     ['Profil Instagram + Ikuti', {track: 'elemen', jenis: 'profil', durasi: 75, masuk: 'geser-atas', props: {akun: 'jodohonline.id', nama: 'jodohonline 💘', bio, tautan: 'jodohonline.company', postingan: '1', pengikut: 0, mengikuti: '0', ketukDetik: 1.2, sensor: true}}],
     ['Kolom komentar + ketik', {track: 'elemen', jenis: 'komentar', durasi: 75, props: {komentar: 'akun1|DAFTAR|1m|2\nakun2|DAFTAR|3m|1', ketik: 'DAFTAR', ketikDetik: 0.3, akunSaya: 'kamu', sensor: true}}],
