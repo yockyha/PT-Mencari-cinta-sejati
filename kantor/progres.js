@@ -3,11 +3,11 @@
 //  arah, acara terjadwal, peringkat, toko (EXP & VIP),
 //  dan notifikasi dari Direktur.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611262240';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611262240';
-import * as Musik from './musik.js?v=202611262240';
-import * as Bayar from './bayar.js?v=202611262240';
-import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611262240';
+import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611270821';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611270821';
+import * as Musik from './musik.js?v=202611270821';
+import * as Bayar from './bayar.js?v=202611270821';
+import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611270821';
 
 // ---------------------------------------------------------------- DATA TUGAS
 const RUANG_TUJUAN = { jodoh: 'kafe', teman: 'meja', curhat: 'taman' };
@@ -53,7 +53,7 @@ export const punyaBarang = id => direkturSaya() || !!P.milik[id];
 export const saldoDiamond = () => P.diamond || 0;
 export const daftarDonatur = () => P.donatur || {};
 // Seragam (khusus) hanya untuk perannya: 'staf' → staf & Direktur, 'direktur' → Direktur, 'npc' → karyawan NPC saja
-const bolehKhusus = o => o.khusus === 'staf' ? !!(K.L && K.peran[K.L.uid]) : o.khusus === 'direktur' ? direkturSaya() : false;
+const bolehKhusus = o => direkturSaya() || (o.khusus === 'staf' ? !!(K.L && K.peran[K.L.uid]) : false); // Direktur boleh memakai semua pakaian, termasuk seragam karyawan
 const boleh = o => !!o && (o.khusus ? bolehKhusus(o) : direkturSaya() || (o.dm || o.gacha || o.season ? punyaBarang(o.id) : o.vip ? vipSaya() : level() >= o.lv));
 export const bolehBarang = id => !id || boleh(BARANG[id]);
 // penampilan yang boleh dikirim ke orang lain: barang terkunci diganti bawaan

@@ -10,9 +10,9 @@
 //  (js/common.js) bila perlu tombol pintasan.
 //  Direktur bisa membuka lebih cepat / mengikuti jadwal lewat papan proyek.
 // =====================================================================
-import { esc } from '../js/common.js?v=202611262240';
-import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611262240';
-import * as Musik from './musik.js?v=202611262240';
+import { esc } from '../js/common.js?v=202611270821';
+import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611270821';
+import * as Musik from './musik.js?v=202611270821';
 
 export const GEDUNG = [
   {

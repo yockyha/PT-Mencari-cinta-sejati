@@ -56,6 +56,7 @@ Semua musik & suara disintesis langsung di browser (`kantor/musik.js`, Web Audio
 ### 👑 Pembeda Direktur
 - Label di atas kepala bertulisan **kuning emas** berbingkai emas + baris "★ DIREKTUR UTAMA ★", lebih besar dari label lain
 - Gelembung chat & baris chat berwarna emas, cincin emas di kaki, jas hitam berdasi
+- Bebas memakai **semua pakaian** (pria/wanita, seragam karyawan, barang VIP/Diamond/Season) + tab **👑 Setelan** berisi 21 setelan satu set khusus Direktur (`SETELAN_DIR` di `js/pakaian.js`): jas formal (hitam, emas, putih, tuxedo, navy, pinstripe, maroon, zamrud, pink, krem), santai sultan (golf, kapten kapal pesiar, linen resor, turtleneck, kasmir, jaket kulit Italia, klub tenis, batik sultan) & gaun malam (emas, putih, merah). Pilih "🧩 Outfit bebas" untuk pakaian biasa
 - Selalu diikuti **1 pengawal 🕶️ GUARD** berjas hitam kekar di belakangnya (terlihat semua orang)
 - Kedatangan diumumkan ke semua tamu, karyawan menyapa, akses Panel Kuasa & suite Direktur
 

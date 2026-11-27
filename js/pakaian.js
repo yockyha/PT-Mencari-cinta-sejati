@@ -135,11 +135,49 @@ const LAMA_A = [null, ['mt', 'kacamata'], ['kp', 'topi'], ['kp', 'pita'], ['tl',
 const int = (v, n, d = 0) => (Number.isInteger(v) && v >= 0 && v < n ? v : d);
 const KOSONG = { kp: '', mt: '', tl: '', lh: '', tg: '', ef: '', pt: '' };
 
+// =====================================================================
+//  SETELAN DIREKTUR: satu set lengkap (atasan + bawahan + sepatu + detail), khusus Direktur.
+//  look.dx = id setelan · '' = setelan bawaan (klasik) · 'bebas' = pakai pakaian biasa.
+//  cA/cB/cS = warna atasan/bawahan/sepatu · cK kemeja · cL kerah · dasi: panjang|kupu|tanpa · cD warna dasi
+//  kancing emas · saku (sapu tangan) · garis (pinstripe) · kilau (berkilau) · turtle (kerah tinggi)
+//  bahu (sweater diikat di bahu) · rantai (kalung emas) · bwP (bawahan versi wanita) · g:'p' khusus karakter wanita
+// =====================================================================
+export const SETELAN_DIR = [
+  // ---- Jas formal
+  { id: 'klasik', nama: 'Jas Hitam Klasik', kat: '🎩 Jas Formal', at: 'jasDir', cA: '#1a1a22', cK: '#ffffff', dasi: 'panjang', cD: '#d4a017', cB: '#1a1a22', bw: 'bahan', sp: 'pantofel', kancing: 1 },
+  { id: 'emas', nama: 'Setelan Emas Kerajaan', kat: '🎩 Jas Formal', at: 'jasDir', cA: '#d4a017', kilau: 1, cL: '#ffe27a', cK: '#1a1a22', dasi: 'kupu', cD: '#ffe27a', cB: '#b8890f', bw: 'bahan', bwP: 'rokPanjang', sp: 'sepatuEmas', rantai: 1 },
+  { id: 'putih', nama: 'Setelan Putih Elegan', kat: '🎩 Jas Formal', at: 'jasDir', cA: '#f5f3ee', cL: '#e6dfd2', cK: '#ffffff', dasi: 'kupu', cD: '#1a1a22', cB: '#f5f3ee', bw: 'bahan', bwP: 'rokPanjang', sp: 'pantofel', cS: '#f2f2f2', saku: '#d4a017' },
+  { id: 'tuxedo', nama: 'Tuxedo Gala', kat: '🎩 Jas Formal', at: 'jasDir', cA: '#111114', cL: '#34343f', cK: '#ffffff', dasi: 'kupu', cD: '#111114', cB: '#111114', bw: 'bahan', sp: 'pantofel', saku: '#ffffff' },
+  { id: 'navy', nama: 'Navy Eksekutif', kat: '🎩 Jas Formal', at: 'jasDir', cA: '#1d2b4a', cK: '#ffffff', dasi: 'panjang', cD: '#b5232f', cB: '#1d2b4a', bw: 'bahan', sp: 'pantofel', cS: '#5a3a22', saku: '#b5232f' },
+  { id: 'pinstripe', nama: 'Pinstripe Wall Street', kat: '🎩 Jas Formal', at: 'jasDir', cA: '#454a54', garis: '#9aa0ab', cK: '#dbe9ff', dasi: 'panjang', cD: '#3a6ea5', cB: '#454a54', bw: 'bahan', sp: 'pantofel' },
+  { id: 'maroon', nama: 'Beludru Maroon', kat: '🎩 Jas Formal', at: 'jasDir', cA: '#6b1530', cL: '#1a1a22', cK: '#1a1a22', dasi: 'tanpa', cB: '#1a1a22', bw: 'bahan', sp: 'pantofel', saku: '#d4a017', rantai: 1 },
+  { id: 'zamrud', nama: 'Zamrud Mewah', kat: '🎩 Jas Formal', at: 'jasDir', cA: '#0f5132', cK: '#ffffff', dasi: 'kupu', cD: '#d4a017', cB: '#0f5132', bw: 'bahan', sp: 'pantofel', kancing: 1 },
+  { id: 'pinkCinta', nama: 'Setelan Pink Cinta', kat: '🎩 Jas Formal', at: 'jasDir', cA: '#ff4f7b', cK: '#ffffff', dasi: 'panjang', cD: '#ffffff', cB: '#ffffff', bw: 'bahan', bwP: 'rokPanjang', sp: 'pantofel', cS: '#ffffff' },
+  { id: 'krem', nama: 'Krem Musim Panas', kat: '🎩 Jas Formal', at: 'jasDir', cA: '#e8d5b5', cK: '#ffffff', dasi: 'panjang', cD: '#8a5a2b', cB: '#e8d5b5', bw: 'bahan', sp: 'pantofel', cS: '#6b4630', mt: 'hitam' },
+  // ---- Santai ala orang kaya
+  { id: 'golf', nama: 'Golf Sultan', kat: '🛥️ Santai Sultan', at: 'polo', cA: '#f7f3ee', bahu: '#1d3557', cB: '#e8d5b5', bw: 'chino', sp: 'pantofel', cS: '#6b4630', mt: 'hitam', tg: 'jam' },
+  { id: 'kapten', nama: 'Kapten Kapal Pesiar', kat: '🛥️ Santai Sultan', at: 'blazer', cA: '#1d2b4a', kancing: 1, cK: '#ffffff', dasi: 'tanpa', cB: '#f5f3ee', bw: 'chino', sp: 'pantofel', cS: '#6b4630', mt: 'hitam' },
+  { id: 'resor', nama: 'Resor Linen Bali', kat: '🛥️ Santai Sultan', at: 'kemeja', cA: '#f3ead8', cB: '#ffffff', bw: 'chino', sp: 'pantofel', cS: '#b08d57', mt: 'hitam', rantai: 1 },
+  { id: 'turtleneck', nama: 'Turtleneck Miliarder', kat: '🛥️ Santai Sultan', at: 'blazer', cA: '#b08d57', turtle: '#1a1a22', cK: '#1a1a22', dasi: 'tanpa', cB: '#1a1a22', bw: 'bahan', sp: 'pantofel', tg: 'jam' },
+  { id: 'kasmir', nama: 'Sweater Kasmir', kat: '🛥️ Santai Sultan', at: 'sweater', cA: '#e8d5b5', turtle: '#ffffff', cB: '#4a4e57', bw: 'chino', sp: 'pantofel', cS: '#6b4630', tg: 'jam' },
+  { id: 'italia', nama: 'Jaket Kulit Italia', kat: '🛥️ Santai Sultan', at: 'kulit', cA: '#5a3a22', cB: '#2b2d42', bw: 'jeans', sp: 'boots', mt: 'hitam', rantai: 1 },
+  { id: 'tenis', nama: 'Klub Tenis', kat: '🛥️ Santai Sultan', at: 'polo', cA: '#ffffff', bahu: '#2f9e6e', cB: '#ffffff', bw: 'pendek', sp: 'sneakers', mt: 'hitam' },
+  { id: 'batikSultan', nama: 'Batik Sultan', kat: '🛥️ Santai Sultan', at: 'batik', cA: '#6b3f22', cB: '#1a1a22', bw: 'bahan', sp: 'pantofel', rantai: 1 },
+  // ---- Gaun malam (karakter wanita)
+  { id: 'gaunEmas', nama: 'Gaun Malam Emas', kat: '👗 Gaun Malam', g: 'p', at: 'gaun', cA: '#d4a017', kilau: 1, sp: 'heels', cS: '#d4a017', rantai: 1 },
+  { id: 'gaunPutih', nama: 'Gaun Putih Gala', kat: '👗 Gaun Malam', g: 'p', at: 'gaun', cA: '#f5f3ee', sp: 'heels', cS: '#f2f2f2', tl: 'antingMutiara' },
+  { id: 'gaunMerah', nama: 'Gaun Karpet Merah', kat: '👗 Gaun Malam', g: 'p', at: 'gaun', cA: '#b5232f', sp: 'heels', cS: '#1a1a22', rantai: 1 },
+];
+export const SETELAN_DIR_ID = Object.fromEntries(SETELAN_DIR.map(s => [s.id, s]));
+// setelan yang berlaku untuk penampilan Direktur (null = pakaian biasa)
+export const setelanDir = l => (l && l.dx === 'bebas' ? null : SETELAN_DIR_ID[(l && l.dx) || 'klasik'] || SETELAN_DIR_ID.klasik);
+
 export function lookV2(l, gender = '') {
   l = l && typeof l === 'object' ? l : {};
   if (l.v === 2) {
     const o = { v: 2, s: l.s === 'p' ? 'p' : 'l', k: int(l.k, KULIT.length), r: int(l.r, RAMBUT.length), w: int(l.w, WARNA_RAMBUT.length), wa: int(l.wa, WARNA_BAJU.length), wb: int(l.wb, WARNA_CELANA.length) };
     for (const s of ['at', 'bw', 'sp', ...SLOT_AKS]) { const it = BARANG[l[s]]; o[s] = it && it.slot === s ? it.id : ''; }
+    if (l.dx === 'bebas' || SETELAN_DIR.some(x => x.id === l.dx)) o.dx = l.dx; // setelan Direktur
     if (!o.at) o.at = 'kaos'; if (!o.bw) o.bw = 'chino'; if (!o.sp) o.sp = 'sneakers';
     return o;
   }

@@ -3,10 +3,10 @@
 //  Lomba Makan Kerupuk, Raja/Ratu Hati mingguan, Kuis "Seberapa Kenal Kamu?",
 //  Lempar Bunga, dan Peluk (harus disetujui dua-duanya).
 // =====================================================================
-import { LS, bersih, esc, fmt, hariIni } from '../js/common.js?v=202611262240';
-import { TS } from '../js/db.js?v=202611262240';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog } from './ui.js?v=202611262240';
-import * as Prog from './progres.js?v=202611262240';
+import { LS, bersih, esc, fmt, hariIni } from '../js/common.js?v=202611270821';
+import { TS } from '../js/db.js?v=202611270821';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog } from './ui.js?v=202611270821';
+import * as Prog from './progres.js?v=202611270821';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const kocok = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };

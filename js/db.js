@@ -5,7 +5,7 @@
 //     tab-tab di browser yang sama saling tersambung lewat BroadcastChannel.
 //  Antarmuka: uid, mode, now(), set(), update(), push(), get(), on(), hapusSaatPutus()
 // =====================================================================
-import { CFG, LS, emailDari } from './common.js?v=202611262240';
+import { CFG, LS, emailDari } from './common.js?v=202611270821';
 
 export const TS = { '.sv': 'timestamp' };
 const FBV = '10.14.1';
