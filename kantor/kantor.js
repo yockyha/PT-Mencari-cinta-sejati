@@ -3,30 +3,30 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611262240';
-import { bukaDB } from '../js/db.js?v=202611262240';
-import { buatLayanan } from '../js/layanan.js?v=202611262240';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611262240';
-import * as Sosial from './sosial.js?v=202611262240';
-import * as Direktur from './direktur.js?v=202611262240';
-import * as Prog from './progres.js?v=202611262240';
-import * as Game from './game.js?v=202611262240';
-import * as Bayar from './bayar.js?v=202611262240';
-import * as Meja from './meja.js?v=202611262240';
-import * as Karyawan from './karyawan.js?v=202611262240';
-import * as Hadir from './hadir.js?v=202611262240';
-import * as Foto from './foto.js?v=202611262240';
-import * as Seru from './seru.js?v=202611262240';
-import * as Speed from './speeddating.js?v=202611262240';
-import * as Aktivitas from './aktivitas.js?v=202611262240';
-import * as Komunitas from './komunitas.js?v=202611262240';
-import * as RuangDir from './ruangdir.js?v=202611262240';
-import * as Gedung from './gedung.js?v=202611262240';
-import * as PapanInfo from './papaninfo.js?v=202611262240';
-import * as Musik from './musik.js?v=202611262240';
-import * as Suara from './suara.js?v=202611262240';
-import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611262240';
-import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2 } from '../js/pakaian.js?v=202611262240';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611270824';
+import { bukaDB } from '../js/db.js?v=202611270824';
+import { buatLayanan } from '../js/layanan.js?v=202611270824';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611270824';
+import * as Sosial from './sosial.js?v=202611270824';
+import * as Direktur from './direktur.js?v=202611270824';
+import * as Prog from './progres.js?v=202611270824';
+import * as Game from './game.js?v=202611270824';
+import * as Bayar from './bayar.js?v=202611270824';
+import * as Meja from './meja.js?v=202611270824';
+import * as Karyawan from './karyawan.js?v=202611270824';
+import * as Hadir from './hadir.js?v=202611270824';
+import * as Foto from './foto.js?v=202611270824';
+import * as Seru from './seru.js?v=202611270824';
+import * as Speed from './speeddating.js?v=202611270824';
+import * as Aktivitas from './aktivitas.js?v=202611270824';
+import * as Komunitas from './komunitas.js?v=202611270824';
+import * as RuangDir from './ruangdir.js?v=202611270824';
+import * as Gedung from './gedung.js?v=202611270824';
+import * as PapanInfo from './papaninfo.js?v=202611270824';
+import * as Musik from './musik.js?v=202611270824';
+import * as Suara from './suara.js?v=202611270824';
+import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611270824';
+import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2, SETELAN_DIR, setelanDir } from '../js/pakaian.js?v=202611270824';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
@@ -885,6 +885,13 @@ function geser(p) {
 const saya = { x: 0, z: 23, r: Math.PI, a: 0, duduk: null, g: null, label: null, gel: null, gelT: 0, look: null };
 let prof = profil();
 
+// Nama tampilan Direktur selalu dari config.js (namaDirektur), apa pun nama di profil
+function pakaiNamaDirektur() {
+  const n = bersih(CFG.namaDirektur || '', 20);
+  if (!n || !L || K.peran[L.uid] !== 'direktur' || !prof || prof.n === n) return;
+  prof.n = n; simpanProfil(prof); posWaktu = 0;
+  if (saya.g) pasangKarakterSaya();
+}
 function pasangKarakterSaya() {
   const lama = saya.g;
   saya.look = lookV2(prof?.look || lookAcakV2(Math.floor(Math.random() * 1e6), prof?.g === 'co' ? 'l' : prof?.g === 'ce' ? 'p' : ''), prof?.g);
@@ -1397,10 +1404,11 @@ function bukaLoker() {
   if (lokasiDi(saya.x, saya.z) === 'loker') { berdiri(); saya.r = Math.PI / 2; }
   kam.yaw = saya.r + Math.PI; kam.pitch = 0.12; kam.jarak = 4.2; kam.y = innerWidth < 900 ? 0.6 : 1.1;
   const dir = K.peran[L.uid] === 'direktur', staf = !!K.peran[L.uid];
-  const TAB = [['at', '👕 Atasan'], ['bw', '👖 Bawahan'], ['sp', '👟 Sepatu'], ['aks', '🎀 Aksesoris'], ['rmb', '💇 Rambut & Kulit'], ['wrn', '🎨 Warna']];
+  const TAB = [...(dir ? [['set', '👑 Setelan']] : []), ['at', '👕 Atasan'], ['bw', '👖 Bawahan'], ['sp', '👟 Sepatu'], ['aks', '🎀 Aksesoris'], ['rmb', '💇 Rambut & Kulit'], ['wrn', '🎨 Warna']];
   const AWAL = { at: 'kaos', bw: 'chino', sp: 'sneakers' };
-  let tab = 'at';
-  const cocok = x => (x.g === 'u' || x.g === saya.look.s) && (!x.khusus || (x.khusus === 'staf' && staf) || (x.khusus === 'direktur' && dir));
+  let tab = dir ? 'set' : 'at';
+  // Direktur: semua pakaian (pria & wanita, seragam karyawan, barang khusus) terbuka
+  const cocok = x => dir || ((x.g === 'u' || x.g === saya.look.s) && (!x.khusus || (x.khusus === 'staf' && staf)));
   const syarat = x => x.khusus ? (x.khusus === 'direktur' ? '👑' : '🪪') : x.season ? '🎟️' : x.gacha ? '🎁' : x.dm ? '💠' + x.dm : x.vip ? '💎' : x.lv > 1 ? 'Lv' + x.lv : '';
   const tombol = x => {
     const kunci = !Prog.bolehBarang(x.id), on = saya.look[x.slot] === x.id;
@@ -1413,12 +1421,19 @@ function bukaLoker() {
   const swatch = (k, daftar, label) => `<div class="sw">${daftar.map((w, i) => `<button type="button" data-w="${k}" data-i="${i}" class="${saya.look[k] === i ? 'on' : ''}" style="background:${w}" aria-label="${label} ${i + 1}"></button>`).join('')}</div>`;
   const isiTab = () => {
     const at = BARANG[saya.look.at] || {};
+    if (tab === 'set') {
+      const kini = setelanDir(saya.look), kat = [...new Set(SETELAN_DIR.map(s => s.kat))];
+      return `<p class="kecil">👑 Setelan khusus Direktur, satu set lengkap (atasan, bawahan, sepatu & detail). Aksesoris lain tetap bisa ditambah dari tab 🎀.</p>
+        <div class="sw teks"><button type="button" data-set="bebas" class="${kini ? '' : 'on'}">🧩 Outfit bebas <small>pakai pakaian biasa</small></button></div>
+        ${kat.map(k => `<h4>${esc(k)}</h4><div class="sw teks">${SETELAN_DIR.filter(s => s.kat === k && (!s.g || s.g === saya.look.s)).map(s => `<button type="button" data-set="${s.id}" class="${kini && kini.id === s.id ? 'on' : ''}"><span class="titikWarna" style="background:${s.cA}"></span>${esc(s.nama)}</button>`).join('')}</div>`).join('')}
+        ${saya.look.s === 'p' ? '' : '<p class="kecil">👗 Gaun malam muncul kalau karakter diubah ke 👩 Wanita.</p>'}`;
+    }
     if (tab === 'aks') return SLOT_AKS.map(s => `<h4>${SLOT[s].ikon} ${SLOT[s].nama}</h4><div class="sw teks"><button type="button" data-kosong="${s}" class="${saya.look[s] ? '' : 'on'}">Tanpa</button>${PAKAIAN.filter(x => x.slot === s && cocok(x)).map(tombol).join('')}</div>`).join('');
     if (tab === 'rmb') return `<h4>Gaya rambut</h4><div class="sw teks">${RAMBUT.map((r, i) => `<button type="button" data-w="r" data-i="${i}" class="${saya.look.r === i ? 'on' : ''}">${esc(r)}</button>`).join('')}</div>
       <h4>Warna rambut</h4>${swatch('w', WARNA_RAMBUT, 'Warna rambut')}<h4>Warna kulit</h4>${swatch('k', KULIT, 'Warna kulit')}`;
     if (tab === 'wrn') return `<h4>Warna atasan ${at.warna ? '' : '<small class="kecil">(atasan ini warnanya tetap)</small>'}</h4>${swatch('wa', WARNA_BAJU, 'Warna atasan')}
       <h4>Warna bawahan</h4>${swatch('wb', WARNA_CELANA, 'Warna bawahan')}<p class="kecil">Warna atasan juga dipakai untuk hijab & kupluk.</p>`;
-    return (dir && ['at', 'bw', 'sp'].includes(tab) ? '<p class="kecil">👑 Sebagai Direktur kamu selalu tampil dengan <b>Jas Direktur, celana bahan & pantofel</b>. Pilihan di sini tersimpan untuk nanti; aksesoris tetap bebas.</p>' : '')
+    return (dir && ['at', 'bw', 'sp'].includes(tab) && setelanDir(saya.look) ? `<p class="kecil">👑 Sekarang kamu memakai setelan <b>${esc(setelanDir(saya.look).nama)}</b>. Pilih pakaian di bawah untuk beralih ke outfit bebas.</p>` : '')
       + (tab === 'bw' && at.gaun ? '<p class="kecil">👗 Dress yang kamu pakai menutupi bawahan.</p>' : '') + grupJenis(tab);
   };
   bukaKartu(`<h2>Ruang Loker 👔 <small class="kecil">Level ${Prog.level()}</small></h2>
@@ -1444,9 +1459,13 @@ function bukaLoker() {
             toast(x.vip ? `${x.nama} khusus VIP & VVIP 💎` : `${x.nama} terbuka di Level ${x.lv}. Kumpulkan EXP dari tugas & acara, atau beli EXP di Toko.`, 3600);
             return;
           }
+          if (dir && ['at', 'bw', 'sp'].includes(x.slot) && setelanDir(saya.look)) { // pakai pakaian biasa: lepas setelan, mulai dari setelan yang sedang dipakai
+            const sd = setelanDir(saya.look); Object.assign(saya.look, { at: BARANG[sd.at] ? sd.at : saya.look.at, bw: sd.bw && BARANG[sd.bw] ? sd.bw : saya.look.bw, sp: sd.sp, dx: 'bebas' });
+          }
           saya.look[x.slot] = SLOT_AKS.includes(x.slot) && saya.look[x.slot] === x.id ? '' : x.id;
           pasangUlang(); gambar();
         });
+        P.querySelectorAll('[data-set]').forEach(b => b.onclick = () => { saya.look.dx = b.dataset.set; pasangUlang(); gambar(); Musik.sfx('pesan'); });
         P.querySelectorAll('[data-kosong]').forEach(b => b.onclick = () => { saya.look[b.dataset.kosong] = ''; pasangUlang(); gambar(); });
         P.querySelectorAll('[data-w]').forEach(b => b.onclick = () => { saya.look[b.dataset.w] = +b.dataset.i; pasangUlang(); gambar(); });
       };
@@ -1457,7 +1476,7 @@ function bukaLoker() {
         for (const slot of Object.keys(SLOT)) { const x = BARANG[saya.look[slot]]; if (x && x.g !== 'u' && x.g !== s) saya.look[slot] = AWAL[slot] || ''; }
         pasangUlang(); gambar();
       });
-      isi.querySelector('#lA').onclick = () => { saya.look = lookAcakV2(Math.floor(Math.random() * 1e7), saya.look.s); pasangUlang(); gambar(); };
+      isi.querySelector('#lA').onclick = () => { saya.look = lookAcakV2(Math.floor(Math.random() * 1e7), saya.look.s); if (dir) saya.look.dx = acak(SETELAN_DIR.filter(s => !s.g || s.g === saya.look.s)).id; pasangUlang(); gambar(); };
       isi.querySelector('#lS').onclick = () => { simpanProfil(prof); lama.simpan = true; posWaktu = 0; tutupKartu(); toast('Penampilan baru tersimpan ✨'); Prog.lapor('tur_loker'); };
       gambar();
     },
@@ -2091,7 +2110,7 @@ async function mulai() {
     const l = Object.values(o || {}).filter(k => k && k.n).map(k => ({ ...k, n: bersih(k.n, 20), ig: igBersih(k.ig), tj: tujuanAman(k.tj) }));
     K.tamu = l.sort((a, b) => (a.t || 0) - (b.t || 0)); dindingKV.ulang();
   });
-  db.on('peran', o => { K.peran = o || {}; Direktur.perbaruiPeran(); terapkanAkses(); K.segarkanOrang(); cekTirai(); Hadir.perbaruiPeran(); });
+  db.on('peran', o => { K.peran = o || {}; pakaiNamaDirektur(); Direktur.perbaruiPeran(); terapkanAkses(); K.segarkanOrang(); cekTirai(); Hadir.perbaruiPeran(); });
   db.on('anggota/' + L.uid, o => { K.anggotaSaya = o; terapkanAkses(); });
   db.on('pendaftaran/' + L.uid, o => { K.daftarku = o; perbaruiTombolProfil(); Prog.segarArah(); });
   db.on('mading', o => { const m = Array.isArray(o) ? o : (o ? Object.values(o) : null); K.mading = m && m.length ? m.filter(Boolean) : null; teksMading.ulang(); });

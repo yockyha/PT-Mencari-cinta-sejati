@@ -56,6 +56,7 @@ Semua musik & suara disintesis langsung di browser (`kantor/musik.js`, Web Audio
 ### 👑 Pembeda Direktur
 - Label di atas kepala bertulisan **kuning emas** berbingkai emas + baris "★ DIREKTUR UTAMA ★", lebih besar dari label lain
 - Gelembung chat & baris chat berwarna emas, cincin emas di kaki, jas hitam berdasi
+- Bebas memakai **semua pakaian** (pria/wanita, seragam karyawan, barang VIP/Diamond/Season) + tab **👑 Setelan** berisi 21 setelan satu set khusus Direktur (`SETELAN_DIR` di `js/pakaian.js`): jas formal (hitam, emas, putih, tuxedo, navy, pinstripe, maroon, zamrud, pink, krem), santai sultan (golf, kapten kapal pesiar, linen resor, turtleneck, kasmir, jaket kulit Italia, klub tenis, batik sultan) & gaun malam (emas, putih, merah). Pilih "🧩 Outfit bebas" untuk pakaian biasa
 - Selalu diikuti **1 pengawal 🕶️ GUARD** berjas hitam kekar di belakangnya (terlihat semua orang)
 - Kedatangan diumumkan ke semua tamu, karyawan menyapa, akses Panel Kuasa & suite Direktur
 
@@ -213,10 +214,10 @@ Selama `firebase: null` di `config.js`, situs berjalan dalam **mode lokal**:
 
 ### Menjadikan dirimu Direktur (sekali saja)
 
-1. Firebase Console → **Authentication → Users → Add user**: email `<username>@ptmcs.id` (domain sesuai `domainLogin` di `config.js`, contoh `yocky@ptmcs.id`) dan kata sandi.
+1. Firebase Console → **Authentication → Users → Add user**: email `<username>@ptmcs.id` (domain sesuai `domainLogin` di `config.js`, contoh `direktur@ptmcs.id`) dan kata sandi.
 2. Salin **User UID** akun itu.
 3. **Realtime Database → Data**: tambahkan node `peran`, lalu di dalamnya kunci `<User UID>` dengan nilai `"direktur"` (pakai tanda kutip).
-4. Buka `/dashboard/` → login dengan username `yocky` + kata sandi tadi. Dari dashboard, tekan **🏢 Masuk kantor** untuk masuk sebagai Direktur.
+4. Buka `/dashboard/` → login dengan username akunmu (mis. `direktur`) + kata sandi tadi. Dari dashboard, tekan **🏢 Masuk kantor** untuk masuk sebagai Direktur.
 
 Di dalam kantor, tombol **👑 Panel** juga tersedia untuk kendali cepat. Staf diangkat dari Panel → Pengunjung → Tindak → *Angkat jadi Staf*.
 

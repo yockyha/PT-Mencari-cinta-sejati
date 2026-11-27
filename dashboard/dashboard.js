@@ -3,9 +3,9 @@
 //  Login username + kata sandi → ringkasan, persetujuan pendaftar,
 //  anggota, online, aktivitas, acara, toko, laporan, siaran & data.
 // =====================================================================
-import { CFG, LS, TUJUAN, LOKASI, GENDER, BARANG_DIAMOND, IKON_DM, esc, fmt, bersih, levelDari, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611262240';
-import { bukaDB } from '../js/db.js?v=202611262240';
-import { buatLayanan } from '../js/layanan.js?v=202611262240';
+import { CFG, LS, TUJUAN, LOKASI, GENDER, BARANG_DIAMOND, IKON_DM, esc, fmt, bersih, levelDari, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611270824';
+import { bukaDB } from '../js/db.js?v=202611270824';
+import { buatLayanan } from '../js/layanan.js?v=202611270824';
 
 const $ = id => document.getElementById(id);
 let db = null, L = null;
@@ -47,7 +47,7 @@ const METODE = { otomatis: '⚡ Otomatis', qris: 'QRIS', bca: 'BCA', bri: 'BRI',
   db = await bukaDB({ anonim: false, akun: 'direktur' });
   $('lInfo').innerHTML = db.mode === 'lokal'
     ? `<b>Mode lokal (demo).</b> Login memakai <code>direkturDemo</code> di <code>config.js</code>${CFG.direkturDemo ? ` (username <code>${esc(CFG.direkturDemo.username)}</code>)` : ''}. Data hanya tersimpan di browser ini.`
-    : `Username = bagian depan email akun Direktur di Firebase Authentication (contoh <code>yocky</code> untuk <code>yocky@${esc(CFG.domainLogin)}</code>), atau ketik email lengkap.`;
+    : `Username = bagian depan email akun Direktur di Firebase Authentication (contoh <code>direktur</code> untuk <code>direktur@${esc(CFG.domainLogin)}</code>), atau ketik email lengkap.`;
   if (db.masukDashboard && db.uid && (await db.get('peran/' + db.uid).catch(() => null)) === 'direktur') { if (db.mode === 'online') LS.set('adaDirektur', true); return masukApp(); }
   tampilLogin();
 })().catch(e => { console.error(e); document.body.innerHTML = '<p style="padding:24px">Dashboard gagal dimuat. Coba muat ulang.</p>'; });

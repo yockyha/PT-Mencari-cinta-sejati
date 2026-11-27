@@ -6,11 +6,11 @@
 //   - efek untuk semua orang (hujan hati, kembang api, hujan bunga,
 //     undangan berkumpul) yang hanya bisa dipicu Direktur
 // =====================================================================
-import { LOKASI, LS, bersih, esc, fmt } from '../js/common.js?v=202611262240';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog } from './ui.js?v=202611262240';
-import * as Musik from './musik.js?v=202611262240';
-import * as Prog from './progres.js?v=202611262240';
-import * as Karyawan from './karyawan.js?v=202611262240';
+import { LOKASI, LS, bersih, esc, fmt } from '../js/common.js?v=202611270824';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog } from './ui.js?v=202611270824';
+import * as Musik from './musik.js?v=202611270824';
+import * as Prog from './progres.js?v=202611270824';
+import * as Karyawan from './karyawan.js?v=202611270824';
 
 export const SAPA = {
   halo: { ikon: '👋', teks: 'Halo, Direktur!' },
@@ -29,7 +29,7 @@ const EFEK = {
 
 const saya = () => K.L && K.L.uid;
 const sayaDirektur = () => K.L && K.peran[K.L.uid] === 'direktur';
-// "Direktur Yocky"; kalau namanya sudah mengandung kata Direktur, tidak diulang
+// "Direktur Bapak Y.H.A"; kalau namanya sudah mengandung kata Direktur, tidak diulang
 const namaDir = o => (o && o.nama) || '';
 const sebut = o => { const n = namaDir(o); return /direktur/i.test(n) ? n : ('Direktur ' + n).trim(); };
 let awal = true, dirLama = new Set(), tamuLama = new Set(), efekLihat = 0, sapaLihat = {}, lepasSapa = null, mulaiT = Date.now();
