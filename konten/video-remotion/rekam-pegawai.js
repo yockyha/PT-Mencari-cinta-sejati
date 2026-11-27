@@ -41,7 +41,7 @@ async function sesi(b) {
   return s;
 }
 // kamera: pemain disembunyikan di titik (x,z); kamera mengorbit pemain
-const kamera = (s, x, z, yaw, pitch, jarak, y = 1.4) => ev(s, ([x, z, yaw, pitch, jarak, y]) => { const K = __kantor; K.pindah(x, z, yaw); K.saya.g.visible = false; Object.assign(K.kam, { yaw, pitch, jarak, y }); }, [x, z, yaw, pitch, jarak, y]);
+const kamera = (s, x, z, yaw, pitch, jarak, y = 1.4) => ev(s, ([x, z, yaw, pitch, jarak, y]) => { const K = __kantor; K.pindah(x, z, yaw); K.saya.g.visible = false; if (K.saya.label) K.saya.label.visible = false; Object.assign(K.kam, { yaw, pitch, jarak, y }); }, [x, z, yaw, pitch, jarak, y]);
 // pegawai ke titik tertentu seketika
 const taruh = (s, id, x, z, r) => ev(s, ([id, x, z, r]) => { const o = __kry.semua.find(o => o.id === id); if (!o) return; if (o.kursi) { o.kursi.oleh = null; o.kursi = null; } o.x = x; o.z = z; if (r != null) o.r = r; }, [id, x, z, r]);
 // beri tugas (daftar langkah dari fungsi kegiatan atau buatan sendiri)
@@ -96,16 +96,15 @@ if (require.main === module) (async () => {
   }
   // ---- 4. Bu Wati ngepel (+ rambu basah) & Mas Ujang nyapu
   if (ingin('ob')) {
-    await taruh(s, 'wati', -2.2, 13.2, 0.4); await taruh(s, 'ujang', 3.4, 12.2, -0.6);
-    await kamera(s, 0.6, 12.6, Math.PI - 0.1, 0.3, 6.2); await maju(s, 400);
-    await rekam(s, 'p_ob', 5, async (i) => {
-      if (i === 2) { await tugas(s, 'wati', `[{ fn: o => K.D.rambuBasah(o.x + 0.9, o.z + 0.3, 14) }, K.tunggu(9, 3, 'Awas licin ya! 🧽')]`); }
-      if (i === 30) await tugas(s, 'ujang', `[K.tunggu(8, 3, 'Sapu dulu biar bersih 🧹')]`);
-    });
+    await taruh(s, 'wati', -1.7, 13.4, Math.PI); await taruh(s, 'ujang', 1.7, 13.0, Math.PI);
+    await tugas(s, 'wati', `[{ fn: o => K.D.rambuBasah(o.x + 0.9, o.z - 0.6, 14) }, K.tunggu(12, 3, 'Awas licin ya! 🧽')]`);
+    await tugas(s, 'ujang', `[K.tunggu(2.2, 3, ''), K.tunggu(10, 3, 'Sapu dulu biar bersih 🧹')]`);
+    await kamera(s, 0, 13.2, Math.PI, 0.2, 7.2, 1.3); await maju(s, 300);
+    await rekam(s, 'p_ob', 5);
   }
   // ---- 5. Mas Raka antar kopi (nampan) di Kafe Jodoh
   if (ingin('raka')) {
-    await kamera(s, 18.8, 0.8, Math.PI / 2 + 0.6, 0.25, 6.5); await maju(s, 400);
+    await kamera(s, 21.5, 2.0, Math.PI, 0.2, 6.5, 1.3); await maju(s, 400);
     await rekam(s, 'p_raka', 5, async (i) => { if (i === 2) await tugas(s, 'raka', `K.KEGIATAN.antarKopi(o)`); });
   }
   // ---- 6. potongan cepat: Kak Nadia, Bang Dimas, Mbak Sari, Mas Bayu (kamera ditambat ke posisi pegawai setelah kegiatannya jalan)
@@ -129,7 +128,7 @@ if (require.main === module) (async () => {
   // ---- 7. pintu Ruang Direktur: 2 GUARD, Mbak Citra antar berkas, Mas Ujang antar kopi
   if (ingin('direktur')) {
     await taruh(s, 'citra', 13.2, 14.2); await taruh(s, 'ujang', 12.6, 17.4);
-    await kamera(s, 14.2, 16, -Math.PI / 2 + 0.35, 0.22, 7.2); await maju(s, 300);
+    await kamera(s, 16.0, 16.0, -Math.PI / 2, 0.18, 6.5, 1.3); await maju(s, 300);
     await rekam(s, 'p_direktur', 5, async (i) => {
       if (i === 2) await tugas(s, 'citra', `[K.ke(16.3, 15.4), K.tunggu(4, 0, 'Pak/Bu Direktur, ini berkas tamu baru 📁', [20.6, 16])]`);
       if (i === 20) await tugas(s, 'ujang', `[{ fn: o => { o.bawaKini = ''; } }, K.ke(16.3, 16.8), K.tunggu(3, 0, 'Kopinya, Direktur ☕', [20.6, 16])]`);
