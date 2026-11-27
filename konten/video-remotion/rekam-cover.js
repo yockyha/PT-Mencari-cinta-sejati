@@ -15,6 +15,10 @@ const COVER = {
       { look: { s: 'l', at: 'kemeja', wa: 1, lh: 'dasiKupu', tg: 'buket' }, a: 0, x: 0.42, ry: -0.45 },
     ],
   },
+  pegawai: {
+    latar: { x: 0, z: 15.5, yaw: Math.PI, pitch: 0.2, jarak: 9, y: 1.6 },
+    tokoh: [],
+  },
   grup: {
     latar: { x: 0, z: 1.5, yaw: 0.15, pitch: 0.62, jarak: 13, y: 1.6 },
     tokoh: [
@@ -42,6 +46,7 @@ const COVER = {
     await s.p.screenshot({ path: `${OUT}/latar-${nama}.png`, clip: await kanvas.boundingBox() });
     await gaya.evaluate(e => e.remove());
     console.log('ok latar', nama);
+    if (!C.tokoh.length) continue;
     // tokoh: render karakter ke target transparan 1600×1600
     const url = await s.p.evaluate(async ([V, tokoh]) => {
       const THREE = await import('three');
