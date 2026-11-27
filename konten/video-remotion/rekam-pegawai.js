@@ -47,7 +47,8 @@ const taruh = (s, id, x, z, r) => ev(s, ([id, x, z, r]) => { const o = __kry.sem
 // beri tugas (daftar langkah dari fungsi kegiatan atau buatan sendiri)
 const tugas = (s, id, kode) => ev(s, ([id, kode]) => { const o = __kry.semua.find(o => o.id === id); if (!o) return; const K = __kry; o.tugas = new Function('o', 'K', 'return ' + kode)(o, K) || []; }, [id, kode]);
 
-(async () => {
+module.exports = { sesi, maju, kamera, taruh, tugas };
+if (require.main === module) (async () => {
   fs.mkdirSync(OUT, { recursive: true });
   const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
   const s = await sesi(b);
@@ -85,7 +86,7 @@ const tugas = (s, id, kode) => ev(s, ([id, kode]) => { const o = __kry.semua.fin
 
   // ---- 2. Mbak Ayu: angkat telepon di meja resepsionis
   if (ingin('ayu')) {
-    await kamera(s, -4.2, 14.4, Math.PI / 2 + 0.2, 0.16, 3.6, 1.3); await maju(s, 800);
+    await kamera(s, -6.25, 14, -Math.PI / 2, 0.2, 5, 1.3); await maju(s, 800);
     await rekam(s, 'p_ayu', 4.5, async (i) => { if (i === 8) await tugas(s, 'ayu', `[K.tunggu(6, 4, '📞 Halo, PT Mencari Cinta Sejati, ada yang bisa dibantu?')]`); });
   }
   // ---- 3. Pak Bambang patroli di lobi
@@ -107,17 +108,21 @@ const tugas = (s, id, kode) => ev(s, ([id, kode]) => { const o = __kry.semua.fin
     await kamera(s, 18.8, 0.8, Math.PI / 2 + 0.6, 0.25, 6.5); await maju(s, 400);
     await rekam(s, 'p_raka', 5, async (i) => { if (i === 2) await tugas(s, 'raka', `K.KEGIATAN.antarKopi(o)`); });
   }
-  // ---- 6. potongan cepat: Kak Nadia, Bang Dimas, Mbak Sari, Mas Bayu
+  // ---- 6. potongan cepat: Kak Nadia, Bang Dimas, Mbak Sari, Mas Bayu (kamera ditambat ke posisi pegawai setelah kegiatannya jalan)
   if (ingin('cepat')) {
-    for (const [id, kode, cam, pre] of [
-      ['nadia', `K.KEGIATAN.dudukTaman(o)`, [18.5, -10.5, Math.PI + 0.2, 0.25, 5.5], [18.4, -12.6]],
-      ['dimas', `K.KEGIATAN.dudukMeja(o)`, [0, 3, Math.PI + 0.2, 0.35, 7], null],
-      ['sari', `[K.tunggu(6, 3, 'Lipet baju dulu 👕'), K.tunggu(4, 3, 'Koleksi baru udah dateng ✨')]`, [-21, 4.2, -Math.PI / 2 + 0.5, 0.2, 4.6], [-22.6, 3.2]],
-      ['bayu', `[K.tunggu(8, 6, 'Rekor baru!! 🎮', [-11.5, 19.2])]`, [-10.4, 16.2, -0.6, 0.18, 4.4], [-11.5, 17.6]],
+    for (const [id, kode, yaw, pre, jarak] of [
+      ['nadia', `K.KEGIATAN.dudukTaman(o)`, Math.PI, null, 5],
+      ['dimas', `K.KEGIATAN.dudukMeja(o)`, Math.PI, null, 5],
+      ['sari', `[K.tunggu(6, 3, 'Lipet baju dulu 👕'), K.tunggu(4, 3, 'Koleksi baru udah dateng ✨')]`, -Math.PI / 2 + 0.5, [-22.6, 3.2], 4.6],
+      ['bayu', `[K.tunggu(8, 6, 'Rekor baru!! 🎮', [-11.5, 19.2])]`, -0.6, [-11.5, 17.6], 4.4],
     ]) {
+      if (HANYA.length > 1 && HANYA.includes('-' + id)) continue;
       if (pre) await taruh(s, id, pre[0], pre[1]);
-      await kamera(s, ...cam); await tugas(s, id, kode); await maju(s, 400);
-      if (id === 'dimas') { await ev(s, () => { const o = __kry.semua.find(o => o.id === 'dimas'); if (o.tugas[0] && o.tugas[0].duduk) { const k = o.tugas[0].duduk; o.x = k.x + 0.3; o.z = k.z + 0.3; } }); await maju(s, 600); }
+      await tugas(s, id, kode);
+      await ev(s, ([id]) => { const o = __kry.semua.find(o => o.id === id); const k = o.tugas[0] && o.tugas[0].duduk; if (k) { o.x = k.x; o.z = k.z; } }, [id]);
+      await maju(s, 1200);
+      await ev(s, ([id, yaw, jarak]) => { const o = __kry.semua.find(o => o.id === id); const K = __kantor; K.pindah(o.x, o.z, yaw); K.saya.g.visible = false; Object.assign(K.kam, { yaw, pitch: 0.2, jarak, y: 1.3 }); }, [id, yaw, jarak]);
+      await maju(s, 300);
       await rekam(s, 'p_' + id, 2.5);
     }
   }
