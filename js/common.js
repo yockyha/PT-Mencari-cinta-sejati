@@ -1,7 +1,7 @@
 // Utilitas bersama untuk semua halaman.
-import PAKET from '../paket.js?v=202611270821';
-export { TINGKAT_DONASI, tingkatDonasi, ucapanDonasi, namaPapan } from '../paket.js?v=202611270821';
-import { PAKAIAN, SLOT } from './pakaian.js?v=202611270821';
+import PAKET from '../paket.js?v=202611270824';
+export { TINGKAT_DONASI, tingkatDonasi, ucapanDonasi, namaPapan } from '../paket.js?v=202611270824';
+import { PAKAIAN, SLOT } from './pakaian.js?v=202611270824';
 export const CFG = Object.assign({
   namaPT: 'PT Mencari Cinta Sejati', singkatan: 'PT MCS', instagram: '', instagramNama: '', tiktok: '', wajibFollow: null,
   kuota: 10000, firebase: null, mading: [], domainLogin: 'ptmcs.id', direkturDemo: null,
@@ -126,5 +126,5 @@ export const rupiah = n => 'Rp' + Number(n || 0).toLocaleString('id-ID');
 export const IKON_DM = '💠';
 export const kodeTamu = uid => 'MCS-' + String(uid).replace(/[^a-z0-9]/gi, '').slice(-6).toUpperCase();
 
-// Username dashboard → email Firebase (yocky → yocky@ptmcs.id)
+// Username dashboard → email Firebase (direktur → direktur@ptmcs.id)
 export const emailDari = u => { u = String(u || '').trim().toLowerCase(); return u.includes('@') ? u : `${u}@${CFG.domainLogin || 'ptmcs.id'}`; };

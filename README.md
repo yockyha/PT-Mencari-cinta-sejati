@@ -214,10 +214,10 @@ Selama `firebase: null` di `config.js`, situs berjalan dalam **mode lokal**:
 
 ### Menjadikan dirimu Direktur (sekali saja)
 
-1. Firebase Console → **Authentication → Users → Add user**: email `<username>@ptmcs.id` (domain sesuai `domainLogin` di `config.js`, contoh `yocky@ptmcs.id`) dan kata sandi.
+1. Firebase Console → **Authentication → Users → Add user**: email `<username>@ptmcs.id` (domain sesuai `domainLogin` di `config.js`, contoh `direktur@ptmcs.id`) dan kata sandi.
 2. Salin **User UID** akun itu.
 3. **Realtime Database → Data**: tambahkan node `peran`, lalu di dalamnya kunci `<User UID>` dengan nilai `"direktur"` (pakai tanda kutip).
-4. Buka `/dashboard/` → login dengan username `yocky` + kata sandi tadi. Dari dashboard, tekan **🏢 Masuk kantor** untuk masuk sebagai Direktur.
+4. Buka `/dashboard/` → login dengan username akunmu (mis. `direktur`) + kata sandi tadi. Dari dashboard, tekan **🏢 Masuk kantor** untuk masuk sebagai Direktur.
 
 Di dalam kantor, tombol **👑 Panel** juga tersedia untuk kendali cepat. Staf diangkat dari Panel → Pengunjung → Tindak → *Angkat jadi Staf*.
 

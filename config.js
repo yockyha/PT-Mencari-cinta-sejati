@@ -25,12 +25,14 @@ window.PT_CONFIG = {
   // ---------------------------------------------------------
   //  LOGIN DASHBOARD DIREKTUR (/dashboard/)
   //  Mode online: buat akun di Firebase Authentication dengan email
-  //  <username>@<domainLogin>, contoh: yocky@ptmcs.id. Di dashboard
-  //  cukup ketik username "yocky" (atau email lengkap) + kata sandi.
+  //  <username>@<domainLogin>, contoh: direktur@ptmcs.id. Di dashboard
+  //  cukup ketik username "direktur" (atau email lengkap) + kata sandi.
   //  direkturDemo HANYA berlaku di mode lokal (firebase: null) untuk mencoba.
   //  Hapus/ganti sebelum dipublikasikan.
   // ---------------------------------------------------------
   domainLogin: 'ptmcs.id',
+  // Nama Direktur yang tampil di kantor (label, chat, pengumuman). Kosongkan untuk memakai nama profil.
+  namaDirektur: 'Bapak Y.H.A',
   direkturDemo: null, // dimatikan: situs sudah memakai Firebase (mode online)
 
   // Pendaftaran tamu
