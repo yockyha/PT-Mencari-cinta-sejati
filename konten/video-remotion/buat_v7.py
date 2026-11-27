@@ -96,7 +96,7 @@ for i, (no, nama, jab, ik, info, w, id_, sub) in enumerate(CEPAT):
 # 6 Ruang Direktur: GUARD, Mbak Citra, (Mas Ujang antar kopi)
 kenal(6, 0, 0.33, '09', 'GUARD', 'Pengawal Direktur', '🕶️', '🚪 Jaga pintu 24 jam', '#111111', 'guard1', 'guard2')
 kenal(6, 0.33, 0.55, '10', 'Mbak Citra', 'Sekretaris Direktur', '👩‍💼', '📁 Antar berkas tamu baru', '#6d597a', 'citra')
-klip('klip/p_direktur.mp4', 6, 0.55, 1, 4.8, trim=0.1, nama='Pintu Ruang Direktur')
+klip('klip/p_direktur.mp4', 6, 0.55, 1, 2.5, trim=0.1, nama='Pintu Ruang Direktur')
 t('sub', 'Ruang Direktur dijaga *dua GUARD 24 jam!*', 6, 0, 0.33, y=BAWAH + 300)
 t('sub', '*Mbak Citra* bolak-balik nganterin berkas,', 6, 0.33, 0.7, y=BAWAH + 300)
 t('sub', '*Mas Ujang* nganterin kopi buat Direktur ☕', 6, 0.7, 1, y=BAWAH)
