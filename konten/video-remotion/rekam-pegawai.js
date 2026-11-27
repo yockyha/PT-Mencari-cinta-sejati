@@ -96,7 +96,7 @@ if (require.main === module) (async () => {
   }
   // ---- 4. Bu Wati ngepel (+ rambu basah) & Mas Ujang nyapu
   if (ingin('ob')) {
-    await taruh(s, 'wati', -1.7, 13.4, Math.PI); await taruh(s, 'ujang', 1.7, 13.0, Math.PI);
+    await taruh(s, 'wati', -1.7, 13.4, 0.25); await taruh(s, 'ujang', 1.7, 13.0, -0.25);
     await tugas(s, 'wati', `[{ fn: o => K.D.rambuBasah(o.x + 0.9, o.z - 0.6, 14) }, K.tunggu(12, 3, 'Awas licin ya! 🧽')]`);
     await tugas(s, 'ujang', `[K.tunggu(2.2, 3, ''), K.tunggu(10, 3, 'Sapu dulu biar bersih 🧹')]`);
     await kamera(s, 0, 13.2, Math.PI, 0.2, 7.2, 1.3); await maju(s, 300);
