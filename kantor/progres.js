@@ -3,11 +3,11 @@
 //  arah, acara terjadwal, peringkat, toko (EXP & VIP),
 //  dan notifikasi dari Direktur.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611270824';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611270824';
-import * as Musik from './musik.js?v=202611270824';
-import * as Bayar from './bayar.js?v=202611270824';
-import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611270824';
+import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611270848';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611270848';
+import * as Musik from './musik.js?v=202611270848';
+import * as Bayar from './bayar.js?v=202611270848';
+import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611270848';
 
 // ---------------------------------------------------------------- DATA TUGAS
 const RUANG_TUJUAN = { jodoh: 'kafe', teman: 'meja', curhat: 'taman' };
@@ -90,7 +90,7 @@ export function mulai() {
   db.on('notif/' + L.uid, v => {
     for (const [id, n] of Object.entries(v || {})) {
       if (!n) continue;
-      tulisLog('', '📬 ' + bersih(n.m, 200), 'sys');
+      if (['bayar', 'donasi'].includes(n.j)) tulisLog('', '📬 ' + bersih(n.m, 200), 'sys'); else tulisLog('👑 Direktur:', bersih(n.m, 200), 'dir');
       tampilNotif(n);
       L.hapusNotif(id);
     }
@@ -195,6 +195,10 @@ function tampilNotif(n) {
   const judul = n.j === 'balasSapa' ? '👑 Direktur membalas sapaanmu' : n.j === 'hadiah' ? '🎁 Hadiah dari Direktur' : n.j === 'bayar' ? '✅ Pembayaran berhasil' : n.j === 'donasi' ? '💖 Donasi diterima' : '📬 Pesan dari Direktur';
   if (n.j === 'hadiah' || n.j === 'balasSapa' || n.j === 'donasi') K.efekLokal && K.efekLokal('hati', 30);
   if (n.j === 'bayar') K.efekLokal && K.efekLokal('kembangapi', 50);
+  const dariDir = !['bayar', 'donasi'].includes(n.j);
+  if (dariDir) return bukaKartu(`<div class="suratDir"><div class="mahkotaDir">👑</div><small class="dirTag">SURAT DARI DIREKTUR UTAMA</small>
+      <h2>${judul.replace(/^\S+\s/, '')}</h2><p class="isiSurat">${m}</p><p class="ttdDir">— ${esc(bersih(CFG.namaDirektur || 'Direktur', 30))}<br><small>Direktur Utama ${esc(CFG.namaPT || '')}</small></p>
+      <div class="baris"><button class="btn emas" type="button" id="nOk">Terima kasih, Direktur 🙏</button></div></div>`, { gaya: 'dir', pasang(i) { i.querySelector('#nOk').onclick = tutupKartu; } });
   bukaKartu(`<h2>${judul}</h2><p style="font-size:18px">${m}</p><div class="baris"><button class="btn" type="button" id="nOk">Oke</button></div>`, { pasang(i) { i.querySelector('#nOk').onclick = tutupKartu; } });
 }
 

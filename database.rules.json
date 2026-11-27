@@ -298,6 +298,25 @@
         }
       }
     },
+    "grupPublik": {
+      ".read": "auth != null && ((root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+      "$gid": {
+        ".write": "auth != null && ((!data.exists() && newData.child('pemilik').val() === auth.uid && (newData.parent().parent().child('grup/' + $gid + '/pemilik').val() === auth.uid || root.child('grup/' + $gid + '/pemilik').val() === auth.uid)) || (data.exists() && ((data.child('pemilik').val() === auth.uid) || root.child('grup/' + $gid + '/anggota/' + auth.uid).exists())) || root.child('peran/' + auth.uid).val() === 'direktur')",
+        ".validate": "newData.child('nama').isString() && newData.child('nama').val().length <= 30 && newData.child('pemilik').isString() && newData.child('pn').isString() && newData.child('pn').val().length <= 30 && newData.child('jml').isNumber() && newData.child('maks').isNumber() && newData.child('t').isNumber() && (!newData.child('ikon').exists() || (newData.child('ikon').isString() && newData.child('ikon').val().length <= 8))"
+      }
+    },
+    "grupMinta": {
+      ".read": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$gid": {
+        ".read": "auth != null && (root.child('grup/' + $gid + '/pemilik').val() === auth.uid || root.child('peran/' + auth.uid).val() === 'direktur')",
+        ".write": "auth != null && !newData.exists() && (root.child('grup/' + $gid + '/pemilik').val() === auth.uid || root.child('peran/' + auth.uid).val() === 'direktur')",
+        "$uid": {
+          ".read": "auth != null && auth.uid === $uid",
+          ".write": "auth != null && ((auth.uid === $uid && newData.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && root.child('grupPublik/' + $gid).exists() && !root.child('grup/' + $gid + '/anggota/' + auth.uid).exists()) || (!newData.exists() && (auth.uid === $uid || root.child('grup/' + $gid + '/pemilik').val() === auth.uid || root.child('peran/' + auth.uid).val() === 'direktur')))",
+          ".validate": "newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('t').val() === now"
+        }
+      }
+    },
     "fotoProfil": {
       ".read": "auth != null",
       "$uid": {

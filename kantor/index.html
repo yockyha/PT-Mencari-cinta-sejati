@@ -38,6 +38,35 @@ button,input,select{font:inherit}
 #log p{margin:0;background:rgba(42,20,32,.72);color:#fff;padding:5px 10px;border-radius:12px;font-size:14px;line-height:1.3;width:fit-content;max-width:100%;overflow-wrap:anywhere;transition:opacity 1s}
 #log p b{color:var(--pink2)}
 #log p.sys{background:rgba(255,79,123,.85)}
+/* ===== GAYA EKSKLUSIF DIREKTUR: semua yang berasal dari Direktur tampil hitam-emas berkilau ===== */
+@keyframes kilauEmas{0%{background-position:-160% 0}60%,100%{background-position:260% 0}}
+@keyframes mahkotaDenyut{0%,100%{transform:scale(1) rotate(-4deg)}50%{transform:scale(1.12) rotate(4deg)}}
+.dirTag{display:inline-block;font:900 10px/1 Nunito,sans-serif;letter-spacing:1.4px;color:#2a1a06;background:linear-gradient(90deg,#c9971c,#ffe27a,#c9971c);padding:4px 8px;border-radius:999px;margin:0 0 4px;box-shadow:0 0 10px rgba(255,210,63,.45)}
+.dm.dmDir span{position:relative;background:linear-gradient(135deg,#1c1206,#3d2a0a 55%,#1c1206);color:#ffe9a0;border:2px solid #ffd23f;box-shadow:0 0 14px rgba(255,210,63,.45),inset 0 0 12px rgba(255,210,63,.12);font-weight:800;overflow:hidden}
+.dm.dmDir span::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,240,180,.35) 50%,transparent 65%);background-size:250% 100%;animation:kilauEmas 3.2s ease-in-out infinite;pointer-events:none}
+.dm.dmDir small{color:#b8890f}
+.balasDir{background:linear-gradient(135deg,#1c1206,#3d2a0a);color:#ffe9a0;border:2px solid #ffd23f;border-radius:10px;padding:6px 9px}.balasDir b{color:#ffd23f}
+.daftar>div.grupDir{background:linear-gradient(135deg,#1c1206,#3d2a0a);color:#ffe9a0;border:2px solid #ffd23f;border-radius:12px;padding:8px 10px;box-shadow:0 0 12px rgba(255,210,63,.3)}.daftar>div.grupDir small{color:#e9c96a}
+.lencanaDir{color:#ffd23f;font-weight:900}
+#kartu.kartuDir .isi{background:radial-gradient(120% 90% at 50% 0%,#4a3210 0%,#1c1206 70%);color:#ffe9a0;border-color:#ffd23f;box-shadow:0 0 0 3px #1c1206,0 0 34px rgba(255,210,63,.55),0 8px 0 #8a6a12}
+#kartu.kartuDir .isi h2,#kartu.kartuDir .isi h3{color:#ffd23f}#kartu.kartuDir .isi .kecil,#kartu.kartuDir .isi small{color:#e9c96a}
+#kartu.kartuDir .isi .x{background:#ffd23f;color:#1c1206;border-color:#1c1206}
+#kartu.kartuDir .daftar>div{background:rgba(255,210,63,.07);border-color:rgba(255,210,63,.35);color:#ffe9a0}
+#kartu.kartuDir input,#kartu.kartuDir textarea{background:#fff8e6}
+.suratDir{text-align:center}.suratDir .dirTag{position:relative;z-index:1;margin-top:10px}
+#umum .dirTag{display:block;width:fit-content;margin-bottom:6px}
+.dm .dirTag{align-self:flex-start;width:fit-content}.dm.saya .dirTag{align-self:flex-end}.suratDir h2{font-size:24px;margin:6px 0 10px}
+.mahkotaDir{font-size:54px;line-height:1;margin:0 0 14px;filter:drop-shadow(0 0 12px rgba(255,210,63,.7));animation:mahkotaDenyut 2.4s ease-in-out infinite}
+.isiSurat{font-size:18px;line-height:1.55;background:rgba(255,210,63,.08);border:1px solid rgba(255,210,63,.4);border-radius:14px;padding:14px;margin:0 0 10px;color:#fff3cf}
+.ttdDir{font-family:Fredoka,sans-serif;font-size:18px;color:#ffd23f;text-align:right;margin:0 4px 12px}.ttdDir small{font-family:Nunito,sans-serif;font-size:12px}
+.btn.emas{background:linear-gradient(90deg,#c9971c,#ffe27a,#c9971c);color:#1c1206;border-color:#1c1206;box-shadow:0 4px 0 #1c1206}
+#umum{background:radial-gradient(120% 120% at 50% 0%,#4a3210 0%,#1c1206 75%)!important;color:#fff3cf!important;border-color:#ffd23f!important;box-shadow:0 0 22px rgba(255,210,63,.55),0 4px 0 #8a6a12!important;overflow:hidden}
+#umum::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,240,180,.25) 50%,transparent 65%);background-size:250% 100%;animation:kilauEmas 3.6s ease-in-out infinite;pointer-events:none}
+#umum span{display:block;font-weight:800;padding-right:30px}#umum span em{display:block;text-align:right;font-style:normal;color:#ffd23f;font-family:Fredoka,sans-serif;margin-top:4px}
+#umum button{background:#ffd23f!important;border-color:#1c1206!important;z-index:1}
+#log p.dir{background:linear-gradient(135deg,#1c1206,#3d2a0a)!important;border:2px solid #ffd23f;color:#ffe9a0;box-shadow:0 0 12px rgba(255,210,63,.45);position:relative;overflow:hidden}
+#log p.dir::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,rgba(255,240,180,.3) 50%,transparent 65%);background-size:250% 100%;animation:kilauEmas 3s ease-in-out infinite}
+
 .titikWarna{display:inline-block;width:12px;height:12px;border-radius:50%;border:2px solid #2a1420;margin-right:5px;vertical-align:-1px}
 .kotakInfo{border:2px dashed #ffb3c6;border-radius:12px;padding:8px 12px;margin:6px 0 12px}.kotakInfo summary{cursor:pointer}.aksiInfo{white-space:nowrap}.infoList>div{align-items:flex-start}
 #log p.dir{background:rgba(30,18,4,.92);border:2px solid #ffd23f;color:#ffe9a0}#log p.dir b{color:#ffd23f}
@@ -357,7 +386,7 @@ table.season{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}t
 .tlpCatatan{color:#d9b8c4;margin-top:8px}
 @media (prefers-reduced-motion:reduce){.dmMerah{animation:none}}
 </style>
-<script src="../config.js?v=202611270824"></script>
+<script src="../config.js?v=202611270848"></script>
 <script type="importmap">{"imports":{"three":"../vendor/three.module.js"}}</script>
 </head>
 <body>
@@ -399,6 +428,6 @@ table.season{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}t
 <div id="tirai" hidden><div class="isi"></div></div>
 <div id="loading"><div><span class="hati">❤</span>Membuka pintu kantor…</div></div>
 
-<script type="module" src="kantor.js?v=202611270824"></script>
+<script type="module" src="kantor.js?v=202611270848"></script>
 </body>
 </html>

@@ -5,7 +5,7 @@
 //  makan, melambai, ngetik).
 // =====================================================================
 import * as THREE from 'three';
-import { BARANG, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, setelanDir } from '../js/pakaian.js?v=202611270824';
+import { BARANG, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, setelanDir } from '../js/pakaian.js?v=202611270848';
 
 const GEO = new THREE.BoxGeometry(1, 1, 1);
 const _mat = {};

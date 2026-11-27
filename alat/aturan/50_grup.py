@@ -21,3 +21,14 @@ def pasang(r):
     r["grupUndangan"] = {"$uid": {".read": f"{A} && auth.uid === $uid", "$gid": {
       ".write": f"{A} && ((newData.exists() && ({ANG} || {DIR}) && {BEBAS}) || (!newData.exists() && auth.uid === $uid))",
       ".validate": "newData.child('nama').isString() && newData.child('dari').isString() && newData.child('dari').val().length <= 30 && newData.child('t').val() === now"}}}
+    # GRUP PUBLIK: kartu grup yang bisa dilihat semua tamu resmi (untuk minta gabung)
+    PEM_PUB = "(data.child('pemilik').val() === auth.uid)"
+    r["grupPublik"] = {".read": f"{A} && ({ANGGOTA})", "$gid": {
+      ".write": f"{A} && ((!data.exists() && newData.child('pemilik').val() === auth.uid && (newData.parent().parent().child('grup/' + $gid + '/pemilik').val() === auth.uid || root.child('grup/' + $gid + '/pemilik').val() === auth.uid)) || (data.exists() && ({PEM_PUB} || {ANG})) || {DIR})",
+      ".validate": "newData.child('nama').isString() && newData.child('nama').val().length <= 30 && newData.child('pemilik').isString() && newData.child('pn').isString() && newData.child('pn').val().length <= 30 && newData.child('jml').isNumber() && newData.child('maks').isNumber() && newData.child('t').isNumber() && (!newData.child('ikon').exists() || (newData.child('ikon').isString() && newData.child('ikon').val().length <= 8))"}}
+    # PERMINTAAN GABUNG: tamu minta gabung, pemilik grup (atau Direktur) yang membaca & memutuskan
+    r["grupMinta"] = {".read": f"{A} && {DIR}", "$gid": {
+      ".read": f"{A} && ({PEM} || {DIR})", ".write": f"{A} && !newData.exists() && ({PEM} || {DIR})",
+      "$uid": {".read": f"{A} && auth.uid === $uid",
+        ".write": f"{A} && ((auth.uid === $uid && newData.exists() && {BEBAS} && root.child('grupPublik/' + $gid).exists() && !root.child('grup/' + $gid + '/anggota/' + auth.uid).exists()) || (!newData.exists() && (auth.uid === $uid || {PEM} || {DIR})))",
+        ".validate": "newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('t').val() === now"}}}

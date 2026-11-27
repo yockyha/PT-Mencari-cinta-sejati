@@ -3,30 +3,30 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611270824';
-import { bukaDB } from '../js/db.js?v=202611270824';
-import { buatLayanan } from '../js/layanan.js?v=202611270824';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611270824';
-import * as Sosial from './sosial.js?v=202611270824';
-import * as Direktur from './direktur.js?v=202611270824';
-import * as Prog from './progres.js?v=202611270824';
-import * as Game from './game.js?v=202611270824';
-import * as Bayar from './bayar.js?v=202611270824';
-import * as Meja from './meja.js?v=202611270824';
-import * as Karyawan from './karyawan.js?v=202611270824';
-import * as Hadir from './hadir.js?v=202611270824';
-import * as Foto from './foto.js?v=202611270824';
-import * as Seru from './seru.js?v=202611270824';
-import * as Speed from './speeddating.js?v=202611270824';
-import * as Aktivitas from './aktivitas.js?v=202611270824';
-import * as Komunitas from './komunitas.js?v=202611270824';
-import * as RuangDir from './ruangdir.js?v=202611270824';
-import * as Gedung from './gedung.js?v=202611270824';
-import * as PapanInfo from './papaninfo.js?v=202611270824';
-import * as Musik from './musik.js?v=202611270824';
-import * as Suara from './suara.js?v=202611270824';
-import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611270824';
-import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2, SETELAN_DIR, setelanDir } from '../js/pakaian.js?v=202611270824';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611270848';
+import { bukaDB } from '../js/db.js?v=202611270848';
+import { buatLayanan } from '../js/layanan.js?v=202611270848';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611270848';
+import * as Sosial from './sosial.js?v=202611270848';
+import * as Direktur from './direktur.js?v=202611270848';
+import * as Prog from './progres.js?v=202611270848';
+import * as Game from './game.js?v=202611270848';
+import * as Bayar from './bayar.js?v=202611270848';
+import * as Meja from './meja.js?v=202611270848';
+import * as Karyawan from './karyawan.js?v=202611270848';
+import * as Hadir from './hadir.js?v=202611270848';
+import * as Foto from './foto.js?v=202611270848';
+import * as Seru from './seru.js?v=202611270848';
+import * as Speed from './speeddating.js?v=202611270848';
+import * as Aktivitas from './aktivitas.js?v=202611270848';
+import * as Komunitas from './komunitas.js?v=202611270848';
+import * as RuangDir from './ruangdir.js?v=202611270848';
+import * as Gedung from './gedung.js?v=202611270848';
+import * as PapanInfo from './papaninfo.js?v=202611270848';
+import * as Musik from './musik.js?v=202611270848';
+import * as Suara from './suara.js?v=202611270848';
+import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611270848';
+import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2, SETELAN_DIR, setelanDir } from '../js/pakaian.js?v=202611270848';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
@@ -692,11 +692,13 @@ function papanRapat() {
     if (!daftar.length) { c.fillStyle = '#9aa'; c.font = FB(32, 700); c.fillText('Belum ada tulisan. Jadilah yang pertama!', 28, 140); }
     daftar.forEach((p, i) => {
       const col = i % 2, row = Math.floor(i / 2), X = 28 + col * (w / 2), Y = 118 + row * 110;
-      c.fillStyle = warna[i % 4]; c.font = FB(30, 800);
+      const dirP = K.peran[p.uid] === 'direktur';
+      if (dirP) { c.fillStyle = '#2a1a06'; bulat(c, X - 14, Y - 40, w / 2 - 28, 104, 14); c.fill(); c.strokeStyle = '#ffd23f'; c.lineWidth = 4; c.stroke(); }
+      c.fillStyle = dirP ? '#ffd23f' : warna[i % 4]; c.font = FB(30, 800);
       const b = bungkus(c, '“' + p.m + '”', w / 2 - 60);
       c.fillText(b[0] + (b.length > 1 ? '' : ''), X, Y, w / 2 - 50);
       if (b[1]) c.fillText(b[1] + (b.length > 2 ? '…' : ''), X, Y + 34, w / 2 - 50);
-      c.font = FB(22, 700); c.fillStyle = '#8a6b77'; c.fillText('— ' + p.n, X, Y + (b[1] ? 66 : 34), w / 2 - 50);
+      c.font = FB(22, dirP ? 900 : 700); c.fillStyle = dirP ? '#fff3a8' : '#8a6b77'; c.fillText(dirP ? '— 👑 ' + p.n + ' · Direktur Utama' : '— ' + p.n, X, Y + (b[1] ? 66 : 34), w / 2 - 50);
     });
   });
   bidangTeks(6.2, 2.0, 0, papanKV, -16, 1.4, -19.73);
@@ -1523,7 +1525,7 @@ function bukaPapan() {
     <p>Tulisanmu tampil di papan untuk semua orang (6 tulisan terbaru).</p>
     <form id="fP"><label for="pI">Tulisanmu</label><textarea id="pI" maxlength="80" rows="2" placeholder="contoh: Agenda hari ini: berani nyapa duluan"></textarea>
     <p class="err" id="pE"></p><div class="baris"><button class="btn" type="submit">Tulis</button></div></form>
-    ${daftar.length ? `<div class="daftar">${daftar.map(p => `<div><span>“${esc(p.m)}” <small>— ${esc(p.n)}</small></span>${bisaModerasi() ? `<button type="button" class="mini merah" data-hapus="papan/${esc(p.k)}">Hapus</button>` : ''}</div>`).join('')}</div>` : ''}`, {
+    ${daftar.length ? `<div class="daftar">${daftar.map(p => `<div class="${K.peran[p.uid] === 'direktur' ? 'grupDir' : ''}"><span>“${esc(p.m)}” <small>— ${K.peran[p.uid] === 'direktur' ? '👑 ' : ''}${esc(p.n)}</small></span>${bisaModerasi() ? `<button type="button" class="mini merah" data-hapus="papan/${esc(p.k)}">Hapus</button>` : ''}</div>`).join('')}</div>` : ''}`, {
     pasang(isi) {
       isi.querySelectorAll('[data-hapus]').forEach(b => b.onclick = async () => { try { await L.hapus(b.dataset.hapus); toast('Tulisan dihapus'); bukaPapan(); } catch (e) { toast('Gagal menghapus.'); } });
       isi.querySelector('#fP').onsubmit = e => {
@@ -1931,10 +1933,10 @@ function tampilPengumuman(p) {
   if (L.db.now() - (p.t || 0) > 6 * 3600e3) return;
   if (LS.get('umumT', 0) >= p.t) return;
   const el = $('umum');
-  el.querySelector('span').textContent = '📢 ' + p.m;
-  el.hidden = false;
+  el.querySelector('span').innerHTML = `<small class="dirTag">👑 PENGUMUMAN DIREKTUR UTAMA</small>${esc(p.m)}<em>— ${esc(bersih(CFG.namaDirektur || 'Direktur', 30))}</em>`;
+  el.hidden = false; Musik.sfx('notif');
   el.querySelector('button').onclick = () => { el.hidden = true; LS.set('umumT', p.t); };
-  tulisLog('', '📢 Pengumuman Direktur: ' + p.m, 'sys');
+  tulisLog('👑 Pengumuman Direktur:', p.m, 'dir');
 }
 function cekTirai() {
   if (!L) return;
