@@ -11,7 +11,7 @@ const NAMA = ['raka', 'sinta_', 'dimas.p', 'nadia.r', 'kevin', 'joko', 'ayu.ln',
 async function sesi(b, { jam = '2026-11-26T20:00:00+07:00' } = {}) {
   const ctx = await b.newContext({ viewport: { width: 405, height: 720 }, deviceScaleFactor: 2 });
   await ctx.route(/fonts\.(googleapis|gstatic)/, r => r.abort());
-  await ctx.route('**/kantor/kantor.js*', async r => { let t = await (await r.fetch()).text(); t = t.replace('window.__kantor = { L, saya, lain, bot, pindah, K, kam };', 'window.__kantor = { L, saya, lain, bot, pindah, K, kam, tombol };'); r.fulfill({ body: t, contentType: 'application/javascript' }); });
+  await ctx.route('**/kantor/kantor.js*', async r => { let t = await (await r.fetch()).text(); t = t.replace('window.__kantor = { L, saya, lain, bot, pindah, K, kam };', 'window.__kantor = { L, saya, lain, bot, pindah, K, kam, tombol, bukaLoker };'); r.fulfill({ body: t, contentType: 'application/javascript' }); });
   await ctx.addInitScript(({ NAMA }) => {
     const t = Date.now(), tamu = {}, anggota = {}, uid = 'urina';
     NAMA.forEach((n, i) => { tamu['t' + i] = { uid: 't' + i, n, tj: ['jodoh', 'teman', 'curhat'][i % 3], t: t - 1e6 + i }; anggota['t' + i] = { n, tj: tamu['t' + i].tj, sejak: t }; });
