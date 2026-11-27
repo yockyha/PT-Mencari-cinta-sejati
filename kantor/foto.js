@@ -6,10 +6,10 @@
 //   galeriData/<id>         foto ukuran penuh (maks. ±960 px), diunduh saat dibuka
 //   galeriKu/<uid>          waktu unggah terakhir (dibatasi 1 foto / menit oleh aturan Firebase)
 // =====================================================================
-import { LS, bersih, esc, fmt, kasar, sensor } from '../js/common.js?v=202611270848';
-import { TS, kunciBaru } from '../js/db.js?v=202611270848';
-import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611270848';
-import * as Prog from './progres.js?v=202611270848';
+import { LS, bersih, esc, fmt, kasar, sensor } from '../js/common.js?v=202611270858';
+import { TS, kunciBaru } from '../js/db.js?v=202611270858';
+import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611270858';
+import * as Prog from './progres.js?v=202611270858';
 
 const siap = () => { if (!K.resmi()) { toast('👀 Daftar dulu untuk memakai foto.'); K.bukaDaftar(); return false; } if (K.terkunci) { toast('Kamu belum bisa berinteraksi sekarang.'); return false; } return true; };
 const staf = () => !!(K.L && K.peran[K.L.uid]);
@@ -21,7 +21,7 @@ function muatGambar(file) {
     const url = URL.createObjectURL(file), img = new Image();
     img.onload = () => { URL.revokeObjectURL(url); res(img); };
     img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('Gambar tidak bisa dibaca')); };
-    img.src = url;
+    img.decoding = 'async'; img.src = url;
   });
 }
 // persegi: potong tengah jadi kotak; maks: sisi terpanjang; batas: panjang maksimum data URL
@@ -37,19 +37,29 @@ export function kompres(img, { maks = 960, persegi = false, batas = 200000, kual
   if (d.length > batas) return '';
   return d;
 }
+// Input file harus menempel di halaman: Safari iPhone/iPad tidak mengirim event 'change'
+// untuk input yang tidak ada di DOM, sehingga foto yang dipilih "hilang" begitu saja.
 function pilihFile() {
+  document.querySelectorAll('input.pilihFoto').forEach(x => x.remove()); // sisa pemilihan sebelumnya
   return new Promise(res => {
-    const i = document.createElement('input'); i.type = 'file'; i.accept = 'image/*';
-    i.onchange = () => res(i.files && i.files[0]); i.click();
+    const i = document.createElement('input'); i.type = 'file'; i.accept = 'image/*'; i.className = 'pilihFoto';
+    i.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:1px;opacity:0';
+    document.body.appendChild(i);
+    let beres = false;
+    const ambil = () => { if (beres) return; const f = i.files && i.files[0]; if (!f) return; beres = true; setTimeout(() => i.remove(), 1500); res(f); };
+    i.addEventListener('change', ambil); i.addEventListener('input', ambil);
+    i.click();
   });
 }
+const fileGambar = f => !!f && (/^image\//.test(f.type || '') || (!f.type && /\.(jpe?g|png|gif|webp|heic|heif|bmp)$/i.test(f.name || '')));
 
 // ---------------------------------------------------------------- FOTO PROFIL
-const cache = {}; // uid -> Promise<url|''>
+const cache = {}; // uid -> { p: Promise<url|''>, t }  (diambil ulang setelah 2 menit supaya foto baru orang lain ikut terlihat)
 export function fotoProfil(uid, segar = false) {
   if (!K.L || !uid || uid.startsWith('bot:')) return Promise.resolve('');
-  if (!cache[uid] || segar) cache[uid] = K.L.db.get(`fotoProfil/${uid}/d`).then(v => (typeof v === 'string' && v.startsWith('data:image/jpeg') ? v : ''), () => '');
-  return cache[uid];
+  const c = cache[uid];
+  if (!c || segar || Date.now() - c.t > 120000) cache[uid] = { p: K.L.db.get(`fotoProfil/${uid}/d`).then(v => (typeof v === 'string' && v.startsWith('data:image/jpeg') ? v : ''), () => ''), t: Date.now() };
+  return cache[uid].p;
 }
 // <img data-av="uid"> di dalam el diisi foto profilnya (atau inisial bila tidak ada)
 export function isiAvatar(el) {
@@ -63,7 +73,8 @@ export const htmlAvatar = (uid, nama, kelas = '') => `<span class="avatar ${kela
 export async function gantiFotoProfil(selesai) {
   if (!siap()) return;
   const f = await pilihFile(); if (!f) return;
-  if (!f.type.startsWith('image/')) { toast('Pilih file gambar ya.'); return; }
+  if (!fileGambar(f)) { toast('Pilih file gambar (JPG/PNG) ya.'); return; }
+  toast('⏳ Memproses foto…', 8000);
   try {
     const img = await muatGambar(f);
     const d = kompres(img, { maks: 256, persegi: true, batas: 40000, kualitas: 0.82 });
@@ -74,20 +85,31 @@ export async function gantiFotoProfil(selesai) {
       pasang(i) {
         i.querySelector('#fpB').onclick = () => (selesai ? selesai() : tutupKartu());
         i.querySelector('#fpS').onclick = async () => {
+          const b = i.querySelector('#fpS'); b.disabled = true; b.textContent = '⏳ Menyimpan…';
           try {
             await K.L.db.set('fotoProfil/' + K.L.uid, { d, t: TS });
-            cache[K.L.uid] = Promise.resolve(d);
+            cache[K.L.uid] = { p: Promise.resolve(d), t: Date.now() };
+            segarkanAvatar(K.L.uid, d);
             toast('Foto profil diperbarui ✨'); Prog.lapor('fotoProfil');
             selesai ? selesai() : tutupKartu();
-          } catch (e) { toast('Gagal menyimpan foto.'); }
+          } catch (e) {
+            console.warn('fotoProfil', e);
+            b.disabled = false; b.textContent = 'Pakai foto ini';
+            toast(/permission|denied/i.test(String(e && (e.code || e.message))) ? 'Foto belum bisa disimpan: akunmu belum di-ACC atau sedang dibatasi.' : 'Gagal menyimpan foto. Periksa koneksi lalu coba lagi.', 4500);
+          }
         };
       },
     });
-  } catch (e) { toast('Gambar tidak bisa dibaca. Coba format JPG/PNG.'); }
+  } catch (e) { toast('Gambar tidak bisa dibaca. Coba foto lain atau format JPG/PNG.', 4000); }
 }
 export async function hapusFotoProfil(uid = K.L.uid) {
   await K.L.db.set('fotoProfil/' + uid, null);
-  cache[uid] = Promise.resolve('');
+  cache[uid] = { p: Promise.resolve(''), t: Date.now() };
+  segarkanAvatar(uid, '');
+}
+// perbarui semua avatar milik uid yang sedang tampil di layar
+function segarkanAvatar(uid, d) {
+  document.querySelectorAll(`[data-av="${CSS.escape(uid)}"]`).forEach(a => { a.style.backgroundImage = d ? `url("${d}")` : ''; a.classList.toggle('ada', !!d); });
 }
 
 // ---------------------------------------------------------------- DINDING FOTO (GALERI)
@@ -128,7 +150,8 @@ async function bukaUnggah() {
   const kunci = 'unggah_' + new Date().toDateString(), sudah = LS.get(kunci, 0) || 0;
   if (sudah >= batasHarian()) { toast(`Batas unggah hari ini ${batasHarian()} foto.${Prog.vipSaya() ? '' : ' VIP bisa 10, VVIP 20 foto per hari.'}`, 4000); return; }
   const f = await pilihFile(); if (!f) return;
-  if (!f.type.startsWith('image/')) { toast('Pilih file gambar ya.'); return; }
+  if (!fileGambar(f)) { toast('Pilih file gambar (JPG/PNG) ya.'); return; }
+  toast('⏳ Memproses foto…', 8000);
   let img;
   try { img = await muatGambar(f); } catch (e) { toast('Gambar tidak bisa dibaca. Coba format JPG/PNG.'); return; }
   const besar = kompres(img, { maks: 960, batas: 200000, kualitas: 0.78 }), kecil = kompres(img, { maks: 300, batas: 28000, kualitas: 0.7 });

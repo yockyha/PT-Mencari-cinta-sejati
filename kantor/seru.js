@@ -2,10 +2,10 @@
 //  Fitur seru: streak harian, kecocokan (zodiak/MBTI/love language),
 //  mood di atas kepala, emote karakter, Amplop Cinta (gacha), Menfess.
 // =====================================================================
-import { LS, bersih, esc, fmt, kasar, sensor, hariIni } from '../js/common.js?v=202611270848';
-import { TS, kunciBaru } from '../js/db.js?v=202611270848';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam } from './ui.js?v=202611270848';
-import * as Prog from './progres.js?v=202611270848';
+import { LS, bersih, esc, fmt, kasar, sensor, hariIni } from '../js/common.js?v=202611270858';
+import { TS, kunciBaru } from '../js/db.js?v=202611270858';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam } from './ui.js?v=202611270858';
+import * as Prog from './progres.js?v=202611270858';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const siap = () => { if (!K.resmi()) { toast('👀 Daftar dulu untuk ikut.'); K.bukaDaftar(); return false; } if (K.terkunci) { toast('Kamu belum bisa berinteraksi sekarang.'); return false; } return true; };
