@@ -27,7 +27,7 @@ async function adegan(s, nama, detik, aksi) {
   for (let i = 0; i < n; i++) { await aksi(i, i / 30); if (i % 6 === 0) await s.ctx.clock.fastForward(200); }
   await s.p.screenshot({ path: `${OUT}/cek-${nama}.png` }); console.log('cek', nama);
 }
-const rapi = s => s.p.addStyleTag({ content: '#arah{display:none!important}' });
+const rapi = s => s.p.addStyleTag({ content: '#arah,#clubPemutar{display:none!important}' });
 const tekanE = s => s.p.keyboard.press('e');
 const ketik = (s, sel, teks, k) => ev(s, ([sel, v]) => { const e = document.querySelector(sel); if (e) { e.value = v; e.dispatchEvent(new Event('input', { bubbles: true })); } }, [sel, [...teks].slice(0, k).join('')]);
 
