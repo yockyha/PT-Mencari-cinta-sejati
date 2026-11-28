@@ -18,9 +18,11 @@ const COVER = {
   club: {
     jam: '2026-11-28T20:05:00+07:00',
     latar: { x: 64, z: 34, yaw: Math.PI + 0.12, pitch: 0.1, jarak: 14, y: 4.2 },
+    // kru Y.H.A Club (tampilan sama dengan karyawan.js): Mas Kevin · DJ Rendi · Bang Tigor
     tokoh: [
-      { look: { s: 'p', at: 'gaun', wa: 1, r: 1, w: 4, tl: 'antingBulat' }, a: 5, x: -0.42, ry: 0.45 },
-      { look: { s: 'l', at: 'kemeja', wa: 5, r: 4, lh: 'dasiKupu' }, a: 0, x: 0.42, ry: -0.45 },
+      { look: { s: 'l', at: 'kemeja', wa: 9, bw: 'bahan', sp: 'pantofel', r: 4, k: 1, lh: 'dasiKupu' }, a: 5, x: -0.78, ry: 0.4, z: -0.1 },
+      { look: { s: 'l', at: 'hoodie', wa: 8, bw: 'jogger', sp: 'sneakers', r: 7, w: 2, k: 2, tl: 'headset', kp: 'topi' }, a: 7, x: 0, ry: 0, z: 0.2 },
+      { look: { s: 'l', at: 'jasDir', bw: 'bahan', sp: 'pantofel', r: 3, k: 3, mt: 'hitam' }, a: 0, x: 0.8, ry: -0.4, z: -0.1, sk: 1.12 },
     ],
   },
   pegawai: {
@@ -69,7 +71,7 @@ const COVER = {
       const S = o => ({ v: 2, k: 1, r: 0, w: 0, wa: 0, wb: 0, at: 'kaos', bw: 'chino', sp: 'sneakers', kp: '', mt: '', tl: '', lh: '', tg: '', ef: '', ...o });
       for (const t of tokoh) {
         const g = buatKarakter(S(t.look), { peran: 'pengunjung' });
-        g.position.set(t.x, 0, t.z || 0); g.rotation.y = t.ry;
+        g.position.set(t.x, 0, t.z || 0); g.rotation.y = t.ry; if (t.sk) g.scale.setScalar(t.sk);
         for (let i = 0; i < 20; i++) pose(g, t.a, 0.08);
         sc.add(g);
       }
