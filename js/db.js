@@ -5,7 +5,7 @@
 //     tab-tab di browser yang sama saling tersambung lewat BroadcastChannel.
 //  Antarmuka: uid, mode, now(), set(), update(), push(), get(), on(), hapusSaatPutus()
 // =====================================================================
-import { CFG, LS, emailDari } from './common.js';
+import { CFG, LS, emailDari } from './common.js?v=202611270858';
 
 export const TS = { '.sv': 'timestamp' };
 const FBV = '10.14.1';
@@ -139,18 +139,23 @@ class DBLokal {
 
 // ---------------------------------------------------------------- FIREBASE
 class DBFirebase {
-  static async buat(cfg, { anonim = true } = {}) {
+  // akun: '' = sesi tamu (aplikasi Firebase bawaan), 'direktur' = sesi Direktur terpisah,
+  // supaya login Direktur tidak menimpa akun tamu di browser yang sama.
+  // paksaTamu: kalau sesi bawaan ternyata akun email (login Direktur versi lama), ganti dengan tamu anonim.
+  static async buat(cfg, { anonim = true, akun = '', paksaTamu = false } = {}) {
     const [{ initializeApp }, A, D] = await Promise.all([import(fbUrl('app')), import(fbUrl('auth')), import(fbUrl('database'))]);
-    const app = initializeApp(cfg);
+    const app = akun ? initializeApp(cfg, akun) : initializeApp(cfg);
     const auth = A.getAuth(app);
     let user = await new Promise(r => { const un = A.onAuthStateChanged(auth, u => { un(); r(u); }); });
+    if (user && paksaTamu && !user.isAnonymous) { await A.signOut(auth); user = null; }
     if (!user && anonim) user = (await A.signInAnonymously(auth)).user;
     const db = new DBFirebase();
     Object.assign(db, { A, D, auth, rdb: D.getDatabase(app), uid: user ? user.uid : null, anon: user ? user.isAnonymous : true, email: (user && user.email) || '', mode: 'online', offset: 0 });
     D.onValue(D.ref(db.rdb, '.info/serverTimeOffset'), s => { db.offset = s.val() || 0; });
     return db;
   }
-  r(p) { return this.D.ref(this.rdb, p); }
+  // Path kosong ('') = akar database. ref(db, '') ditolak Firebase, jadi pakai ref(db).
+  r(p) { return p ? this.D.ref(this.rdb, p) : this.D.ref(this.rdb); }
   now() { return Date.now() + this.offset; }
   set(p, v) { return this.D.set(this.r(p), v).catch(e => { console.warn('set', p, e.message); throw e; }); }
   update(p, o) { return this.D.update(this.r(p), o).catch(e => { console.warn('update', p, e.message); throw e; }); }
@@ -167,6 +172,8 @@ class DBFirebase {
     return this.uid;
   }
   async keluar() { await this.A.signOut(this.auth); }
+  // Token login (untuk server pembayaran otomatis memastikan siapa pembelinya)
+  async idToken() { return this.auth.currentUser ? this.auth.currentUser.getIdToken() : ''; }
   get masukDashboard() { return !this.anon; }
 }
 

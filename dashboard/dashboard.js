@@ -3,9 +3,9 @@
 //  Login username + kata sandi → ringkasan, persetujuan pendaftar,
 //  anggota, online, aktivitas, acara, toko, laporan, siaran & data.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, GENDER, BARANG_DIAMOND, IKON_DM, esc, fmt, bersih, levelDari, hariIni, lokasiDi, kodeTamu } from '../js/common.js';
-import { bukaDB } from '../js/db.js';
-import { buatLayanan } from '../js/layanan.js';
+import { CFG, LS, TUJUAN, LOKASI, GENDER, BARANG_DIAMOND, IKON_DM, esc, fmt, bersih, levelDari, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611270858';
+import { bukaDB } from '../js/db.js?v=202611270858';
+import { buatLayanan } from '../js/layanan.js?v=202611270858';
 
 const $ = id => document.getElementById(id);
 let db = null, L = null;
@@ -40,15 +40,15 @@ const diusir = uid => (S.ban?.[uid]?.sampai || 0) > kini();
 const onlineAktif = () => ent(S.online).filter(([, p]) => !p.t || kini() - p.t < 120000);
 const gagal = e => { console.warn(e); toast('Gagal: ' + (e && e.message ? e.message.replace(/^.*PERMISSION_DENIED.*$/, 'izin ditolak server') : 'coba lagi')); };
 const paket = id => [...(CFG.toko?.paket || []), ...(CFG.diamond?.paket || []).map(p => ({ ...p, nama: `${p.diamond} Diamond` }))].find(p => p.id === id) || (id === 'donasi' ? { id, nama: 'Donasi', harga: 0 } : null);
-const METODE = { qris: 'QRIS', bca: 'BCA', bri: 'BRI', lain: 'Lainnya' };
+const METODE = { otomatis: '⚡ Otomatis', qris: 'QRIS', bca: 'BCA', bri: 'BRI', lain: 'Lainnya' };
 
 // ---------------------------------------------------------------- MULAI
 (async function mulai() {
-  db = await bukaDB({ anonim: false });
+  db = await bukaDB({ anonim: false, akun: 'direktur' });
   $('lInfo').innerHTML = db.mode === 'lokal'
     ? `<b>Mode lokal (demo).</b> Login memakai <code>direkturDemo</code> di <code>config.js</code>${CFG.direkturDemo ? ` (username <code>${esc(CFG.direkturDemo.username)}</code>)` : ''}. Data hanya tersimpan di browser ini.`
-    : `Username = bagian depan email akun Direktur di Firebase Authentication (contoh <code>yocky</code> untuk <code>yocky@${esc(CFG.domainLogin)}</code>), atau ketik email lengkap.`;
-  if (db.masukDashboard && db.uid && (await db.get('peran/' + db.uid).catch(() => null)) === 'direktur') return masukApp();
+    : `Username = bagian depan email akun Direktur di Firebase Authentication (contoh <code>direktur</code> untuk <code>direktur@${esc(CFG.domainLogin)}</code>), atau ketik email lengkap.`;
+  if (db.masukDashboard && db.uid && (await db.get('peran/' + db.uid).catch(() => null)) === 'direktur') { if (db.mode === 'online') LS.set('adaDirektur', true); return masukApp(); }
   tampilLogin();
 })().catch(e => { console.error(e); document.body.innerHTML = '<p style="padding:24px">Dashboard gagal dimuat. Coba muat ulang.</p>'; });
 
@@ -66,6 +66,7 @@ function tampilLogin() {
         return;
       }
       E.textContent = ''; $('lP').value = '';
+      LS.set('adaDirektur', true); LS.set('modeKantor', 'direktur');
       masukApp();
     } catch (err) { console.warn(err); E.textContent = 'Username atau kata sandi salah.'; }
   };
@@ -73,11 +74,21 @@ function tampilLogin() {
 
 function masukApp() {
   L = buatLayanan(db);
+  // sekali saja: hapus username IG lama dari buku tamu publik (sekarang hanya ada di data pribadi)
+  if (db.mode === 'online') db.get('tamu').then(o => { const upd = {}; for (const [u, v] of Object.entries(o || {})) if (v && v.ig) upd[`tamu/${u}/ig`] = ''; if (Object.keys(upd).length) db.update('', upd).catch(e => console.warn('bersih ig', e)); }).catch(() => {});
   $('login').hidden = true; $('app').hidden = false;
   $('mode').textContent = db.mode === 'lokal' ? 'langsung · mode lokal (demo)' : 'langsung · online';
   const node = ['pendaftaran', 'anggota', 'tamu', 'online', 'peran', 'ban', 'exp', 'expBeli', 'vip', 'papan', 'curhatPemilik', 'laporan', 'saran',
-    'pesanan', 'riwayat', 'acara', 'ikutAcara', 'hadirAcara', 'setelan', 'mading', 'pengumuman', 'diamond', 'milik', 'donatur', 'katalog'];
-  for (const n of node) db.on(n, v => { S[n] = v || {}; jadwalGambar(); });
+    'pesanan', 'riwayat', 'acara', 'ikutAcara', 'hadirAcara', 'setelan', 'mading', 'pengumuman', 'diamond', 'milik', 'donatur', 'katalog', 'profilPribadi'];
+  let onlineT = 0, onlineTunda = null;
+  for (const n of node) db.on(n, v => {
+    S[n] = v || {};
+    if (n !== 'online') return jadwalGambar();
+    if (!['online', 'ringkas'].includes(bagian)) { navigasi(); return; }
+    const sisa = 3000 - (Date.now() - onlineT);
+    if (sisa <= 0) { onlineT = Date.now(); jadwalGambar(); }
+    else if (!onlineTunda) onlineTunda = setTimeout(() => { onlineTunda = null; onlineT = Date.now(); jadwalGambar(); }, sisa);
+  });
   db.on('chat', v => { S.chat = v || {}; jadwalGambar(); }, { limit: 200 });
   db.on('curhat', v => { S.curhat = v || {}; jadwalGambar(); }, { limit: 100 });
   db.on('skor/' + hariIni(), v => { S.skor = v || {}; jadwalGambar(); });
@@ -88,12 +99,15 @@ function masukApp() {
 }
 
 // ---------------------------------------------------------------- RENDER
-let antre = false, kotor = false;
+let antre = false, kotor = false, ditekan = false;
+// Selama tombol mouse/jari ditekan, tunda gambar ulang supaya klik tidak hilang karena tombol diganti
+addEventListener('pointerdown', () => { ditekan = true; }, true);
+for (const ev of ['pointerup', 'pointercancel']) addEventListener(ev, () => { ditekan = false; if (kotor) setTimeout(() => { if (kotor && !ditekan && !sibukMengetik()) gambar(); }, 120); }, true);
 function jadwalGambar() { if (antre) return; antre = true; setTimeout(() => { antre = false; gambar(); }, 250); }
 function sibukMengetik() { const a = document.activeElement; return a && $('isi').contains(a) && a.matches('input,textarea,select'); }
 function gambar(paksa = false) {
   navigasi();
-  if (!paksa && sibukMengetik()) { kotor = true; return; }
+  if (!paksa && (sibukMengetik() || ditekan)) { kotor = true; return; }
   kotor = false;
   const m = MENU.find(x => x[0] === bagian);
   $('judul').textContent = m[1] + ' ' + m[2];
@@ -110,7 +124,7 @@ function navigasi() {
     ${MENU.map(([k, ik, n]) => `<button type="button" class="nav ${k === bagian ? 'on' : ''}" data-b="${k}"><span>${ik}</span><span>${n}</span>${hitung[k] ? `<span class="jml">${hitung[k]}</span>` : ''}</button>`).join('')}
     <div class="bawah"><a class="btn emas" href="../kantor/index.html" target="_blank" rel="noopener">🏢 Masuk kantor</a><button class="btn putih" type="button" id="bKeluar">Keluar</button></div>`;
   $('samping').querySelectorAll('[data-b]').forEach(b => b.onclick = () => { bagian = b.dataset.b; history.replaceState(null, '', '#' + bagian); gambar(true); scrollTo(0, 0); });
-  $('bKeluar').onclick = async () => { await db.keluar().catch(() => {}); location.reload(); };
+  $('bKeluar').onclick = async () => { await db.keluar().catch(() => {}); LS.set('adaDirektur', false); LS.set('modeKantor', 'tamu'); location.reload(); };
 }
 
 // ---------------------------------------------------------------- 📊 RINGKASAN
@@ -140,11 +154,11 @@ function ringkas() {
       <div class="angka sorot tombol" data-ke="daftar"><b>${fmt(menunggu)}</b><span>📝 pendaftar menunggu</span></div>
       <div class="angka tombol" data-ke="online"><b>${fmt(onlineAktif().length)}</b><span>🟢 online sekarang</span></div>
       <div class="angka tombol" data-ke="anggota"><b>${fmt(ang.length)}</b><span>👥 anggota resmi</span></div>
-      <div class="angka tombol" data-ke="toko"><b>${fmt(ent(S.pesanan).length)}</b><span>💳 pesanan menunggu</span></div>
+      <div class="angka tombol" data-ke="toko"><b>${fmt(ent(S.pesanan).filter(([, v]) => v.metode !== 'otomatis').length)}</b><span>💳 pesanan menunggu</span></div>
       <div class="angka tombol" data-ke="toko"><b>${rp(pendapatan)}</b><span>💰 total pendapatan</span></div>
       <div class="angka tombol" data-ke="laporan"><b>${fmt(ent(S.laporan).length)}</b><span>🚩 laporan</span></div>
       <div class="angka tombol" data-ke="acara"><b>${fmt(nanti)}</b><span>📅 acara mendatang</span></div>
-      <div class="angka"><b>${fmt(ent(S.vip).filter(([u]) => vipAktif(u)).length)}</b><span>💎 Eksekutif aktif</span></div>
+      <div class="angka"><b>${fmt(ent(S.vip).filter(([u]) => vipAktif(u)).length)}</b><span>💎 VIP / VVIP aktif</span></div>
     </div>
     <div class="panel"><h3>Anggota per tujuan</h3><div class="tiga">${Object.entries(TUJUAN).map(([k, t]) => `<div class="angka"><b>${fmt(ang.filter(([, a]) => a.tj === k).length)}</b><span>${t.ikon} ${t.nama}</span></div>`).join('')}</div></div>
     <div class="dua">
@@ -182,7 +196,10 @@ function vDaftar() {
         <dt>Kelamin</dt><dd>${esc(GENDER[d.g] || 'Rahasia')}</dd>
         <dt>Kota</dt><dd>${esc(d.kota)}</dd>
         ${d.s ? `<dt>Status hati</dt><dd>${esc(d.s)}</dd>` : ''}
+        ${d.nl ? `<dt>Nama lengkap</dt><dd>${esc(d.nl)}</dd>` : ''}
         <dt>Instagram</dt><dd>${d.ig ? `<a href="https://www.instagram.com/${encodeURIComponent(d.ig)}/" target="_blank" rel="noopener">@${esc(d.ig)}</a>` : '—'}</dd>
+        <dt>TikTok</dt><dd>${d.tt ? `<a href="https://www.tiktok.com/@${encodeURIComponent(d.tt)}" target="_blank" rel="noopener">@${esc(d.tt)}</a>` : '—'}</dd>
+        ${CFG.wajibFollow ? `<dt>Follow & komen</dt><dd>${d.ikut ? `☑️ mengaku sudah${d.ig ? ` · <a href="https://www.instagram.com/${encodeURIComponent(d.ig)}/" target="_blank" rel="noopener">cek profilnya</a>` : ''}` : '⚠️ belum'}<br><span class="kecil">✅ Verifikasi akun: cari komen <b>"${esc(CFG.wajibFollow.komen || 'DAFTAR')} ${esc(kodeTamu(u))}"</b> dari <b>@${esc(d.ig || d.tt || '?')}</b> di postingan terbaru, dan pastikan dia ada di daftar follower. Kalau komennya dari akun lain, berarti akun itu bukan miliknya.</span></dd>` : ''}
         <dt>Masuk</dt><dd>${esc(tgl(d.t))}</dd>
         <dt>Kode</dt><dd><code>${esc(kodeTamu(u))}</code></dd>
       </dl>
@@ -202,7 +219,7 @@ function vDaftar() {
       ${list.length ? `<div class="daftarKartu">${list.map(kartu).join('')}</div>` : `<p class="kosong">${filterDaftar === 'menunggu' ? 'Tidak ada pendaftar yang menunggu. 🎉' : 'Tidak ada pendaftaran yang ditolak.'}</p>`}
       <div class="panel"><h3>Format pendaftaran</h3>
         <p class="kecil">Pengunjung yang belum diterima hanya bisa melihat-lihat: tidak terlihat orang lain, tidak bisa chat, ngobrol, ikut acara, atau mengumpulkan EXP (dikunci di server). Formulir yang mereka isi:</p>
-        <ol class="kecil" style="line-height:1.7"><li>Tujuan datang: 💘 Cari Jodoh / 🤝 Cari Teman / 💬 Mau Curhat</li><li>Nama panggilan (2–20 huruf)</li><li>Umur (min. ${CFG.pendaftaran?.umurMin || 13}; Cari Jodoh min. ${CFG.pendaftaran?.umurMinJodoh || 18})</li><li>Jenis kelamin (opsional) & kota</li><li>Status hati (khusus Cari Jodoh)</li><li>Instagram (opsional, untuk verifikasi)</li><li>Tentang aku (10–100 huruf) & alasan bergabung (10–200 huruf)</li><li>Pernyataan data benar & janji sopan</li></ol>
+        <ol class="kecil" style="line-height:1.7"><li>Tujuan datang: 💘 Cari Jodoh / 🤝 Cari Teman / 💬 Mau Curhat</li><li>Nama karakter (2–20 huruf) & nama lengkap (privat)</li><li>Umur (min. 18 tahun)</li><li>Jenis kelamin (opsional) & kota</li><li>Status hati (khusus Cari Jodoh)</li><li>Username Instagram (wajib) & TikTok (opsional), diverifikasi lewat komen berisi kode unik</li><li>Tentang aku (10–100 huruf) & alasan bergabung (10–200 huruf)</li><li>Pernyataan data benar & janji sopan</li></ol>
       </div>`,
     pasang(el) {
       el.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { filterDaftar = b.dataset.f; gambar(true); });
@@ -242,7 +259,7 @@ function vAnggota() {
       <p class="kecil">${fmt(list.length)} dari ${fmt(semua.length)} anggota · ketuk baris untuk mengelola</p>
       <div class="tabelWrap"><table><thead><tr><th>Nama</th><th>Tujuan</th><th>Peran</th><th>Level</th><th>EXP</th><th>Eksekutif</th><th>Status</th><th>Sejak</th></tr></thead><tbody>
       ${list.map(a => `<tr data-u="${esc(a.u)}" class="${pilihAnggota === a.u ? 'pilih' : ''}"><td><b>${esc(a.n)}</b><br><code>${esc(kodeTamu(a.u))}</code></td><td>${pillTj(a.tj)}</td><td>${a.peran === 'direktur' ? '👑 Direktur' : a.peran === 'staf' ? '🛡 Staf' : 'Tamu'}</td>
-        <td class="angkaK">${a.peran === 'direktur' ? '∞' : levelDari(a.exp)}</td><td class="angkaK">${a.peran === 'direktur' ? '∞' : fmt(a.exp)}</td><td>${vipAktif(a.u) ? '💎 s/d ' + esc(tgl(S.vip[a.u].sampai)) : '—'}</td>
+        <td class="angkaK">${a.peran === 'direktur' ? '∞' : levelDari(a.exp)}</td><td class="angkaK">${a.peran === 'direktur' ? '∞' : fmt(a.exp)}</td><td>${vipAktif(a.u) ? (S.vip[a.u].tingkat === 'vvip' ? '👑 VVIP' : '💎 VIP') + ' s/d ' + esc(tgl(S.vip[a.u].sampai)) : '—'}</td>
         <td>${diusir(a.u) ? '🚪 diusir' : on.has(a.u) ? '🟢 online' : '—'}</td><td>${esc(tgl(a.sejak))}</td></tr>`).join('') || '<tr><td colspan="8" class="kosong">Belum ada anggota.</td></tr>'}
       </tbody></table></div>
       ${pilihAnggota ? detailAnggota(pilihAnggota) : ''}`,
@@ -268,11 +285,12 @@ function detailAnggota(u) {
       <div class="baris"><button class="btn putih kecil" type="button" data-exp="50">+50</button><button class="btn putih kecil" type="button" data-exp="100">+100</button><button class="btn putih kecil" type="button" data-exp="500">+500</button>
       <input data-i="expSet" type="number" min="0" placeholder="Atur EXP bonus" style="width:150px" aria-label="Atur EXP bonus"><button class="btn kecil" type="button" data-d="expSet">Atur</button></div></div>
     <div class="seksi"><h4>${IKON_DM} Diamond · saldo ${fmt(S.diamond?.[u] || 0)}</h4>
+      ${(() => { const pp = S.profilPribadi?.[u] || {}; return `<p class="kecil">🔒 Data pribadi: ${pp.nl ? `<b>${esc(pp.nl)}</b>` : 'nama lengkap —'} · ${pp.ig ? `<a href="https://www.instagram.com/${encodeURIComponent(pp.ig)}/" target="_blank" rel="noopener">IG @${esc(pp.ig)}</a>` : 'IG —'} · ${pp.tt ? `<a href="https://www.tiktok.com/@${encodeURIComponent(pp.tt)}" target="_blank" rel="noopener">TikTok @${esc(pp.tt)}</a>` : 'TikTok —'}</p>`; })()}
       <p class="kecil">Barang dimiliki: ${esc(Object.keys(S.milik?.[u] || {}).map(id => (BARANG_DIAMOND.find(x => x.id === id) || {}).nama || id).join(', ') || '—')}</p>
       <div class="baris"><button class="btn putih kecil" type="button" data-dm="50">+50</button><button class="btn putih kecil" type="button" data-dm="100">+100</button><button class="btn putih kecil" type="button" data-dm="500">+500</button>
       <input data-i="dmSet" type="number" min="0" placeholder="Atur saldo" style="width:130px" aria-label="Atur saldo diamond"><button class="btn kecil" type="button" data-d="dmSet">Atur</button></div></div>
-    <div class="seksi"><h4>Kartu Eksekutif ${vipAktif(u) ? `· aktif s/d ${esc(tgl(S.vip[u].sampai))}` : ''}</h4>
-      <div class="baris"><button class="btn putih kecil" type="button" data-vip="7">+7 hari</button><button class="btn putih kecil" type="button" data-vip="30">+30 hari</button><button class="btn putih kecil" type="button" data-vip="365">+1 tahun</button>${vipAktif(u) ? '<button class="btn merah kecil" type="button" data-d="vipCabut">Cabut</button>' : ''}</div></div>
+    <div class="seksi"><h4>VIP ${vipAktif(u) ? `· aktif s/d ${esc(tgl(S.vip[u].sampai))}` : ''}</h4>
+      <div class="baris"><button class="btn putih kecil" type="button" data-vip="7">+7 hari</button><button class="btn putih kecil" type="button" data-vip="30">+30 hari</button><button class="btn putih kecil" type="button" data-vip="365">+1 tahun</button><button class="btn putih kecil" type="button" data-vvip="30">👑 VVIP +30 hari</button>${vipAktif(u) ? '<button class="btn merah kecil" type="button" data-d="vipCabut">Cabut</button>' : ''}</div></div>
     <div class="seksi"><h4>Jabatan</h4><div class="baris"><button class="btn ${peran === 'staf' ? 'putih' : ''} kecil" type="button" data-d="${peran === 'staf' ? 'jadiTamu' : 'jadiStaf'}">${peran === 'staf' ? 'Jadikan tamu biasa' : 'Angkat jadi Staf 🛡'}</button></div></div>
     <div class="seksi"><h4>Tindakan ${ban && ban.sampai > kini() ? `· 🚪 diusir s/d ${esc(tgl(ban.sampai))} (${esc(ban.alasan || '')})` : ''}</h4>
       <div class="baris"><input data-i="alasan" maxlength="100" placeholder="Alasan" value="Melanggar aturan kantor" style="flex:1 1 200px" aria-label="Alasan">
@@ -288,7 +306,8 @@ function pasangDetail(el) {
   const jalankan = (p, pesan) => p.then(() => { kotor = false; toast(pesan); }).catch(gagal);
   d.querySelectorAll('[data-exp]').forEach(b => b.onclick = () => jalankan(L.beriExp(u, +b.dataset.exp).then(() => L.kirimNotif(u, `Kamu dapat ${b.dataset.exp} EXP dari Direktur 🎁`)), `+${b.dataset.exp} EXP ✔`));
   d.querySelectorAll('[data-dm]').forEach(b => b.onclick = () => jalankan(L.beriDiamond(u, +b.dataset.dm).then(() => L.kirimNotif(u, `Kamu dapat ${b.dataset.dm} Diamond dari Direktur 🎁`)), `+${b.dataset.dm} Diamond ✔`));
-  d.querySelectorAll('[data-vip]').forEach(b => b.onclick = () => jalankan(L.beriVip(u, +b.dataset.vip).then(() => L.kirimNotif(u, `Kartu Eksekutif kamu diperpanjang ${b.dataset.vip} hari 💎`)), 'Kartu Eksekutif diperpanjang 💎'));
+  d.querySelectorAll('[data-vip]').forEach(b => b.onclick = () => jalankan(L.beriVip(u, +b.dataset.vip).then(() => L.kirimNotif(u, `VIP kamu diperpanjang ${b.dataset.vip} hari 💎`)), 'VIP diperpanjang 💎'));
+  d.querySelectorAll('[data-vvip]').forEach(b => b.onclick = () => jalankan(L.beriVip(u, +b.dataset.vvip, 'vvip').then(() => L.kirimNotif(u, `Kamu sekarang VVIP 👑 selama ${b.dataset.vvip} hari. Selamat!`)), 'VVIP diberikan 👑'));
   d.querySelectorAll('[data-usir]').forEach(b => b.onclick = () => {
     const m = b.dataset.usir === 'blokir' ? 60 * 24 * 365 * 100 : +b.dataset.usir;
     jalankan(L.usir(u, m, i('alasan').value || 'Melanggar aturan kantor', a.n), `${a.n} dikeluarkan 🚪`);
@@ -299,7 +318,7 @@ function pasangDetail(el) {
     if (k === 'simpan') { const n = bersih(i('n').value, 20); if (n.length < 2) return toast('Nama minimal 2 huruf'); jalankan(L.ubahAnggota(u, { n, tj: i('tj').value }), 'Data anggota disimpan ✔'); }
     if (k === 'dmSet') { const n = +i('dmSet').value; if (!(n >= 0)) return toast('Isi angka diamond'); jalankan(L.setDiamond(u, n), 'Saldo diamond diatur ✔'); }
     if (k === 'expSet') { const n = +i('expSet').value; if (!(n >= 0)) return toast('Isi angka EXP'); jalankan(L.setExpBeli(u, n), 'EXP bonus diatur ✔'); }
-    if (k === 'vipCabut') jalankan(db.set('vip/' + u, { sampai: kini() }), 'Kartu Eksekutif dicabut');
+    if (k === 'vipCabut') jalankan(db.set('vip/' + u, { sampai: kini() }), 'VIP dicabut');
     if (k === 'jadiStaf') jalankan(L.setPeran(u, 'staf').then(() => L.kirimNotif(u, 'Kamu diangkat menjadi Staf 🛡')), `${a.n} sekarang Staf 🛡`);
     if (k === 'jadiTamu') jalankan(L.setPeran(u, null), `${a.n} kembali jadi tamu`);
     if (k === 'ampun') jalankan(L.ampuni(u), 'Sudah diampuni');
@@ -348,7 +367,7 @@ const TEMPLAT = [
   { judul: 'Sesi Curhat Bareng', isi: 'Ruang aman untuk cerita. Tulis di papan curhat, saling peluk dan kuatkan.', lokasi: 'taman', durasi: 60, exp: 40 },
   { judul: 'Kuis Cinta', isi: 'Direktur kasih pertanyaan di chat, yang jawab paling cepat menang hadiah EXP.', lokasi: 'rapat', durasi: 45, exp: 50 },
   { judul: 'Turnamen Tangkap Hati', isi: 'Skor tertinggi hari ini dapat hadiah dari Direktur!', lokasi: 'lobi', durasi: 60, exp: 30 },
-  { judul: 'Malam Eksekutif', isi: 'Nongkrong santai khusus pemegang Kartu Eksekutif.', lokasi: 'lounge', durasi: 90, exp: 40 },
+  { judul: 'Malam Eksekutif', isi: 'Nongkrong santai khusus pemegang VIP.', lokasi: 'lounge', durasi: 90, exp: 40 },
 ];
 const keWib = ms => new Date(ms + 7 * 3600e3).toISOString().slice(0, 16);
 function dariWib(v) { const [t, j] = String(v).split('T'); if (!j) return NaN; const [y, m, d] = t.split('-').map(Number); const [h, mi] = j.split(':').map(Number); return Date.UTC(y, m - 1, d, h - 7, mi); }
@@ -400,24 +419,27 @@ function vAcara() {
 
 // ---------------------------------------------------------------- 💳 TOKO
 function vToko() {
-  const ps = ent(S.pesanan).sort((a, b) => a[1].t - b[1].t);
+  const semua = ent(S.pesanan).sort((a, b) => a[1].t - b[1].t);
+  const ps = semua.filter(([, v]) => v.metode !== 'otomatis'), pOto = semua.filter(([, v]) => v.metode === 'otomatis');
   const rw = ent(S.riwayat).sort((a, b) => b[1].t - a[1].t);
   const total = rw.reduce((a, [, r]) => a + (r.harga || 0), 0);
   const bln = t => new Date(t + 7 * 3600e3).toISOString().slice(0, 7);
   const bulanIni = rw.filter(([, r]) => bln(r.t) === bln(kini())).reduce((a, [, r]) => a + (r.harga || 0), 0);
   const perMetode = Object.keys(METODE).map(m => [m, rw.filter(([, r]) => r.metode === m).reduce((a, [, r]) => a + (r.harga || 0), 0)]).filter(([, v]) => v);
   const donasi = rw.filter(([, r]) => r.jenis === 'donasi').reduce((a, [, r]) => a + (r.harga || 0), 0);
-  const B = CFG.pembayaran || {}, metode = [B.qris ? 'QRIS' : null, ...(B.bank || []).filter(x => x && x.nomor).map(x => x.bank), CFG.toko?.linkBayar ? 'Lainnya' : null].filter(Boolean);
+  const B = CFG.pembayaran || {}, metode = [B.otomatis === 'midtrans' ? '⚡ Otomatis (Midtrans)' : null, B.qris ? 'QRIS' : null, ...(B.bank || []).filter(x => x && x.nomor).map(x => x.bank), CFG.toko?.linkBayar ? 'Lainnya' : null].filter(Boolean);
   const kat = S.katalog || {}, katBeda = BARANG_DIAMOND.filter(x => !kat[x.id] || kat[x.id].harga !== x.harga);
   const donatur = ent(S.donatur).sort((a, b) => (b[1].total || 0) - (a[1].total || 0));
   const dmBeredar = ent(S.diamond).reduce((a, [, v]) => a + (+v || 0), 0);
   return {
     html: `<div class="grid"><div class="angka sorot"><b>${fmt(ps.length)}</b><span>pesanan menunggu</span></div><div class="angka"><b>${rp(bulanIni)}</b><span>pendapatan bulan ini</span></div><div class="angka"><b>${rp(total)}</b><span>total pendapatan</span></div><div class="angka"><b>${rp(donasi)}</b><span>🎁 total donasi</span></div><div class="angka"><b>${fmt(dmBeredar)}</b><span>${IKON_DM} diamond beredar</span></div></div>
       <div class="panel"><h3>Metode pembayaran aktif <small>${metode.length ? esc(metode.join(' · ')) : 'belum ada'}</small></h3>
+        ${B.otomatis === 'midtrans' ? `<p class="kecil">⚡ <b>Pembayaran otomatis aktif.</b> Pesanan lewat Midtrans langsung lunas sendiri, tidak perlu disetujui. ${pOto.length ? `${fmt(pOto.length)} tamu sedang di halaman bayar.` : ''} Uang masuk ke saldo Midtrans kamu, lalu dicairkan ke rekening.</p>` : '<p class="kecil">💡 Mau diamond masuk otomatis tanpa perlu menyetujui? Aktifkan Midtrans (lihat README bagian <b>Pembayaran otomatis</b>).</p>'}
         ${metode.length ? '<p class="kecil">Atur QRIS & rekening di <code>config.js</code> → <code>pembayaran</code>.</p>' : '<p><b>⚠️ Toko masih tertutup.</b> Isi <code>pembayaran.qris</code> dan/atau nomor rekening BCA/BRI di <code>config.js</code>, lalu merge ke <code>main</code>.</p>'}
         ${katBeda.length ? `<p><b>⚠️ Harga barang Diamond belum diterbitkan</b> (${katBeda.length} barang). Tanpa ini, tamu tidak bisa membeli barang dengan Diamond.</p><button class="btn" type="button" id="kT">Terbitkan harga barang Diamond</button>` : `<p class="kecil">✅ Harga ${BARANG_DIAMOND.length} barang Diamond sudah terbit.</p>`}
       </div>
-      <div class="panel"><h3>Pesanan menunggu</h3>
+      ${pOto.length ? `<div class="panel"><h3>⚡ Menunggu dibayar (otomatis) <small>${fmt(pOto.length)}</small></h3><p class="kecil">Tidak perlu diapa-apakan: lunas → masuk sendiri, tidak dibayar 60 menit → batal sendiri.</p><ul class="feed">${pOto.slice(-20).reverse().map(([, v]) => `<li><span class="isi"><b>${esc(v.nama || v.paket)}</b><br><span class="kecil">${esc(bersih(v.n, 20))} · <code>${esc(v.kode)}</code></span></span><b>${rp(v.nominal)}</b><time>${esc(tgl(v.t))}</time></li>`).join('')}</ul></div>` : ''}
+      <div class="panel"><h3>Pesanan manual menunggu</h3>
         <p class="kecil">Buka mutasi rekening / riwayat QRIS, cari <b>nominal unik</b> di bawah (sampai 3 digit terakhir), lalu Setujui. Diamond/paket masuk otomatis ke akun pembeli.</p>
         ${ps.length ? `<ul class="feed">${ps.map(([id, v]) => `<li><span class="isi"><b>${esc(v.nama || paket(v.paket)?.nama || v.paket)}</b> ${v.jenis === 'donasi' ? '🎁' : ''}<br><span class="kecil">${esc(bersih(v.n, 20))} · <code>${esc(v.kode || kodeTamu(v.uid))}</code> · ${esc(tgl(v.t))}${v.pesan ? ` · “${esc(v.pesan)}”` : ''}</span></span>
           <span class="nominal"><b>${rp(v.nominal || paket(v.paket)?.harga || 0)}</b><small>${esc(METODE[v.metode] || '-')}</small></span>

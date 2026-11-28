@@ -1,5 +1,5 @@
 // Alat UI bersama + status bersama (K) untuk modul-modul kantor.
-import { esc } from '../js/common.js';
+import { esc } from '../js/common.js?v=202611270858';
 
 export const $ = id => document.getElementById(id);
 
@@ -13,11 +13,12 @@ export function toast(t, lama = 2600) {
 }
 
 let saatTutup = null;
-export function bukaKartu(html, { bawah = false, pasang, tutup } = {}) {
+export function bukaKartu(html, { bawah = false, pasang, tutup, gaya = '' } = {}) {
   const k = $('kartu'), isi = k.querySelector('.isi');
   if (saatTutup) { const f = saatTutup; saatTutup = null; f(); }
   isi.innerHTML = `<button class="x" type="button" aria-label="Tutup">✕</button>` + html;
   k.classList.toggle('bawah', bawah);
+  k.classList.toggle('kartuDir', gaya === 'dir'); // kartu mewah untuk semua yang berasal dari Direktur
   k.hidden = false;
   isi.scrollTop = 0;
   isi.querySelector('.x').onclick = tutupKartu;

@@ -2,6 +2,8 @@
 
 Kantor virtual 3D tempat orang datang sebagai **tamu** untuk **💘 cari jodoh**, **🤝 cari teman**, atau sekadar **💬 curhat**. Pemilik situs memegang kendali sebagai **👑 Direktur Utama**.
 
+🌐 **Situs:** <https://jodohonline.company> · kantor: <https://jodohonline.company/kantor/> · daftar: <https://jodohonline.company/kantor/#daftar> · dashboard: <https://jodohonline.company/dashboard/>
+
 ## Konsep
 
 | Siapa | Bisa apa |
@@ -35,14 +37,31 @@ Login username + kata sandi. Isinya:
 🔒 Isi obrolan pribadi antar-tamu sengaja tidak bisa dibaca siapa pun selain dua orang di dalamnya, termasuk Direktur.
 
 ### Ruangan
-- **Lobi**: resepsionis (info & aturan), mading kantor, sofa
+- **Lobi**: resepsionis di sisi barat (info & aturan), Papan Donasi & mading di sisi timur, sofa; jalan tengah dari pintu ke dalam kantor dibiarkan lega. Papan nama gedung, dinding & kanopi otomatis transparan bila menghalangi kamera
 - **💘 Kafe Jodoh** (pantry): Mesin Kopi Jodoh memberi ramalan + menyarankan tamu lain yang juga cari jodoh
 - **🤝 Meja Nongkrong**: 8 meja topik (Gaming, Musik, Drakor & Film, Olahraga, Kuliner, Buku, Jalan-jalan, Random). Duduk di meja = minatmu terlihat di profil
 - **💬 Taman Curhat**: papan curhat anonim (pelukan 🤗 + balasan) dan air mancur harapan
 - **📋 Ruang Rapat**: papan tulis bersama
-- **📖 Buku Tamu**: semua tamu yang pernah datang
+- **📖 Buku Tamu**: monitor LIVE, nama semua tamu turun bergantian seperti hujan (makin ramai makin cepat)
 - **👔 Ruang Loker**: ganti penampilan
-- **👑 Ruang Direktur**: kotak saran untuk Direktur + pintu masuk Panel Direktur
+- **👑 Ruang Direktur** (suite mewah): lounge tamu (sofa kulit, akuarium), meja Direktur (kursi singgasana, globe), kamar pribadi (kasur king, TV, mini bar, treadmill). Direktur bisa kerja, tidur, nonton TV, bikin kopi, olahraga. **Tamu harus mengetuk pintu dulu** (pintu dijaga 2 pengawal 🕶️ GUARD); Direktur mengizinkan (30 menit / 2 jam), menolak, mengundang, atau membuka ruangan untuk semua (Panel → Kuasa → 🚪 Pintu Ruanganmu)
+- **🎡 Taman Cinta** (gedung baru di barat kantor): air mancur harapan, Bioskop Cinta, bianglala (bisa dinaiki), kedai es krim/boba/sosis. Sebelum jadwal buka tampil sebagai proyek pembangunan dengan hitung mundur
+
+### 📢 Papan Informasi (halaman depan)
+Layar LED raksasa 2 sisi di halaman depan dekat pintu masuk, terlihat dari jalan, halaman, dan pintu. Info dari Direktur tampil bergantian seperti slide (ikon, judul, isi, tanggal), dengan lampu LED berjalan di bingkai, jam WIB, dan teks berjalan berisi semua judul. Tamu mengetuk papan untuk membaca semua info; tamu yang sedang online mendapat notifikasi saat ada info baru. Direktur menulis, menyematkan 📌, dan menghapus info lewat papan itu atau **Panel → Kuasa → 📢 Papan Informasi** (6 pilihan warna, 12 ikon). Hanya Direktur yang bisa menulis (aturan `papanInfo`).
+
+### 🎵 Musik latar & efek suara
+Semua musik & suara disintesis langsung di browser (`kantor/musik.js`, Web Audio API): tanpa file lagu, bebas hak cipta, dan sedikit berbeda tiap putaran. Lagu berganti otomatis dengan crossfade: **🎵 Ceria** (lobi, halaman, Taman Cinta), **☕ Santai lo-fi** (ruangan kantor & saat main Tangkap Hati), **🌙 Malam bossa** (Lounge & suite Direktur). Efek suara untuk duduk/berdiri, pesan kopi/minum/makan, chat, foto, koin, level naik, match, hadiah, pembayaran, game, ketukan & pintu suite, tidur, lambai, dll. Tombol **🎵** di kanan layar: hidup/mati & volume musik dan efek (tersimpan di perangkat). Musik otomatis dikecilkan saat telepon dan berhenti saat tab disembunyikan.
+
+### 👑 Pembeda Direktur
+- Label di atas kepala bertulisan **kuning emas** berbingkai emas + baris "★ DIREKTUR UTAMA ★", lebih besar dari label lain
+- Gelembung chat & baris chat berwarna emas, cincin emas di kaki, jas hitam berdasi
+- Bebas memakai **semua pakaian** (pria/wanita, seragam karyawan, barang VIP/Diamond/Season) + tab **👑 Setelan** berisi 21 setelan satu set khusus Direktur (`SETELAN_DIR` di `js/pakaian.js`): jas formal (hitam, emas, putih, tuxedo, navy, pinstripe, maroon, zamrud, pink, krem), santai sultan (golf, kapten kapal pesiar, linen resor, turtleneck, kasmir, jaket kulit Italia, klub tenis, batik sultan) & gaun malam (emas, putih, merah). Pilih "🧩 Outfit bebas" untuk pakaian biasa
+- Selalu diikuti **1 pengawal 🕶️ GUARD** berjas hitam kekar di belakangnya (terlihat semua orang)
+- Kedatangan diumumkan ke semua tamu, karyawan menyapa, akses Panel Kuasa & suite Direktur
+
+### 🏗️ Menambah gedung baru
+Semua gedung tambahan ada di `kantor/gedung.js` (daftar `GEDUNG`). Tiap gedung punya `mulai` & `selesai` (jadwal pembangunan), `area`, `gerbang`, daftar `fasilitas`, dan fungsi `bangun`. Selama belum selesai otomatis tampil pagar seng, crane, perancah, pekerja, dan papan hitung mundur; bangunannya "naik" sesuai progres. Direktur bisa menekan **⚡ Buka sekarang** di papan proyek. Tambahkan juga satu lokasi di `LOKASI` (`js/common.js`) dengan `gedung: '<id>'` supaya muncul tombol pintasannya.
 
 ### Interaksi antar-tamu
 - **Ketuk orang lain** → profil (tujuan, status, bio, meja tempat dia nongkrong)
@@ -70,16 +89,53 @@ Dipakai untuk **💠 Diamond**, **Kartu Eksekutif/EXP**, dan **🎁 donasi**. Ua
 2. Pembeli memilih paket → memilih **QRIS / BCA / BRI** → membayar **nominal unik** (harga + Rp1–499, mis. Rp10.330) → menekan *Saya sudah bayar*
 3. Di **Dashboard → Toko & Pesanan**, cocokkan nominal unik dengan mutasi rekening/QRIS → **Setujui**. Diamond/paket langsung masuk, pembeli dapat notifikasi; donasi tercatat di **Papan Donatur**
 
-Verifikasi masih manual (klik Setujui). Verifikasi otomatis butuh akun *payment gateway* (Midtrans/Xendit/Tripay) atas namamu; strukturnya sudah siap disambungkan lewat Cloudflare Pages Functions.
+Cara manual ini tetap tersedia sebagai cadangan. Supaya **tidak perlu standby menyetujui**, aktifkan pembayaran otomatis di bawah.
+
+### 🛡️ Aturan Firebase (otomatis)
+Aturan keamanan ditulis per fitur di `alat/aturan/` (lihat `alat/aturan/README.md`) dan digabung menjadi `database.rules.json`.
+Setiap merge ke `main` yang mengubah aturan **dipasang ke Firebase otomatis** oleh GitHub Actions,
+asalkan secret `FIREBASE_DB_SECRET` sudah diisi di GitHub → Settings → Secrets and variables → Actions.
+
+### ⚡ Pembayaran otomatis (Midtrans): diamond langsung masuk
+Pembeli memilih **⚡ Bayar otomatis** → halaman bayar Midtrans (semua metode yang aktif di akun Midtrans-mu: QRIS, VA bank, GoPay, dll.) → begitu lunas, Midtrans mengabari server situs (`/api/bayar/notifikasi`) dan **Diamond / VIP (Rp25.000) / VVIP (Rp50.000) / EXP / donasi (nominal bebas, min. Rp5.000) masuk sendiri dalam beberapa detik**. Tidak dibayar dalam 60 menit → batal sendiri. Uang masuk ke saldo Midtrans, lalu dicairkan ke rekeningmu (biaya Midtrans ± 0,7% QRIS, ± Rp4.000 per VA).
+
+Keamanan: harga dihitung server dari `paket.js` (bukan dari browser), notifikasi dicek tanda tangan SHA-512 Midtrans, nominal dicocokkan, dan setiap pesanan hanya bisa dilunasi **sekali** (notifikasi ganda tidak dobel).
+
+**Pasang (sekali saja, ±20 menit):**
+1. **Daftar Midtrans** di <https://dashboard.midtrans.com/register>. Mulai di mode **Sandbox** (uang mainan) untuk mencoba. Untuk uang sungguhan, lengkapi verifikasi bisnis (KTP + rekening) lalu pindah ke **Production**
+2. Midtrans → **Settings → Access Keys** → salin **Server Key** (`SB-Mid-server-…` di Sandbox)
+3. Firebase Console → ⚙️ **Project settings → Service accounts → Database secrets** → **Show** → salin secret-nya
+4. Cloudflare → **Workers & Pages → pt-mencari-cinta-sejati → Settings → Variables and Secrets** → tambahkan (tipe **Secret** untuk yang rahasia):
+
+   | Nama | Isi |
+   |---|---|
+   | `MIDTRANS_SERVER_KEY` | Server Key dari langkah 2 (Secret) |
+   | `MIDTRANS_PRODUCTION` | `false` untuk Sandbox, `true` untuk uang sungguhan |
+   | `FIREBASE_DB_SECRET` | secret dari langkah 3 (Secret) |
+   | `FIREBASE_DB_URL` | `databaseURL` dari `config.js` |
+   | `FIREBASE_API_KEY` | `apiKey` dari `config.js` |
+5. Midtrans → **Settings → Payment → Notification URL** → isi `https://<situsmu>/api/bayar/notifikasi` (mis. `https://jodohonline.company/api/bayar/notifikasi`), simpan
+6. Cloudflare → **Deployments** → deployment terbaru → **Retry deployment** (variabel baru baru terpakai setelah deploy ulang). Tombol **⚡ Bayar otomatis** muncul sendiri begitu server siap; cek di `https://<situsmu>/api/bayar/status` (harus `"aktif": true`). Tidak perlu mengubah `config.js`
+7. Coba beli Diamond di kantor → pilih ⚡ Bayar otomatis → di Sandbox bayar pakai simulator <https://simulator.sandbox.midtrans.com> → diamond masuk sendiri
+
+**Jangan pernah** menaruh Server Key atau Database secret di `config.js` / GitHub. Keduanya hanya di variabel Cloudflare. Pembayaran otomatis hanya jalan di situs online (bukan mode offline).
+
+### 🎙️ Pesan suara & 📞 telepon
+- **Pesan suara** di obrolan pribadi: tombol 🎤, maks. 30 detik. Audio disimpan terpisah (`suaraDm`) dan baru diunduh saat diputar; dihapus otomatis setelah 7 hari.
+- **Telepon suara** khusus pasangan yang **saling match** (tombol 📞 di profil & obrolan). WebRTC langsung antar-perangkat, tidak direkam, maks. 30 menit.
+- **Server TURN** (agar telepon tetap tersambung di data seluler), pilih salah satu dan isi di Cloudflare Pages → Settings → Variables and Secrets (tipe Secret), lalu deploy ulang:
+  - **Metered Open Relay** (gratis 20 GB/bulan, tanpa kartu): daftar di https://www.metered.ca/tools/openrelay/ → isi `METERED_APP` (nama aplikasi, bagian depan `<nama>.metered.live`) dan `METERED_API_KEY`.
+  - **Cloudflare Realtime** (gratis 1.000 GB/bulan, perlu metode pembayaran): `TURN_KEY_ID` dan `TURN_KEY_API_TOKEN`.
+  - Tanpa itu, telepon tetap jalan lewat STUN (umumnya lancar di WiFi).
 
 ### 💠 Diamond & Lemari Diamond
-- Paket Diamond diatur di `config.js` → `diamond.paket` (bawaan 50/110/300/650 Diamond, Rp5rb–50rb)
+- Paket Diamond diatur di `paket.js` → `diamond` (bawaan 50/110/300/650 Diamond, Rp5rb–50rb)
 - Barang khusus Diamond (outfit: Jas Pengantin, Hoodie Hati, Jaket Varsity; aksesoris: kacamata hati, balon hati, topi pesta) diatur di `js/common.js` (`dm` = harga)
 - **Sekali saja (dan setiap mengubah harga):** Dashboard → Toko & Pesanan → **Terbitkan harga barang Diamond**. Harga di database inilah yang dipakai server untuk memotong diamond
 - Membeli barang dikunci server: diamond terpotong persis sebesar harga dan barang tercatat dalam satu transaksi. Saldo diamond hanya bisa ditambah Direktur
 
 ### Kartu Eksekutif & EXP (dibayar dengan uang)
-- Paket diatur di `config.js` → `toko.paket` (bawaan: Kartu Eksekutif 30 hari Rp5.000, 100/300/1.000 EXP)
+- Paket diatur di `paket.js` → `toko` (bawaan: Kartu Eksekutif 30 hari Rp5.000, 100/300/1.000 EXP)
 - **Kartu Eksekutif** membuka: lihat *siapa* yang menyukaimu, Lounge Eksekutif (lewat lift lobi), Setelan Emas, Mahkota Emas, Halo, nama emas 💎, dan ajakan ngobrol yang menonjol
 
 Semua aturan di atas dijaga di server lewat `database.rules.json`, bukan cuma di tampilan. **Batasan yang perlu diketahui:** EXP dari tugas dicatat oleh browser tamu (dibatasi maksimal 60 EXP per 3 detik), jadi tamu yang paham teknis bisa mengakali EXP *tugas*. Ini hanya berpengaruh ke barang kosmetik. EXP yang **dibeli**, Kartu Eksekutif, dan daftar "siapa yang menyukaimu" sepenuhnya dikunci server dan hanya bisa diberikan Direktur.
@@ -103,6 +159,9 @@ js/db.js              lapisan data: Firebase (online) atau tiruan lokal
 js/layanan.js         semua operasi data (chat, undangan, usir, dll.)
 js/common.js          tujuan, topik meja, filter kata kasar, utilitas
 config.js             ← file yang perlu diubah
+paket.js              harga Diamond, Kartu Eksekutif/EXP & batas donasi (dipakai situs + server)
+functions/api/bayar/  server pembayaran otomatis (Cloudflare Pages Functions)
+server/               kode server: Midtrans, Firebase REST, proses pelunasan
 database.rules.json   aturan keamanan Firebase Realtime Database
 ```
 
@@ -155,10 +214,10 @@ Selama `firebase: null` di `config.js`, situs berjalan dalam **mode lokal**:
 
 ### Menjadikan dirimu Direktur (sekali saja)
 
-1. Firebase Console → **Authentication → Users → Add user**: email `<username>@ptmcs.id` (domain sesuai `domainLogin` di `config.js`, contoh `yocky@ptmcs.id`) dan kata sandi.
+1. Firebase Console → **Authentication → Users → Add user**: email `<username>@ptmcs.id` (domain sesuai `domainLogin` di `config.js`, contoh `direktur@ptmcs.id`) dan kata sandi.
 2. Salin **User UID** akun itu.
 3. **Realtime Database → Data**: tambahkan node `peran`, lalu di dalamnya kunci `<User UID>` dengan nilai `"direktur"` (pakai tanda kutip).
-4. Buka `/dashboard/` → login dengan username `yocky` + kata sandi tadi. Dari dashboard, tekan **🏢 Masuk kantor** untuk masuk sebagai Direktur.
+4. Buka `/dashboard/` → login dengan username akunmu (mis. `direktur`) + kata sandi tadi. Dari dashboard, tekan **🏢 Masuk kantor** untuk masuk sebagai Direktur.
 
 Di dalam kantor, tombol **👑 Panel** juga tersedia untuk kendali cepat. Staf diangkat dari Panel → Pengunjung → Tindak → *Angkat jadi Staf*.
 
@@ -173,7 +232,7 @@ Di mode lokal (tanpa Firebase), buka `/dashboard/` dan login dengan `direkturDem
    - **GitHub Pages**: Settings → Pages → Deploy from branch.
 3. Tambahkan domain hosting ke Firebase → Authentication → Settings → **Authorized domains**.
 4. Isi `instagram`, `toko.linkBayar`, dan **hapus `direkturDemo`** di `config.js`.
-5. (Opsional) Domain sendiri, misalnya `ptmencaricintasejati.id`, bisa disambungkan di Cloudflare/Netlify.
+5. Domain sendiri: situs ini memakai **jodohonline.company** (Cloudflare Pages → Custom domains). Alamat `pt-mencari-cinta-sejati-bas.pages.dev` tetap jalan sebagai cadangan.
 
 ## Kustomisasi cepat
 

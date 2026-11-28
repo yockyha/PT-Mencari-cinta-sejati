@@ -3,8 +3,8 @@
 //  ajakan ngobrol, obrolan pribadi, suka & match, laporan, dan
 //  alat Direktur/Staf. Struktur data ini sama dengan database.rules.json.
 // =====================================================================
-import { TS } from './db.js';
-import { CFG, bersih, sensor, rupiah } from './common.js';
+import { TS, kunciBaru } from './db.js?v=202611270858';
+import { CFG, bersih, sensor, rupiah, kodeTamu, ucapanDonasi, namaPapan } from './common.js?v=202611270858';
 
 export function buatLayanan(db) {
   const uid = db.uid;
@@ -21,7 +21,7 @@ export function buatLayanan(db) {
     // ---- buku tamu
     async daftarTamu(d) {
       const lama = await db.get('tamu/' + uid).catch(() => null);
-      return db.set('tamu/' + uid, { uid, n: d.n, ig: d.ig || '', tj: d.tj, t: (lama && lama.t) || TS }).catch(() => {});
+      return db.set('tamu/' + uid, { uid, n: d.n, ig: '', tj: d.tj, t: (lama && lama.t) || TS }).catch(() => {});
     },
 
     // ---- pendaftaran & keanggotaan
@@ -30,14 +30,25 @@ export function buatLayanan(db) {
     async terimaPendaftar(target, d, peran = 'tamu') {
       const upd = {
         [`anggota/${target}`]: { n: d.n, tj: d.tj, sejak: TS, oleh: uid },
-        [`tamu/${target}`]: { uid: target, n: d.n, ig: d.ig || '', tj: d.tj, t: TS },
+        [`tamu/${target}`]: { uid: target, n: d.n, ig: '', tj: d.tj, t: TS }, // ig, TikTok & nama lengkap hanya di profilPribadi
         [`pendaftaran/${target}`]: null,
       };
       if (peran === 'staf') upd[`peran/${target}`] = 'staf';
       await db.update('', upd);
+      // kode undangan: pengundang & tamu baru masing-masing dapat 50 Diamond
+      if (d.ref) {
+        const semua = (await db.get('tamu').catch(() => null)) || {};
+        const pengundang = Object.keys(semua).find(u => u !== target && kodeTamu(u) === String(d.ref).toUpperCase());
+        if (pengundang) {
+          await L.beriDiamond(pengundang, 50).catch(() => {});
+          await L.beriDiamond(target, 50).catch(() => {});
+          L.kirimNotif(pengundang, `🎟️ ${d.n} daftar pakai kode undanganmu dan sudah di-ACC! Kamu dapat 50 💠 Diamond.`, 'hadiah');
+          L.kirimNotif(target, '🎟️ Bonus kode undangan: kamu dapat 50 💠 Diamond. Selamat datang!', 'hadiah');
+        }
+      }
       return L.kirimNotif(target, peran === 'staf'
         ? `Selamat ${d.n}! Pendaftaranmu diterima dan kamu diangkat menjadi Staf 🛡`
-        : `Selamat ${d.n}! Pendaftaranmu diterima. Kamu resmi menjadi tamu. Selamat bersenang-senang 💖`);
+        : `Selamat ${d.n}! Pendaftaranmu diterima. Kamu resmi menjadi tamu. Selamat bersenang-senang 💖`, 'acc');
     },
     tolakPendaftar(target, alasan) { return db.update('pendaftaran/' + target, { status: 'ditolak', alasanTolak: bersih(alasan, 160) }); },
     cabutAnggota(target) { return db.update('', { [`anggota/${target}`]: null, [`peran/${target}`]: null, [`online/${target}`]: null }); },
@@ -69,9 +80,9 @@ export function buatLayanan(db) {
       await db.set(`undangan/${uid}/${dari}`, null);
       return r;
     },
-    kirimDm(r, n, m) {
+    kirimDm(r, n, m, st = '') {
       const teks = sensor(bersih(m, 300));
-      db.push(`dm/${r}/pesan`, { uid, n, m: teks, t: TS });
+      db.push(`dm/${r}/pesan`, { uid, n, m: teks, t: TS, ...(st ? { st } : {}) });
       db.update(`dmku/${uid}/${r}`, { t: TS, baru: false }).catch(() => {});
       db.update(`dmku/${lawan(r)}/${r}`, { t: TS, baru: true }).catch(() => {});
     },
@@ -134,6 +145,16 @@ export function buatLayanan(db) {
       await db.update('', { [`diamond/${uid}`]: saldo - harga, [`milik/${uid}/${id}`]: true });
       return { ok: true, saldo: saldo - harga };
     },
+    // beli VIP / VVIP dengan Diamond: saldo dipotong & masa aktif ditambah dalam satu transaksi (dijaga aturan Firebase)
+    async beliLangganan(tingkat, harga, hari) {
+      const saldo = (await db.get('diamond/' + uid).catch(() => 0)) || 0;
+      if (saldo < harga) return { ok: false, alasan: 'kurang', saldo };
+      const lama = (await db.get('vip/' + uid).catch(() => null)) || {};
+      const kini = db.now(), dari = Math.max(kini, lama.sampai || 0);
+      const sampai = dari + hari * 86400e3;
+      await db.update('', { [`diamond/${uid}`]: saldo - harga, [`vip/${uid}`]: { sampai, tingkat } });
+      return { ok: true, sampai };
+    },
     async beriDiamond(target, n) {
       const lama = (await db.get('diamond/' + target).catch(() => 0)) || 0;
       return db.set('diamond/' + target, Math.max(0, lama + n));
@@ -155,10 +176,14 @@ export function buatLayanan(db) {
       if (!p) throw new Error('Paket ' + v.paket + ' tidak ada di config.js');
       let pesan;
       if (v.jenis === 'diamond') { await L.beriDiamond(v.uid, p.diamond); pesan = `💠 ${p.diamond} Diamond sudah masuk ke akunmu. Selamat belanja di Lemari Diamond!`; }
-      else if (v.jenis === 'donasi') { await L.catatDonatur(v.uid, v.n, v.nominal, v.tampil); pesan = `Terima kasih atas donasi ${rupiah(v.nominal)}! 💖 Dukunganmu sangat berarti untuk kantor.`; }
+      else if (v.jenis === 'donasi') { await L.catatDonatur(v.uid, v.nt || v.n, v.nominal, v.tampil); await db.set('papanDonasi/' + kunciBaru(), { n: namaPapan(v), nominal: v.nominal, m: bersih(v.pesan || '', 100), t: TS }); pesan = ucapanDonasi(v.nominal); }
       else {
         if (p.exp) await L.beriExp(v.uid, p.exp);
-        if (p.vipHari) await L.beriVip(v.uid, p.vipHari);
+        if (p.vipHari) {
+          const lama = (await db.get('vip/' + v.uid).catch(() => null)) || {};
+          const vvipAktif = lama.sampai > db.now() && lama.tingkat === 'vvip';
+          await L.beriVip(v.uid, p.vipHari, p.tingkat === 'vvip' || vvipAktif ? 'vvip' : 'vip');
+        }
         pesan = `Pembelian ${p.nama} disetujui. Terima kasih sudah mendukung ${CFG.namaPT}! 💖`;
       }
       await L.catatRiwayat({ uid: v.uid, n: v.n, paket: v.paket, jenis: v.jenis || 'paket', nama: v.nama || p.nama, harga: v.nominal || p.harga, metode: v.metode || '', kode: v.kode || '' });
@@ -174,12 +199,27 @@ export function buatLayanan(db) {
       const lama = (await db.get('expBeli/' + target).catch(() => 0)) || 0;
       return db.set('expBeli/' + target, lama + jumlah);
     },
-    async beriVip(target, hari) {
+    async beriVip(target, hari, tingkat = '') {
       const lama = (await db.get('vip/' + target).catch(() => null)) || {};
       const dari = Math.max(db.now(), lama.sampai || 0);
-      return db.set('vip/' + target, { sampai: dari + hari * 86400e3 });
+      return db.set('vip/' + target, { sampai: dari + hari * 86400e3, tingkat: tingkat || (lama.sampai > db.now() && lama.tingkat) || 'vip' });
     },
-    kirimNotif(target, m) { return db.push(`notif/${target}`, { m: bersih(m, 200), t: TS }); },
+    kirimNotif(target, m, j = '') { return db.push(`notif/${target}`, { m: bersih(m, 200), t: TS, ...(j ? { j } : {}) }); },
+    // ---- privasi Instagram: ig disimpan di profilPribadi (dibaca sesuai izin, diatur aturan Firebase)
+    // data pribadi (nama lengkap, Instagram, TikTok): hanya pemilik, Direktur, VVIP & yang diizinkan
+    // ganti = true: isi formulir menggantikan semuanya; false: hanya mengisi yang masih kosong (sinkron dari perangkat lain aman)
+    async simpanPribadi(d, ganti = false) {
+      const lama = ganti ? {} : ((await db.get('profilPribadi/' + uid).catch(() => null)) || {});
+      const ambil = k => (ganti ? d[k] || '' : lama[k] || d[k] || '');
+      await db.set('profilPribadi/' + uid, { nl: ambil('nl'), ig: ambil('ig'), tt: ambil('tt'), t: TS });
+      const ada = await db.get('tamu/' + uid + '/ig').catch(() => null);
+      if (ada) await db.update('tamu/' + uid, { ig: '' }).catch(() => {});
+    },
+    mintaIzinIg(pemilik, n) { return db.set(`izinIgMinta/${pemilik}/${uid}`, { n, t: TS }); },
+    izinkanIg(peminta, ya) { return Promise.all([db.set(`izinIg/${uid}/${peminta}`, ya ? true : null), db.set(`izinIgMinta/${uid}/${peminta}`, null)]); },
+    // sapaan khusus untuk Direktur (satu per tamu, paling cepat 5 menit sekali) & efek untuk semua dari Direktur
+    sapaDirektur(n, j) { return db.set('sapaDir/' + uid, { n, j, t: TS }); },
+    efek(jenis, n, lok = '') { return db.set('efek', { jenis, n, t: TS, ...(lok ? { lok } : {}) }); },
     hapusNotif(id) { return db.set(`notif/${uid}/${id}`, null).catch(() => {}); },
   };
   return L;

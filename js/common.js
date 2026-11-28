@@ -1,10 +1,19 @@
 // Utilitas bersama untuk semua halaman.
+import PAKET from '../paket.js?v=202611270858';
+export { TINGKAT_DONASI, tingkatDonasi, ucapanDonasi, namaPapan } from '../paket.js?v=202611270858';
+import { PAKAIAN, SLOT } from './pakaian.js?v=202611270858';
 export const CFG = Object.assign({
-  namaPT: 'PT Mencari Cinta Sejati', singkatan: 'PT MCS', instagram: '', donasi: '',
+  namaPT: 'PT Mencari Cinta Sejati', singkatan: 'PT MCS', instagram: '', instagramNama: '', tiktok: '', wajibFollow: null,
   kuota: 10000, firebase: null, mading: [], domainLogin: 'ptmcs.id', direkturDemo: null,
-  pendaftaran: { umurMin: 13, umurMinJodoh: 18 }, toko: { paket: [] },
+  pendaftaran: { umurMin: 18, umurMinJodoh: 18 }, toko: { paket: [] },
   pembayaran: { qris: '', bank: [], kodeUnik: true }, diamond: { paket: [] }, donasi: { min: 5000, saran: [] },
 }, window.PT_CONFIG || {});
+// Harga paket selalu dari paket.js (sama dengan yang dipakai server pembayaran)
+CFG.diamond = { paket: PAKET.diamond };
+CFG.donasi = PAKET.donasi;
+CFG.toko = { ...(CFG.toko || {}), paket: PAKET.toko };
+export const LANGGANAN = PAKET.langganan;
+export { PAKET };
 
 // Tujuan tamu datang ke kantor
 export const TUJUAN = {
@@ -43,6 +52,11 @@ export function sensor(s) {
 }
 
 export const bersih = (s, max) => (s || '').replace(/[\u0000-\u001f<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, max);
+// Format username: Instagram 1–30 (huruf kecil, angka, titik, garis bawah; tanpa titik di awal/akhir & titik ganda),
+// TikTok 2–24 (huruf, angka, titik, garis bawah; tidak diakhiri titik)
+export const igSah = u => /^(?!\.)(?!.*\.\.)(?!.*\.$)[a-z0-9._]{1,30}$/.test(u || '') && !/^[0-9._]+$/.test(u);
+export const ttBersih = s => (s || '').trim().replace(/^@+/, '').toLowerCase().replace(/[^a-z0-9._]/g, '').slice(0, 24);
+export const ttSah = u => /^(?!.*\.$)[a-z0-9._]{2,24}$/.test(u || '') && !/^[0-9._]+$/.test(u);
 export const igBersih = s => (s || '').trim().replace(/^@+/, '').toLowerCase().replace(/[^a-z0-9._]/g, '').slice(0, 30);
 
 export function hash(s) {
@@ -58,8 +72,10 @@ export function esc(s) {
 }
 
 // Profil karyawan yang tersimpan di browser ini
-export function profil() { return LS.get('profil', null); }
-export function simpanProfil(p) { LS.set('profil', p); }
+// Profil disimpan terpisah untuk mode tamu & mode Direktur (satu browser bisa dipakai keduanya)
+const kunciProfil = () => (LS.get('modeKantor') === 'direktur' ? 'profilDir' : 'profil');
+export function profil() { return LS.get(kunciProfil(), null); }
+export function simpanProfil(p) { LS.set(kunciProfil(), p); }
 
 // Jam Jakarta (0–24, desimal)
 export function jamJakarta() {
@@ -93,8 +109,9 @@ export const LOKASI = {
   rapat: { nama: '📋 Ruang Rapat', x: -12, z: -10, r: -Math.PI / 2 - 0.4, area: [-24, -20, -8, -7] },
   bukutamu: { nama: '📖 Buku Tamu', x: 3, z: -14.5, r: Math.PI, area: [-8, -20, 14, -7] },
   loker: { nama: '👔 Ruang Loker', x: -19, z: 7.5, r: -Math.PI / 2, area: [-24, 0, -15, 10] },
-  direktur: { nama: '👑 Ruang Direktur', x: 16.8, z: 16, r: Math.PI / 2, area: [14, 12, 24, 20] },
+  direktur: { nama: '👑 Ruang Direktur', x: 16.8, z: 16, r: Math.PI / 2, area: [14, 12, 34, 20] }, // suite: lounge tamu, kantor, kamar
   halaman: { nama: '🌳 Halaman', x: 0, z: 30, r: Math.PI, area: [-40, 20, 40, 50] },
+  plaza: { nama: '🎡 Taman Cinta', x: -30.2, z: 22, r: -Math.PI / 2, area: [-80, -26, -32, 26], gedung: 'tamanCinta' },
   lounge: { nama: '💎 Lounge Eksekutif', x: 0, z: -62.5, r: Math.PI, area: [-12, -70, 12, -54], vip: true },
 };
 export function lokasiDi(x, z) {
@@ -103,23 +120,11 @@ export function lokasiDi(x, z) {
 }
 
 // Barang yang terbuka sesuai level (lv) atau khusus Kartu Eksekutif (vip)
-export const OUTFIT = [
-  { nama: 'Kemeja', lv: 1 }, { nama: 'Hoodie', lv: 2 }, { nama: 'Jaket Denim', lv: 3 }, { nama: 'Jas & Dasi', lv: 4 },
-  { nama: 'Gaun Pesta', lv: 5 }, { nama: 'Jaket Kulit', lv: 6 }, { nama: 'Setelan Emas', vip: true },
-  // dibeli dengan Diamond (dm = harga, id = kunci di katalog & daftar milik)
-  { nama: 'Jas Pengantin', dm: 120, id: 'o7' }, { nama: 'Hoodie Hati', dm: 80, id: 'o8' }, { nama: 'Jaket Varsity', dm: 100, id: 'o9' },
-];
-export const AKSESORIS = [
-  { nama: 'tidak ada', lv: 1 }, { nama: 'kacamata', lv: 1 }, { nama: 'topi', lv: 1 }, { nama: 'pita', lv: 1 }, { nama: 'headset', lv: 1 },
-  { nama: 'kacamata hitam', lv: 2 }, { nama: 'bando kucing', lv: 3 }, { nama: 'mahkota bunga', lv: 5 }, { nama: 'sayap cupid', lv: 7 },
-  { nama: 'aura hati', lv: 9 }, { nama: 'mahkota emas', vip: true }, { nama: 'halo', vip: true },
-  { nama: 'kacamata hati', dm: 60, id: 'a12' }, { nama: 'balon hati', dm: 90, id: 'a13' }, { nama: 'topi pesta', dm: 40, id: 'a14' },
-];
-// Semua barang Diamond, untuk katalog harga di database
-export const BARANG_DIAMOND = [...OUTFIT, ...AKSESORIS].filter(x => x.dm).map(x => ({ id: x.id, nama: x.nama, harga: x.dm, jenis: x.id[0] === 'o' ? 'Outfit' : 'Aksesoris' }));
+// Pakaian & aksesoris ada di js/pakaian.js. Barang Diamond (id = kunci katalog & daftar milik):
+export const BARANG_DIAMOND = PAKAIAN.filter(x => x.dm).map(x => ({ id: x.id, nama: x.nama, harga: x.dm, jenis: SLOT[x.slot].nama }));
 export const rupiah = n => 'Rp' + Number(n || 0).toLocaleString('id-ID');
 export const IKON_DM = '💠';
 export const kodeTamu = uid => 'MCS-' + String(uid).replace(/[^a-z0-9]/gi, '').slice(-6).toUpperCase();
 
-// Username dashboard → email Firebase (yocky → yocky@ptmcs.id)
+// Username dashboard → email Firebase (direktur → direktur@ptmcs.id)
 export const emailDari = u => { u = String(u || '').trim().toLowerCase(); return u.includes('@') ? u : `${u}@${CFG.domainLogin || 'ptmcs.id'}`; };

@@ -2,9 +2,10 @@
 //  Mini-game "Tangkap Hati": 30 detik menangkap hati yang jatuh.
 //  💗 +1 · 💖 +3 · 💔 −2. EXP diberikan untuk 3 permainan pertama tiap hari.
 // =====================================================================
-import { LS, fmt, bersih, hariIni } from '../js/common.js';
-import { $, K, toast, bukaKartu, tutupKartu } from './ui.js';
-import * as P from './progres.js';
+import { LS, fmt, bersih, hariIni } from '../js/common.js?v=202611270858';
+import { $, K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611270858';
+import * as Musik from './musik.js?v=202611270858';
+import * as P from './progres.js?v=202611270858';
 
 const DURASI = 30;
 let main = false;
@@ -22,7 +23,7 @@ export function bukaArcade() {
 
 function mulai() {
   if (main) return;
-  main = true;
+  main = true; Musik.paksakan('santai');
   const lapis = document.createElement('div');
   lapis.id = 'game';
   lapis.innerHTML = `<div class="gAtas"><span id="gS">0</span><span id="gT">${DURASI}</span><button type="button" id="gX" aria-label="Berhenti">✕</button></div><canvas id="gC" aria-label="Arena Tangkap Hati"></canvas>`;
@@ -62,6 +63,7 @@ function mulai() {
         b.kena = true; const d = b.j === '💖' ? 3 : b.j === '💔' ? -2 : 1;
         skor = Math.max(0, skor + d); kilat.push({ x: b.x, y: yb - 30, t: 0.7, s: (d > 0 ? '+' : '') + d });
         if (d < 0 && navigator.vibrate) navigator.vibrate(60);
+        Musik.sfx(d < 0 ? 'rusak' : 'tangkap', { besar: d > 1, jeda: 30 });
       }
     }
     benda = benda.filter(b => !b.kena && b.y < H + 40);
@@ -84,7 +86,7 @@ function mulai() {
 
   function selesai(batal) {
     if (akhir) return;
-    akhir = true; main = false;
+    akhir = true; main = false; Musik.paksakan(null); if (!batal) Musik.sfx('selesai');
     removeEventListener('keydown', kd, true); removeEventListener('keyup', ku, true); removeEventListener('resize', ukur);
     lapis.remove();
     if (batal) { toast('Permainan dihentikan.'); return; }

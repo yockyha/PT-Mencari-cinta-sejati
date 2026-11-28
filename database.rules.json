@@ -6,17 +6,17 @@
       ".read": true,
       ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
       "$uid": {
-        ".write": "auth != null && ((auth.uid === $uid && (!newData.exists() || (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
+        ".write": "auth != null && ((auth.uid === $uid && (!newData.exists() || ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
         ".validate": "root.child('peran/' + auth.uid).exists() || (newData.child('n').val() === root.child('anggota/' + $uid + '/n').val() && newData.child('x').isNumber() && newData.child('z').isNumber() && newData.child('t').val() === now)"
       }
     },
     "pendaftaran": {
-      ".read": "auth != null && root.child('peran/' + auth.uid).exists()",
+      ".read": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
       ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
       "$uid": {
         ".read": "auth != null && auth.uid === $uid",
         ".write": "auth != null && auth.uid === $uid && !root.child('anggota/' + $uid).exists() && root.child('setelan/daftarTutup').val() !== true",
-        ".validate": "!newData.exists() || root.child('peran/' + auth.uid).val() === 'direktur' || (newData.child('uid').val() === $uid && newData.child('status').val() === 'menunggu' && newData.child('n').isString() && newData.child('n').val().length >= 2 && newData.child('n').val().length <= 20 && newData.child('tj').val().matches(/^(jodoh|teman|curhat)$/) && newData.child('umur').isNumber() && newData.child('kota').isString() && newData.child('kota').val().length <= 40 && newData.child('b').isString() && newData.child('b').val().length <= 100 && newData.child('alasan').isString() && newData.child('alasan').val().length <= 200 && newData.child('t').val() === now)"
+        ".validate": "!newData.exists() || root.child('peran/' + auth.uid).val() === 'direktur' || (newData.child('uid').val() === $uid && newData.child('status').val() === 'menunggu' && newData.child('n').isString() && newData.child('n').val().length >= 2 && newData.child('n').val().length <= 20 && newData.child('tj').val().matches(/^(jodoh|teman|curhat)$/) && newData.child('umur').isNumber() && newData.child('umur').val() >= 18 && newData.child('umur').val() <= 99 && newData.child('nl').isString() && newData.child('nl').val().length >= 3 && newData.child('nl').val().length <= 60 && newData.child('ig').isString() && newData.child('ig').val().matches(/^[a-z0-9._]{1,30}$/) && (!newData.child('tt').exists() || (newData.child('tt').isString() && newData.child('tt').val().matches(/^[a-z0-9._]{0,24}$/))) && newData.child('kota').isString() && newData.child('kota').val().length <= 40 && newData.child('b').isString() && newData.child('b').val().length <= 100 && newData.child('alasan').isString() && newData.child('alasan').val().length <= 200 && newData.child('t').val() === now)"
       }
     },
     "anggota": {
@@ -30,128 +30,8 @@
       ],
       ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
       "$uid": {
-        ".write": "auth != null && ((auth.uid === $uid && (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
+        ".write": "auth != null && ((auth.uid === $uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
         ".validate": "root.child('peran/' + auth.uid).val() === 'direktur' || (newData.child('uid').val() === $uid && newData.child('n').val() === root.child('anggota/' + $uid + '/n').val() && newData.child('tj').val().matches(/^(jodoh|teman|curhat)$/) && newData.child('t').isNumber())"
-      }
-    },
-    "chat": {
-      ".read": true,
-      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
-      "$id": {
-        ".write": "auth != null && ((!data.exists() && (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
-        ".validate": "newData.child('uid').val() === auth.uid && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('m').isString() && newData.child('m').val().length > 0 && newData.child('m').val().length <= 120 && newData.child('t').val() === now"
-      }
-    },
-    "papan": {
-      ".read": true,
-      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
-      "$id": {
-        ".write": "auth != null && ((!data.exists() && (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
-        ".validate": "newData.child('uid').val() === auth.uid && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('m').isString() && newData.child('m').val().length > 0 && newData.child('m').val().length <= 80 && newData.child('t').val() === now"
-      }
-    },
-    "curhat": {
-      ".read": true,
-      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
-      "$id": {
-        ".write": "auth != null && ((!data.exists() && (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
-        ".validate": "newData.child('m').isString() && newData.child('m').val().length > 0 && newData.child('m').val().length <= 300 && newData.child('t').isNumber()",
-        "m": {
-          ".validate": "!data.exists() || data.val() === newData.val() || root.child('peran/' + auth.uid).val() === 'direktur'"
-        },
-        "peluk": {
-          "$uid": {
-            ".write": "auth != null && auth.uid === $uid && (!newData.exists() || (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())))",
-            ".validate": "newData.val() === true"
-          }
-        },
-        "balas": {
-          "$b": {
-            ".write": "auth != null && ((!data.exists() && (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
-            ".validate": "newData.child('uid').val() === auth.uid && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('m').isString() && newData.child('m').val().length > 0 && newData.child('m').val().length <= 160 && newData.child('t').val() === now"
-          }
-        }
-      }
-    },
-    "curhatPemilik": {
-      ".read": "auth != null && root.child('peran/' + auth.uid).exists()",
-      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
-      "$id": {
-        ".write": "auth != null && ((!data.exists() && newData.val() === auth.uid && (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))"
-      }
-    },
-    "saran": {
-      ".read": "auth != null && root.child('peran/' + auth.uid).exists()",
-      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
-      "$id": {
-        ".write": "auth != null && ((!data.exists() && (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
-        ".validate": "newData.child('dari').val() === auth.uid && newData.child('m').isString() && newData.child('m').val().length <= 300 && newData.child('t').val() === now"
-      }
-    },
-    "laporan": {
-      ".read": "auth != null && root.child('peran/' + auth.uid).exists()",
-      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
-      "$id": {
-        ".write": "auth != null && ((!data.exists() && (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
-        ".validate": "newData.child('dari').val() === auth.uid && newData.child('target').isString() && newData.child('alasan').isString() && newData.child('alasan').val().length <= 120 && newData.child('t').val() === now"
-      }
-    },
-    "undangan": {
-      "$ke": {
-        ".read": "auth != null && auth.uid === $ke",
-        "$dari": {
-          ".write": "auth != null && ((auth.uid === $dari && newData.exists() && (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (auth.uid === $ke && !newData.exists()))",
-          ".validate": "newData.child('n').isString() && newData.child('n').val().length <= 20 && newData.child('t').val() === now"
-        }
-      }
-    },
-    "dm": {
-      "$room": {
-        ".read": "auth != null && ($room.beginsWith(auth.uid + '_') || $room.endsWith('_' + auth.uid))",
-        "ok": {
-          ".write": "auth != null && ($room.beginsWith(auth.uid + '_') || $room.endsWith('_' + auth.uid)) && newData.val() === true && (root.child('undangan/' + auth.uid + '/' + $room.replace(auth.uid, '').replace('_', '')).exists() || root.child('match/' + auth.uid + '/' + $room.replace(auth.uid, '').replace('_', '')).exists())"
-        },
-        "pesan": {
-          "$id": {
-            ".write": "auth != null && ($room.beginsWith(auth.uid + '_') || $room.endsWith('_' + auth.uid)) && !data.exists() && root.child('dm/' + $room + '/ok').val() === true && (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
-            ".validate": "newData.child('uid').val() === auth.uid && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('m').isString() && newData.child('m').val().length > 0 && newData.child('m').val().length <= 300 && newData.child('t').val() === now"
-          }
-        }
-      }
-    },
-    "dmku": {
-      "$uid": {
-        ".read": "auth != null && auth.uid === $uid",
-        "$room": {
-          ".write": "auth != null && ($room.beginsWith(auth.uid + '_') || $room.endsWith('_' + auth.uid)) && ($room.beginsWith($uid + '_') || $room.endsWith('_' + $uid))",
-          ".validate": "newData.child('n').isString() && newData.child('u').isString()"
-        }
-      }
-    },
-    "suka": {
-      "$ke": {
-        ".read": "auth != null && auth.uid === $ke && (root.child('vip/' + auth.uid + '/sampai').val() > now || root.child('peran/' + auth.uid).val() === 'direktur')",
-        "$dari": {
-          ".read": "auth != null && auth.uid === $ke && root.child('suka/' + $dari + '/' + auth.uid).exists()",
-          ".write": "auth != null && auth.uid === $dari && $dari !== $ke && (!newData.exists() || (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())))",
-          ".validate": "newData.val() === now"
-        }
-      }
-    },
-    "jumlahSuka": {
-      ".read": true,
-      "$uid": {
-        ".write": "auth != null && auth.uid !== $uid && ((newData.parent().parent().child('suka/' + $uid + '/' + auth.uid).exists() && !root.child('suka/' + $uid + '/' + auth.uid).exists()) || (!newData.parent().parent().child('suka/' + $uid + '/' + auth.uid).exists() && root.child('suka/' + $uid + '/' + auth.uid).exists()))",
-        ".validate": "newData.isNumber() && newData.val() >= 0 && ((!data.exists() && newData.val() <= 1) || (data.exists() && (newData.val() === data.val() + 1 || newData.val() === data.val() - 1)))"
-      }
-    },
-    "match": {
-      "$a": {
-        ".read": "auth != null && auth.uid === $a",
-        "$b": {
-          ".write": "auth != null && (auth.uid === $a || auth.uid === $b) && root.child('suka/' + $a + '/' + $b).exists() && root.child('suka/' + $b + '/' + $a).exists()",
-          ".validate": "newData.child('n').isString()"
-        }
       }
     },
     "peran": {
@@ -181,11 +61,590 @@
       ".read": true,
       ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'"
     },
+    "chat": {
+      ".read": true,
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$id": {
+        ".write": "auth != null && ((!data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
+        ".validate": "newData.child('uid').val() === auth.uid && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('m').isString() && newData.child('m').val().length > 0 && newData.child('m').val().length <= 120 && newData.child('t').val() === now"
+      }
+    },
+    "papan": {
+      ".read": true,
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$id": {
+        ".write": "auth != null && ((!data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
+        ".validate": "newData.child('uid').val() === auth.uid && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('m').isString() && newData.child('m').val().length > 0 && newData.child('m').val().length <= 80 && newData.child('t').val() === now"
+      }
+    },
+    "curhat": {
+      ".read": true,
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$id": {
+        ".write": "auth != null && ((!data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
+        ".validate": "newData.child('m').isString() && newData.child('m').val().length > 0 && newData.child('m').val().length <= 300 && newData.child('t').isNumber()",
+        "m": {
+          ".validate": "!data.exists() || data.val() === newData.val() || root.child('peran/' + auth.uid).val() === 'direktur'"
+        },
+        "peluk": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && (!newData.exists() || ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())))",
+            ".validate": "newData.val() === true"
+          }
+        },
+        "balas": {
+          "$b": {
+            ".write": "auth != null && ((!data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
+            ".validate": "newData.child('uid').val() === auth.uid && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('m').isString() && newData.child('m').val().length > 0 && newData.child('m').val().length <= 160 && newData.child('t').val() === now"
+          }
+        }
+      }
+    },
+    "curhatPemilik": {
+      ".read": "auth != null && root.child('peran/' + auth.uid).exists()",
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$id": {
+        ".write": "auth != null && ((!data.exists() && newData.val() === auth.uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))"
+      }
+    },
+    "saran": {
+      ".read": "auth != null && root.child('peran/' + auth.uid).exists()",
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$id": {
+        ".write": "auth != null && ((!data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
+        ".validate": "newData.child('dari').val() === auth.uid && newData.child('m').isString() && newData.child('m').val().length <= 300 && newData.child('t').val() === now"
+      }
+    },
+    "laporan": {
+      ".read": "auth != null && root.child('peran/' + auth.uid).exists()",
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$id": {
+        ".write": "auth != null && ((!data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
+        ".validate": "newData.child('dari').val() === auth.uid && newData.child('target').isString() && newData.child('alasan').isString() && newData.child('alasan').val().length <= 120 && newData.child('t').val() === now"
+      }
+    },
+    "mejaChat": {
+      ".read": true,
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$meja": {
+        "$id": {
+          ".write": "auth != null && $meja.matches(/^(gaming|musik|drakor|olahraga|kuliner|buku|jalan|random|kafe|lounge)$/) && ((!data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
+          ".validate": "newData.child('uid').val() === auth.uid && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('m').isString() && newData.child('m').val().length > 0 && newData.child('m').val().length <= 160 && newData.child('t').val() === now"
+        }
+      }
+    },
+    "mejaPapan": {
+      ".read": true,
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$meja": {
+        "$id": {
+          ".write": "auth != null && $meja.matches(/^(gaming|musik|drakor|olahraga|kuliner|buku|jalan|random|kafe|lounge)$/) && ((!data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (data.exists() && !newData.exists() && (data.child('uid').val() === auth.uid || root.child('peran/' + auth.uid).exists())))",
+          ".validate": "data.exists() || (newData.child('uid').val() === auth.uid && newData.hasChildren(['n', 't']))",
+          "uid": {
+            ".validate": "!data.exists() || data.val() === newData.val()"
+          },
+          "n": {
+            ".validate": "newData.isString() && newData.val().length <= 30 && (!data.exists() || data.val() === newData.val())"
+          },
+          "a": {
+            ".validate": "newData.isString() && newData.val().length <= 60 && (!data.exists() || data.val() === newData.val())"
+          },
+          "b": {
+            ".validate": "newData.isString() && newData.val().length <= 60 && (!data.exists() || data.val() === newData.val())"
+          },
+          "c": {
+            ".validate": "newData.isString() && newData.val().length <= 160 && (!data.exists() || data.val() === newData.val())"
+          },
+          "t": {
+            ".validate": "(!data.exists() && newData.val() === now) || data.val() === newData.val()"
+          },
+          "s": {
+            "$uid": {
+              ".write": "auth != null && auth.uid === $uid && (!newData.exists() || ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())))",
+              ".validate": "newData.val() === true"
+            }
+          },
+          "$lain": {
+            ".validate": false
+          }
+        }
+      }
+    },
+    "mejaVote": {
+      ".read": true,
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$meja": {
+        "$hari": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && $meja.matches(/^(gaming|musik|drakor|olahraga|kuliner|buku|jalan|random|kafe|lounge)$/) && $hari.matches(/^[0-9]+$/) && $hari.length === 8 && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+            ".validate": "newData.val() === 'a' || newData.val() === 'b'"
+          }
+        }
+      }
+    },
+    "efek": {
+      ".read": true,
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      ".validate": "newData.child('jenis').val().matches(/^(hati|kembangapi|bunga|kumpul)$/) && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('t').val() === now && (!newData.child('lok').exists() || (newData.child('lok').isString() && newData.child('lok').val().length <= 20))"
+    },
+    "sapaDir": {
+      ".read": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && newData.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && (!data.exists() || data.child('t').val() < now - 300000 || (root.child('vip/' + auth.uid + '/tingkat').val() === 'vvip' && root.child('vip/' + auth.uid + '/sampai').val() > now))",
+        ".validate": "newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('j').val().matches(/^(halo|hormat|bunga|kopi|makasih|semangat)$/) && newData.child('t').isNumber() && (newData.child('t').val() === now || root.child('peran/' + auth.uid).val() === 'direktur')"
+      }
+    },
+    "ketukDir": {
+      ".read": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && ((auth.uid === $uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && (!newData.exists() || !data.exists() || data.child('t').val() < now - 60000)) || (!newData.exists() && root.child('peran/' + auth.uid).val() === 'direktur'))",
+        ".validate": "newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('t').val() === now"
+      }
+    },
+    "izinDir": {
+      ".read": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && (root.child('peran/' + auth.uid).val() === 'direktur' || (auth.uid === $uid && !newData.exists()))",
+        ".validate": "newData.child('sampai').isNumber() && (!newData.child('n').exists() || (newData.child('n').isString() && newData.child('n').val().length <= 30))"
+      }
+    },
+    "papanInfo": {
+      ".read": true,
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$id": {
+        ".validate": "newData.child('j').isString() && newData.child('j').val().length >= 1 && newData.child('j').val().length <= 60 && (!newData.child('m').exists() || (newData.child('m').isString() && newData.child('m').val().length <= 400)) && (!newData.child('ik').exists() || (newData.child('ik').isString() && newData.child('ik').val().length <= 8)) && (!newData.child('w').exists() || newData.child('w').val().matches(/^(pink|emas|biru|hijau|ungu|merah)$/)) && (!newData.child('pin').exists() || newData.child('pin').isBoolean()) && newData.child('t').isNumber()"
+      }
+    },
+    "privasi": {
+      ".read": true,
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+        ".validate": "newData.child('ig').val().matches(/^(publik|sembunyi)$/) && newData.child('t').val() === now"
+      }
+    },
+    "profilPribadi": {
+      ".read": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('peran/' + auth.uid).val() === 'direktur' || (root.child('vip/' + auth.uid + '/tingkat').val() === 'vvip' && root.child('vip/' + auth.uid + '/sampai').val() > now) || root.child('izinIg/' + $uid + '/' + auth.uid).exists())",
+        ".write": "auth != null && auth.uid === $uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+        ".validate": "newData.child('ig').isString() && newData.child('ig').val().length <= 31 && (!newData.child('tt').exists() || (newData.child('tt').isString() && newData.child('tt').val().length <= 24)) && (!newData.child('nl').exists() || (newData.child('nl').isString() && newData.child('nl').val().length <= 60)) && newData.child('t').val() === now"
+      }
+    },
+    "izinIgMinta": {
+      "$pemilik": {
+        ".read": "auth != null && (auth.uid === $pemilik || root.child('peran/' + auth.uid).val() === 'direktur')",
+        "$peminta": {
+          ".write": "auth != null && ((auth.uid === $peminta && newData.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (auth.uid === $pemilik && !newData.exists()))",
+          ".validate": "newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('t').val() === now"
+        }
+      }
+    },
+    "izinIg": {
+      "$pemilik": {
+        ".read": "auth != null && (auth.uid === $pemilik || root.child('peran/' + auth.uid).val() === 'direktur')",
+        "$peminta": {
+          ".read": "auth != null && auth.uid === $peminta",
+          ".write": "auth != null && auth.uid === $pemilik",
+          ".validate": "newData.val() === true"
+        }
+      }
+    },
+    "grup": {
+      ".read": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$gid": {
+        ".read": "auth != null && (root.child('grup/' + $gid + '/anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).val() === 'direktur')",
+        ".write": "auth != null && ((!data.exists() && newData.child('pemilik').val() === auth.uid && newData.child('anggota/' + auth.uid).exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && ((root.child('vip/' + auth.uid + '/sampai').exists() && root.child('vip/' + auth.uid + '/sampai').val() > now) || ((root.child('exp/' + auth.uid + '/n').exists() && root.child('exp/' + auth.uid + '/n').val() >= 800) || (root.child('expBeli/' + auth.uid).exists() && root.child('expBeli/' + auth.uid).val() >= 800) || (root.child('exp/' + auth.uid + '/n').exists() && root.child('expBeli/' + auth.uid).exists() && root.child('exp/' + auth.uid + '/n').val() + root.child('expBeli/' + auth.uid).val() >= 800)) || root.child('peran/' + auth.uid).val() === 'direktur')) || (data.exists() && !newData.exists() && data.child('pemilik').val() === auth.uid))",
+        ".validate": "newData.child('nama').isString() && newData.child('nama').val().length >= 1 && newData.child('nama').val().length <= 30 && newData.child('pemilik').isString() && newData.child('t').isNumber() && (!newData.child('ikon').exists() || (newData.child('ikon').isString() && newData.child('ikon').val().length <= 8))",
+        "anggota": {
+          "$u": {
+            ".write": "auth != null && ((auth.uid === $u && newData.exists() && root.child('grupUndangan/' + auth.uid + '/' + $gid).exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && (auth.uid === $u || root.child('grup/' + $gid + '/pemilik').val() === auth.uid)))",
+            ".validate": "newData.isString() && newData.val().length <= 30"
+          }
+        }
+      }
+    },
+    "grupPesan": {
+      ".read": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$gid": {
+        ".read": "auth != null && (root.child('grup/' + $gid + '/anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).val() === 'direktur')",
+        ".write": "auth != null && !newData.exists() && root.child('grup/' + $gid + '/pemilik').val() === auth.uid",
+        "$id": {
+          ".write": "auth != null && ((!data.exists() && newData.exists() && root.child('grup/' + $gid + '/anggota/' + auth.uid).exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && root.child('grup/' + $gid + '/pemilik').val() === auth.uid))",
+          ".validate": "newData.child('uid').val() === auth.uid && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('m').isString() && newData.child('m').val().length > 0 && newData.child('m').val().length <= 300 && newData.child('t').val() === now && (!newData.child('sis').exists() || newData.child('sis').val() === true) && (!newData.child('st').exists() || newData.child('st').val().matches(/^f_[a-z]+$/) || (newData.child('st').val().matches(/^v_[a-z]+$/) && (root.child('vip/' + auth.uid + '/sampai').exists() && root.child('vip/' + auth.uid + '/sampai').val() > now)) || (newData.child('st').val().matches(/^w_[a-z]+$/) && (root.child('vip/' + auth.uid + '/tingkat').val() === 'vvip' && root.child('vip/' + auth.uid + '/sampai').val() > now)) || root.child('peran/' + auth.uid).val() === 'direktur')"
+        }
+      }
+    },
+    "grupku": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "$gid": {
+          ".write": "auth != null && ((auth.uid === $uid && (!newData.exists() || newData.parent().parent().parent().child('grup/' + $gid + '/anggota/' + $uid).exists())) || (root.child('grup/' + $gid + '/anggota/' + auth.uid).exists() && (!newData.exists() || root.child('grup/' + $gid + '/anggota/' + $uid).exists())) || root.child('peran/' + auth.uid).val() === 'direktur')",
+          ".validate": "newData.child('nama').isString() && newData.child('nama').val().length <= 30 && newData.child('t').isNumber()"
+        }
+      }
+    },
+    "grupUndangan": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "$gid": {
+          ".write": "auth != null && ((newData.exists() && (root.child('grup/' + $gid + '/anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).val() === 'direktur') && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && auth.uid === $uid))",
+          ".validate": "newData.child('nama').isString() && newData.child('dari').isString() && newData.child('dari').val().length <= 30 && newData.child('t').val() === now"
+        }
+      }
+    },
+    "grupPublik": {
+      ".read": "auth != null && ((root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+      "$gid": {
+        ".write": "auth != null && ((!data.exists() && newData.child('pemilik').val() === auth.uid && (newData.parent().parent().child('grup/' + $gid + '/pemilik').val() === auth.uid || root.child('grup/' + $gid + '/pemilik').val() === auth.uid)) || (data.exists() && ((data.child('pemilik').val() === auth.uid) || root.child('grup/' + $gid + '/anggota/' + auth.uid).exists())) || root.child('peran/' + auth.uid).val() === 'direktur')",
+        ".validate": "newData.child('nama').isString() && newData.child('nama').val().length <= 30 && newData.child('pemilik').isString() && newData.child('pn').isString() && newData.child('pn').val().length <= 30 && newData.child('jml').isNumber() && newData.child('maks').isNumber() && newData.child('t').isNumber() && (!newData.child('ikon').exists() || (newData.child('ikon').isString() && newData.child('ikon').val().length <= 8))"
+      }
+    },
+    "grupMinta": {
+      ".read": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$gid": {
+        ".read": "auth != null && (root.child('grup/' + $gid + '/pemilik').val() === auth.uid || root.child('peran/' + auth.uid).val() === 'direktur')",
+        ".write": "auth != null && !newData.exists() && (root.child('grup/' + $gid + '/pemilik').val() === auth.uid || root.child('peran/' + auth.uid).val() === 'direktur')",
+        "$uid": {
+          ".read": "auth != null && auth.uid === $uid",
+          ".write": "auth != null && ((auth.uid === $uid && newData.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && root.child('grupPublik/' + $gid).exists() && !root.child('grup/' + $gid + '/anggota/' + auth.uid).exists()) || (!newData.exists() && (auth.uid === $uid || root.child('grup/' + $gid + '/pemilik').val() === auth.uid || root.child('peran/' + auth.uid).val() === 'direktur')))",
+          ".validate": "newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('t').val() === now"
+        }
+      }
+    },
+    "fotoProfil": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && ((auth.uid === $uid && (!newData.exists() || ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
+        ".validate": "newData.child('d').isString() && newData.child('d').val().length <= 40000 && newData.child('d').val().beginsWith('data:image/jpeg;base64,') && newData.child('t').val() === now"
+      }
+    },
+    "galeri": {
+      ".read": "auth != null",
+      ".indexOn": [
+        "t"
+      ],
+      "$id": {
+        ".write": "auth != null && ((!data.exists() && newData.child('uid').val() === auth.uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && (!root.child('galeriKu/' + auth.uid).exists() || root.child('galeriKu/' + auth.uid).val() < now - 60000) && newData.parent().parent().child('galeriKu/' + auth.uid).val() === now) || (data.exists() && !newData.exists() && (data.child('uid').val() === auth.uid || root.child('peran/' + auth.uid).exists())))",
+        ".validate": "data.exists() || (newData.child('uid').val() === auth.uid && newData.hasChildren(['n', 'th', 't']))",
+        "uid": {
+          ".validate": "!data.exists() || data.val() === newData.val()"
+        },
+        "n": {
+          ".validate": "newData.isString() && newData.val().length <= 30 && (!data.exists() || data.val() === newData.val())"
+        },
+        "c": {
+          ".validate": "newData.isString() && newData.val().length <= 100 && (!data.exists() || data.val() === newData.val())"
+        },
+        "th": {
+          ".validate": "newData.isString() && newData.val().length <= 30000 && newData.val().beginsWith('data:image/jpeg;base64,') && (!data.exists() || data.val() === newData.val())"
+        },
+        "t": {
+          ".validate": "(!data.exists() && newData.val() === now) || data.val() === newData.val()"
+        },
+        "s": {
+          "$u": {
+            ".write": "auth != null && auth.uid === $u && (!newData.exists() || ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())))",
+            ".validate": "newData.val() === true"
+          }
+        },
+        "$lain": {
+          ".validate": false
+        }
+      }
+    },
+    "galeriData": {
+      ".read": "auth != null",
+      "$id": {
+        ".write": "auth != null && ((!data.exists() && newData.exists() && newData.parent().parent().child('galeri/' + $id + '/uid').val() === auth.uid && !root.child('galeri/' + $id).exists()) || (!newData.exists() && (root.child('galeri/' + $id + '/uid').val() === auth.uid || root.child('peran/' + auth.uid).exists())))",
+        ".validate": "newData.child('d').isString() && newData.child('d').val().length <= 220000 && newData.child('d').val().beginsWith('data:image/jpeg;base64,')"
+      }
+    },
+    "galeriKu": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.val() === now"
+      }
+    },
+    "streak": {
+      ".read": true,
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+        ".validate": "newData.child('t').val() === now && newData.child('n').isNumber() && ((!data.exists() && newData.child('n').val() === 1) || (data.exists() && now - data.child('t').val() >= 43200000 && ((now - data.child('t').val() < 194400000 && newData.child('n').val() === data.child('n').val() + 1) || (now - data.child('t').val() >= 194400000 && newData.child('n').val() === 1))))"
+      }
+    },
+    "amplop": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('peran/' + auth.uid).val() === 'direktur')",
+        ".write": "auth != null && auth.uid === $uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+        ".validate": "newData.child('t').val() === now && newData.child('n').isNumber() && ((newData.child('tg').val() === now && (!data.exists() || !data.child('tg').exists() || now - data.child('tg').val() >= 72000000)) || ((data.exists() && newData.child('tg').val() === data.child('tg').val() || (!data.exists() && newData.child('tg').val() === 0)) && newData.parent().parent().child('diamond/' + $uid).val() === root.child('diamond/' + $uid).val() - 30))"
+      }
+    },
+    "menfess": {
+      ".read": "auth != null",
+      ".indexOn": [
+        "t"
+      ],
+      "$id": {
+        ".write": "auth != null && ((!data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && (!root.child('menfessT/' + auth.uid).exists() || root.child('menfessT/' + auth.uid).val() < now - 600000) && newData.parent().parent().child('menfessT/' + auth.uid).val() === now && newData.parent().parent().child('menfessPengirim/' + $id).val() === auth.uid) || (data.exists() && !newData.exists() && (root.child('menfessPengirim/' + $id).val() === auth.uid || root.child('peran/' + auth.uid).exists())))",
+        ".validate": "data.exists() || newData.hasChildren(['m', 't'])",
+        "m": {
+          ".validate": "newData.isString() && newData.val().length >= 1 && newData.val().length <= 280 && (!data.exists() || data.val() === newData.val())"
+        },
+        "ke": {
+          ".validate": "newData.isString() && (!data.exists() || data.val() === newData.val())"
+        },
+        "keN": {
+          ".validate": "newData.isString() && newData.val().length <= 30 && (!data.exists() || data.val() === newData.val())"
+        },
+        "t": {
+          ".validate": "(!data.exists() && newData.val() === now) || data.val() === newData.val()"
+        },
+        "n": {
+          ".write": "auth != null && root.child('menfessPengirim/' + $id).val() === auth.uid && newData.exists()",
+          ".validate": "newData.isString() && newData.val().length <= 30 && newData.val() === root.child('anggota/' + auth.uid + '/n').val()"
+        },
+        "s": {
+          "$u": {
+            ".write": "auth != null && auth.uid === $u && (!newData.exists() || ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())))",
+            ".validate": "newData.val() === true"
+          }
+        },
+        "$lain": {
+          ".validate": false
+        }
+      }
+    },
+    "menfessPengirim": {
+      ".read": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$id": {
+        ".write": "auth != null && ((!data.exists() && newData.val() === auth.uid) || (!newData.exists() && (data.val() === auth.uid || root.child('peran/' + auth.uid).exists())))",
+        ".validate": "newData.isString()"
+      }
+    },
+    "menfessT": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.val() === now"
+      }
+    },
+    "menfessKu": {
+      "$ke": {
+        ".read": "auth != null && auth.uid === $ke",
+        "$id": {
+          ".write": "auth != null && ((newData.exists() && newData.parent().parent().parent().child('menfessPengirim/' + $id).val() === auth.uid) || (!newData.exists() && (auth.uid === $ke || root.child('menfessPengirim/' + $id).val() === auth.uid || root.child('peran/' + auth.uid).exists())))",
+          ".validate": "newData.child('t').val() === now"
+        }
+      }
+    },
+    "speedDating": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'"
+    },
+    "sdAntre": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid && (!newData.exists() || (((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && root.child('anggota/' + auth.uid + '/tj').val() === 'jodoh'))",
+        ".validate": "newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('t').val() === now"
+      }
+    },
+    "sdChat": {
+      ".read": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$room": {
+        ".read": "auth != null && ($room.beginsWith(auth.uid + '_') || $room.endsWith('_' + auth.uid)) && root.child('speedDating/ronde/pasangan/' + auth.uid).val() === $room.replace(auth.uid, '').replace('_', '')",
+        "$id": {
+          ".write": "auth != null && ($room.beginsWith(auth.uid + '_') || $room.endsWith('_' + auth.uid)) && root.child('speedDating/ronde/pasangan/' + auth.uid).val() === $room.replace(auth.uid, '').replace('_', '') && !data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+          ".validate": "newData.child('uid').val() === auth.uid && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('m').isString() && newData.child('m').val().length > 0 && newData.child('m').val().length <= 200 && newData.child('t').val() === now"
+        }
+      }
+    },
+    "kamar": {
+      ".read": "auth != null",
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+        ".validate": "newData.child('wp').isNumber() && newData.child('lt').isNumber() && newData.child('t').val() === now"
+      }
+    },
+    "seasonKlaim": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('peran/' + auth.uid).val() === 'direktur')",
+        "$ms": {
+          "$k": {
+            ".write": "auth != null && auth.uid === $uid && !data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && $k.matches(/^[bp][0-9]+$/) && ($k.beginsWith('b') || root.child('seasonPremium/' + auth.uid + '/' + $ms).exists())",
+            ".validate": "newData.val() === true"
+          }
+        }
+      }
+    },
+    "seasonPremium": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('peran/' + auth.uid).val() === 'direktur')",
+        ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+        "$ms": {
+          ".write": "auth != null && auth.uid === $uid && !data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && newData.parent().parent().parent().child('diamond/' + $uid).val() === root.child('diamond/' + $uid).val() - 100",
+          ".validate": "newData.val() === now"
+        }
+      }
+    },
+    "pasanganSetuju": {
+      ".read": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$room": {
+        ".read": "auth != null && ($room.beginsWith(auth.uid + '_') || $room.endsWith('_' + auth.uid))",
+        "$u": {
+          ".write": "auth != null && auth.uid === $u && ($room.beginsWith(auth.uid + '_') || $room.endsWith('_' + auth.uid)) && root.child('match/' + auth.uid + '/' + $room.replace(auth.uid, '').replace('_', '')).exists()",
+          ".validate": "newData.val() === true"
+        }
+      }
+    },
+    "pasanganMinggu": {
+      ".read": true,
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'"
+    },
+    "kisah": {
+      ".read": "auth != null",
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$id": {
+        ".write": "auth != null && !data.exists() && newData.child('a').val() === auth.uid && root.child('match/' + auth.uid + '/' + newData.child('b').val()).exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+        ".validate": "newData.child('cerita').isString() && newData.child('cerita').val().length <= 300 && newData.child('na').isString() && newData.child('nb').isString() && (newData.child('ok').val() === false || root.child('peran/' + auth.uid).val() === 'direktur') && newData.child('t').isNumber()"
+      }
+    },
+    "lomba": {
+      ".read": "auth != null",
+      "$jenis": {
+        "$periode": {
+          "$uid": {
+            ".write": "auth != null && auth.uid === $uid && $jenis.matches(/^(kuis|kerupuk)$/) && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+            ".validate": "newData.child('s').isNumber() && newData.child('s').val() >= 0 && newData.child('s').val() <= 200 && newData.child('n').isString() && newData.child('n').val().length <= 20 && newData.child('t').val() === now && (!data.exists() || newData.child('s').val() > data.child('s').val())"
+          }
+        }
+      }
+    },
+    "bunga": {
+      ".read": "auth != null",
+      "$ke": {
+        "$dari": {
+          ".write": "auth != null && auth.uid === $dari && $dari !== $ke && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && (!data.exists() || data.val() < now - 72000000)",
+          ".validate": "newData.val() === now"
+        }
+      }
+    },
+    "aksiReq": {
+      "$ke": {
+        ".read": "auth != null && auth.uid === $ke",
+        "$dari": {
+          ".write": "auth != null && ((auth.uid === $dari && newData.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && (auth.uid === $ke || auth.uid === $dari)))",
+          ".validate": "newData.child('j').val() === 'peluk' && newData.child('n').isString() && newData.child('t').val() === now"
+        }
+      }
+    },
+    "aksiJawab": {
+      "$dari": {
+        ".read": "auth != null && auth.uid === $dari",
+        "$ke": {
+          ".write": "auth != null && ((auth.uid === $ke && newData.exists()) || (!newData.exists() && auth.uid === $dari))",
+          ".validate": "newData.child('ok').isBoolean() && newData.child('t').val() === now"
+        }
+      }
+    },
+    "kenal": {
+      "$uid": {
+        ".read": "auth != null && (auth.uid === $uid || root.child('peran/' + auth.uid).val() === 'direktur' || root.child('match/' + auth.uid + '/' + $uid).exists())",
+        ".write": "auth != null && auth.uid === $uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+        ".validate": "newData.child('j').exists() && newData.child('t').val() === now"
+      }
+    },
+    "undangan": {
+      "$ke": {
+        ".read": "auth != null && auth.uid === $ke",
+        "$dari": {
+          ".write": "auth != null && ((auth.uid === $dari && newData.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (auth.uid === $ke && !newData.exists()))",
+          ".validate": "newData.child('n').isString() && newData.child('n').val().length <= 20 && newData.child('t').val() === now"
+        }
+      }
+    },
+    "dm": {
+      "$room": {
+        ".read": "auth != null && ($room.beginsWith(auth.uid + '_') || $room.endsWith('_' + auth.uid))",
+        "ok": {
+          ".write": "auth != null && ($room.beginsWith(auth.uid + '_') || $room.endsWith('_' + auth.uid)) && newData.val() === true && (root.child('undangan/' + auth.uid + '/' + $room.replace(auth.uid, '').replace('_', '')).exists() || root.child('match/' + auth.uid + '/' + $room.replace(auth.uid, '').replace('_', '')).exists())"
+        },
+        "pesan": {
+          "$id": {
+            ".write": "auth != null && ($room.beginsWith(auth.uid + '_') || $room.endsWith('_' + auth.uid)) && !data.exists() && root.child('dm/' + $room + '/ok').val() === true && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+            ".validate": "newData.child('uid').val() === auth.uid && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('m').isString() && newData.child('m').val().length > 0 && newData.child('m').val().length <= 300 && newData.child('t').val() === now && (!newData.child('sv').exists() || (newData.child('sv/id').isString() && newData.child('sv/dur').isNumber() && newData.child('sv/dur').val() <= 31)) && (!newData.child('st').exists() || newData.child('st').val().matches(/^f_[a-z]+$/) || (newData.child('st').val().matches(/^v_[a-z]+$/) && (root.child('vip/' + auth.uid + '/sampai').exists() && root.child('vip/' + auth.uid + '/sampai').val() > now)) || (newData.child('st').val().matches(/^w_[a-z]+$/) && (root.child('vip/' + auth.uid + '/tingkat').val() === 'vvip' && root.child('vip/' + auth.uid + '/sampai').val() > now)) || root.child('peran/' + auth.uid).val() === 'direktur')"
+          }
+        }
+      }
+    },
+    "suaraDm": {
+      "$room": {
+        ".read": "auth != null && ($room.beginsWith(auth.uid + '_') || $room.endsWith('_' + auth.uid))",
+        "$id": {
+          ".write": "auth != null && ($room.beginsWith(auth.uid + '_') || $room.endsWith('_' + auth.uid)) && ((!data.exists() && newData.exists() && root.child('dm/' + $room + '/ok').val() === true && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (data.exists() && !newData.exists() && data.child('t').val() < now - 604800000))",
+          ".validate": "newData.child('uid').val() === auth.uid && newData.child('d').isString() && newData.child('d').val().length <= 160000 && newData.child('tp').isString() && newData.child('tp').val().matches(/^audio\\/(webm|mp4|ogg|mpeg|aac|x-m4a)$/) && newData.child('t').val() === now"
+        }
+      }
+    },
+    "sinyal": {
+      "$room": {
+        ".read": "auth != null && ($room.beginsWith(auth.uid + '_') || $room.endsWith('_' + auth.uid))",
+        ".write": "auth != null && ($room.beginsWith(auth.uid + '_') || $room.endsWith('_' + auth.uid)) && (!newData.exists() || ((root.child('match/' + auth.uid + '/' + $room.replace(auth.uid, '').replace('_', '')).exists() || root.child('dm/' + $room + '/ok').val() === true) && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))))"
+      }
+    },
+    "telepon": {
+      "$ke": {
+        ".read": "auth != null && (auth.uid === $ke || data.child('dari').val() === auth.uid)",
+        ".write": "auth != null && (auth.uid === $ke || (newData.exists() && newData.child('dari').val() === auth.uid && (root.child('match/' + auth.uid + '/' + $ke).exists() || root.child('dm/' + auth.uid + '_' + $ke + '/ok').val() === true || root.child('dm/' + $ke + '_' + auth.uid + '/ok').val() === true) && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && (!data.exists() || data.child('dari').val() === auth.uid || data.child('t').val() < now - 60000)) || (!newData.exists() && data.child('dari').val() === auth.uid))",
+        ".validate": "newData.child('dari').isString() && newData.child('r').isString() && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('st').val().matches(/^(dering|angkat|tolak)$/) && newData.child('t').isNumber()"
+      }
+    },
+    "dmku": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "$room": {
+          ".write": "auth != null && ($room.beginsWith(auth.uid + '_') || $room.endsWith('_' + auth.uid)) && ($room.beginsWith($uid + '_') || $room.endsWith('_' + $uid))",
+          ".validate": "newData.child('n').isString() && newData.child('u').isString()"
+        }
+      }
+    },
+    "suka": {
+      "$ke": {
+        ".read": "auth != null && auth.uid === $ke && ((root.child('vip/' + auth.uid + '/sampai').exists() && root.child('vip/' + auth.uid + '/sampai').val() > now) || root.child('peran/' + auth.uid).val() === 'direktur')",
+        "$dari": {
+          ".read": "auth != null && auth.uid === $ke && root.child('suka/' + $dari + '/' + auth.uid).exists()",
+          ".write": "auth != null && auth.uid === $dari && $dari !== $ke && (!newData.exists() || ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())))",
+          ".validate": "newData.val() === now"
+        }
+      }
+    },
+    "jumlahSuka": {
+      ".read": true,
+      "$uid": {
+        ".write": "auth != null && auth.uid !== $uid && ((newData.parent().parent().child('suka/' + $uid + '/' + auth.uid).exists() && !root.child('suka/' + $uid + '/' + auth.uid).exists()) || (!newData.parent().parent().child('suka/' + $uid + '/' + auth.uid).exists() && root.child('suka/' + $uid + '/' + auth.uid).exists()))",
+        ".validate": "newData.isNumber() && newData.val() >= 0 && ((!data.exists() && newData.val() <= 1) || (data.exists() && (newData.val() === data.val() + 1 || newData.val() === data.val() - 1)))"
+      }
+    },
+    "match": {
+      "$a": {
+        ".read": "auth != null && auth.uid === $a",
+        "$b": {
+          ".write": "auth != null && (auth.uid === $a || auth.uid === $b) && root.child('suka/' + $a + '/' + $b).exists() && root.child('suka/' + $b + '/' + $a).exists()",
+          ".validate": "newData.child('n').isString()"
+        }
+      }
+    },
     "exp": {
       ".read": true,
       ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
       "$uid": {
-        ".write": "auth != null && auth.uid === $uid && (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+        ".write": "auth != null && auth.uid === $uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
         ".validate": "root.child('peran/' + auth.uid).val() === 'direktur' || (newData.child('n').isNumber() && newData.child('t').val() === now && ((!data.exists() && newData.child('n').val() <= 60) || (data.exists() && newData.child('n').val() >= data.child('n').val() && newData.child('n').val() <= data.child('n').val() + 60 && now - data.child('t').val() >= 3000)))"
       }
     },
@@ -195,7 +654,7 @@
       "$uid": {
         ".read": "auth != null && auth.uid === $uid",
         "$k": {
-          ".write": "auth != null && auth.uid === $uid && !data.exists() && (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+          ".write": "auth != null && auth.uid === $uid && !data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
           ".validate": "newData.val() === true && $k.length <= 40"
         }
       }
@@ -211,7 +670,8 @@
       ".read": true,
       ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
       "$uid": {
-        ".validate": "newData.child('sampai').isNumber()"
+        ".write": "auth != null && auth.uid === $uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && newData.exists() && ((newData.child('tingkat').val() === 'vip' && newData.parent().parent().child('diamond/' + $uid).val() === root.child('diamond/' + $uid).val() - 300) || (newData.child('tingkat').val() === 'vvip' && newData.parent().parent().child('diamond/' + $uid).val() === root.child('diamond/' + $uid).val() - 650)) && newData.child('sampai').val() > now && (newData.child('sampai').val() <= now + 2592060000 || (data.exists() && newData.child('sampai').val() <= data.child('sampai').val() + 2592060000))",
+        ".validate": "newData.child('sampai').isNumber() && (!newData.child('tingkat').exists() || newData.child('tingkat').val().matches(/^(vip|vvip)$/))"
       }
     },
     "pesanan": {
@@ -219,7 +679,7 @@
       ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
       "$id": {
         ".read": "auth != null && data.child('uid').val() === auth.uid",
-        ".write": "auth != null && !data.exists() && newData.child('uid').val() === auth.uid && (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+        ".write": "auth != null && !data.exists() && newData.child('uid').val() === auth.uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
         ".validate": "root.child('peran/' + auth.uid).val() === 'direktur' || (newData.child('paket').isString() && newData.child('paket').val().length <= 20 && newData.child('jenis').val().matches(/^(diamond|paket|donasi)$/) && newData.child('metode').val().matches(/^(qris|bca|bri|lain)$/) && newData.child('nominal').isNumber() && newData.child('nominal').val() >= 1000 && newData.child('nominal').val() <= 10000000 && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('t').val() === now)"
       }
     },
@@ -228,7 +688,7 @@
       ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
       "$uid": {
         ".read": "auth != null && auth.uid === $uid",
-        ".write": "auth != null && auth.uid === $uid && (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && newData.isNumber() && newData.val() >= 0 && newData.val() < data.val()",
+        ".write": "auth != null && auth.uid === $uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && newData.isNumber() && newData.val() >= 0 && (newData.val() < data.val() || (newData.parent().parent().child('streak/' + $uid).child('t').val() === now && newData.parent().parent().child('streak/' + $uid).child('n').val() % 7 === 0 && ((!data.exists() && newData.val() === 20) || (data.exists() && newData.val() === data.val() + 20))))",
         ".validate": "newData.isNumber() && newData.val() >= 0"
       }
     },
@@ -237,7 +697,7 @@
       ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
       "$uid": {
         "$item": {
-          ".write": "auth != null && auth.uid === $uid && !data.exists() && (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && root.child('katalog/' + $item + '/harga').exists() && newData.parent().parent().parent().child('diamond/' + $uid).val() === root.child('diamond/' + $uid).val() - root.child('katalog/' + $item + '/harga').val()",
+          ".write": "auth != null && auth.uid === $uid && !data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && ((root.child('katalog/' + $item + '/harga').exists() && newData.parent().parent().parent().child('diamond/' + $uid).val() === root.child('diamond/' + $uid).val() - root.child('katalog/' + $item + '/harga').val()) || ($item.beginsWith('gc') && newData.parent().parent().parent().child('amplop/' + $uid + '/t').val() === now) || ($item.beginsWith('ss') && root.child('seasonPremium/' + $uid).exists()))",
           ".validate": "newData.val() === true"
         }
       }
@@ -252,6 +712,13 @@
     "donatur": {
       ".read": true,
       ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'"
+    },
+    "papanDonasi": {
+      ".read": true,
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$id": {
+        ".validate": "newData.child('n').isString() && newData.child('n').val().length <= 20 && newData.child('nominal').isNumber() && newData.child('m').isString() && newData.child('m').val().length <= 100 && newData.child('t').isNumber()"
+      }
     },
     "riwayat": {
       ".read": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
@@ -279,7 +746,7 @@
       ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
       "$id": {
         "$uid": {
-          ".write": "auth != null && auth.uid === $uid && root.child('acara/' + $id).exists() && (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+          ".write": "auth != null && auth.uid === $uid && root.child('acara/' + $id).exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
           ".validate": "newData.val() === true"
         }
       }
@@ -289,7 +756,7 @@
       ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
       "$id": {
         "$uid": {
-          ".write": "auth != null && auth.uid === $uid && !data.exists() && (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && now >= root.child('acara/' + $id + '/mulai').val() && now <= root.child('acara/' + $id + '/mulai').val() + root.child('acara/' + $id + '/durasi').val() * 60000",
+          ".write": "auth != null && auth.uid === $uid && !data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && now >= root.child('acara/' + $id + '/mulai').val() && now <= root.child('acara/' + $id + '/mulai').val() + root.child('acara/' + $id + '/durasi').val() * 60000",
           ".validate": "newData.val() === now"
         }
       }
@@ -299,7 +766,7 @@
       ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
       "$hari": {
         "$uid": {
-          ".write": "auth != null && auth.uid === $uid && (!(root.child('ban/' + auth.uid + '/sampai').val() > now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+          ".write": "auth != null && auth.uid === $uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
           ".validate": "newData.child('s').isNumber() && newData.child('s').val() >= 0 && newData.child('s').val() <= 300 && newData.child('n').isString() && newData.child('n').val().length <= 20 && newData.child('t').val() === now && (!data.exists() || newData.child('s').val() > data.child('s').val())"
         }
       }

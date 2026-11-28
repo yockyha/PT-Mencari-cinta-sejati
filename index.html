@@ -40,12 +40,12 @@ h1 span{color:var(--pink)}
 footer{position:absolute;bottom:14px;left:0;right:0;font-size:13px;opacity:.75;font-weight:700}
 footer a{color:inherit}
 </style>
-<script src="config.js"></script>
+<script src="config.js?v=202611270858"></script>
 </head>
 <body>
   <header class="hero">
     <div class="latar" aria-hidden="true"></div>
-    <p class="label">PINTU TERBUKA 24 JAM · TANPA SYARAT</p>
+    <p class="label">BUKA 24 JAM · GRATIS · DI-ACC DIREKTUR</p>
     <h1>PT MENCARI<br><span>CINTA SEJATI</span></h1>
     <p class="slogan">Kantor virtual tempat orang datang untuk cari jodoh, cari teman, atau sekadar curhat.</p>
     <div class="tombol-grup">
@@ -55,17 +55,19 @@ footer a{color:inherit}
     <div class="fitur" aria-label="Fitur">
       <span>💘 Kafe Jodoh</span><span>🤝 Meja Nongkrong</span><span>💬 Taman Curhat</span><span>💌 Obrolan Pribadi</span>
     </div>
-    <footer id="kaki">Perusahaan fiktif untuk seru-seruan. · <a href="dashboard/index.html">Masuk Direktur</a></footer>
+    <footer id="kaki">Kantor virtual untuk seru-seruan cari teman &amp; jodoh. · <a href="info/harga.html">Harga</a> · <a href="info/syarat.html">Syarat</a> · <a href="info/refund.html">Refund</a> · <a href="info/kontak.html">Kontak</a> · <a href="dashboard/index.html">Masuk Direktur</a></footer>
   </header>
   <section class="cara" aria-labelledby="caraJ">
     <h2 id="caraJ">Cara bergabung</h2>
     <ol>
       <li><b>Masuk kantor.</b> Siapa saja boleh lihat-lihat: jalan keliling, lihat papan, jadwal acara, dan buku tamu.</li>
-      <li><b>Isi formulir pendaftaran.</b> Tujuan (💘 jodoh, 🤝 teman, 💬 curhat), nama panggilan, umur, kota, tentang kamu, dan alasan bergabung. Tanpa password.</li>
-      <li><b>Tunggu persetujuan Direktur.</b> Kamu dapat kabar langsung di layar begitu diterima.</li>
+      <li><b>Follow Instagram @jodohonline.company (atau TikTok @jodohonline.id) & komen "DAFTAR"</b> di postingan terbaru kami. Ini syarat wajib supaya di-ACC.</li>
+      <li><b>Isi formulir pendaftaran.</b> Tujuan (💘 jodoh, 🤝 teman, 💬 curhat), nama panggilan, umur, kota, tentang kamu, dan alasan bergabung, plus username Instagram-mu. Tanpa password.</li>
+      <li><b>Tunggu persetujuan Direktur.</b> Direktur mengecek follow & komenmu. Kamu dapat kabar langsung di layar begitu diterima.</li>
       <li><b>Resmi jadi tamu!</b> Ngobrol, ajak orang ngobrol pribadi, ikut acara, kumpulkan EXP, dan bikin Kartu Tamu.</li>
     </ol>
     <a href="kantor/index.html#daftar" class="tombol utama">Daftar sekarang</a>
+    <p style="margin-top:22px;font-size:14px;font-weight:700"><a href="info/harga.html" style="color:inherit">Produk &amp; Harga</a> · <a href="info/syarat.html" style="color:inherit">Syarat &amp; Ketentuan</a> · <a href="info/refund.html" style="color:inherit">Kebijakan Pengembalian Dana</a> · <a href="info/kontak.html" style="color:inherit">Kontak</a></p>
   </section>
 <script>
   (function () {
@@ -73,7 +75,7 @@ footer a{color:inherit}
     if (c.instagram) {
       var a = document.createElement('a');
       a.href = 'https://www.instagram.com/' + encodeURIComponent(c.instagram) + '/';
-      a.target = '_blank'; a.rel = 'noopener'; a.textContent = '@' + c.instagram;
+      a.target = '_blank'; a.rel = 'noopener'; a.textContent = '@' + (c.instagramNama || c.instagram);
       var f = document.getElementById('kaki'); f.appendChild(document.createTextNode(' · ')); f.appendChild(a);
     }
   })();
