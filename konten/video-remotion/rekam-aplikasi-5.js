@@ -6,7 +6,7 @@ const { chromium } = require('playwright'); const fs = require('fs');
 const { sesi, maju, rekam, ev } = require('./rekam-aplikasi-4.js');
 const OUT = process.argv[2], HANYA = (process.argv[3] || '').split(',').filter(Boolean);
 const ingin = n => !HANYA.length || HANYA.includes(n);
-const V = '202611261340';
+const V = require('fs').readFileSync('/tmp/claude-0/-home-user-PT-Mencari-cinta-sejati/b6f39f92-0519-5b23-874c-9957b4f02bef/scratchpad/situs/kantor/index.html', 'utf8').match(/kantor\.js\?v=(\d+)/)[1];
 const JAM = '2026-11-27T19:20:00+07:00';
 
 // Jadwal Date Night sama persis dengan data asli (paket acara Direktur, 27 Nov)

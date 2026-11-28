@@ -73,7 +73,7 @@ if (require.main === module) (async () => {
     await tutup(s); await ev(s, () => { const K = __kantor; K.pindah(-30.2, 22, -Math.PI / 2); Object.assign(K.kam, { yaw: -Math.PI / 2 - 0.2, pitch: 0.35, jarak: 14 }); }); await maju(s, 2500); await foto(s, 'c_taman');
     await ev(s, () => { const K = __kantor; K.pindah(0, 1.5, Math.PI); Object.assign(K.kam, { yaw: 0.2, pitch: 0.4, jarak: 8 }); }); await maju(s, 1500); await foto(s, 'c_meja');
   }
-  const V = '202611260740';
+  const V = require('fs').readFileSync('/tmp/claude-0/-home-user-PT-Mencari-cinta-sejati/b6f39f92-0519-5b23-874c-9957b4f02bef/scratchpad/situs/kantor/index.html', 'utf8').match(/kantor\.js\?v=(\d+)/)[1];
   // 1 speed dating: kecocokan + obrolan, timer habis → pilih ❤
   if (ingin('speed')) {
     const s = await sesi(b);
