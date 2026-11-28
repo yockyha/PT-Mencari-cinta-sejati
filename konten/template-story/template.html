@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>Template Story Date Night</title>
+<style>
+/* Template Story 1080×1920 untuk peserta Date Night. Buka template.html?t=1..4 lalu screenshot 1080×1920. */
+@font-face { font-family: Lilita; src: url(../video-remotion/public/font/lilita.woff2); }
+@font-face { font-family: Nunito; font-weight: 800; src: url(../video-remotion/public/font/nunito-latin-800-normal.woff2); }
+@font-face { font-family: Nunito; font-weight: 900; src: url(../video-remotion/public/font/nunito-latin-900-normal.woff2); }
+:root { --pink: #ff4f7b; --kuning: #ffd23f; --tinta: #1a0d14; --malam: #2a0f2a; }
+* { box-sizing: border-box; margin: 0; }
+html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--malam); }
+body { font-family: Nunito, 'Noto Color Emoji', sans-serif; color: white; position: relative; }
+.latar { position: absolute; inset: 0; background: radial-gradient(120% 70% at 50% 0%, #ff4f7b55 0%, transparent 60%), radial-gradient(90% 60% at 50% 100%, #8b2fc955 0%, transparent 60%), linear-gradient(180deg, #3a1236 0%, #1f0a22 100%); }
+.hati { position: absolute; font-size: 70px; opacity: .55; }
+.sinar { position: absolute; inset: 0; background: repeating-conic-gradient(from 0deg at 50% 38%, rgba(255,255,255,.05) 0 7deg, transparent 7deg 14deg); }
+.label { position: absolute; left: 50%; translate: -50% 0; top: 150px; background: var(--pink); border: 9px solid var(--tinta); border-radius: 999px; padding: 12px 46px; font: 400 50px Lilita, sans-serif; letter-spacing: 3px; box-shadow: 0 10px 0 var(--tinta); white-space: nowrap; rotate: -2deg; }
+.judul { position: absolute; left: 0; right: 0; text-align: center; font-family: Lilita, 'Noto Color Emoji', sans-serif; text-transform: uppercase; line-height: .98; letter-spacing: 2px; -webkit-text-stroke: 26px var(--tinta); paint-order: stroke fill; }
+.foto { position: absolute; left: 110px; right: 110px; border: 14px solid white; border-radius: 34px; background: repeating-linear-gradient(45deg, #ffffff14 0 24px, #ffffff08 24px 48px); box-shadow: 0 0 0 9px var(--tinta), 0 24px 50px #0008; display: grid; place-items: center; text-align: center; color: #ffffffb0; font: 900 40px Nunito, sans-serif; rotate: 1.5deg; }
+.foto small { display: block; font-size: 30px; font-weight: 800; margin-top: 10px; color: #ffffff80; }
+.stiker { position: absolute; background: white; color: var(--tinta); border: 9px solid var(--tinta); border-radius: 30px; font: 900 44px Nunito, 'Noto Color Emoji', sans-serif; padding: 16px 32px; box-shadow: 0 10px 0 var(--tinta); white-space: nowrap; }
+.tag { position: absolute; left: 0; right: 0; bottom: 210px; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+.tag .akun { background: var(--kuning); color: var(--tinta); border: 9px solid var(--tinta); border-radius: 999px; font: 900 46px Nunito, 'Noto Color Emoji', sans-serif; padding: 12px 40px; box-shadow: 0 9px 0 var(--tinta); }
+.tag .kecil { font: 800 36px Nunito, sans-serif; color: #ffe3eb; }
+.tag .ht { font: 400 54px Lilita, sans-serif; letter-spacing: 1px; color: white; -webkit-text-stroke: 14px var(--tinta); paint-order: stroke fill; }
+.jadwal { position: absolute; left: 90px; right: 90px; top: 560px; display: grid; gap: 20px; }
+.jadwal div { display: flex; gap: 26px; align-items: center; background: #ffffff12; border: 5px solid #ffffff40; border-radius: 28px; padding: 20px 30px; font: 900 42px Nunito, 'Noto Color Emoji', sans-serif; }
+.jadwal b { font: 400 46px Lilita, sans-serif; color: var(--kuning); min-width: 140px; }
+.jadwal small { display: block; font-size: 29px; font-weight: 800; color: #ffd3df; }
+.rating { position: absolute; left: 140px; right: 140px; top: 1285px; background: white; border: 9px solid var(--tinta); border-radius: 34px; padding: 22px 30px; color: var(--tinta); text-align: center; box-shadow: 0 10px 0 var(--tinta); }
+.rating p { font: 900 40px Nunito, sans-serif; }
+.rating .bar { height: 30px; border-radius: 99px; margin-top: 16px; background: linear-gradient(90deg, #ffd23f, #ff4f7b); }
+</style>
+</head>
+<body>
+<div class="latar"></div><div class="sinar"></div>
+<span class="hati" style="left:60px;top:430px">💗</span><span class="hati" style="right:70px;top:360px">💖</span>
+<span class="hati" style="left:40px;bottom:620px">💘</span><span class="hati" style="right:50px;bottom:700px">💗</span>
+<div id="isi"></div>
+<script>
+const t = new URLSearchParams(location.search).get('t') || '1';
+const TAG = `<div class="tag"><div class="akun">📷 @jodohonline.company</div><div class="kecil">🎵 TikTok @jodohonline.id · jodohonline.company</div><div class="ht">#DateNightJodohonline</div></div>`;
+const T = {
+  // 1. Ajakan sebelum acara (bisa diposting tamu & akun resmi)
+  1: `<div class="label">💘 JUMAT, 27 NOV · 19.30 WIB</div>
+      <div class="judul" style="top:300px;font-size:150px;color:white">DATE<br><span style="color:var(--kuning);font-size:190px">NIGHT</span></div>
+      <div class="jadwal" style="top:650px">
+        <div><b>19.30</b><span>👗 Dandan Kencan<small>dress code merah · pink · formal</small></span></div>
+        <div><b>20.15</b><span>☕ Speed Dating<small>3 menit per ronde, saling ❤ = match</small></span></div>
+        <div><b>21.30</b><span>🎡 Taman Cinta buka perdana<small>bianglala · koin harapan · bioskop</small></span></div>
+        <div><b>22.00</b><span>👑 Raja & Ratu Kencan<small>hadiah Diamond dari Direktur</small></span></div>
+      </div>
+      <div class="stiker" style="left:50%;translate:-50% 0;top:1310px;rotate:-2deg">Siapa yang ikut? 🙋</div>${TAG}`,
+  // 2. Outfit kencan (setelah sesi Dandan Kencan)
+  2: `<div class="label">👗 DATE NIGHT · DRESS CODE</div>
+      <div class="judul" style="top:300px;font-size:130px;color:white">OUTFIT<br><span style="color:var(--kuning)">KENCANKU</span></div>
+      <div class="foto" style="top:600px;height:640px">📸 Tempel foto<br>karakter / photobooth-mu<small>tahan & seret foto di sini</small></div>
+      <div class="rating"><p>Rate outfitku 1–10 👇</p><div class="bar"></div></div>${TAG}`,
+  // 3. Match malam ini
+  3: `<div class="label">💘 DATE NIGHT · SPEED DATING</div>
+      <div class="judul" style="top:300px;font-size:136px;color:white">MATCH-KU<br><span style="color:#ff7aa0">MALAM INI</span> 🙈</div>
+      <div class="foto" style="top:600px;height:560px;left:90px;right:560px;rotate:-3deg">📸<br>aku</div>
+      <div class="foto" style="top:650px;height:560px;left:560px;right:90px;rotate:3deg">🤫<br>siapa<br>hayo?</div>
+      <div class="stiker" style="left:50%;translate:-50% 0;top:1290px;rotate:2deg;background:var(--pink);color:white">Kecocokan kami: ___% 💞</div>${TAG}`,
+  // 4. Kencan di Taman Cinta / Raja & Ratu
+  4: `<div class="label">🎡 DATE NIGHT · TAMAN CINTA</div>
+      <div class="judul" style="top:300px;font-size:122px;color:white">KENCAN<br>PERTAMA DI<br><span style="color:var(--kuning)">TAMAN CINTA</span></div>
+      <div class="foto" style="top:700px;height:540px">📸 Tempel foto<br>bianglala / photobooth<small>tahan & seret foto di sini</small></div>
+      <div class="stiker" style="left:50%;translate:-50% 0;top:1290px;rotate:-3deg">👑 Vote kami jadi Raja & Ratu!</div>${TAG}`,
+};
+document.getElementById('isi').innerHTML = T[t] || T[1];
+</script>
+</body>
+</html>

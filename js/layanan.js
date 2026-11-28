@@ -3,8 +3,8 @@
 //  ajakan ngobrol, obrolan pribadi, suka & match, laporan, dan
 //  alat Direktur/Staf. Struktur data ini sama dengan database.rules.json.
 // =====================================================================
-import { TS, kunciBaru } from './db.js?v=202611270858';
-import { CFG, bersih, sensor, rupiah, kodeTamu, ucapanDonasi, namaPapan } from './common.js?v=202611270858';
+import { TS, kunciBaru } from './db.js?v=202611280202';
+import { CFG, bersih, sensor, rupiah, kodeTamu, ucapanDonasi, namaPapan } from './common.js?v=202611280202';
 
 export function buatLayanan(db) {
   const uid = db.uid;
@@ -168,6 +168,7 @@ export function buatLayanan(db) {
     // ---- proses pesanan (dipakai Dashboard & panel di kantor)
     cariPaket(v) {
       if (v.jenis === 'donasi') return { id: 'donasi', nama: 'Donasi', harga: v.nominal };
+      if (v.jenis === 'layar') return { id: 'layar', nama: 'Ucapan di Layar Y.H.A Club', harga: v.nominal };
       if (v.jenis === 'diamond') return ((CFG.diamond && CFG.diamond.paket) || []).find(p => p.id === v.paket) || null;
       return ((CFG.toko && CFG.toko.paket) || []).find(p => p.id === v.paket) || null;
     },
@@ -176,6 +177,7 @@ export function buatLayanan(db) {
       if (!p) throw new Error('Paket ' + v.paket + ' tidak ada di config.js');
       let pesan;
       if (v.jenis === 'diamond') { await L.beriDiamond(v.uid, p.diamond); pesan = `💠 ${p.diamond} Diamond sudah masuk ke akunmu. Selamat belanja di Lemari Diamond!`; }
+      else if (v.jenis === 'layar') { await db.push('clubLayar', { uid: v.uid, n: bersih(v.nt || '', 20) || 'Seseorang 🤫', ke: bersih(v.ke || '', 30), m: sensor(bersih(v.pesan || '', 120)) || '💖', tema: ['emas', 'pink', 'biru', 'ungu'].includes(v.tema) ? v.tema : 'emas', via: 'bayar', t: TS }); pesan = '🪩 Ucapanmu sudah tampil di layar Y.H.A Club! Masuk ke club buat lihat 💌'; }
       else if (v.jenis === 'donasi') { await L.catatDonatur(v.uid, v.nt || v.n, v.nominal, v.tampil); await db.set('papanDonasi/' + kunciBaru(), { n: namaPapan(v), nominal: v.nominal, m: bersih(v.pesan || '', 100), t: TS }); pesan = ucapanDonasi(v.nominal); }
       else {
         if (p.exp) await L.beriExp(v.uid, p.exp);

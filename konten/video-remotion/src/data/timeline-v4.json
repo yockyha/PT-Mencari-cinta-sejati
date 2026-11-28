@@ -1,0 +1,828 @@
+{
+ "versi": 1,
+ "fps": 30,
+ "lebar": 1080,
+ "tinggi": 1920,
+ "durasi": 1425,
+ "vo": {
+  "src": "vo4.mp3",
+  "volume": 1
+ },
+ "lapis": [
+  {
+   "id": "g1",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/drone.mp4",
+   "mulai": 0,
+   "durasi": 148,
+   "gelap": 0.45,
+   "kecepatan": 0.9,
+   "nama": "Drone kantor (redup)"
+  },
+  {
+   "id": "e2",
+   "track": "elemen",
+   "jenis": "hitung",
+   "mulai": 0,
+   "durasi": 148,
+   "props": {
+    "dari": 0,
+    "ke": 149,
+    "detik": 3.71,
+    "atas": "belum SEHARI 😳",
+    "label": "orang join 💘",
+    "y": 420
+   },
+   "nama": "Angka anggota"
+  },
+  {
+   "id": "t3",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Gila… belum *sehari,*",
+   "mulai": 0,
+   "durasi": 65,
+   "y": 1330
+  },
+  {
+   "id": "t4",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "yang join udah *hampir 150!*",
+   "mulai": 65,
+   "durasi": 83,
+   "y": 1330
+  },
+  {
+   "id": "g5",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/drone.mp4",
+   "mulai": 148,
+   "durasi": 82,
+   "gelap": 0.35,
+   "kecepatan": 0.7,
+   "trim": 1.5,
+   "nama": "Kantor (antre ACC)"
+  },
+  {
+   "id": "t6",
+   "track": "teks",
+   "jenis": "cap",
+   "teks": "ANTRE ACC ⏳",
+   "mulai": 153,
+   "durasi": 77,
+   "warna": "#ff4f7b",
+   "y": 620,
+   "x": 150,
+   "miring": -7
+  },
+  {
+   "id": "t7",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Dan masih *banyak yang antre* di-ACC Direktur!",
+   "mulai": 148,
+   "durasi": 82,
+   "y": 1330
+  },
+  {
+   "id": "g8",
+   "track": "gambar",
+   "jenis": "foto",
+   "src": "foto/meja.png",
+   "mulai": 230,
+   "durasi": 103,
+   "zoom": 1.1,
+   "nama": "Kantor dari atas"
+  },
+  {
+   "id": "t9",
+   "track": "teks",
+   "jenis": "judul",
+   "teks": "Emang di dalem",
+   "mulai": 232,
+   "durasi": 101,
+   "kecil": "ngapain aja? 🤔",
+   "y": 520
+  },
+  {
+   "id": "t10",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Nih, yang *baru-baru!* 👇",
+   "mulai": 292,
+   "durasi": 41,
+   "y": 1330
+  },
+  {
+   "id": "g11",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/sd.mp4",
+   "mulai": 333,
+   "durasi": 183,
+   "trim": 0.2,
+   "kecepatan": 1.131,
+   "nama": "Speed dating"
+  },
+  {
+   "id": "t12",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "💘 SPEED DATING",
+   "mulai": 337,
+   "durasi": 179,
+   "nyala": "0",
+   "y": 1690,
+   "masuk": "pop"
+  },
+  {
+   "id": "t13",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Ikut *speed dating:* dipasangin acak,",
+   "mulai": 333,
+   "durasi": 73,
+   "y": 130
+  },
+  {
+   "id": "t14",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "ngobrol *3 menit,*",
+   "mulai": 406,
+   "durasi": 40,
+   "y": 130
+  },
+  {
+   "id": "t15",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "terus pilih… *lanjut* atau *skip?*",
+   "mulai": 446,
+   "durasi": 70,
+   "y": 130
+  },
+  {
+   "id": "g16",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/menfess.mp4",
+   "mulai": 516,
+   "durasi": 112,
+   "trim": 0.3,
+   "kecepatan": 1.501,
+   "nama": "Menfess"
+  },
+  {
+   "id": "t17",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "📮 MENFESS",
+   "mulai": 518,
+   "durasi": 110,
+   "nyala": "0",
+   "y": 1690,
+   "masuk": "pop"
+  },
+  {
+   "id": "t18",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Naksir tapi malu? Kirim *menfess,* tanpa nama 🤫",
+   "mulai": 516,
+   "durasi": 112,
+   "y": 130
+  },
+  {
+   "id": "g19",
+   "track": "gambar",
+   "jenis": "foto",
+   "src": "foto/cocok.png",
+   "mulai": 628,
+   "durasi": 116,
+   "zoom": 1.18,
+   "nama": "Kecocokan zodiak & MBTI"
+  },
+  {
+   "id": "t20",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "🔮 CEK KECOCOKAN",
+   "mulai": 630,
+   "durasi": 114,
+   "nyala": "0",
+   "y": 1690,
+   "masuk": "pop"
+  },
+  {
+   "id": "t21",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Cek kecocokan, dari *zodiak* sampai *MBTI!*",
+   "mulai": 628,
+   "durasi": 116,
+   "y": 130
+  },
+  {
+   "id": "g22",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/tod.mp4",
+   "mulai": 744,
+   "durasi": 54,
+   "trim": 0.9,
+   "kecepatan": 1.444,
+   "nama": "Truth or dare"
+  },
+  {
+   "id": "g23",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/kerupuk.mp4",
+   "mulai": 798,
+   "durasi": 54,
+   "trim": 0.6,
+   "kecepatan": 2.0,
+   "nama": "Lomba kerupuk"
+  },
+  {
+   "id": "t24",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "🍾 TRUTH OR DARE",
+   "mulai": 746,
+   "durasi": 52,
+   "nyala": "0",
+   "y": 1690,
+   "masuk": "pop"
+  },
+  {
+   "id": "t25",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "🍘 LOMBA KERUPUK",
+   "mulai": 798,
+   "durasi": 54,
+   "nyala": "0",
+   "y": 1690,
+   "masuk": "pop"
+  },
+  {
+   "id": "t26",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Main *truth or dare* bareng,",
+   "mulai": 744,
+   "durasi": 54,
+   "y": 130
+  },
+  {
+   "id": "t27",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "sampai *lomba makan kerupuk!*",
+   "mulai": 798,
+   "durasi": 54,
+   "y": 130
+  },
+  {
+   "id": "g28",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/amplop.mp4",
+   "mulai": 852,
+   "durasi": 100,
+   "trim": 0.3,
+   "kecepatan": 1.254,
+   "nama": "Amplop Cinta"
+  },
+  {
+   "id": "t29",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "🎁 AMPLOP CINTA",
+   "mulai": 854,
+   "durasi": 98,
+   "nyala": "0",
+   "y": 1690,
+   "masuk": "pop"
+  },
+  {
+   "id": "t30",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Buka *Amplop Cinta,*",
+   "mulai": 852,
+   "durasi": 41,
+   "y": 130
+  },
+  {
+   "id": "t31",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "siapa tau dapet *hadiah langka!* ✨",
+   "mulai": 893,
+   "durasi": 59,
+   "y": 130
+  },
+  {
+   "id": "g32",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/ketuk.mp4",
+   "mulai": 952,
+   "durasi": 62,
+   "trim": 0.4,
+   "kecepatan": 1.756,
+   "nama": "Ketuk pintu Direktur"
+  },
+  {
+   "id": "t33",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "🚪 RUANG DIREKTUR",
+   "mulai": 954,
+   "durasi": 60,
+   "nyala": "0",
+   "y": 1690,
+   "masuk": "pop"
+  },
+  {
+   "id": "t34",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Berani *ketuk pintu* ruang Direktur? 👀",
+   "mulai": 952,
+   "durasi": 62,
+   "y": 130
+  },
+  {
+   "id": "g35",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/taman.mp4",
+   "mulai": 1014,
+   "durasi": 183,
+   "kecepatan": 0.721,
+   "nama": "Taman Cinta (proyek)"
+  },
+  {
+   "id": "t36",
+   "track": "teks",
+   "jenis": "stiker",
+   "teks": "SEGERA BUKA 🎡",
+   "mulai": 1018,
+   "durasi": 179,
+   "warna": "#ff4f7b",
+   "y": 300
+  },
+  {
+   "id": "t37",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Dan bentar lagi… *Taman Cinta* buka!",
+   "mulai": 1014,
+   "durasi": 91,
+   "y": 1330
+  },
+  {
+   "id": "t38",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Ada *bianglala, bioskop,* sampai *boba!*",
+   "mulai": 1105,
+   "durasi": 92,
+   "y": 1330
+  },
+  {
+   "id": "g39",
+   "track": "gambar",
+   "jenis": "foto",
+   "src": "foto/kamar.png",
+   "mulai": 1197,
+   "durasi": 21,
+   "zoom": 1.12,
+   "nama": "Cepat foto/kamar.png"
+  },
+  {
+   "id": "g40",
+   "track": "gambar",
+   "jenis": "foto",
+   "src": "foto/kuis.png",
+   "mulai": 1218,
+   "durasi": 20,
+   "zoom": 1.12,
+   "nama": "Cepat foto/kuis.png"
+  },
+  {
+   "id": "g41",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/r_lounge.mp4",
+   "mulai": 1238,
+   "durasi": 21,
+   "nama": "Cepat klip/r_lounge.mp4"
+  },
+  {
+   "id": "g42",
+   "track": "gambar",
+   "jenis": "foto",
+   "src": "foto/season.png",
+   "mulai": 1259,
+   "durasi": 21,
+   "zoom": 1.12,
+   "nama": "Cepat foto/season.png"
+  },
+  {
+   "id": "t43",
+   "track": "teks",
+   "jenis": "judul",
+   "teks": "Itu baru",
+   "mulai": 1199,
+   "durasi": 81,
+   "kecil": "SEBAGIAN! 🤯",
+   "y": 560
+  },
+  {
+   "id": "t44",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "masih *banyak lagi!*",
+   "mulai": 1222,
+   "durasi": 58,
+   "y": 1330
+  },
+  {
+   "id": "g45",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/drone.mp4",
+   "mulai": 1280,
+   "durasi": 145,
+   "gelap": 0.45,
+   "kecepatan": 0.6,
+   "trim": 0.5,
+   "nama": "Latar penutup"
+  },
+  {
+   "id": "e46",
+   "track": "elemen",
+   "jenis": "komentar",
+   "mulai": 1280,
+   "durasi": 145,
+   "props": {
+    "komentar": "penonton1|@temen ini jomblo dari lahir 😭|1m|12\npenonton2|@bestie udah 5 taun sendiri, gas|2m|8\npenonton3|bahas speed dating dong min!|3m|5\npenonton4|@sepupu nih biar ga galau mulu|4m|3",
+    "ketik": "@temenku_jomblo sini 😭",
+    "ketikDetik": 0.39,
+    "akunSaya": "kamu",
+    "sensor": true
+   },
+   "masuk": "geser-atas",
+   "nama": "Komentar: tag temen"
+  },
+  {
+   "id": "t47",
+   "track": "teks",
+   "jenis": "stiker",
+   "teks": "JOMBLO ALERT 🚨",
+   "mulai": 1282,
+   "durasi": 74,
+   "warna": "#ff4f7b",
+   "y": 240
+  },
+  {
+   "id": "t48",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "*Tag temen* kalian yang",
+   "mulai": 1280,
+   "durasi": 36,
+   "y": 470
+  },
+  {
+   "id": "t49",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "udah *kelamaan jomblo!* 😭",
+   "mulai": 1316,
+   "durasi": 40,
+   "y": 470
+  },
+  {
+   "id": "t50",
+   "track": "teks",
+   "jenis": "stiker",
+   "teks": "KOMEN YUK 👇",
+   "mulai": 1356,
+   "durasi": 69,
+   "warna": "#ffd23f",
+   "y": 240
+  },
+  {
+   "id": "t51",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Terus komen, mau kita",
+   "mulai": 1356,
+   "durasi": 37,
+   "y": 470
+  },
+  {
+   "id": "t52",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "bahas *apa lagi?*",
+   "mulai": 1393,
+   "durasi": 32,
+   "y": 470
+  },
+  {
+   "id": "t53",
+   "track": "teks",
+   "jenis": "akun",
+   "teks": "@jodohonline.id",
+   "mulai": 0,
+   "durasi": 333,
+   "masuk": "none",
+   "y": 150,
+   "x": 130
+  }
+ ],
+ "sfx": [
+  {
+   "id": "s1",
+   "nama": "Tik hitung 1",
+   "src": "sfx/pop.mp3",
+   "mulai": 4,
+   "durasi": 8,
+   "volume": 0.18
+  },
+  {
+   "id": "s2",
+   "nama": "Tik hitung 2",
+   "src": "sfx/pop.mp3",
+   "mulai": 18,
+   "durasi": 8,
+   "volume": 0.18
+  },
+  {
+   "id": "s3",
+   "nama": "Tik hitung 3",
+   "src": "sfx/pop.mp3",
+   "mulai": 32,
+   "durasi": 8,
+   "volume": 0.18
+  },
+  {
+   "id": "s4",
+   "nama": "Tik hitung 4",
+   "src": "sfx/pop.mp3",
+   "mulai": 46,
+   "durasi": 8,
+   "volume": 0.18
+  },
+  {
+   "id": "s5",
+   "nama": "Tik hitung 5",
+   "src": "sfx/pop.mp3",
+   "mulai": 60,
+   "durasi": 8,
+   "volume": 0.18
+  },
+  {
+   "id": "s6",
+   "nama": "Tik hitung 6",
+   "src": "sfx/pop.mp3",
+   "mulai": 74,
+   "durasi": 8,
+   "volume": 0.18
+  },
+  {
+   "id": "s7",
+   "nama": "Tik hitung 7",
+   "src": "sfx/pop.mp3",
+   "mulai": 88,
+   "durasi": 8,
+   "volume": 0.18
+  },
+  {
+   "id": "s8",
+   "nama": "Tik hitung 8",
+   "src": "sfx/pop.mp3",
+   "mulai": 102,
+   "durasi": 8,
+   "volume": 0.18
+  },
+  {
+   "id": "s9",
+   "nama": "Ding angka",
+   "src": "sfx/levelup.mp3",
+   "mulai": 116,
+   "durasi": 33,
+   "volume": 0.3
+  },
+  {
+   "id": "s10",
+   "nama": "Cap antre",
+   "src": "sfx/cap.mp3",
+   "mulai": 153,
+   "durasi": 18,
+   "volume": 0.4
+  },
+  {
+   "id": "s11",
+   "nama": "Whoosh judul",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 227,
+   "durasi": 18,
+   "volume": 0.3
+  },
+  {
+   "id": "s12",
+   "nama": "Pop 💘 SPEED DATING",
+   "src": "sfx/pop.mp3",
+   "mulai": 337,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s13",
+   "nama": "Timer habis",
+   "src": "sfx/notif.mp3",
+   "mulai": 476,
+   "durasi": 30,
+   "volume": 0.25
+  },
+  {
+   "id": "s14",
+   "nama": "Pop 📮 MENFESS",
+   "src": "sfx/pop.mp3",
+   "mulai": 518,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s15",
+   "nama": "Ketik menfess",
+   "src": "sfx/ketik.mp3",
+   "mulai": 555,
+   "durasi": 40,
+   "volume": 0.8
+  },
+  {
+   "id": "s16",
+   "nama": "Pop 🔮 CEK KECOCOKAN",
+   "src": "sfx/pop.mp3",
+   "mulai": 630,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s17",
+   "nama": "Pop 🍾 TRUTH OR DARE",
+   "src": "sfx/pop.mp3",
+   "mulai": 746,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s18",
+   "nama": "Pop 🍘 LOMBA KERUPUK",
+   "src": "sfx/pop.mp3",
+   "mulai": 798,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s19",
+   "nama": "Pop 🎁 AMPLOP CINTA",
+   "src": "sfx/pop.mp3",
+   "mulai": 854,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s20",
+   "nama": "Hadiah",
+   "src": "sfx/levelup.mp3",
+   "mulai": 902,
+   "durasi": 33,
+   "volume": 0.3
+  },
+  {
+   "id": "s21",
+   "nama": "Pop 🚪 RUANG DIREKTUR",
+   "src": "sfx/pop.mp3",
+   "mulai": 954,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s22",
+   "nama": "Tok tok",
+   "src": "sfx/ketuk.mp3",
+   "mulai": 996,
+   "durasi": 12,
+   "volume": 0.5
+  },
+  {
+   "id": "s23",
+   "nama": "Tok tok 2",
+   "src": "sfx/ketuk.mp3",
+   "mulai": 1001,
+   "durasi": 12,
+   "volume": 0.5
+  },
+  {
+   "id": "s24",
+   "nama": "Whoosh taman",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 1011,
+   "durasi": 18,
+   "volume": 0.3
+  },
+  {
+   "id": "s25",
+   "nama": "Whip 1",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 1196,
+   "durasi": 10,
+   "volume": 0.18
+  },
+  {
+   "id": "s26",
+   "nama": "Whip 2",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 1217,
+   "durasi": 10,
+   "volume": 0.18
+  },
+  {
+   "id": "s27",
+   "nama": "Whip 3",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 1237,
+   "durasi": 10,
+   "volume": 0.18
+  },
+  {
+   "id": "s28",
+   "nama": "Whip 4",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 1258,
+   "durasi": 10,
+   "volume": 0.18
+  },
+  {
+   "id": "s29",
+   "nama": "Geser komentar",
+   "src": "sfx/geser.mp3",
+   "mulai": 1280,
+   "durasi": 18,
+   "volume": 0.8
+  },
+  {
+   "id": "s30",
+   "nama": "Pop stiker",
+   "src": "sfx/pop.mp3",
+   "mulai": 1282,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s31",
+   "nama": "Ketik tag",
+   "src": "sfx/ketik.mp3",
+   "mulai": 1291,
+   "durasi": 40,
+   "volume": 1.0
+  },
+  {
+   "id": "s32",
+   "nama": "Ketuk kirim",
+   "src": "sfx/ketuk.mp3",
+   "mulai": 1370,
+   "durasi": 12,
+   "volume": 0.45
+  },
+  {
+   "id": "s33",
+   "nama": "Pop terkirim",
+   "src": "sfx/pop.mp3",
+   "mulai": 1375,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s34",
+   "nama": "Pop stiker 2",
+   "src": "sfx/pop.mp3",
+   "mulai": 1356,
+   "durasi": 15,
+   "volume": 0.35
+  }
+ ]
+}

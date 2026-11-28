@@ -12,7 +12,7 @@ def pasang(r):
       ".validate": "newData.child('sampai').isNumber() && (!newData.child('tingkat').exists() || newData.child('tingkat').val().matches(/^(vip|vvip)$/))"}}
     r["pesanan"] = {**D(), "$id": {".read": f"{A} && data.child('uid').val() === auth.uid",
       ".write": f"{A} && !data.exists() && newData.child('uid').val() === auth.uid && {BEBAS}",
-      ".validate": f"{DIR} || (newData.child('paket').isString() && newData.child('paket').val().length <= 20 && newData.child('jenis').val().matches(/^(diamond|paket|donasi)$/) && newData.child('metode').val().matches(/^(qris|bca|bri|lain)$/) && newData.child('nominal').isNumber() && newData.child('nominal').val() >= 1000 && newData.child('nominal').val() <= 10000000 && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('t').val() === now)"}}
+      ".validate": f"{DIR} || (newData.child('paket').isString() && newData.child('paket').val().length <= 20 && newData.child('jenis').val().matches(/^(diamond|paket|donasi|layar)$/) && newData.child('metode').val().matches(/^(qris|bca|bri|lain)$/) && newData.child('nominal').isNumber() && newData.child('nominal').val() >= 1000 && newData.child('nominal').val() <= 10000000 && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('t').val() === now)"}}
     r["diamond"] = {".read": f"{A} && {DIR}", ".write": f"{A} && {DIR}", "$uid": {".read": f"{A} && auth.uid === $uid",
       ".write": f"{A} && auth.uid === $uid && {BEBAS} && newData.isNumber() && newData.val() >= 0 && (newData.val() < data.val() || {HADIAH_STREAK})",
       ".validate": "newData.isNumber() && newData.val() >= 0"}}

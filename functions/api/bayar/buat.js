@@ -1,6 +1,6 @@
 // POST /api/bayar/buat  →  membuat pesanan & halaman bayar Midtrans
-// Body: { idToken, jenis: 'diamond'|'paket'|'donasi', paket, nominal?, pesan?, tampil? }
-import PAKET, { hitungItem } from '../../../paket.js';
+// Body: { idToken, jenis: 'diamond'|'paket'|'donasi'|'layar', paket, nominal?, pesan?, tampil?, ke?, tema?, nt? }
+import PAKET, { hitungItem, dataLayar } from '../../../paket.js';
 import { buatDb, uidDariToken, TS } from '../../../server/firebase.js';
 import { buatTransaksi } from '../../../server/midtrans.js';
 
@@ -22,6 +22,7 @@ export async function onRequestPost({ request, env }) {
     const orderId = 'MCS-' + Date.now().toString(36).toUpperCase() + '-' + crypto.getRandomValues(new Uint32Array(1))[0].toString(36).toUpperCase();
     await db.set('pesanan/' + orderId, {
       uid, n, paket: it.paket, jenis: it.jenis, nama: it.nama, nominal: it.harga, metode: 'otomatis', kode: orderId, status: 'menunggu', t: TS,
+      ...(it.jenis === 'layar' ? dataLayar(PAKET, b, n) : {}),
       ...(it.jenis === 'donasi' ? { pesan: String(b.pesan || '').slice(0, 100), tampil: b.tampil !== false, nt: String(b.nt || n).trim().slice(0, 20) } : {}),
     });
     const asal = new URL(request.url).origin;

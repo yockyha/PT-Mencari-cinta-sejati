@@ -1,5 +1,5 @@
 // Memasukkan barang ke akun pembeli setelah pembayaran lunas.
-import PAKET, { hitungItem, ucapanDonasi, namaPapan } from '../paket.js';
+import PAKET, { hitungItem, ucapanDonasi, namaPapan, dataLayar } from '../paket.js';
 import { TS } from './firebase.js';
 
 const rp = n => 'Rp' + Number(n || 0).toLocaleString('id-ID');
@@ -18,6 +18,10 @@ export async function lunasi(db, id, v, metodeBayar) {
   if (it.jenis === 'diamond') {
     await db.atomik('diamond/' + v.uid, x => (+x || 0) + it.diamond);
     pesan = `💠 ${it.diamond} Diamond sudah masuk ke akunmu. Selamat belanja di Lemari Diamond!`;
+  } else if (it.jenis === 'layar') {
+    const d = dataLayar(PAKET, v, v.n);
+    await db.push('clubLayar', { uid: v.uid, n: d.nt || 'Seseorang 🤫', ke: d.ke, m: d.pesan || '💖', tema: d.tema, via: 'bayar', t: TS });
+    pesan = '🪩 Ucapanmu sudah tampil di layar Y.H.A Club! Masuk ke club buat lihat 💌';
   } else if (it.jenis === 'donasi') {
     await db.push('papanDonasi', { n: namaPapan(v), nominal: it.harga, m: String(v.pesan || '').slice(0, 100), t: TS });
     await db.atomik('donatur/' + v.uid, x => ({ n: namaPapan({ ...v, tampil: true }), total: ((x && x.total) || 0) + it.harga, kali: ((x && x.kali) || 0) + 1, tampil: v.tampil !== false, t: sekarang }));

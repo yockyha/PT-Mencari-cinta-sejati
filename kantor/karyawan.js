@@ -6,8 +6,8 @@
 //    (kurir datang ke lobi), istirahat, beres-beres; OB ngepel & menyapu.
 //  Disimulasikan di tiap perangkat (tidak lewat database).
 // =====================================================================
-import { CFG, LOKASI, esc } from '../js/common.js?v=202611270858';
-import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611270858';
+import { CFG, LOKASI, esc } from '../js/common.js?v=202611280202';
+import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611280202';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const jarak = (a, x, z) => Math.hypot(a.x - x, a.z - z);
@@ -41,6 +41,13 @@ const STAF = [
     sapa: ['Ruang Direktur privat. Silakan ketuk pintu dulu. 🕶️', 'Tanpa izin Direktur, dilarang masuk.', 'Saya jaga pintu ini 24 jam.'], kegiatan: [] },
   { id: 'guard2', n: 'GUARD', jab: 'Pengawal Direktur', ikon: '🕶️', fitur: 'pengawal', pengawal: true, look: S({ s: 'l', at: 'jasDir', bw: 'bahan', wb: 0, sp: 'pantofel', r: 0, w: 1, k: 3, mt: 'hitam' }), pos: [13.15, 17.5], r: -Math.PI / 2,
     sapa: ['Ada perlu dengan Direktur? Ketuk pintu, nanti beliau yang putuskan.', 'Mohon jaga ketertiban. 🕶️', 'Silakan antre di depan pintu.'], kegiatan: [] },
+  // 🪩 Y.H.A Club (muncul setelah gedung dibuka; tidak ikut jalan-jalan ke kantor)
+  { id: 'dj', n: 'DJ Rendi', jab: 'DJ Y.H.A Club', ikon: '🎧', fitur: 'dj', gedung: 'yhaClub', y: 0.6, posA: 7, look: S({ s: 'l', at: 'hoodie', wa: 8, bw: 'jogger', wb: 0, sp: 'sneakers', r: 7, w: 2, k: 2, tl: 'headset', kp: 'topi' }), pos: [64, -14.6], r: 0,
+    sapa: ['Yo! Mau request lagu? Tempel link YouTube di panel DJ 🎧', 'Turun ke lantai dansa, gas joget! 💃', 'Beat malam ini panas banget 🔥'], kegiatan: ['ngeDJ', 'ngeDJ', 'sapaLantai'] },
+  { id: 'kevin', n: 'Mas Kevin', jab: 'Bartender Mocktail', ikon: '🍹', fitur: 'bartender', gedung: 'yhaClub', look: S({ s: 'l', at: 'kemeja', wa: 9, bw: 'bahan', wb: 0, sp: 'pantofel', r: 4, w: 0, k: 1, lh: 'dasiKupu' }), pos: [46.2, 1], r: Math.PI / 2,
+    sapa: ['Mau mocktail apa malam ini? Semua tanpa alkohol ya 🍹', 'Strawberry Love Fizz lagi laris tuh 🍓'], kegiatan: ['racikMinuman', 'lapGelas'] },
+  { id: 'tigor', n: 'Bang Tigor', jab: 'Bouncer Y.H.A Club', ikon: '🕶️', fitur: 'bouncer', gedung: 'yhaClub', besar: true, look: S({ s: 'l', at: 'jasDir', bw: 'bahan', wb: 0, sp: 'pantofel', r: 3, w: 0, k: 3, mt: 'hitam' }), pos: [61.2, 20.4], r: 0,
+    sapa: ['Selamat datang di Y.H.A Club. Jaga sikap, have fun! 🕶️', 'Silakan masuk, lantai dansa lagi rame 🪩'], kegiatan: ['jagaPintu'] },
   { id: 'bayu', n: 'Mas Bayu', jab: 'Game Master', ikon: '🎮', fitur: 'game', look: S({ s: 'l', at: 'seragam', bw: 'jogger', wb: 0, sp: 'lari', r: 7, w: 5, k: 2, kp: 'topi' }), pos: [-9.8, 17.9], r: -Math.PI / 2,
     sapa: ['Berani lawan rekor Tangkap Hati hari ini? 💗', 'Main game dapat EXP lho!'], kegiatan: ['mainGame', 'ngobrol', 'ngopi'] },
   { id: 'wati', n: 'Bu Wati', jab: 'Office Girl', ikon: '🧽', fitur: 'ob', ob: true, look: S({ s: 'p', at: 'ob', bw: 'bahan', wb: 3, sp: 'sandal', kp: 'hijab', wa: 2, k: 3 }), bawa: 'pel', pos: [-6.5, -5], r: 0,
@@ -48,8 +55,8 @@ const STAF = [
   { id: 'ujang', n: 'Mas Ujang', jab: 'Office Boy', ikon: '🧹', fitur: 'ob', ob: true, look: S({ s: 'l', at: 'ob', bw: 'bahan', wb: 3, sp: 'sandal', kp: 'topiOb', r: 0, k: 2 }), bawa: 'sapu', pos: [11.5, -5], r: 0,
     sapa: ['Mangga, silakan lewat 🙏', 'Mau kopi? Nanti saya buatin, hehe.'], kegiatan: ['nyapu', 'nyapu', 'kopiDirektur', 'ngobrol'] },
 ];
-const NAMA_POS = { guard1: 'Pintu Ruang Direktur', guard2: 'Pintu Ruang Direktur', ayu: 'Lobi', bambang: 'Pintu masuk', raka: 'Kafe Jodoh', nadia: 'Taman Curhat', dimas: 'Meja Nongkrong', sari: 'Ruang Loker', laras: 'Lobi (papan acara)', hendra: 'Ruang Rapat', citra: 'Depan Ruang Direktur', bayu: 'Mesin arcade lobi' };
-export const posKaryawan = () => STAF.filter(s => NAMA_POS[s.id]).map(s => ({ id: s.id, n: s.n, jab: s.jab, ikon: s.ikon, tempat: NAMA_POS[s.id] }));
+const NAMA_POS = { dj: 'Y.H.A Club', kevin: 'Bar Y.H.A Club', tigor: 'Pintu Y.H.A Club', guard1: 'Pintu Ruang Direktur', guard2: 'Pintu Ruang Direktur', ayu: 'Lobi', bambang: 'Pintu masuk', raka: 'Kafe Jodoh', nadia: 'Taman Curhat', dimas: 'Meja Nongkrong', sari: 'Ruang Loker', laras: 'Lobi (papan acara)', hendra: 'Ruang Rapat', citra: 'Depan Ruang Direktur', bayu: 'Mesin arcade lobi' };
+export const posKaryawan = () => STAF.filter(s => NAMA_POS[s.id] && (!s.gedung || !K.gedungBuka || K.gedungBuka(s.gedung))).map(s => ({ id: s.id, n: s.n, jab: s.jab, ikon: s.ikon, tempat: NAMA_POS[s.id] }));
 
 const DIALOG = [
   ['Udah makan siang belum?', 'Belum nih, pesen online yuk? 📱', 'Boleh, aku mau nasi padang 🍛', 'Sip, nanti aku pesenin!'],
@@ -72,7 +79,8 @@ function pasangModel(o) {
   const lama = o.g;
   o.g = D.buatKarakter(o.look, { peran: o.pengawal ? 'pengawal' : 'karyawan', bawa: o.bawaKini || '' });
   if (o.pengawal) { o.g.userData.tubuh.scale.set(1.22, 1.06, 1.22); o.g.add(D.labelNama('🕶️ GUARD', 'guard')); }
-  else o.g.add(D.labelNama(`${o.ikon} ${o.n} · ${o.jab}`, o.kurir ? '' : 'staf'));
+  else if (o.besar) { o.g.userData.tubuh.scale.set(1.2, 1.05, 1.2); o.g.add(D.labelNama(`${o.ikon} ${o.n} · ${o.jab}`, 'guard')); }
+  if (!o.pengawal && !o.besar) o.g.add(D.labelNama(`${o.ikon} ${o.n} · ${o.jab}`, o.kurir ? '' : 'staf'));
   if (lama) { if (o.gel) { lama.remove(o.gel); o.g.add(o.gel); } D.scene.remove(lama); }
   o.g.position.set(o.x, 0, o.z); o.g.rotation.y = o.r;
   D.scene.add(o.g);
@@ -106,7 +114,7 @@ const pulang = o => [ke(o.pos[0], o.pos[1]), { fn: o => { o.r = o.posR ?? o.r; }
 
 function bebas(o) { return !o.tugas.length && !o.kurir; }
 function partnerBebas(o) {
-  const l = semua.filter(p => p !== o && bebas(p) && !p.duduk && !p.kurir && !p.pengawal && !pemainDekat(p.pos[0], p.pos[1], 12));
+  const l = semua.filter(p => p !== o && bebas(p) && !p.duduk && !p.kurir && !p.pengawal && !p.gedung && !pemainDekat(p.pos[0], p.pos[1], 12));
   return l.sort((a, b) => jarak(a, o.x, o.z) - jarak(b, o.x, o.z))[0];
 }
 
@@ -172,6 +180,11 @@ const KEGIATAN = {
     const [x, z] = D.NAV[n];
     return [ke(x + (Math.random() - 0.5) * 2, z + (Math.random() - 0.5) * 2), tunggu(8, 3, acak(['Sapu dulu biar bersih 🧹', 'Siapa nih buang bungkus permen sembarangan…', '']))];
   },
+  ngeDJ(o) { return [tunggu(14, 7, acak(['🎧 Drop the beat!! 🔥', 'Tangan di atas semuanyaaa 🙌', 'Request lagu di depan panggung ya!', '🎶 Lagu berikutnya lebih kenceng!']))]; },
+  sapaLantai(o) { return [tunggu(4, 5, acak(['Y.H.A Club, make some noise!! 📣', 'Yang jomblo angkat tangan 🙋', 'Joget bareng yuk! 💃']))]; },
+  racikMinuman(o) { return [{ fn: o => pakai(o, 'kopi') }, tunggu(5, 3, acak(['Shake… shake… 🍹', 'Satu Mango Match Sunrise, siap! 🥭', 'Mocktail spesial buat yang lagi PDKT 💘'])), { fn: o => pakai(o, o.bawa || '') }]; },
+  lapGelas(o) { return [tunggu(6, 3, acak(['Lap gelas biar kinclong ✨', 'Bar siap melayani! 🍹']))]; },
+  jagaPintu(o) { return [tunggu(10, 0, acak(['Antre yang rapi ya 🕶️', 'Dilarang bawa minuman beralkohol!', 'Dress code bebas, sikap harus sopan 👌']))]; },
   kopiDirektur(o) { return [{ fn: o => pakai(o, 'nampan') }, ke(16.5, 16), tunggu(3, 0, 'Kopinya, Direktur ☕', [20.6, 16]), { fn: o => pakai(o, o.bawa) }]; },
 };
 
@@ -194,8 +207,9 @@ export function update(dt) {
   for (let i = semua.length - 1; i >= 0; i--) {
     const o = semua[i];
     if (o.hapus) { D.scene.remove(o.g); semua.splice(i, 1); continue; }
+    if (o.gedung) { const b = !K.gedungBuka || K.gedungBuka(o.gedung); o.g.visible = b; if (!b) continue; }
     langkah(o, dt);
-    o.g.position.set(o.x, 0, o.z); o.g.rotation.y = o.r;
+    o.g.position.set(o.x, o.y || 0, o.z); o.g.rotation.y = o.r;
     D.pose(o.g, o.a, dt, 1, !!o.kursi && o.a !== 1);
     if (o.gel) { o.gelT -= dt; if (o.gelT <= 0) { o.g.remove(o.gel); o.gel.material.map.dispose(); o.gel = null; } }
     // sapa tamu yang mendekat
@@ -219,7 +233,7 @@ function langkah(o, dt) {
     if (!o.kurir && jarak(o, o.pos[0], o.pos[1]) > 0.35) { o.tugas.push(...pulang(o)); return; }
     // jaga pos
     if (o.kursiPos) { o.kursiPos.oleh = o; o.kursi = o.kursiPos; o.x = o.kursiPos.x; o.z = o.kursiPos.z; o.r = sudutLerp(o.r, o.kursiPos.r, Math.min(1, dt * 6)); o.a = o.posA || 2; }
-    else { o.a = 0; if (jarak(p, o.x, o.z) < 6) hadapKe(o, p.x, p.z, dt); else o.r = sudutLerp(o.r, o.posR, Math.min(1, dt * 3)); }
+    else { o.a = o.posA || 0; if (jarak(p, o.x, o.z) < 6 && !o.posA) hadapKe(o, p.x, p.z, dt); else o.r = sudutLerp(o.r, o.posR, Math.min(1, dt * 3)); }
     o.idleT -= dt;
     if (o.idleT <= 0) {
       o.idleT = 25 + Math.random() * 35;
@@ -288,6 +302,12 @@ const PANDUAN = {
   pengawal: () => ({ isi: `<p>Saya <b>pengawal pribadi Direktur</b>. Ruang Direktur adalah area privat.</p>
       <ul><li>✊ <b>Ketuk pintu</b> dulu, nanti Direktur yang memutuskan boleh masuk atau tidak.</li><li>Kalau diizinkan, pintu otomatis terbuka untukmu selama waktu izin.</li><li>Mau kasih saran ke Direktur? Lewat <b>Mbak Citra</b> (sekretaris) di sebelah.</li></ul>`,
     tombol: [['✊ Ketuk pintu', 'ketukDir'], ['💡 Kirim saran', 'saran']] }),
+  dj: () => ({ isi: `<p>Selamat datang di <b>🪩 Y.H.A Club</b>! Saya yang pegang musik malam ini.</p><ul><li>🎧 <b>Request lagu</b>: tempel link YouTube di panel DJ depan panggung, nanti saya atau Direktur yang putar.</li><li>🔊 Musik terdengar oleh semua tamu di dalam club, makin keras makin dekat panggung. Ketuk <b>Nyalakan suara</b> kalau belum terdengar.</li><li>💃 Turun ke lantai dansa dan tekan <b>Joget</b>. Joget 1 menit = tugas harian!</li></ul>`,
+    tombol: [['🎧 Panel DJ / request', 'clubDJ']] }),
+  bartender: () => ({ isi: `<p>Ini <b>🍹 Mocktail Bar</b>. Semua minuman di sini <b>tanpa alkohol</b> dan gratis buat tamu.</p><ul><li>🍓 Strawberry Love Fizz · 🍋 Lemon Crush Jomblo</li><li>🫐 Blue Lagoon Baper · 🥭 Mango Match Sunrise</li></ul><p class="kecil">Gelasnya bisa kamu bawa sambil joget 😉</p>`,
+    tombol: [['🍹 Pesan mocktail', 'clubBar']] }),
+  bouncer: () => ({ isi: `<p>Saya jaga pintu <b>Y.H.A Club</b>. Aturannya simpel:</p><ul><li>🙅 Tanpa alkohol, tanpa rokok, tanpa ribut.</li><li>💎 <b>VIP Table</b> khusus tamu VIP & VVIP.</li><li>🚩 Ada yang ganggu? Ketuk orangnya → <b>Laporkan</b>.</li></ul>`,
+    tombol: [['🪩 Masuk ke club', 'club'], ['🎧 Request lagu', 'clubDJ']] }),
   ob: o => ({ isi: `<p>${esc(acak(['Kantor harus bersih biar tamunya betah. Saya pel dari pagi lho! 🧽', 'Kalau lihat lantai basah, hati-hati ya. Nanti kepeleset kayak jatuh cinta 😆', 'Ssst… saya kasih tahu rahasia kantor ya.']))}</p>
       <p><b>🤫 Rahasia kantor:</b></p><ul><li>🧊 Buka <b>kulkas pantry</b>, siapa tahu ada camilan.</li><li>🍱 <b>Microwave</b> & 💧 <b>dispenser</b> bisa dipakai.</li><li>🪴 <b>Siram tanaman</b> di dalam kantor.</li><li>📸 Foto di <b>patung hati</b> depan kantor, hasilnya bisa disimpan!</li></ul>`, tombol: [['📸 Antar ke patung hati', 'patung']] }),
 };
@@ -296,7 +316,7 @@ export function ketuk(o) {
   if (o.kurir) { D.bicara(o, 'Lagi antar pesanan, permisi ya! 🛵'); return; }
   const pd = PANDUAN[o.fitur](o);
   D.bicara(o, acak(o.sapa));
-  bukaKartu(`<h2>${o.ikon} ${esc(o.n)}</h2><p class="kecil" style="margin-top:-6px">${o.pengawal ? '🕶️ Pengawal pribadi Direktur' : `🪪 Karyawan ${esc(CFG.namaPT)} · ${esc(o.jab)}`}</p>
+  bukaKartu(`<h2>${o.ikon} ${esc(o.n)}</h2><p class="kecil" style="margin-top:-6px">${o.gedung ? `🪩 Kru Y.H.A Club · ${esc(o.jab)}` : o.pengawal ? '🕶️ Pengawal pribadi Direktur' : `🪪 Karyawan ${esc(CFG.namaPT)} · ${esc(o.jab)}`}</p>
     ${pd.isi}<div class="baris">${pd.tombol.map(([l, k]) => `<button class="btn ${k === pd.tombol[0][1] ? '' : 'putih'}" type="button" data-f="${k}">${l}</button>`).join('')}</div>`, {
     pasang(isi) {
       isi.querySelectorAll('[data-f]').forEach(b => b.onclick = () => { tutupKartu(); D.fitur[b.dataset.f] && D.fitur[b.dataset.f](); });
@@ -318,7 +338,7 @@ export function sambut(t) {
 // Direktur memanggil semua karyawan berkumpul di sekitarnya
 export function panggil(t) {
   if (!D || !t) return;
-  const l = semua.filter(o => !o.kurir && !o.pengawal);
+  const l = semua.filter(o => !o.kurir && !o.pengawal && !o.gedung);
   l.forEach((o, i) => {
     const a = (i / l.length) * Math.PI * 2;
     lepasKursi(o); if (o.kursiPos) o.kursiPos.oleh = null;
@@ -330,6 +350,6 @@ export function panggil(t) {
 // karyawan terdekat untuk tombol aksi
 export function terdekat(x, z, r = 2.2) {
   let best = null, bd = r;
-  for (const o of semua) { const d = jarak(o, x, z); if (d < bd) { bd = d; best = o; } }
+  for (const o of semua) { if (o.g && !o.g.visible) continue; const d = jarak(o, x, z); if (d < bd) { bd = d; best = o; } }
   return best;
 }

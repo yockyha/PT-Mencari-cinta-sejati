@@ -1,0 +1,886 @@
+{
+ "versi": 1,
+ "fps": 30,
+ "lebar": 1080,
+ "tinggi": 1920,
+ "durasi": 2198,
+ "vo": {
+  "src": "vo7.mp3",
+  "volume": 1
+ },
+ "lapis": [
+  {
+   "id": "g1",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/drone.mp4",
+   "mulai": 0,
+   "durasi": 234,
+   "gelap": 0.35,
+   "kecepatan": 0.85,
+   "nama": "Kantor dari atas"
+  },
+  {
+   "id": "t2",
+   "track": "teks",
+   "jenis": "stiker",
+   "teks": "KENALAN YUK 👋",
+   "mulai": 5,
+   "durasi": 229,
+   "warna": "#ff4f7b",
+   "y": 380
+  },
+  {
+   "id": "t3",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Lu pikir kantor jodoh isinya *cuma tamu?*",
+   "mulai": 0,
+   "durasi": 103,
+   "y": 1330
+  },
+  {
+   "id": "t4",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Salah! Pegawainya juga *sibuk banget!*",
+   "mulai": 103,
+   "durasi": 89,
+   "y": 1330
+  },
+  {
+   "id": "t5",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Yuk, *gue ajak liat!* 👀",
+   "mulai": 192,
+   "durasi": 42,
+   "y": 1330
+  },
+  {
+   "id": "e6",
+   "track": "elemen",
+   "jenis": "kenal",
+   "mulai": 234,
+   "durasi": 90,
+   "props": {
+    "tokoh": "foto/pegawai-ayu.png",
+    "tokoh2": "",
+    "nama": "Mbak Ayu",
+    "jabatan": "Resepsionis",
+    "ikon": "💁‍♀️",
+    "info": "👋 Nyambut tamu\n📞 Angkat telepon",
+    "warna": "#ff4f7b",
+    "nomor": "01",
+    "judulAtas": "KENALIN 👋"
+   },
+   "masuk": "geser-kiri",
+   "nama": "Kartu Mbak Ayu"
+  },
+  {
+   "id": "g7",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/p_ayu.mp4",
+   "mulai": 324,
+   "durasi": 160,
+   "trim": 0.2,
+   "kecepatan": 0.786,
+   "nama": "Mbak Ayu angkat telepon"
+  },
+  {
+   "id": "t8",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Kerjaannya nyambut tamu, *angkat telepon…*",
+   "mulai": 324,
+   "durasi": 95,
+   "y": 1330
+  },
+  {
+   "id": "t9",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "sama *pesen makan online,* hehe 🤭",
+   "mulai": 419,
+   "durasi": 65,
+   "y": 1330
+  },
+  {
+   "id": "e10",
+   "track": "elemen",
+   "jenis": "kenal",
+   "mulai": 484,
+   "durasi": 58,
+   "props": {
+    "tokoh": "foto/pegawai-bambang.png",
+    "tokoh2": "",
+    "nama": "Pak Bambang",
+    "jabatan": "Satpam",
+    "ikon": "👮",
+    "info": "🚶 Patroli lobi\n🫡 Aman terkendali",
+    "warna": "#1d3557",
+    "nomor": "02",
+    "judulAtas": "KENALIN 👋"
+   },
+   "masuk": "geser-kiri",
+   "nama": "Kartu Pak Bambang"
+  },
+  {
+   "id": "g11",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/p_bambang.mp4",
+   "mulai": 542,
+   "durasi": 83,
+   "trim": 0.1,
+   "kecepatan": 1.731,
+   "nama": "Pak Bambang patroli"
+  },
+  {
+   "id": "t12",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Patroli biar kantor *tetep aman!*",
+   "mulai": 542,
+   "durasi": 83,
+   "y": 1330
+  },
+  {
+   "id": "e13",
+   "track": "elemen",
+   "jenis": "kenal",
+   "mulai": 626,
+   "durasi": 80,
+   "props": {
+    "tokoh": "foto/pegawai-wati.png",
+    "tokoh2": "foto/pegawai-ujang.png",
+    "nama": "Bu Wati & Mas Ujang",
+    "jabatan": "OG & OB",
+    "ikon": "🧹",
+    "info": "🧽 Ngepel + papan awas licin\n🧹 Nyapu tiap sudut",
+    "warna": "#2a9d8f",
+    "nomor": "03",
+    "judulAtas": "KENALIN 👋"
+   },
+   "masuk": "geser-kiri",
+   "nama": "Kartu Bu Wati & Mas Ujang"
+  },
+  {
+   "id": "g14",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/p_ob.mp4",
+   "mulai": 706,
+   "durasi": 163,
+   "trim": 0.1,
+   "kecepatan": 0.884,
+   "nama": "Ngepel & nyapu"
+  },
+  {
+   "id": "t15",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Satu *ngepel,* satu *nyapu.*",
+   "mulai": 706,
+   "durasi": 58,
+   "y": 1330
+  },
+  {
+   "id": "t16",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Sampe ada *papan awas licin,* detail banget!",
+   "mulai": 764,
+   "durasi": 105,
+   "y": 1330
+  },
+  {
+   "id": "e17",
+   "track": "elemen",
+   "jenis": "kenal",
+   "mulai": 868,
+   "durasi": 73,
+   "props": {
+    "tokoh": "foto/pegawai-raka.png",
+    "tokoh2": "",
+    "nama": "Mas Raka",
+    "jabatan": "Barista Kafe Jodoh",
+    "ikon": "☕",
+    "info": "☕ Antar kopi ke meja\n✨ Lap meja kafe",
+    "warna": "#8a5a2b",
+    "nomor": "04",
+    "judulAtas": "KENALIN 👋"
+   },
+   "masuk": "geser-kiri",
+   "nama": "Kartu Mas Raka"
+  },
+  {
+   "id": "g18",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/p_raka.mp4",
+   "mulai": 941,
+   "durasi": 73,
+   "trim": 0.1,
+   "kecepatan": 1.979,
+   "nama": "Mas Raka antar kopi"
+  },
+  {
+   "id": "t19",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Sibuk *nganterin kopi* ke meja tamu ☕",
+   "mulai": 941,
+   "durasi": 73,
+   "y": 1330
+  },
+  {
+   "id": "e20",
+   "track": "elemen",
+   "jenis": "kenal",
+   "mulai": 1014,
+   "durasi": 43,
+   "props": {
+    "tokoh": "foto/pegawai-nadia.png",
+    "tokoh2": "",
+    "nama": "Kak Nadia",
+    "jabatan": "Konselor Taman Curhat",
+    "ikon": "🌷",
+    "info": "🤗 Nemenin yang curhat",
+    "warna": "#7fb069",
+    "nomor": "05",
+    "judulAtas": "KENALIN 👋"
+   },
+   "masuk": "geser-kiri",
+   "nama": "Kartu Kak Nadia"
+  },
+  {
+   "id": "g21",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/p_nadia.mp4",
+   "mulai": 1057,
+   "durasi": 29,
+   "trim": 0.5,
+   "kecepatan": 1.675,
+   "nama": "Kak Nadia beraksi"
+  },
+  {
+   "id": "t22",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Ada *Kak Nadia* di Taman Curhat,",
+   "mulai": 1014,
+   "durasi": 72,
+   "y": 1630
+  },
+  {
+   "id": "e23",
+   "track": "elemen",
+   "jenis": "kenal",
+   "mulai": 1086,
+   "durasi": 39,
+   "props": {
+    "tokoh": "foto/pegawai-dimas.png",
+    "tokoh2": "",
+    "nama": "Bang Dimas",
+    "jabatan": "Host Meja Nongkrong",
+    "ikon": "🤝",
+    "info": "🪑 \"Sini gabung!\"",
+    "warna": "#e76f51",
+    "nomor": "06",
+    "judulAtas": "KENALIN 👋"
+   },
+   "masuk": "geser-kiri",
+   "nama": "Kartu Bang Dimas"
+  },
+  {
+   "id": "g24",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/p_dimas.mp4",
+   "mulai": 1125,
+   "durasi": 27,
+   "trim": 0.5,
+   "kecepatan": 1.821,
+   "nama": "Bang Dimas beraksi"
+  },
+  {
+   "id": "t25",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "*Bang Dimas* host meja nongkrong,",
+   "mulai": 1086,
+   "durasi": 66,
+   "y": 1630
+  },
+  {
+   "id": "e26",
+   "track": "elemen",
+   "jenis": "kenal",
+   "mulai": 1152,
+   "durasi": 36,
+   "props": {
+    "tokoh": "foto/pegawai-sari.png",
+    "tokoh2": "",
+    "nama": "Mbak Sari",
+    "jabatan": "Stylist Ruang Loker",
+    "ikon": "👗",
+    "info": "👕 Lipet baju baru",
+    "warna": "#b5179e",
+    "nomor": "07",
+    "judulAtas": "KENALIN 👋"
+   },
+   "masuk": "geser-kiri",
+   "nama": "Kartu Mbak Sari"
+  },
+  {
+   "id": "g27",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/p_sari.mp4",
+   "mulai": 1188,
+   "durasi": 24,
+   "trim": 0.5,
+   "kecepatan": 1.995,
+   "nama": "Mbak Sari beraksi"
+  },
+  {
+   "id": "t28",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "*Mbak Sari* yang lagi lipet baju,",
+   "mulai": 1152,
+   "durasi": 60,
+   "y": 1630
+  },
+  {
+   "id": "e29",
+   "track": "elemen",
+   "jenis": "kenal",
+   "mulai": 1212,
+   "durasi": 53,
+   "props": {
+    "tokoh": "foto/pegawai-bayu.png",
+    "tokoh2": "",
+    "nama": "Mas Bayu",
+    "jabatan": "Game Master",
+    "ikon": "🎮",
+    "info": "🎮 Main game mulu",
+    "warna": "#3a0ca3",
+    "nomor": "08",
+    "judulAtas": "KENALIN 👋"
+   },
+   "masuk": "geser-kiri",
+   "nama": "Kartu Mas Bayu"
+  },
+  {
+   "id": "g30",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/p_bayu.mp4",
+   "mulai": 1265,
+   "durasi": 35,
+   "trim": 0.5,
+   "kecepatan": 1.351,
+   "nama": "Mas Bayu beraksi"
+  },
+  {
+   "id": "t31",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "sampe *Mas Bayu* yang main game mulu 😆",
+   "mulai": 1212,
+   "durasi": 88,
+   "y": 1630
+  },
+  {
+   "id": "e32",
+   "track": "elemen",
+   "jenis": "kenal",
+   "mulai": 1300,
+   "durasi": 101,
+   "props": {
+    "tokoh": "foto/pegawai-guard1.png",
+    "tokoh2": "foto/pegawai-guard2.png",
+    "nama": "GUARD",
+    "jabatan": "Pengawal Direktur",
+    "ikon": "🕶️",
+    "info": "🚪 Jaga pintu 24 jam",
+    "warna": "#111111",
+    "nomor": "09",
+    "judulAtas": "KENALIN 👋"
+   },
+   "masuk": "geser-kiri",
+   "nama": "Kartu GUARD"
+  },
+  {
+   "id": "e33",
+   "track": "elemen",
+   "jenis": "kenal",
+   "mulai": 1401,
+   "durasi": 38,
+   "props": {
+    "tokoh": "foto/pegawai-citra.png",
+    "tokoh2": "",
+    "nama": "Mbak Citra",
+    "jabatan": "Sekretaris Direktur",
+    "ikon": "👩‍💼",
+    "info": "📁 Antar berkas tamu baru",
+    "warna": "#6d597a",
+    "nomor": "10",
+    "judulAtas": "KENALIN 👋"
+   },
+   "masuk": "geser-kiri",
+   "nama": "Kartu Mbak Citra"
+  },
+  {
+   "id": "g34",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/p_direktur.mp4",
+   "mulai": 1439,
+   "durasi": 113,
+   "trim": 0.1,
+   "kecepatan": 0.847,
+   "nama": "Pintu Ruang Direktur"
+  },
+  {
+   "id": "t35",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Ruang Direktur dijaga *dua GUARD 24 jam!*",
+   "mulai": 1300,
+   "durasi": 101,
+   "y": 1630
+  },
+  {
+   "id": "t36",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "*Mbak Citra* bolak-balik nganterin berkas,",
+   "mulai": 1401,
+   "durasi": 71,
+   "y": 1630
+  },
+  {
+   "id": "t37",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "*Mas Ujang* nganterin kopi buat Direktur ☕",
+   "mulai": 1472,
+   "durasi": 80,
+   "y": 1330
+  },
+  {
+   "id": "e38",
+   "track": "elemen",
+   "jenis": "kenal",
+   "mulai": 1552,
+   "durasi": 86,
+   "props": {
+    "tokoh": "foto/pegawai-ojol.png",
+    "tokoh2": "",
+    "nama": "Bang Ojol",
+    "jabatan": "Kurir Makanan",
+    "ikon": "🛵",
+    "info": "📦 Antar pesanan ke lobi\n⭐ \"Jangan lupa bintang 5!\"",
+    "warna": "#0f6b31",
+    "nomor": "11",
+    "judulAtas": "KENALIN 👋"
+   },
+   "masuk": "geser-kiri",
+   "nama": "Kartu Bang Ojol"
+  },
+  {
+   "id": "g39",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/p_ojol.mp4",
+   "mulai": 1638,
+   "durasi": 172,
+   "trim": 0.1,
+   "kecepatan": 1.527,
+   "nama": "Bang Ojol antar pesanan"
+  },
+  {
+   "id": "t40",
+   "track": "teks",
+   "jenis": "stiker",
+   "teks": "PALING DITUNGGU 🛵",
+   "mulai": 1552,
+   "durasi": 86,
+   "warna": "#ffd23f",
+   "y": 60
+  },
+  {
+   "id": "t41",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Tiap ada pegawai *pesen makan,*",
+   "mulai": 1638,
+   "durasi": 121,
+   "y": 1330
+  },
+  {
+   "id": "t42",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "dia dateng bawa pesanan. *Bintang lima!* ⭐",
+   "mulai": 1759,
+   "durasi": 51,
+   "y": 1330
+  },
+  {
+   "id": "g43",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/p_ngobrol.mp4",
+   "mulai": 1810,
+   "durasi": 198,
+   "trim": 4.2,
+   "kecepatan": 0.727,
+   "nama": "Ngobrol, lalu ada tamu"
+  },
+  {
+   "id": "t44",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Kalau lagi sepi, mereka *ngobrol bareng.*",
+   "mulai": 1810,
+   "durasi": 88,
+   "y": 1330
+  },
+  {
+   "id": "t45",
+   "track": "teks",
+   "jenis": "stiker",
+   "teks": "ADA TAMU! 🏃",
+   "mulai": 1898,
+   "durasi": 110,
+   "warna": "#ff4f7b",
+   "y": 380
+  },
+  {
+   "id": "t46",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Tapi begitu ada tamu… *langsung balik ke pos!*",
+   "mulai": 1898,
+   "durasi": 110,
+   "y": 1330
+  },
+  {
+   "id": "g47",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/drone.mp4",
+   "mulai": 2008,
+   "durasi": 190,
+   "gelap": 0.45,
+   "kecepatan": 0.6,
+   "trim": 0.5,
+   "nama": "Latar penutup"
+  },
+  {
+   "id": "e48",
+   "track": "elemen",
+   "jenis": "komentar",
+   "mulai": 2008,
+   "durasi": 190,
+   "props": {
+    "komentar": "penonton1|Bu Wati paling rajin sumpah 😭|1m|18\npenonton2|tim Bang Ojol 🛵⭐⭐⭐⭐⭐|2m|12\npenonton3|GUARD-nya serem tapi keren|3m|7\npenonton4|Mas Bayu kerja apa main 😂|4m|5",
+    "ketik": "fav gue Bang Ojol sih 🛵",
+    "ketikDetik": 0.5,
+    "akunSaya": "lu",
+    "sensor": true
+   },
+   "masuk": "geser-atas",
+   "nama": "Komentar: favorit"
+  },
+  {
+   "id": "t49",
+   "track": "teks",
+   "jenis": "stiker",
+   "teks": "FAVORIT LU SIAPA? 👇",
+   "mulai": 2012,
+   "durasi": 106,
+   "warna": "#ff4f7b",
+   "y": 240
+  },
+  {
+   "id": "t50",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Jadi, *pegawai mana* favorit lu?",
+   "mulai": 2008,
+   "durasi": 110,
+   "y": 470
+  },
+  {
+   "id": "t51",
+   "track": "teks",
+   "jenis": "stiker",
+   "teks": "DAFTAR DI LINK BIO 💘",
+   "mulai": 2118,
+   "durasi": 80,
+   "warna": "#ffd23f",
+   "y": 240
+  },
+  {
+   "id": "t52",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Pengen ketemu langsung? *Daftar* di link bio!",
+   "mulai": 2118,
+   "durasi": 80,
+   "y": 470
+  },
+  {
+   "id": "t53",
+   "track": "teks",
+   "jenis": "akun",
+   "teks": "@jodohonline.company",
+   "mulai": 0,
+   "durasi": 234,
+   "masuk": "none",
+   "y": 150,
+   "x": 130
+  }
+ ],
+ "sfx": [
+  {
+   "id": "s1",
+   "nama": "Pop stiker",
+   "src": "sfx/pop.mp3",
+   "mulai": 2,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s2",
+   "nama": "Whoosh Mbak Ayu",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 232,
+   "durasi": 18,
+   "volume": 0.3
+  },
+  {
+   "id": "s3",
+   "nama": "Pop Mbak Ayu",
+   "src": "sfx/pop.mp3",
+   "mulai": 242,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s4",
+   "nama": "Whoosh Pak Bambang",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 482,
+   "durasi": 18,
+   "volume": 0.3
+  },
+  {
+   "id": "s5",
+   "nama": "Pop Pak Bambang",
+   "src": "sfx/pop.mp3",
+   "mulai": 492,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s6",
+   "nama": "Whoosh Bu Wati & Mas Ujang",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 624,
+   "durasi": 18,
+   "volume": 0.3
+  },
+  {
+   "id": "s7",
+   "nama": "Pop Bu Wati & Mas Ujang",
+   "src": "sfx/pop.mp3",
+   "mulai": 634,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s8",
+   "nama": "Whoosh Mas Raka",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 866,
+   "durasi": 18,
+   "volume": 0.3
+  },
+  {
+   "id": "s9",
+   "nama": "Pop Mas Raka",
+   "src": "sfx/pop.mp3",
+   "mulai": 876,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s10",
+   "nama": "Whoosh Kak Nadia",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 1012,
+   "durasi": 18,
+   "volume": 0.3
+  },
+  {
+   "id": "s11",
+   "nama": "Pop Kak Nadia",
+   "src": "sfx/pop.mp3",
+   "mulai": 1022,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s12",
+   "nama": "Whoosh Bang Dimas",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 1084,
+   "durasi": 18,
+   "volume": 0.3
+  },
+  {
+   "id": "s13",
+   "nama": "Pop Bang Dimas",
+   "src": "sfx/pop.mp3",
+   "mulai": 1094,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s14",
+   "nama": "Whoosh Mbak Sari",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 1150,
+   "durasi": 18,
+   "volume": 0.3
+  },
+  {
+   "id": "s15",
+   "nama": "Pop Mbak Sari",
+   "src": "sfx/pop.mp3",
+   "mulai": 1160,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s16",
+   "nama": "Whoosh Mas Bayu",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 1210,
+   "durasi": 18,
+   "volume": 0.3
+  },
+  {
+   "id": "s17",
+   "nama": "Pop Mas Bayu",
+   "src": "sfx/pop.mp3",
+   "mulai": 1220,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s18",
+   "nama": "Whoosh GUARD",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 1298,
+   "durasi": 18,
+   "volume": 0.3
+  },
+  {
+   "id": "s19",
+   "nama": "Pop GUARD",
+   "src": "sfx/pop.mp3",
+   "mulai": 1308,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s20",
+   "nama": "Whoosh Mbak Citra",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 1399,
+   "durasi": 18,
+   "volume": 0.3
+  },
+  {
+   "id": "s21",
+   "nama": "Pop Mbak Citra",
+   "src": "sfx/pop.mp3",
+   "mulai": 1409,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s22",
+   "nama": "Whoosh Bang Ojol",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 1550,
+   "durasi": 18,
+   "volume": 0.3
+  },
+  {
+   "id": "s23",
+   "nama": "Pop Bang Ojol",
+   "src": "sfx/pop.mp3",
+   "mulai": 1560,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s24",
+   "nama": "Klakson",
+   "src": "sfx/notif.mp3",
+   "mulai": 1643,
+   "durasi": 20,
+   "volume": 0.3
+  },
+  {
+   "id": "s25",
+   "nama": "Kaget",
+   "src": "sfx/pop.mp3",
+   "mulai": 1898,
+   "durasi": 15,
+   "volume": 0.4
+  },
+  {
+   "id": "s26",
+   "nama": "Geser komentar",
+   "src": "sfx/geser.mp3",
+   "mulai": 2008,
+   "durasi": 18,
+   "volume": 0.8
+  },
+  {
+   "id": "s27",
+   "nama": "Ketik",
+   "src": "sfx/ketik.mp3",
+   "mulai": 2024,
+   "durasi": 40,
+   "volume": 1.0
+  },
+  {
+   "id": "s28",
+   "nama": "Ketuk kirim",
+   "src": "sfx/ketuk.mp3",
+   "mulai": 2106,
+   "durasi": 12,
+   "volume": 0.45
+  },
+  {
+   "id": "s29",
+   "nama": "Pop stiker 2",
+   "src": "sfx/pop.mp3",
+   "mulai": 2118,
+   "durasi": 15,
+   "volume": 0.35
+  }
+ ]
+}

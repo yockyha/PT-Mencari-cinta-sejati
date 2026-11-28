@@ -26,6 +26,24 @@ efek suara dan voice-over, masing-masing dengan waktu mulai, durasi, posisi dan 
 Baca `video/<id>.catatan` dan `timeline/<id>` (yang mungkin sudah diedit pemilik), kerjakan,
 render ulang, perbarui lembar kerja, isi `dirender` = waktu render bila `mintaRender` ada.
 
+## Cover
+
+Konsep & tulisan cover sama untuk semua video (label, 3 baris judul, teks bawah). Yang beda tiap video: **latar** & **tokoh**.
+- Bahan dibuat dari aplikasi dengan `node rekam-cover.js <folder>` (latar tanpa UI + karakter 3D transparan), simpan ke `public/foto/latar-<nama>.png` & `tokoh-<nama>.png`.
+- Isi cover tiap video ada di `cover-vN.json`; render: `npx remotion still Cover out/cover-N.png --props=cover-vN.json`.
+
+## Voice-over
+
+VO dibuat pemilik di akun ElevenLabs-nya sendiri, lalu dikirim ke Claude sebagai satu file.
+- Naskah tiap video ada di `naskah-voN.txt` (juga di kolom `naskahVo` dokumen `video/vN` Studio).
+- Saat membaca naskah, beri jeda ±0,5 detik antar bagian `[...]` supaya waktunya bisa dipotong otomatis.
+- Simpan sebagai `public/voN.mp3`, ukur durasi tiap bagian (mis. `ffmpeg -af silencedetect`), tulis ke
+  `src/data/durasi-voN.json`, lalu `python3 buat_vN.py src/data/durasi-voN.json` dan render ulang.
+
+## Render di lingkungan Claude (tanpa akses unduh browser)
+
+Tambahkan `--browser-executable=/opt/pw-browsers/chromium_headless_shell-1243/chrome-headless-shell-linux64/chrome-headless-shell`.
+
 ## Isi folder
 
 - `src/data/`: timeline, tipe data, komposisi `VideoData`, penerjemah path aset

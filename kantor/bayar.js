@@ -5,11 +5,11 @@
 //  atau manual: QRIS/transfer BCA/BRI dengan NOMINAL UNIK, lalu
 //  diverifikasi Direktur di Dashboard (Toko & Pesanan).
 // =====================================================================
-import { PAKAIAN, SLOT } from '../js/pakaian.js?v=202611270858';
-import { LANGGANAN, TINGKAT_DONASI, tingkatDonasi, namaPapan } from '../js/common.js?v=202611270858';
-import { CFG, LS, esc, fmt, bersih, sensor, rupiah, IKON_DM, kodeTamu, hash } from '../js/common.js?v=202611270858';
-import { K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611270858';
-import * as P from './progres.js?v=202611270858';
+import { PAKAIAN, SLOT } from '../js/pakaian.js?v=202611280202';
+import { LANGGANAN, TINGKAT_DONASI, tingkatDonasi, namaPapan } from '../js/common.js?v=202611280202';
+import { CFG, LS, esc, fmt, bersih, sensor, rupiah, IKON_DM, kodeTamu, hash } from '../js/common.js?v=202611280202';
+import { K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611280202';
+import * as P from './progres.js?v=202611280202';
 
 const BAYAR = () => CFG.pembayaran || {};
 const resmi = () => !!(K.resmi && K.resmi());
@@ -118,14 +118,15 @@ async function bayarOtomatis(item, tombol) {
   try {
     const r = await fetch('/api/bayar/buat', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({
       idToken: await K.L.db.idToken(), jenis: item.jenis, paket: item.paket, nominal: item.harga,
-      ...(item.jenis === 'donasi' ? { pesan: item.pesan || '', tampil: item.tampil !== false, nt: item.nt || '' } : {}) }) });
+      ...(item.jenis === 'donasi' ? { pesan: item.pesan || '', tampil: item.tampil !== false, nt: item.nt || '' } : {}),
+      ...(item.jenis === 'layar' ? { pesan: item.pesan || '', ke: item.ke || '', tema: item.tema || 'emas', tampil: item.tampil !== false, nt: item.nt || '' } : {}) }) });
     const d = await r.json().catch(() => ({}));
     if (!r.ok || !d.redirect_url) throw new Error(d.error || 'Gagal membuat pembayaran.');
     LS.set('pesananKu', [...pesananKu(), d.orderId]);
     LS.set('linkBayar', Object.fromEntries([...Object.entries(linkBayar()).slice(-19), [d.orderId, d.redirect_url]]));
     if (jendela) jendela.location.href = d.redirect_url;
     tutupKartu();
-    bukaKartu(`<div class="match"><div class="hatiBesar">⚡</div><h2>Selesaikan pembayaran</h2><p>${esc(item.nama)} · <b>${rupiah(item.harga)}</b><br>Halaman bayar ${jendela ? 'sudah terbuka di tab baru' : 'siap dibuka'}. Pilih QRIS, VA BCA/BRI, atau e-wallet.<br><b>Begitu lunas, ${item.jenis === 'donasi' ? 'nama & pesanmu tampil di Papan Donasi lobi' : 'langsung masuk ke akunmu'}</b>. Tidak perlu menunggu Direktur.</p>
+    bukaKartu(`<div class="match"><div class="hatiBesar">⚡</div><h2>Selesaikan pembayaran</h2><p>${esc(item.nama)} · <b>${rupiah(item.harga)}</b><br>Halaman bayar ${jendela ? 'sudah terbuka di tab baru' : 'siap dibuka'}. Pilih QRIS, VA BCA/BRI, atau e-wallet.<br><b>Begitu lunas, ${item.jenis === 'donasi' ? 'nama & pesanmu tampil di Papan Donasi lobi' : item.jenis === 'layar' ? 'ucapanmu langsung tayang di layar Y.H.A Club' : 'langsung masuk ke akunmu'}</b>. Tidak perlu menunggu Direktur.</p>
       <div class="baris"><a class="btn" href="${esc(d.redirect_url)}" ${jendela ? 'target="_blank" rel="noopener"' : ''}>Buka halaman bayar ↗</a><button class="btn putih" type="button" id="bO">Tutup</button></div>
       <p class="kecil">Kode pesanan: <code>${esc(d.orderId)}</code>. Berlaku 60 menit.</p></div>`, { pasang(x) { x.querySelector('#bO').onclick = tutupKartu; } });
   } catch (e) {
@@ -170,7 +171,7 @@ function langkahBayar(item, m) {
       el.querySelector('#bB').onclick = () => {
         if (Date.now() - LS.get('pesanT', 0) < 30000) { toast('Pesananmu barusan sudah terkirim, tunggu sebentar ya.'); return; }
         LS.set('pesanT', Date.now());
-        const id = K.L.pesan({ paket: item.paket, jenis: item.jenis, nama: item.nama.slice(0, 40), metode: m.id, nominal: total, kode, n: K.prof.n.slice(0, 30), ...(item.jenis === 'donasi' ? { pesan: item.pesan || '', tampil: item.tampil !== false, nt: item.nt || '' } : {}) });
+        const id = K.L.pesan({ paket: item.paket, jenis: item.jenis, nama: item.nama.slice(0, 40), metode: m.id, nominal: total, kode, n: K.prof.n.slice(0, 30), ...(item.jenis === 'donasi' ? { pesan: item.pesan || '', tampil: item.tampil !== false, nt: item.nt || '' } : {}), ...(item.jenis === 'layar' ? { pesan: item.pesan || '', ke: item.ke || '', tema: item.tema || 'emas', nt: item.tampil === false ? '' : (item.nt || '') } : {}) });
         LS.set('pesananKu', [...pesananKu(), id]);
         tutupKartu();
         bukaKartu(`<div class="match"><div class="hatiBesar">🧾</div><h2>Pesanan terkirim!</h2><p>${esc(item.nama)} · <b>${rupiah(total)}</b> via ${esc(m.nama)}.<br>Direktur akan mencocokkan pembayaranmu. Kamu dapat pesan di sini begitu disetujui.</p><div class="baris"><button class="btn" type="button" id="bO">Oke</button></div></div>`, { pasang(x) { x.querySelector('#bO').onclick = tutupKartu; } });

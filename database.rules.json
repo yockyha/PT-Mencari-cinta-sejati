@@ -560,6 +560,94 @@
         ".validate": "newData.child('j').exists() && newData.child('t').val() === now"
       }
     },
+    "club": {
+      ".read": true,
+      "lagu": {
+        ".write": "auth != null && (root.child('peran/' + auth.uid).val() === 'direktur' || root.child('club/dj/' + auth.uid).val() === true)",
+        ".validate": "!newData.exists() || (newData.hasChildren(['t', 'oleh']) && (newData.child('id').val() !== '' || newData.child('list').val() !== ''))",
+        "id": {
+          ".validate": "newData.isString() && (newData.val() === '' || newData.val().matches(/^[A-Za-z0-9_-]{11}$/))"
+        },
+        "list": {
+          ".validate": "newData.isString() && (newData.val() === '' || newData.val().matches(/^[A-Za-z0-9_-]{10,64}$/))"
+        },
+        "judul": {
+          ".validate": "newData.isString() && newData.val().length <= 100"
+        },
+        "n": {
+          ".validate": "newData.isString() && newData.val().length <= 30"
+        },
+        "ulang": {
+          ".validate": "newData.isBoolean()"
+        },
+        "oleh": {
+          ".validate": "newData.val() === auth.uid || newData.val() === data.val()"
+        },
+        "t": {
+          ".validate": "newData.val() === now || newData.val() === data.val()"
+        },
+        "$lain": {
+          ".validate": false
+        }
+      },
+      "dj": {
+        "$uid": {
+          ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+          ".validate": "newData.val() === true"
+        }
+      },
+      "antre": {
+        "$id": {
+          ".write": "auth != null && ((!data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && newData.child('uid').val() === auth.uid) || (!newData.exists() && (root.child('peran/' + auth.uid).val() === 'direktur' || root.child('club/dj/' + auth.uid).val() === true || data.child('uid').val() === auth.uid)))",
+          ".validate": "!newData.exists() || newData.hasChildren(['uid', 'n', 'id', 't'])",
+          "uid": {
+            ".validate": "newData.val() === auth.uid"
+          },
+          "n": {
+            ".validate": "newData.isString() && newData.val().length <= 30"
+          },
+          "id": {
+            ".validate": "newData.isString() && newData.val().matches(/^[A-Za-z0-9_-]{11}$/)"
+          },
+          "c": {
+            ".validate": "newData.isString() && newData.val().length <= 60"
+          },
+          "t": {
+            ".validate": "newData.val() === now"
+          },
+          "$lain": {
+            ".validate": false
+          }
+        }
+      }
+    },
+    "clubMeja": {
+      ".read": true,
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$meja": {
+        "$id": {
+          ".write": "auth != null && $meja.matches(/^(t[1-4]|vip[12])$/) && ((!data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && (!$meja.beginsWith('vip') || ((root.child('vip/' + auth.uid + '/sampai').exists() && root.child('vip/' + auth.uid + '/sampai').val() > now) || root.child('peran/' + auth.uid).val() === 'direktur'))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
+          ".validate": "newData.child('uid').val() === auth.uid && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('m').isString() && newData.child('m').val().length > 0 && newData.child('m').val().length <= 160 && newData.child('t').val() === now"
+        }
+      }
+    },
+    "clubLayar": {
+      ".read": true,
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$id": {
+        ".write": "auth != null && ((!data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && newData.child('uid').val() === auth.uid && (root.child('peran/' + auth.uid).val() === 'direktur' || ((root.child('vip/' + auth.uid + '/sampai').exists() && root.child('vip/' + auth.uid + '/sampai').val() > now) && (newData.parent().parent().child('clubLayarKuota/' + auth.uid).child('t0').val() === now || newData.parent().parent().child('clubLayarKuota/' + auth.uid).child('n').val() === root.child('clubLayarKuota/' + auth.uid).child('n').val() + 1)))) || (!newData.exists() && root.child('peran/' + auth.uid).exists()))",
+        ".validate": "!newData.exists() || (newData.hasChildren(['uid', 'n', 'm', 'tema', 't']) && newData.child('n').isString() && newData.child('n').val().length <= 20 && newData.child('m').isString() && newData.child('m').val().length <= 120 && newData.child('m').val().length >= 1 && (!newData.child('ke').exists() || newData.child('ke').isString() && newData.child('ke').val().length <= 30) && newData.child('tema').val().matches(/^(emas|pink|biru|ungu)$/) && (!newData.child('via').exists() || newData.child('via').val().matches(/^(dir|vip|vvip|bayar)$/)) && (!newData.child('h').exists() || newData.child('h').isString() && newData.child('h').val().length <= 12) && (newData.child('t').val() === now || root.child('peran/' + auth.uid).val() === 'direktur'))"
+      }
+    },
+    "clubLayarKuota": {
+      ".read": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && (root.child('vip/' + auth.uid + '/sampai').exists() && root.child('vip/' + auth.uid + '/sampai').val() > now)",
+        ".validate": "newData.child('n').isNumber() && newData.child('n').val() <= ((root.child('vip/' + auth.uid + '/tingkat').val() === 'vvip' && root.child('vip/' + auth.uid + '/sampai').val() > now) ? 5 : 2) && ((newData.child('n').val() === 1 && newData.child('t0').val() === now && (!data.exists() || now - data.child('t0').val() >= 86400000)) || (data.exists() && now - data.child('t0').val() < 86400000 && newData.child('t0').val() === data.child('t0').val() && newData.child('n').val() === data.child('n').val() + 1))"
+      }
+    },
     "undangan": {
       "$ke": {
         ".read": "auth != null && auth.uid === $ke",
@@ -680,7 +768,7 @@
       "$id": {
         ".read": "auth != null && data.child('uid').val() === auth.uid",
         ".write": "auth != null && !data.exists() && newData.child('uid').val() === auth.uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
-        ".validate": "root.child('peran/' + auth.uid).val() === 'direktur' || (newData.child('paket').isString() && newData.child('paket').val().length <= 20 && newData.child('jenis').val().matches(/^(diamond|paket|donasi)$/) && newData.child('metode').val().matches(/^(qris|bca|bri|lain)$/) && newData.child('nominal').isNumber() && newData.child('nominal').val() >= 1000 && newData.child('nominal').val() <= 10000000 && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('t').val() === now)"
+        ".validate": "root.child('peran/' + auth.uid).val() === 'direktur' || (newData.child('paket').isString() && newData.child('paket').val().length <= 20 && newData.child('jenis').val().matches(/^(diamond|paket|donasi|layar)$/) && newData.child('metode').val().matches(/^(qris|bca|bri|lain)$/) && newData.child('nominal').isNumber() && newData.child('nominal').val() >= 1000 && newData.child('nominal').val() <= 10000000 && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('t').val() === now)"
       }
     },
     "diamond": {
