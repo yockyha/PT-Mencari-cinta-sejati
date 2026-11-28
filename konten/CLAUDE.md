@@ -12,5 +12,6 @@
 - VO dibuat pemilik (ElevenLabs akun sendiri) lalu dikirim; waktu adegan dipas ke jeda VO (`silencedetect`).
 
 ## Status stok (`video-remotion/public/`)
+- Diperbarui 28 Nov 2026 (video 8, `rekam-aplikasi-8.js`): klip `tc_drone`, `tc_koin`, `tc_bioskop` (Taman Cinta malam), `cl_luar`, `cl_dance`, `cl_dj`, `cl_bar`, `cl_vip`, `cl_layar` (Y.H.A Club), serta rekam ulang `jadwal`, `hujan`, `raja`, `sd`, `tod`, `loker`; foto `latar-club`, `tokoh-club`.
 - Diperbarui dari situs terbaru 27 Nov 2026: klip `drone`, `jalan`, `r_kafe`, `r_meja`, `r_taman`, `r_lounge`, `loker`, `pintudir` (pintu Ruang Direktur + GUARD); foto `meja`, `karakter`, `tugas`, `toko`, `beranda`.
 - Masih versi LAMA (rekam ulang dulu sebelum dipakai): `direktur.mp4` (perlu sesi sebagai Direktur, karena Direktur hanya tampil saat online), `chat.mp4`, `game.mp4`, `diterima.mp4`, `dash_acc.mp4`, `formulir.mp4`, foto `levelup`, `rapat`, `airmancur`, `halaman`, `formulir`, `direktur.png` (tokoh cover lama).

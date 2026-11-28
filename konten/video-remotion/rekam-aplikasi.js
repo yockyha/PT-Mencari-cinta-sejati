@@ -6,7 +6,7 @@ const NAMA = ['raka','sinta_','dimas.p','nadia.r','kevin','joko','ayu.ln','bagas
 async function buka(b, { uid, nama, look, resmi, dir, hash = '', ui = true, jamSendiri = false }) {
   const ctx = await b.newContext({ viewport: { width: 405, height: 720 }, deviceScaleFactor: 2, hasTouch: false });
   await ctx.route(/fonts\.(googleapis|gstatic)/, r => r.abort());
-  await ctx.route('**/kantor/kantor.js', async r => { let t = await (await r.fetch()).text(); t = t.replace('window.__kantor = { L, saya, lain, bot, pindah, K };', 'window.__kantor = { L, saya, lain, bot, pindah, K, kam, bukaLoker, bukaDaftar, tombol };'); r.fulfill({ body: t, contentType: 'application/javascript' }); });
+  await ctx.route('**/kantor/kantor.js*', async r => { let t = await (await r.fetch()).text(); t = t.replace('window.__kantor = { L, saya, lain, bot, pindah, K, kam };', 'window.__kantor = { L, saya, lain, bot, pindah, K, kam, bukaLoker, bukaDaftar, tombol };'); r.fulfill({ body: t, contentType: 'application/javascript' }); });
   await ctx.addInitScript(({ uid, nama, look, NAMA, resmi, dir }) => {
     const t = Date.now(), tamu = {}, anggota = {};
     NAMA.forEach((n, i) => { tamu['t' + i] = { uid: 't' + i, n, tj: ['jodoh', 'teman', 'curhat'][i % 3], t: t - 1e6 + i }; anggota['t' + i] = { n, tj: tamu['t' + i].tj, sejak: t }; });
