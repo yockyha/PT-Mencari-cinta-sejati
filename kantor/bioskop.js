@@ -11,9 +11,9 @@
 //  Catatan: kunci katalog di bawah harus sama dengan regex di
 //  alat/aturan/69_bioskop.py (KATALOG_ID).
 // =====================================================================
-import { esc, bersih, LS } from '../js/common.js?v=202611280848';
-import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611280848';
-import * as Musik from './musik.js?v=202611280848';
+import { esc, bersih, LS } from '../js/common.js?v=202611280851';
+import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611280851';
+import * as Musik from './musik.js?v=202611280851';
 
 export const AREA = [-78, -24, -62, -6];        // x1, z1, x2, z2 (sama dengan gedung.js)
 export const PINTU = { x: -60.2, z: -15, r: -Math.PI / 2 };
@@ -118,7 +118,7 @@ function wadah() {
   const v = w.querySelector('#bioskopVol'); v.value = volUser; v.oninput = () => { volUser = +v.value; LS.set('bioskopVol', volUser); if (yt && ytSiap) yt.setVolume(volUser); };
   w.querySelector('#bioskopSuara').onclick = nyalakanSuara;
   w.querySelector('#bioskopUkuran').onclick = () => { besar = !besar; LS.set('bioskopBesar', besar); w.className = besar ? 'besar' : 'kecil'; };
-  w.querySelector('#bioskopX').onclick = () => { tersembunyi = true; w.hidden = true; if (yt && ytSiap) yt.mute(); toast('Layar disembunyikan. Ketuk "🎬 Bioskop" di bioskop untuk menonton lagi.'); };
+  w.querySelector('#bioskopX').onclick = () => { tersembunyi = true; w.hidden = true; if (yt && ytSiap) yt.mute(); toast('Layar disembunyikan. Ketuk "🎬 Nonton film" di depan layar untuk menonton lagi.'); };
   return w;
 }
 function nyalakanSuara() {

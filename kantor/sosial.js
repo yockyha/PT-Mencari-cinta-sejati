@@ -2,16 +2,16 @@
 //  Interaksi antar-tamu: profil, ajak ngobrol (pribadi), suka & match,
 //  papan curhat, daftar orang di kantor, lapor & sembunyikan.
 // =====================================================================
-import { TUJUAN, GENDER, LS, bersih, esc, fmt, kasar, igBersih, kodeTamu } from '../js/common.js?v=202611280848';
-import { TS } from '../js/db.js?v=202611280848';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611280848';
-import * as Musik from './musik.js?v=202611280848';
-import * as Prog from './progres.js?v=202611280848';
-import * as Suara from './suara.js?v=202611280848';
-import * as Grup from './grup.js?v=202611280848';
-import * as Stiker from './stiker.js?v=202611280848';
-import * as Foto from './foto.js?v=202611280848';
-import * as Seru from './seru.js?v=202611280848';
+import { TUJUAN, GENDER, LS, bersih, esc, fmt, kasar, igBersih, kodeTamu } from '../js/common.js?v=202611280851';
+import { TS } from '../js/db.js?v=202611280851';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611280851';
+import * as Musik from './musik.js?v=202611280851';
+import * as Prog from './progres.js?v=202611280851';
+import * as Suara from './suara.js?v=202611280851';
+import * as Grup from './grup.js?v=202611280851';
+import * as Stiker from './stiker.js?v=202611280851';
+import * as Foto from './foto.js?v=202611280851';
+import * as Seru from './seru.js?v=202611280851';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const siap = () => { if (!K.resmi()) { toast('👀 Kamu masih pengunjung. Daftar dulu untuk berinteraksi.'); K.bukaDaftar(); return false; } if (K.terkunci) { toast('Kamu belum bisa berinteraksi sekarang.'); return false; } return true; };
@@ -168,7 +168,7 @@ export function bukaProfil(o) {
         K.segarkanOrang(); gambarUndangan(); tutupKartu();
         toast(`${nama} disembunyikan. Chat & ajakannya tidak akan muncul lagi.`, 3200);
       };
-      const pm = isi.querySelector('#pM'); if (pm) pm.onclick = () => import('./direktur.js?v=202611280848').then(D => D.bukaModerasiOrang(o));
+      const pm = isi.querySelector('#pM'); if (pm) pm.onclick = () => import('./direktur.js?v=202611280851').then(D => D.bukaModerasiOrang(o));
     },
   });
 }

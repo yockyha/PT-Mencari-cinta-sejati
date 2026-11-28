@@ -11,11 +11,11 @@
 //  jadi tamu lain melihatmu duduk di gondola yang benar.
 //  Data: ajakBL/<penerima>/<pengirim> · gondolaObrol/<uidA_uidB> · lampion · kembangApi
 // =====================================================================
-import { esc, bersih, LS, hariIni, sensor, kasar } from '../js/common.js?v=202611280848';
-import { TS } from '../js/db.js?v=202611280848';
-import { K, toast, bukaKartu, tutupKartu, kartuTerbuka, jam } from './ui.js?v=202611280848';
-import * as Musik from './musik.js?v=202611280848';
-import * as Prog from './progres.js?v=202611280848';
+import { esc, bersih, LS, hariIni, sensor, kasar } from '../js/common.js?v=202611280851';
+import { TS } from '../js/db.js?v=202611280851';
+import { K, toast, bukaKartu, tutupKartu, kartuTerbuka, jam } from './ui.js?v=202611280851';
+import * as Musik from './musik.js?v=202611280851';
+import * as Prog from './progres.js?v=202611280851';
 
 export const RODA = { x: -70, z: 14, y: 7.4, r: 6.2, laju: 0.12, n: 8 };
 export const LAMA_NAIK = 157;                 // 3 putaran (detik)
@@ -343,8 +343,8 @@ function ledak(x, y, z) {
     vel.push([Math.sin(b) * Math.cos(a) * v, Math.cos(b) * v, Math.sin(b) * Math.sin(a) * v]);
   }
   const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-  const warna = new THREE.Color().setHSL(Math.random(), 0.9, 0.62);
-  const mat = new THREE.PointsMaterial({ color: warna, size: 0.42, transparent: true, opacity: 1, depthWrite: false, blending: THREE.AdditiveBlending });
+  const warna = new THREE.Color().setHSL(Math.random(), 1, 0.55);
+  const mat = new THREE.PointsMaterial({ color: warna, size: 0.55, transparent: true, opacity: 1, depthWrite: false });
   const p = new THREE.Points(geo, mat); D.scene.add(p);
   ledakan.push({ p, vel, umur: 0 });
 }

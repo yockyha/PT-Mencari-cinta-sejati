@@ -7,12 +7,12 @@
 //  Skor tersimpan di lomba/<jenis>/<periode>/<uid> (dijaga aturan Firebase: hanya bisa naik).
 //  EXP hanya diberikan untuk 3 permainan pertama tiap game per hari.
 // =====================================================================
-import { LS, bersih, esc, fmt, hariIni } from '../js/common.js?v=202611280848';
-import { TS } from '../js/db.js?v=202611280848';
-import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611280848';
-import * as Prog from './progres.js?v=202611280848';
-import * as Musik from './musik.js?v=202611280848';
-import { mingguIni } from './aktivitas.js?v=202611280848';
+import { LS, bersih, esc, fmt, hariIni } from '../js/common.js?v=202611280851';
+import { TS } from '../js/db.js?v=202611280851';
+import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611280851';
+import * as Prog from './progres.js?v=202611280851';
+import * as Musik from './musik.js?v=202611280851';
+import { mingguIni } from './aktivitas.js?v=202611280851';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const kocok = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
