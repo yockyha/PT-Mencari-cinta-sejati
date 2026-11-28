@@ -3,12 +3,12 @@
 //  Semua tindakan juga dijaga database.rules.json di server, jadi
 //  tamu biasa tidak bisa memakainya walau mengutak-atik browser.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, fmt, esc, bersih, kodeTamu } from '../js/common.js?v=202611270858';
-import * as Prog from './progres.js?v=202611270858';
-import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611270858';
-import * as Hadir from './hadir.js?v=202611270858';
-import * as Speed from './speeddating.js?v=202611270858';
-import { TS, kunciBaru } from '../js/db.js?v=202611270858';
+import { CFG, TUJUAN, LOKASI, fmt, esc, bersih, kodeTamu } from '../js/common.js?v=202611280108';
+import * as Prog from './progres.js?v=202611280108';
+import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611280108';
+import * as Hadir from './hadir.js?v=202611280108';
+import * as Speed from './speeddating.js?v=202611280108';
+import { TS, kunciBaru } from '../js/db.js?v=202611280108';
 
 let laporan = {}, saran = {}, larangan = {}, pesanan = {}, lepas = [], tabAktif = '';
 const peranku = () => K.L && K.peran[K.L.uid];
@@ -199,7 +199,7 @@ function orang() {
       <h3>Sedang dikeluarkan</h3>
       ${diusir.length ? `<div class="daftar">${diusir.map(([u, b]) => `<div><span>${esc(b.n || namaDari(u))}<br><small>${b.sampai > now + 3650 * 86400e3 ? 'diblokir' : 'sampai ' + esc(tanggalJam(b.sampai))} · ${esc(b.alasan || '')}</small></span><button type="button" class="mini putih" data-ampun="${esc(u)}">Ampuni</button></div>`).join('')}</div>` : '<p class="kecil">Tidak ada.</p>'}`,
     pasang(isi) {
-      isi.querySelectorAll('[data-lihat]').forEach(b => b.onclick = () => import('./sosial.js?v=202611270858').then(S => S.bukaProfil(o.find(x => x.uid === b.dataset.lihat))));
+      isi.querySelectorAll('[data-lihat]').forEach(b => b.onclick = () => import('./sosial.js?v=202611280108').then(S => S.bukaProfil(o.find(x => x.uid === b.dataset.lihat))));
       isi.querySelectorAll('[data-mod]').forEach(b => b.onclick = () => bukaModerasiOrang(o.find(x => x.uid === b.dataset.mod)));
       isi.querySelectorAll('[data-ampun]').forEach(b => b.onclick = () => {
         const u = b.dataset.ampun;
@@ -334,6 +334,7 @@ const TEMPLAT = [
   { judul: 'Jumat Speed Dating', isi: 'Kenalan 3 menit per orang. Ikut antrean di menu ⭐ → Harian → Speed Dating.', lokasi: 'kafe', durasi: 90, exp: 60 },
   { judul: 'Minggu: Pasangan Minggu Ini', isi: 'Pengumuman pasangan match yang setuju ditampilkan. Kumpul di lobi!', lokasi: 'lobi', durasi: 30, exp: 30 },
   { judul: 'Lomba Makan Kerupuk 17-an', isi: 'Lomba virtual: menu ⭐ → Harian → Lomba Kerupuk. Juara harian dapat hadiah!', lokasi: 'lobi', durasi: 60, exp: 40 },
+  { judul: '🪩 Club Night', isi: 'Joget bareng di Y.H.A Club! DJ muter lagu request kalian dari YouTube, ada VIP table & mocktail gratis di bar (tanpa alkohol).', lokasi: 'club', durasi: 120, exp: 50 },
   { judul: 'Bukber Virtual', isi: 'Buka puasa bareng di Kafe Jodoh, cerita menu bukamu hari ini.', lokasi: 'kafe', durasi: 60, exp: 40 },
 ];
 function keWib(ms) { const d = new Date(ms + 7 * 3600e3); return d.toISOString().slice(0, 16); }

@@ -3,11 +3,11 @@
 //  arah, acara terjadwal, peringkat, toko (EXP & VIP),
 //  dan notifikasi dari Direktur.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611270858';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611270858';
-import * as Musik from './musik.js?v=202611270858';
-import * as Bayar from './bayar.js?v=202611270858';
-import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611270858';
+import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611280108';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611280108';
+import * as Musik from './musik.js?v=202611280108';
+import * as Bayar from './bayar.js?v=202611280108';
+import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611280108';
 
 // ---------------------------------------------------------------- DATA TUGAS
 const RUANG_TUJUAN = { jodoh: 'kafe', teman: 'meja', curhat: 'taman' };
@@ -29,8 +29,11 @@ export const HARIAN = [
   { id: 'papan', nama: 'Tulis di papan Ruang Rapat', exp: 10, ke: 'rapat' },
   { id: 'game', nama: 'Main Tangkap Hati di mesin arcade lobi', exp: 15, ke: 'lobi' },
   { id: 'koin', nama: 'Lempar koin di air mancur harapan', exp: 5, ke: 'taman' },
+  { id: 'joget', nama: 'Joget 1 menit di Y.H.A Club', exp: 15, ke: 'club', gedung: 'yhaClub' },
 ];
 const kunciHarian = id => `h${hariIni()}_${id}`;
+// tugas di gedung baru baru muncul setelah gedungnya dibuka
+const harianAktif = () => HARIAN.filter(t => !t.gedung || !K.gedungBuka || K.gedungBuka(t.gedung));
 
 // ---------------------------------------------------------------- STATUS
 const P = { diamond: 0, milik: {}, donatur: {}, exp: 0, beli: 0, selesai: new Set(), acara: {}, ikut: {}, hadir: {}, skorHari: {}, expSemua: {}, beliSemua: {} };
@@ -283,7 +286,7 @@ export function segarArah() {
     const tur = TUR.find(t => !sudah(t.id));
     if (tur) a = { t: `👉 Langkah berikutnya: ${tur.nama} (+${tur.exp} EXP)`, aksi: () => aksiTugas(tur) };
     else {
-      const h = HARIAN.find(t => !sudah(kunciHarian(t.id)));
+      const h = harianAktif().find(t => !sudah(kunciHarian(t.id)));
       const [id, nx] = acaraNanti()[0] || [];
       if (nx && nx.mulai - kini() < 3 * 3600e3) a = { t: `📅 ${bersih(nx.judul, 40)} · ${tanggalJam(nx.mulai)} di ${LOKASI[nx.lokasi]?.nama || ''}`, aksi: () => bukaHub('acara') };
       else if (h) a = { t: `⭐ Tugas harian: ${h.nama} (+${h.exp} EXP)`, aksi: () => aksiTugas(h) };
@@ -330,7 +333,7 @@ function tabTugas() {
   return {
     html: `${turSisa ? `<h3>🧭 Tur Kantor <small>(${TUR.length - turSisa}/${TUR.length})</small></h3><div class="daftar">${TUR.map(t => barisTugas(t, sudah(t.id), t.id)).join('')}</div>` : ''}
       <h3>☀️ Tugas harian <small>(reset tiap tengah malam WIB)</small></h3>
-      <div class="daftar">${HARIAN.map(t => barisTugas(t, sudah(kunciHarian(t.id)), t.id)).join('')}</div>
+      <div class="daftar">${harianAktif().map(t => barisTugas(t, sudah(kunciHarian(t.id)), t.id)).join('')}</div>
       <p class="kecil">EXP membuka outfit & aksesoris baru di Ruang Loker. Hadir di acara Direktur juga memberi EXP.</p>`,
     pasang(el) { el.querySelectorAll('[data-tg]').forEach(b => b.onclick = () => { tutupKartu(); aksiTugas([...TUR, ...HARIAN].find(t => t.id === b.dataset.tg)); }); },
   };

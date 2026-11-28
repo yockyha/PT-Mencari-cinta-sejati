@@ -10,9 +10,10 @@
 //  (js/common.js) bila perlu tombol pintasan.
 //  Direktur bisa membuka lebih cepat / mengikuti jadwal lewat papan proyek.
 // =====================================================================
-import { esc } from '../js/common.js?v=202611270858';
-import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611270858';
-import * as Musik from './musik.js?v=202611270858';
+import { esc } from '../js/common.js?v=202611280108';
+import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611280108';
+import * as Musik from './musik.js?v=202611280108';
+import * as Club from './club.js?v=202611280108';
 
 export const GEDUNG = [
   {
@@ -22,6 +23,14 @@ export const GEDUNG = [
     gerbang: { x: -31.2, z: 22 },                     // titik masuk (sisi timur)
     fasilitas: ['⛲ Air mancur harapan', '🎬 Bioskop Cinta', '🎡 Bianglala', '🍦 Kedai es krim & 🍿 popcorn', '🪑 Taman duduk & lampu taman'],
     bangun: bangunTamanCinta,
+  },
+  {
+    id: 'yhaClub', nama: '🪩 Y.H.A Club', ikon: '🪩',
+    mulai: '2026-11-28T08:00:00+07:00', selesai: '2026-11-29T08:00:00+07:00',   // 1 hari pembangunan
+    area: Club.AREA,                                   // lahan kosong di timur kantor
+    gerbang: { x: 64, z: 28 }, normal: [0, 1],          // gerbang di sisi selatan (menghadap halaman)
+    fasilitas: ['🪩 Dance floor LED + disco ball', '🎧 Panggung DJ (musik YouTube)', '🛋️ Table & 💎 VIP Table', '🍹 Mocktail bar', '💃 Joget bareng & lampu laser'],
+    bangun: g => Club.bangun(g, { D, kotakKe, papan, aksiBuka }),
   },
 ];
 
@@ -116,8 +125,9 @@ function bangunProyek(g) {
     }
   }
   // papan hitung mundur besar di gerbang
-  const { x: gx, z: gz } = def.gerbang;
-  for (const dz of [-1.8, 1.8]) kotakKe(P, 0.2, 4.6, 0.2, gx + 0.4, 0, gz + dz, '#5b5f6a');
+  const { x: gx, z: gz } = def.gerbang, [nx, nz] = def.normal || [1, 0], lx = -nz, lz = nx;   // normal = arah keluar gerbang
+  const di = (maju, samping) => [gx + nx * maju + lx * samping, gz + nz * maju + lz * samping];
+  for (const dz of [-1.8, 1.8]) { const [px, pz] = di(0.4, dz); kotakKe(P, 0.2, 4.6, 0.2, px, 0, pz, '#5b5f6a'); }
   g.papanKv = D.kanvas(800, 420, (c, w, h) => {
     const p = progres(def), ms = sisa(def);
     c.fillStyle = '#1b1220'; c.fillRect(0, 0, w, h); c.strokeStyle = '#ffd23f'; c.lineWidth = 10; c.strokeRect(5, 5, w - 10, h - 10);
@@ -131,8 +141,8 @@ function bangunProyek(g) {
     c.fillStyle = '#fff'; c.font = D.FD(64); c.fillText(sisaTeks(ms), w / 2, 336);
     c.fillStyle = '#8f7a99'; c.font = D.FB(22, 800); c.fillText('Mohon maaf atas ketidaknyamanannya 🙏 · ketuk papan untuk info', w / 2, 388, w - 40);
   });
-  papan(P, 3.4, 1.8, g.papanKv, gx + 0.55, 3.3, gz, Math.PI / 2);
-  D.titikAksi.push({ x: gx + 1.4, z: gz, r: 2.6, label: '🏗️ Lihat progres ' + def.nama, aksi: () => bukaProyek(def), syarat: () => !g.buka });
+  { const [px, pz] = di(0.55, 0); papan(P, 3.4, 1.8, g.papanKv, px, 3.3, pz, nx ? Math.PI / 2 * nx : (nz > 0 ? 0 : Math.PI)); }
+  D.titikAksi.push({ x: di(1.4, 0)[0], z: di(1.4, 0)[1], r: 2.6, label: '🏗️ Lihat progres ' + def.nama, aksi: () => bukaProyek(def), syarat: () => !g.buka });
   // crane menara
   const cx = (x1 + x2) / 2 - 6, cz = (z1 + z2) / 2 - 8;
   for (let y = 0; y < 16; y += 2) { kotakKe(P, 0.7, 2, 0.08, cx, y, cz - 0.35, '#ffd23f'); kotakKe(P, 0.7, 2, 0.08, cx, y, cz + 0.35, '#ffd23f'); kotakKe(P, 0.08, 2, 0.7, cx - 0.35, y, cz, '#ffd23f'); kotakKe(P, 0.08, 2, 0.7, cx + 0.35, y, cz, '#ffd23f'); kotakKe(P, 0.7, 0.08, 0.7, cx, y, cz, '#e0b020'); }
@@ -148,9 +158,9 @@ function bangunProyek(g) {
   const molen = new D.THREE.Mesh(new D.THREE.CylinderGeometry(0.5, 0.75, 1.5, 12), D.M('#ff8a3d')); molen.rotation.z = Math.PI / 2.6; molen.position.set(x2 - 12, 1.1, z1 + 9); P.add(molen);
   kotakKe(P, 1.4, 0.5, 1.0, x2 - 12, 0, z1 + 9, '#5b5f6a');
   g.anim.push((dt, t, buka) => { if (!buka) molen.rotation.y += dt * 2; });
-  for (let i = 0; i < 6; i++) { const k = new D.THREE.Mesh(new D.THREE.ConeGeometry(0.22, 0.6, 8), D.M(i % 2 ? '#ffffff' : '#ff8a3d')); k.position.set(gx + 1.6, 0.3, gz - 3.5 + i * 1.4); P.add(k); }
+  for (let i = 0; i < 6; i++) { const k = new D.THREE.Mesh(new D.THREE.ConeGeometry(0.22, 0.6, 8), D.M(i % 2 ? '#ffffff' : '#ff8a3d')); const [px, pz] = di(1.6, -3.5 + i * 1.4); k.position.set(px, 0.3, pz); P.add(k); }
   const kedip = [];
-  for (const dz of [-2.2, 2.2]) { const l = new D.THREE.Mesh(new D.THREE.SphereGeometry(0.16, 8, 6), new D.THREE.MeshBasicMaterial({ color: '#ff9900' })); l.position.set(gx + 0.4, 4.75, gz + dz); P.add(l); kedip.push(l); }
+  for (const dz of [-2.2, 2.2]) { const l = new D.THREE.Mesh(new D.THREE.SphereGeometry(0.16, 8, 6), new D.THREE.MeshBasicMaterial({ color: '#ff9900' })); const [px, pz] = di(0.4, dz); l.position.set(px, 4.75, pz); P.add(l); kedip.push(l); }
   g.anim.push((dt, t, buka) => { if (!buka) for (const l of kedip) l.visible = Math.sin(t / 250) > 0; });
   // pekerja proyek (berhelm kuning)
   if (D.buatKarakter) {
