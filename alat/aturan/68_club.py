@@ -40,3 +40,15 @@ def pasang(r):
     r["clubMeja"] = {".read": True, ".write": f"{A} && {DIR}", "$meja": {"$id": {
         ".write": f"{A} && $meja.matches(/^(t[1-4]|vip[12])$/) && ((!data.exists() && {BEBAS} && (!$meja.beginsWith('vip') || {VIP})) || (!newData.exists() && {STAF}))",
         ".validate": pesan(160)}}}
+
+    # 💌 LAYAR UCAPAN: Direktur bebas; VIP/VVIP gratis dengan kuota per 24 jam (clubLayarKuota
+    # dinaikkan di transaksi yang sama). Tamu biasa membayar → ditulis server pembayaran/Direktur.
+    KQ = "newData.parent().parent().child('clubLayarKuota/' + auth.uid)"
+    KQ_L = "root.child('clubLayarKuota/' + auth.uid)"
+    r["clubLayar"] = {".read": True, ".write": f"{A} && {DIR}", "$id": {
+        ".write": f"{A} && ((!data.exists() && {BEBAS} && newData.child('uid').val() === auth.uid && ({DIR} || ({VIP_AKTIF} && ({KQ}.child('t0').val() === now || {KQ}.child('n').val() === {KQ_L}.child('n').val() + 1)))) || (!newData.exists() && {STAF}))",
+        ".validate": "!newData.exists() || (newData.hasChildren(['uid', 'n', 'm', 'tema', 't']) && " + TXT('n', 20) + " && " + TXT('m', 120) + " && newData.child('m').val().length >= 1 && (!newData.child('ke').exists() || " + TXT('ke', 30) + ") && newData.child('tema').val().matches(/^(emas|pink|biru|ungu)$/) && (!newData.child('via').exists() || newData.child('via').val().matches(/^(dir|vip|vvip|bayar)$/)) && (!newData.child('h').exists() || " + TXT('h', 12) + ") && (newData.child('t').val() === now || " + DIR + "))"}}
+    # kuota jendela 24 jam: {n, t0}; reset bila sudah lewat 24 jam sejak t0. VIP 2×, VVIP 5× (lihat paket.js → layar)
+    r["clubLayarKuota"] = {".read": f"{A} && {DIR}", ".write": f"{A} && {DIR}", "$uid": {".read": f"{A} && auth.uid === $uid",
+        ".write": f"{A} && auth.uid === $uid && {VIP_AKTIF}",
+        ".validate": f"newData.child('n').isNumber() && newData.child('n').val() <= ({VVIP} ? 5 : 2) && ((newData.child('n').val() === 1 && newData.child('t0').val() === now && (!data.exists() || now - data.child('t0').val() >= 86400000)) || (data.exists() && now - data.child('t0').val() < 86400000 && newData.child('t0').val() === data.child('t0').val() && newData.child('n').val() === data.child('n').val() + 1))"}}

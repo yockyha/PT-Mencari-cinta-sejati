@@ -28,6 +28,8 @@ export default {
     { id: 'vip', nama: 'VIP', ikon: '💎', diamond: 300, hari: 30, paketUang: 'vip30d' },
     { id: 'vvip', nama: 'VVIP', ikon: '👑', diamond: 650, hari: 30, paketUang: 'vvip30d' },
   ],
+  // 🪩 Layar Ucapan Y.H.A Club: tamu biasa bayar per ucapan; VIP/VVIP punya kuota gratis per hari; Direktur bebas
+  layar: { harga: 5000, kuotaVip: 2, kuotaVvip: 5, maksPesan: 120, maksUntuk: 30 },
   // Donasi (nominal bebas)
   donasi: { min: 5000, maks: 10000000, saran: [10000, 25000, 50000, 100000] },
 };
@@ -36,6 +38,7 @@ export default {
 export function hitungItem(P, { jenis, paket, nominal }) {
   if (jenis === 'diamond') { const p = P.diamond.find(x => x.id === paket); return p ? { jenis, paket: p.id, nama: `${p.diamond} Diamond`, harga: p.harga, diamond: p.diamond } : null; }
   if (jenis === 'paket') { const p = P.toko.find(x => x.id === paket); return p ? { jenis, paket: p.id, nama: p.nama, harga: p.harga, exp: p.exp || 0, vipHari: p.vipHari || 0, tingkat: p.tingkat || '' } : null; }
+  if (jenis === 'layar') return P.layar ? { jenis, paket: 'layar', nama: 'Ucapan di Layar Y.H.A Club', harga: P.layar.harga } : null;
   if (jenis === 'donasi') { const n = Math.round(+nominal || 0); return n >= P.donasi.min && n <= P.donasi.maks ? { jenis, paket: 'donasi', nama: 'Donasi', harga: n } : null; }
   return null;
 }
@@ -58,3 +61,10 @@ export function ucapanDonasi(n) {
 // Nama yang tampil di Papan Donasi (nt = nama pilihan donatur; tampil=false → anonim)
 export const ANONIM_DONASI = 'Orang Baik 🤍';
 export const namaPapan = v => (v && v.tampil === false ? ANONIM_DONASI : String((v && (v.nt || v.n)) || 'Tamu').trim().slice(0, 20) || 'Tamu');
+
+// Data ucapan layar yang dikirim pembeli (dibersihkan; dipakai tampilan & server)
+export const TEMA_LAYAR = ['emas', 'pink', 'biru', 'ungu'];
+export function dataLayar(P, b, n) {
+  const pot = (x, m) => String(x || '').replace(/[\u0000-\u001f<>]/g, '').replace(/\s+/g, ' ').trim().slice(0, m);
+  return { pesan: pot(b.pesan, P.layar.maksPesan), ke: pot(b.ke, P.layar.maksUntuk), tema: TEMA_LAYAR.includes(b.tema) ? b.tema : 'emas', nt: b.tampil === false ? '' : pot(b.nt || n, 20) };
+}

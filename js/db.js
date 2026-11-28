@@ -3,9 +3,9 @@
 //   - DBFirebase: Firebase Realtime Database (mode online, multiplayer)
 //   - DBLokal: tiruan kecil Realtime Database di browser (mode lokal);
 //     tab-tab di browser yang sama saling tersambung lewat BroadcastChannel.
-//  Antarmuka: uid, mode, now(), set(), update(), push(), get(), on(), hapusSaatPutus()
+//  Antarmuka: uid, mode, now(), set(), update(), push(), kunci(), get(), on(), hapusSaatPutus()
 // =====================================================================
-import { CFG, LS, emailDari } from './common.js?v=202611280108';
+import { CFG, LS, emailDari } from './common.js?v=202611280202';
 
 export const TS = { '.sv': 'timestamp' };
 const FBV = '10.14.1';
@@ -116,6 +116,7 @@ class DBLokal {
   set(p, v) { this._op({ k: 'set', p, v: isiWaktu(salin(v), Date.now()) }); return Promise.resolve(); }
   update(p, o) { this._op({ k: 'update', p, v: isiWaktu(salin(o), Date.now()) }); return Promise.resolve(); }
   push(p, v) { const k = kunciBaru(); this.set(p + '/' + k, v); return k; }
+  kunci() { return kunciBaru(); }   // kunci baru berurutan seperti push(), untuk update multi-path
   get(p) { return Promise.resolve(salin(this._ambil(p))); }
   on(p, cb, { limit } = {}) {
     const l = { p, cb, limit };
@@ -159,6 +160,7 @@ class DBFirebase {
   now() { return Date.now() + this.offset; }
   set(p, v) { return this.D.set(this.r(p), v).catch(e => { console.warn('set', p, e.message); throw e; }); }
   update(p, o) { return this.D.update(this.r(p), o).catch(e => { console.warn('update', p, e.message); throw e; }); }
+  kunci(p) { return this.D.push(this.r(p)).key; }   // kunci push tanpa menulis (untuk update multi-path)
   push(p, v) { const ref = this.D.push(this.r(p)); this.D.set(ref, v).catch(e => console.warn('push', p, e.message)); return ref.key; }
   async get(p) { return (await this.D.get(this.r(p))).val(); }
   on(p, cb, { limit } = {}) {

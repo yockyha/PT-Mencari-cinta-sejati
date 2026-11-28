@@ -12,13 +12,16 @@
 //  (video atau playlist). Lagu disimpan di club/lagu {id, list, judul, t}
 //  lalu semua tamu di dalam club memutarnya di detik yang sama lewat
 //  YouTube IFrame Player API. Tamu bisa request lagu (club/antre).
-//  Data: club/lagu · club/dj/<uid> · club/antre/<id> · clubMeja/<meja>/<id>
+//  💌 Layar Ucapan (shoutout wall ala club mewah): Direktur bebas, VIP/VVIP
+//  pakai kuota harian, tamu biasa bayar per ucapan (paket.js → layar).
+//  Data: club/lagu · club/dj/<uid> · club/antre/<id> · clubMeja/<meja>/<id> · clubLayar/<id> · clubLayarKuota/<uid>/<hari>
 // =====================================================================
-import { esc, bersih, LS, hariIni } from '../js/common.js?v=202611280108';
-import { TS } from '../js/db.js?v=202611280108';
-import { K, toast, bukaKartu, tutupKartu, jam } from './ui.js?v=202611280108';
-import * as Musik from './musik.js?v=202611280108';
-import * as Prog from './progres.js?v=202611280108';
+import { esc, bersih, LS, hariIni, sensor, kasar, PAKET, rupiah } from '../js/common.js?v=202611280202';
+import { TS } from '../js/db.js?v=202611280202';
+import { K, toast, bukaKartu, tutupKartu, jam } from './ui.js?v=202611280202';
+import * as Musik from './musik.js?v=202611280202';
+import * as Prog from './progres.js?v=202611280202';
+import * as Bayar from './bayar.js?v=202611280202';
 
 // ---------------------------------------------------------------- TATA LETAK
 export const AREA = [40, -22, 88, 28];          // lahan (pagar proyek)
@@ -34,7 +37,7 @@ const MEJA_CLUB = [
 const MOCKTAIL = [['🍓', 'Strawberry Love Fizz', '#ff4f7b'], ['🍋', 'Lemon Crush Jomblo', '#ffd23f'], ['🫐', 'Blue Lagoon Baper', '#3fa9f5'], ['🥭', 'Mango Match Sunrise', '#ff9f1c']];
 
 let G = null, A = null;            // grup gedung & alat bangun dari gedung.js
-const ST = { lagu: null, dj: {}, antre: {}, mejaBuka: null, lepasMeja: null };
+const ST = { lagu: null, dj: {}, antre: {}, mejaBuka: null, lepasMeja: null, ucapan: [], ucapanBaru: 0 };
 const bolehDJ = () => !!(K.L && (K.peran[K.L.uid] === 'direktur' || ST.dj[K.L.uid]));
 
 // ---------------------------------------------------------------- BANGUN (dipanggil gedung.js)
@@ -182,6 +185,13 @@ export function bangun(g, alat) {
     if (emas) { const pk = D.kanvas(320, 64, (c, w, h) => { c.fillStyle = '#d4a017'; c.fillRect(0, 0, w, h); c.fillStyle = '#1b1220'; c.font = D.FD(40); c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('💎 VIP', w / 2, h / 2 + 2); }); tampil(papan(J, 1.6, 0.32, pk, m.x, y0 + 1.25, m.z + 1.4)); }
     aksiBuka(g, { x: m.x - 2.6, z: m.z, r: 1.6, label: `${emas ? '💎' : '🛋️'} ${m.nama}`, aksi: () => bukaTable(m), syarat: () => !(K.saya && K.saya.duduk) });
   }
+  // 💌 LAYAR UCAPAN raksasa di dinding timur (menghadap dance floor)
+  ST.layarUcapan = D.kanvas(1280, 640, gambarUcapan);
+  tampil(kotakKe(J, 0.3, 5.6, 19.4, BX2 - 0.5, 1.4, 0, '#0a0a0d'));
+  tampil(papan(J, 18.6, 9.3, ST.layarUcapan, BX2 - 0.68, 4.2, 0, -Math.PI / 2));
+  g.anim.push((dt, t, buka) => { if (buka && t - (g.ucapT || 0) > 110) { g.ucapT = t; ST.layarUcapan.ulang(); } });
+  aksiBuka(g, { x: 73.5, z: 0.5, r: 3.0, label: '💌 Kirim ucapan ke layar', aksi: bukaUcapan });
+  aksiBuka(g, { x: PINTU.x - 3, z: BZ2 + 2.5, r: 2.0, label: '💌 Kirim ucapan ke layar club', aksi: bukaUcapan });
   // panel DJ & request lagu di depan panggung
   aksiBuka(g, { x: pg.x, z: pg.z + 4.6, r: 2.4, label: '🎧 Panel DJ / request lagu', aksi: bukaPanelDJ });
   aksiBuka(g, { x: PINTU.x + 3, z: BZ2 + 2.5, r: 2.2, label: '📸 Foto di depan Y.H.A Club', aksi: () => D.ambilFoto('Foto di Y.H.A Club', [PINTU.x, BZ2 + 1]) });
@@ -208,6 +218,14 @@ export function mulai() {
   db.on('club/lagu', v => { const lama = ST.lagu; ST.lagu = v && (v.id || v.list) ? v : null; if (!lama || !ST.lagu || lama.id !== ST.lagu.id || lama.list !== ST.lagu.list || lama.t !== ST.lagu.t) muatLagu(); if (ST.panel) bukaPanelDJ(); });
   db.on('club/dj', v => { ST.dj = v || {}; });
   db.on('club/antre', v => { ST.antre = v || {}; if (ST.panel) bukaPanelDJ(); });
+  let awal = true;
+  db.on('clubLayar', v => {
+    const l = Object.entries(v || {}).filter(([, x]) => x && x.m).map(([k, x]) => ({ ...x, k })).sort((a, b) => (b.t || 0) - (a.t || 0));
+    const terbaru = l[0];
+    if (!awal && terbaru && (!ST.ucapan[0] || terbaru.t > ST.ucapan[0].t)) { ST.ucapanBaru = performance.now(); bannerUcapan(terbaru); }
+    ST.ucapan = l.slice(0, 30); awal = false;
+    if (ST.formUcapan) segarDaftarUcapan();
+  }, { limit: 30 });
   setInterval(atur, 500);
   setInterval(hitungJoget, 1000);
 }
@@ -405,3 +423,130 @@ function bukaTable(m) {
     },
   });
 }
+
+// ---------------------------------------------------------------- 💌 LAYAR UCAPAN (shoutout wall)
+const TEMA = {
+  emas: { a: '#f7d774', b: '#b8860b', c: '#fff6d5', g: '#ffb300', nama: '✨ Gold Luxe' },
+  pink: { a: '#ff7ac8', b: '#c2185b', c: '#ffe0f0', g: '#ff2fb3', nama: '💗 Pink Neon' },
+  biru: { a: '#7fe3ff', b: '#0077b6', c: '#e0f8ff', g: '#00b4ff', nama: '🧊 Blue Ice' },
+  ungu: { a: '#c9a2ff', b: '#6a1b9a', c: '#f1e6ff', g: '#9d4dff', nama: '🔮 Royal Purple' },
+};
+const LENCANA = { dir: '👑 DIREKTUR', vvip: '👑 VVIP', vip: '💎 VIP', bayar: '💌 SPECIAL' };
+// ucapan yang sedang tayang: ucapan baru tampil dulu 15 detik, lalu bergantian tiap 12 detik
+function ucapanTayang() {
+  const l = ST.ucapan; if (!l.length) return null;
+  if (performance.now() - ST.ucapanBaru < 15000) return l[0];
+  return l[Math.floor(Date.now() / 12000) % Math.min(l.length, 12)];
+}
+function bungkus(c, teks, maks, baris) {
+  const kata = String(teks).split(' '), hasil = []; let b = '';
+  for (const k of kata) { const coba = b ? b + ' ' + k : k; if (c.measureText(coba).width > maks && b) { hasil.push(b); b = k; } else b = coba; }
+  if (b) hasil.push(b);
+  if (hasil.length > baris) { hasil.length = baris; hasil[baris - 1] = hasil[baris - 1].replace(/.{0,2}$/, '…'); }
+  return hasil;
+}
+function gambarUcapan(c, w, h, contoh) {
+  const D = A && A.D, FD = n => (D ? D.FD(n) : `bold ${n}px sans-serif`), FB = (n, b = 800) => (D ? D.FB(n, b) : `${b} ${n}px sans-serif`);
+  const t = performance.now() / 1000, u = contoh || ucapanTayang(), T = TEMA[(u && u.tema) || 'emas'] || TEMA.emas;
+  // latar hitam mewah + cahaya tema
+  c.fillStyle = '#050307'; c.fillRect(0, 0, w, h);
+  const rg = c.createRadialGradient(w / 2, h * 0.45, 40, w / 2, h / 2, w * 0.7); rg.addColorStop(0, T.g + '55'); rg.addColorStop(1, '#00000000'); c.fillStyle = rg; c.fillRect(0, 0, w, h);
+  // sapuan cahaya diagonal
+  const x0 = ((t * 260) % (w * 2)) - w * 0.5, sg = c.createLinearGradient(x0, 0, x0 + 260, h); sg.addColorStop(0, '#ffffff00'); sg.addColorStop(0.5, '#ffffff16'); sg.addColorStop(1, '#ffffff00'); c.fillStyle = sg; c.fillRect(0, 0, w, h);
+  // gemerlap
+  for (let i = 0; i < 60; i++) { const x = (i * 197.3) % w, y = (i * 113.7) % h, k = 0.5 + 0.5 * Math.sin(t * 3 + i * 1.7); c.fillStyle = `rgba(255,255,255,${0.15 + 0.75 * k * k})`; const r = 1 + 2.2 * k; c.beginPath(); c.moveTo(x, y - r * 3); c.lineTo(x + r, y); c.lineTo(x, y + r * 3); c.lineTo(x - r, y); c.closePath(); c.fill(); }
+  // bingkai ganda emas + ornamen sudut
+  const fg = c.createLinearGradient(0, 0, w, h); fg.addColorStop(0, T.a); fg.addColorStop(0.5, T.c); fg.addColorStop(1, T.b);
+  c.strokeStyle = fg; c.lineWidth = 10; c.strokeRect(18, 18, w - 36, h - 36); c.lineWidth = 3; c.strokeRect(34, 34, w - 68, h - 68);
+  c.fillStyle = fg; for (const [x, y] of [[34, 34], [w - 34, 34], [34, h - 34], [w - 34, h - 34]]) { c.save(); c.translate(x, y); c.rotate(Math.PI / 4); c.fillRect(-14, -14, 28, 28); c.restore(); }
+  c.textAlign = 'center'; c.textBaseline = 'middle';
+  if (!u) {
+    c.shadowColor = T.g; c.shadowBlur = 30; c.fillStyle = fg; c.font = FD(110); c.fillText('Y.H.A CLUB', w / 2, h * 0.34);
+    c.shadowBlur = 0; c.fillStyle = '#fff'; c.font = FB(44, 900); c.fillText('✦  SHOUTOUT WALL  ✦', w / 2, h * 0.52);
+    c.fillStyle = T.c; c.font = FB(32, 800); c.fillText('Kirim ucapanmu ke layar ini 💌', w / 2, h * 0.67);
+    c.fillStyle = '#bfb3c9'; c.font = FB(26, 800); c.fillText('👑 VVIP & 💎 VIP gratis tiap hari · tamu lain ' + rupiah(PAKET.layar.harga) + ' / ucapan', w / 2, h * 0.79, w - 120);
+    return;
+  }
+  // label atas + lencana
+  c.fillStyle = T.c; c.font = FB(30, 900); c.fillText('✦  SPECIAL MESSAGE  ✦', w / 2, 82);
+  const lc = LENCANA[u.via] || LENCANA.bayar; c.font = FB(26, 900); const lw = c.measureText(lc).width + 44;
+  c.fillStyle = fg; c.beginPath(); c.roundRect ? c.roundRect(w / 2 - lw / 2, 104, lw, 44, 22) : c.rect(w / 2 - lw / 2, 104, lw, 44); c.fill(); c.fillStyle = '#120a14'; c.fillText(lc, w / 2, 127);
+  // untuk siapa
+  c.fillStyle = '#d9cfe3'; c.font = FB(30, 800); c.fillText(u.ke ? 'TO' : 'FOR EVERYONE IN', w / 2, 192);
+  const ke = u.ke || 'Y.H.A CLUB'; let uk = 104; c.font = FD(uk); while (c.measureText(ke).width > w - 160 && uk > 50) { uk -= 6; c.font = FD(uk); }
+  const pulsa = 0.85 + 0.15 * Math.sin(t * 3); c.shadowColor = T.g; c.shadowBlur = 36 * pulsa; c.fillStyle = fg; c.fillText(ke, w / 2, 262);
+  // pesan
+  c.shadowBlur = 16; c.shadowColor = T.g; c.fillStyle = '#ffffff'; let pk = 46; c.font = FB(pk, 900);
+  let bs = bungkus(c, `“${u.m}”`, w - 200, 3); while (bs.length > 2 && pk > 34) { pk -= 4; c.font = FB(pk, 900); bs = bungkus(c, `“${u.m}”`, w - 200, 3); }
+  bs.forEach((b, i) => c.fillText(b, w / 2, 368 + (i - (bs.length - 1) / 2) * (pk + 12)));
+  // dari siapa
+  c.shadowBlur = 0; c.fillStyle = T.c; c.font = FB(34, 900); c.fillText('— from ' + (u.n || 'Seseorang 🤫') + ' —', w / 2, h - 118, w - 160);
+  c.fillStyle = '#8f8499'; c.font = FD(30); c.fillText('Y.H.A CLUB', w / 2, h - 66);
+}
+// banner mewah di layar tamu saat ucapan baru tayang (hanya yang berada di dalam / dekat club)
+function bannerUcapan(u) {
+  if (!K.saya || !dekat()) return;
+  let b = document.getElementById('clubBanner');
+  if (!b) {
+    b = document.createElement('div'); b.id = 'clubBanner';
+    b.innerHTML = '<style>#clubBanner{position:fixed;left:50%;top:84px;transform:translateX(-50%);z-index:60;min-width:260px;max-width:min(92vw,520px);background:#07040a;border:3px solid #f7d774;border-radius:16px;padding:10px 16px;color:#fff;text-align:center;font:800 14px Nunito,sans-serif;box-shadow:0 0 28px #ffb30088;transition:opacity .4s}#clubBanner[hidden]{display:none}#clubBanner b{display:block;font:400 22px Fredoka,Nunito,sans-serif;color:#f7d774;margin:2px 0}#clubBanner small{color:#cbbfd6}</style><div id="cbI"></div>';
+    document.body.append(b);
+  }
+  const T = TEMA[u.tema] || TEMA.emas; b.style.borderColor = T.a; b.style.boxShadow = `0 0 28px ${T.g}99`;
+  b.querySelector('#cbI').innerHTML = `<small>💌 Ucapan baru di layar Y.H.A Club</small><b style="color:${T.a}">${esc(u.ke ? 'To: ' + u.ke : 'Untuk semua')}</b>“${esc(u.m)}”<br><small>— ${esc(u.n || 'Seseorang')}</small>`;
+  b.hidden = false; b.style.opacity = 1; Musik.sfx('hadiah');
+  clearTimeout(bannerUcapan.t); bannerUcapan.t = setTimeout(() => { b.style.opacity = 0; setTimeout(() => { b.hidden = true; }, 450); }, 6500);
+}
+
+// formulir kirim ucapan: Direktur bebas · VIP/VVIP kuota harian · tamu biasa bayar
+const kunciKuota = () => 'clubLayarKuota/' + K.L.uid;   // {n, t0}: kuota jendela 24 jam
+async function bukaUcapan() {
+  const L = K.L; if (!L) return;
+  if (!K.resmi || !K.resmi()) { K.bukaDaftar && K.bukaDaftar(); return; }
+  const dir = K.peran[L.uid] === 'direktur', tk = Prog.tingkat(L.uid), P = PAKET.layar;
+  const batas = tk === 'vvip' ? P.kuotaVvip : tk === 'vip' ? P.kuotaVip : 0;
+  const q = batas ? await L.db.get(kunciKuota()).catch(() => null) : null, kad = !q || !q.t0 || L.db.now() - q.t0 >= 864e5;
+  const pakai = kad ? 0 : (q.n || 0), sisa = Math.max(0, batas - pakai);
+  let tema = 'emas';
+  ST.formUcapan = true;
+  bukaKartu(`<h2>💌 Layar Ucapan · Y.H.A Club</h2>
+    <p class="kecil">Ucapanmu tayang di layar raksasa club, gaya shoutout club mewah. ${dir ? '<b>👑 Direktur: tanpa batas.</b>' : batas ? `<b>${tk === 'vvip' ? '👑 VVIP' : '💎 VIP'}: sisa kuota gratis (per 24 jam) ${sisa}/${batas}.</b>` : `Tamu biasa: <b>${rupiah(P.harga)} per ucapan</b> (VIP & VVIP gratis tiap hari).`}</p>
+    <canvas id="ucPrev" width="640" height="320" style="width:100%;border-radius:12px;display:block;background:#000"></canvas>
+    <label for="ucKe">Untuk (opsional)</label><input id="ucKe" maxlength="${P.maksUntuk}" placeholder="contoh: Rina, geng Pejuang Jomblo, semua yang jomblo">
+    <label for="ucM">Pesan</label><textarea id="ucM" maxlength="${P.maksPesan}" rows="2" placeholder="contoh: Happy birthday bestie! Semoga cepet ketemu jodoh 🎂💖"></textarea>
+    <label>Tema</label><div class="sw teks" id="ucT">${Object.entries(TEMA).map(([k, v]) => `<button type="button" data-t="${k}" class="${k === tema ? 'on' : ''}">${v.nama}</button>`).join('')}</div>
+    <label class="cek"><input type="checkbox" id="ucN" checked> Tampilkan namaku (kalau tidak, tampil sebagai "Seseorang 🤫")</label>
+    <p class="err" id="ucE"></p>
+    <div class="baris">${dir ? '<button class="btn" type="button" id="ucKirim">🪩 Tayangkan sekarang</button>' : sisa ? `<button class="btn" type="button" id="ucKirim">${tk === 'vvip' ? '👑' : '💎'} Kirim gratis (${sisa}/${batas})</button>` : ''}${dir ? '' : `<button class="btn ${sisa ? 'putih' : ''}" type="button" id="ucBayar">💳 Kirim · ${rupiah(P.harga)}</button>`}</div>
+    <h3 style="margin-top:12px">🕘 Ucapan terbaru</h3><div class="daftar" id="ucDaftar"></div>`, {
+    tutup() { ST.formUcapan = false; clearInterval(ST.prevT); },
+    pasang(el) {
+      const isi = () => ({ ke: bersih(el.querySelector('#ucKe').value, P.maksUntuk), m: sensor(bersih(el.querySelector('#ucM').value, P.maksPesan)), tema, tampil: el.querySelector('#ucN').checked });
+      const cv = el.querySelector('#ucPrev'), cx = cv.getContext('2d');
+      const prev = () => { const d = isi(); cx.save(); cx.scale(0.5, 0.5); gambarUcapan(cx, 1280, 640, { ke: d.ke, m: d.m || 'Tulis pesanmu di bawah ✍️', tema, n: d.tampil ? (K.prof?.n || 'Kamu') : 'Seseorang 🤫', via: dir ? 'dir' : batas ? tk : 'bayar' }); cx.restore(); };
+      prev(); clearInterval(ST.prevT); ST.prevT = setInterval(prev, 120);
+      el.querySelectorAll('[data-t]').forEach(b => b.onclick = () => { tema = b.dataset.t; el.querySelectorAll('[data-t]').forEach(x => x.classList.toggle('on', x === b)); });
+      const cek = () => { const d = isi(), E = el.querySelector('#ucE'); if (d.m.length < 3) { E.textContent = 'Tulis pesan minimal 3 huruf ya.'; return null; } if (kasar(el.querySelector('#ucM').value) || kasar(d.ke)) { E.textContent = 'Pakai kata-kata yang lebih sopan ya 🙏'; return null; } E.textContent = ''; return d; };
+      const kirim = el.querySelector('#ucKirim');
+      if (kirim) kirim.onclick = async () => {
+        const d = cek(); if (!d) return; kirim.disabled = true;
+        const data = { uid: L.uid, n: d.tampil ? bersih(K.prof?.n || 'Tamu', 20) : 'Seseorang 🤫', ke: d.ke, m: d.m, tema: d.tema, via: dir ? 'dir' : tk, h: hariIni(), t: TS };
+        try {
+          const k = L.db.kunci('clubLayar');
+          await L.db.update('', dir ? { ['clubLayar/' + k]: data } : { ['clubLayar/' + k]: data, [kunciKuota()]: kad ? { n: 1, t0: TS } : { n: pakai + 1, t0: q.t0 } });
+          tutupKartu(); toast('🪩 Ucapanmu tayang di layar Y.H.A Club!', 3500);
+        } catch (e) { kirim.disabled = false; el.querySelector('#ucE').textContent = 'Gagal mengirim. Kuota mungkin sudah habis, coba kirim berbayar.'; }
+      };
+      const by = el.querySelector('#ucBayar');
+      if (by) by.onclick = () => { const d = cek(); if (!d) return; tutupKartu(); Bayar.bukaBayar({ jenis: 'layar', paket: 'layar', nama: 'Ucapan di Layar Y.H.A Club', harga: P.harga, pesan: d.m, ke: d.ke, tema: d.tema, tampil: d.tampil, nt: bersih(K.prof?.n || 'Tamu', 20) }); };
+      segarDaftarUcapan();
+    },
+  });
+}
+function segarDaftarUcapan() {
+  const el = document.querySelector('#kartu #ucDaftar'); if (!el) return;
+  const staf = K.L && K.peran[K.L.uid];
+  el.innerHTML = ST.ucapan.length ? ST.ucapan.slice(0, 10).map(u => `<div><span><b>${esc(u.ke || 'Untuk semua')}</b> · “${esc(u.m)}”<br><small>${esc(LENCANA[u.via] || '💌')} · ${esc(u.n || '')} · ${esc(jam(u.t))}</small></span>${staf ? `<button type="button" class="mini putih" data-hu="${esc(u.k)}" aria-label="Hapus ucapan">✕</button>` : ''}</div>`).join('') : '<p class="kecil">Belum ada ucapan. Jadi yang pertama!</p>';
+  el.querySelectorAll('[data-hu]').forEach(b => b.onclick = () => { if (confirm('Hapus ucapan ini dari layar?')) K.L.db.set('clubLayar/' + b.dataset.hu, null).then(() => toast('Ucapan dihapus.')); });
+}
+export const bukaLayarUcapan = () => bukaUcapan();

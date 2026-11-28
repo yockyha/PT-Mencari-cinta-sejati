@@ -3,11 +3,11 @@
 //  arah, acara terjadwal, peringkat, toko (EXP & VIP),
 //  dan notifikasi dari Direktur.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611280108';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611280108';
-import * as Musik from './musik.js?v=202611280108';
-import * as Bayar from './bayar.js?v=202611280108';
-import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611280108';
+import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611280202';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611280202';
+import * as Musik from './musik.js?v=202611280202';
+import * as Bayar from './bayar.js?v=202611280202';
+import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611280202';
 
 // ---------------------------------------------------------------- DATA TUGAS
 const RUANG_TUJUAN = { jodoh: 'kafe', teman: 'meja', curhat: 'taman' };
