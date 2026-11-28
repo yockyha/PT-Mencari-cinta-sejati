@@ -121,7 +121,7 @@ const ketik = (s, sel, teks, k) => ev(s, ([sel, v]) => { const e = document.quer
     await ev(s, () => { const K = __kantor; K.pindah(49.6, 1, -Math.PI / 2); });
     await maju(s, 2000); await kam(s, { yaw: -Math.PI / 2 + 0.5, pitch: 0.2, jarak: 5, y: 1.8 });
     await adegan(s, 'cl_bar', 4.5, async (i, t) => {
-      await kam(s, { yaw: -Math.PI / 2 + 0.5 - t * 0.12, pitch: 0.2, jarak: 5 - t * 0.3, y: 1.8 });
+      await kam(s, { yaw: -Math.PI / 2 + 1.0 - t * 0.1, pitch: 0.16, jarak: 7.5 - t * 0.4, y: 2 });
       if (i === 5) await tekanE(s);
       if (i === 40) await klik(s, '#kartu [data-m="0"]');
     });
