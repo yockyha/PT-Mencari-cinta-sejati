@@ -104,12 +104,13 @@ const ketik = (s, sel, teks, k) => ev(s, ([sel, v]) => { const e = document.quer
     await ev(s, () => { const K = __kantor; K.pindah(64, -9.4, Math.PI); });
     await maju(s, 2000); await kam(s, { yaw: Math.PI, pitch: 0.12, jarak: 5, y: 2.2 });
     const link = 'https://youtu.be/dQw4w9WgXcQ';
-    await adegan(s, 'cl_dj', 5, async (i) => {
+    await adegan(s, 'cl_dj', 6, async (i) => {
       if (i === 5) await tekanE(s);
       if (i > 22 && i <= 60) await ketik(s, '#djL', link, Math.round((i - 22) / 38 * link.length));
       if (i === 64) await ev(s, () => { const e = document.querySelector('#djJ'); if (e) e.value = 'Y.H.A Club Opening Night Mix'; });
       if (i === 72) await klik(s, '#djP');
-      if (i === 100) await tutup(s);
+      if (i === 100) { await tutup(s); await ev(s, () => { __kantor.K.saya.g.visible = false; }); }
+      if (i >= 100) await kam(s, { yaw: Math.PI, pitch: 0.02 + (i - 100) / 80 * 0.04, jarak: 13 - (i - 100) / 80 * 2, y: 5 });
     });
     await s.ctx.close();
   }
