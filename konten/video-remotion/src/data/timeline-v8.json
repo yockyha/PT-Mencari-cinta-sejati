@@ -1,0 +1,967 @@
+{
+ "versi": 1,
+ "fps": 30,
+ "lebar": 1080,
+ "tinggi": 1920,
+ "durasi": 1953,
+ "vo": {
+  "src": "vo8.mp3",
+  "volume": 1
+ },
+ "lapis": [
+  {
+   "id": "g1",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/hujan.mp4",
+   "mulai": 0,
+   "durasi": 158,
+   "trim": 0.0,
+   "kecepatan": 0.854,
+   "nama": "Hujan hati semalam"
+  },
+  {
+   "id": "t2",
+   "track": "teks",
+   "jenis": "stiker",
+   "teks": "POV: LU SKIP SEMALAM 💀",
+   "mulai": 0,
+   "durasi": 158,
+   "warna": "#ff4f7b",
+   "y": 330
+  },
+  {
+   "id": "t3",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "📹 REC · 27.11 · 20.00",
+   "mulai": 0,
+   "durasi": 158,
+   "nyala": "0",
+   "y": 1690,
+   "masuk": "pop"
+  },
+  {
+   "id": "t4",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Lu *semalem* ke mana?",
+   "mulai": 0,
+   "durasi": 36,
+   "y": 1330
+  },
+  {
+   "id": "t5",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Di jodohonline semalem *rame banget,* sumpah!",
+   "mulai": 36,
+   "durasi": 122,
+   "y": 1330
+  },
+  {
+   "id": "g6",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/tc_drone.mp4",
+   "mulai": 158,
+   "durasi": 140,
+   "trim": 0.0,
+   "kecepatan": 1.068,
+   "nama": "Taman Cinta malam (drone)"
+  },
+  {
+   "id": "t7",
+   "track": "teks",
+   "jenis": "stiker",
+   "teks": "RESMI DIBUKA 🎡",
+   "mulai": 158,
+   "durasi": 140,
+   "warna": "#ffd23f",
+   "y": 330
+  },
+  {
+   "id": "t8",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "27.11 · 21.30 · 🎡 TAMAN CINTA",
+   "mulai": 158,
+   "durasi": 348,
+   "nyala": "0",
+   "y": 1690,
+   "masuk": "pop"
+  },
+  {
+   "id": "t9",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Pertama, *Taman Cinta* akhirnya resmi dibuka!",
+   "mulai": 158,
+   "durasi": 80,
+   "y": 1330
+  },
+  {
+   "id": "t10",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Ada *bianglala* buat naik berdua,",
+   "mulai": 238,
+   "durasi": 60,
+   "y": 1330
+  },
+  {
+   "id": "g11",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/tc_koin.mp4",
+   "mulai": 298,
+   "durasi": 118,
+   "trim": 0.4,
+   "kecepatan": 1.308,
+   "nama": "Lempar koin harapan"
+  },
+  {
+   "id": "t12",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "*air mancur* buat lempar koin harapan,",
+   "mulai": 298,
+   "durasi": 118,
+   "y": 130
+  },
+  {
+   "id": "g13",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/tc_bioskop.mp4",
+   "mulai": 416,
+   "durasi": 90,
+   "trim": 0.0,
+   "kecepatan": 1.5,
+   "nama": "Bioskop + popcorn"
+  },
+  {
+   "id": "t14",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "sampe *bioskop* sama popcorn 🍿",
+   "mulai": 416,
+   "durasi": 22,
+   "y": 1330
+  },
+  {
+   "id": "t15",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Spot nge-date *paling cakep* di kantor!",
+   "mulai": 438,
+   "durasi": 68,
+   "y": 1330
+  },
+  {
+   "id": "g16",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/jadwal.mp4",
+   "mulai": 506,
+   "durasi": 92,
+   "trim": 0.3,
+   "kecepatan": 1.194,
+   "nama": "Jadwal Date Night"
+  },
+  {
+   "id": "t17",
+   "track": "teks",
+   "jenis": "stiker",
+   "teks": "DATE NIGHT 💘",
+   "mulai": 506,
+   "durasi": 92,
+   "warna": "#ff4f7b",
+   "y": 330
+  },
+  {
+   "id": "t18",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Terus lanjut *Date Night,*",
+   "mulai": 506,
+   "durasi": 37,
+   "y": 1330
+  },
+  {
+   "id": "t19",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "dibuka langsung sama *Pak Direktur* 👑",
+   "mulai": 543,
+   "durasi": 55,
+   "y": 1330
+  },
+  {
+   "id": "g20",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/loker.mp4",
+   "mulai": 598,
+   "durasi": 80,
+   "trim": 0.3,
+   "kecepatan": 1.585,
+   "nama": "Dandan outfit kencan"
+  },
+  {
+   "id": "t21",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "👗 DANDAN KENCAN",
+   "mulai": 598,
+   "durasi": 80,
+   "nyala": "0",
+   "y": 1690,
+   "masuk": "pop"
+  },
+  {
+   "id": "t22",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Ada yang dandan pake *outfit kencan* terbaiknya,",
+   "mulai": 598,
+   "durasi": 80,
+   "y": 130
+  },
+  {
+   "id": "g23",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/sd.mp4",
+   "mulai": 678,
+   "durasi": 100,
+   "trim": 0.6,
+   "kecepatan": 2.06,
+   "nama": "Speed dating"
+  },
+  {
+   "id": "t24",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "☕ SPEED DATING",
+   "mulai": 678,
+   "durasi": 100,
+   "nyala": "0",
+   "y": 1690,
+   "masuk": "pop"
+  },
+  {
+   "id": "t25",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "lanjut *speed dating…*",
+   "mulai": 678,
+   "durasi": 36,
+   "y": 1500
+  },
+  {
+   "id": "t26",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "saling kasih love = *langsung MATCH!* 💘",
+   "mulai": 714,
+   "durasi": 64,
+   "y": 1500
+  },
+  {
+   "id": "g27",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/tod.mp4",
+   "mulai": 778,
+   "durasi": 62,
+   "trim": 0.9,
+   "kecepatan": 1.512,
+   "nama": "Truth or dare"
+  },
+  {
+   "id": "t28",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "🎲 TRUTH OR DARE",
+   "mulai": 778,
+   "durasi": 62,
+   "nyala": "0",
+   "y": 1690,
+   "masuk": "pop"
+  },
+  {
+   "id": "t29",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Abis itu *truth or dare* berdua,",
+   "mulai": 778,
+   "durasi": 62,
+   "y": 1500
+  },
+  {
+   "id": "g30",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/raja.mp4",
+   "mulai": 840,
+   "durasi": 146,
+   "trim": 0.0,
+   "kecepatan": 0.82,
+   "nama": "Raja & Ratu Kencan"
+  },
+  {
+   "id": "t31",
+   "track": "teks",
+   "jenis": "stiker",
+   "teks": "RAJA & RATU KENCAN 👑",
+   "mulai": 840,
+   "durasi": 146,
+   "warna": "#ffd23f",
+   "y": 330
+  },
+  {
+   "id": "t32",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "ditutup *penobatan Raja & Ratu Kencan!*",
+   "mulai": 840,
+   "durasi": 82,
+   "y": 1330
+  },
+  {
+   "id": "t33",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Asli, *salting berjamaah* 😳",
+   "mulai": 922,
+   "durasi": 64,
+   "y": 1330
+  },
+  {
+   "id": "g34",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/cl_luar.mp4",
+   "mulai": 986,
+   "durasi": 75,
+   "gelap": 0.82,
+   "kecepatan": 0.6,
+   "nama": "Gelap: transisi club"
+  },
+  {
+   "id": "t35",
+   "track": "teks",
+   "jenis": "stiker",
+   "teks": "EITS… ✋",
+   "mulai": 986,
+   "durasi": 22,
+   "warna": "#ffffff",
+   "y": 700
+  },
+  {
+   "id": "t36",
+   "track": "teks",
+   "jenis": "judul",
+   "teks": "TAPI ITU BARU",
+   "mulai": 1006,
+   "durasi": 55,
+   "kecil": "PEMANASAN 🔥",
+   "warna": "#ff2fb3",
+   "y": 720
+  },
+  {
+   "id": "g37",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/cl_luar.mp4",
+   "mulai": 1061,
+   "durasi": 177,
+   "trim": 0.0,
+   "kecepatan": 0.847,
+   "nama": "Y.H.A Club eksterior"
+  },
+  {
+   "id": "t38",
+   "track": "teks",
+   "jenis": "stiker",
+   "teks": "NANTI MALAM 20.00 WIB 🪩",
+   "mulai": 1061,
+   "durasi": 177,
+   "warna": "#ff2fb3",
+   "y": 330
+  },
+  {
+   "id": "t39",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "👑 GRAND OPENING · Y.H.A CLUB",
+   "mulai": 1061,
+   "durasi": 177,
+   "nyala": "0",
+   "y": 1690,
+   "masuk": "pop"
+  },
+  {
+   "id": "t40",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Nanti malem *jam delapan,*",
+   "mulai": 1061,
+   "durasi": 37,
+   "y": 1330
+  },
+  {
+   "id": "t41",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Pak Direktur bakal *resmiin Y.H.A Club!*",
+   "mulai": 1098,
+   "durasi": 70,
+   "y": 1330
+  },
+  {
+   "id": "t42",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Klub malem *paling megah* di jodohonline.",
+   "mulai": 1168,
+   "durasi": 70,
+   "y": 1330
+  },
+  {
+   "id": "g43",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/cl_dance.mp4",
+   "mulai": 1238,
+   "durasi": 43,
+   "trim": 0.0,
+   "kecepatan": 2.5,
+   "nama": "Dance floor LED"
+  },
+  {
+   "id": "t44",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "💃 DANCE FLOOR LED",
+   "mulai": 1238,
+   "durasi": 43,
+   "nyala": "0",
+   "y": 1690,
+   "masuk": "pop"
+  },
+  {
+   "id": "g45",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/cl_dj.mp4",
+   "mulai": 1281,
+   "durasi": 77,
+   "trim": 0.0,
+   "kecepatan": 2.353,
+   "nama": "DJ lagu YouTube"
+  },
+  {
+   "id": "t46",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "🎧 DJ · LAGU YOUTUBE",
+   "mulai": 1281,
+   "durasi": 77,
+   "nyala": "0",
+   "y": 1690,
+   "masuk": "pop"
+  },
+  {
+   "id": "t47",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "DJ muterin *lagu YouTube* buat semua orang,",
+   "mulai": 1281,
+   "durasi": 77,
+   "y": 1500
+  },
+  {
+   "id": "g48",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/cl_vip.mp4",
+   "mulai": 1358,
+   "durasi": 36,
+   "trim": 1.0,
+   "kecepatan": 2.5,
+   "nama": "VIP table"
+  },
+  {
+   "id": "t49",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "💎 VIP TABLE",
+   "mulai": 1358,
+   "durasi": 36,
+   "nyala": "0",
+   "y": 1690,
+   "masuk": "pop"
+  },
+  {
+   "id": "g50",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/cl_bar.mp4",
+   "mulai": 1394,
+   "durasi": 46,
+   "trim": 1.0,
+   "kecepatan": 2.258,
+   "nama": "Mocktail bar"
+  },
+  {
+   "id": "t51",
+   "track": "teks",
+   "jenis": "chips",
+   "teks": "🍹 MOCKTAIL BAR",
+   "mulai": 1394,
+   "durasi": 46,
+   "nyala": "0",
+   "y": 1690,
+   "masuk": "pop"
+  },
+  {
+   "id": "t52",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Ada *dance floor LED,*",
+   "mulai": 1238,
+   "durasi": 43,
+   "y": 1330
+  },
+  {
+   "id": "t53",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "VIP table, *mocktail bar…*",
+   "mulai": 1358,
+   "durasi": 82,
+   "y": 1330
+  },
+  {
+   "id": "g54",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/cl_layar.mp4",
+   "mulai": 1440,
+   "durasi": 81,
+   "trim": 0.2,
+   "kecepatan": 1.556,
+   "nama": "Tulis ucapan"
+  },
+  {
+   "id": "g55",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/cl_layar.mp4",
+   "mulai": 1521,
+   "durasi": 85,
+   "trim": 4.55,
+   "kecepatan": 1.223,
+   "nama": "Ucapan tayang di layar raksasa"
+  },
+  {
+   "id": "t56",
+   "track": "teks",
+   "jenis": "stiker",
+   "teks": "LAYAR UCAPAN 💌",
+   "mulai": 1440,
+   "durasi": 166,
+   "warna": "#ffd23f",
+   "y": 1150
+  },
+  {
+   "id": "t57",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "sampe *layar ucapan raksasa!*",
+   "mulai": 1440,
+   "durasi": 33,
+   "y": 1500
+  },
+  {
+   "id": "t58",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Kirim pesan buat *gebetan lu,*",
+   "mulai": 1473,
+   "durasi": 57,
+   "y": 1500
+  },
+  {
+   "id": "t59",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "tampil *gede* di layar club. *Berani nggak?* 😏",
+   "mulai": 1530,
+   "durasi": 76,
+   "y": 1500
+  },
+  {
+   "id": "g60",
+   "track": "gambar",
+   "jenis": "video",
+   "src": "klip/cl_dance.mp4",
+   "mulai": 1606,
+   "durasi": 347,
+   "gelap": 0.5,
+   "kecepatan": 0.5,
+   "nama": "Latar penutup club"
+  },
+  {
+   "id": "e61",
+   "track": "elemen",
+   "jenis": "komentar",
+   "mulai": 1606,
+   "durasi": 257,
+   "props": {
+    "komentar": "penonton1|MALL dong biar bisa nge-date sambil belanja 🛍️|1m|24\npenonton2|kampus jodoh wkwk 🎓|2m|17\npenonton3|stadion buat nobar bola ⚽|3m|9\npenonton4|kebun binatang 🦒 gemes|4m|6",
+    "ketik": "bangun pantai plis biar bisa sunset date 🏖️",
+    "ketikDetik": 2.6,
+    "akunSaya": "lu",
+    "sensor": true
+   },
+   "masuk": "geser-atas",
+   "nama": "Komentar: mau dibangun apa"
+  },
+  {
+   "id": "t62",
+   "track": "teks",
+   "jenis": "stiker",
+   "teks": "MAU DIBANGUN APA LAGI? 👇",
+   "mulai": 1606,
+   "durasi": 257,
+   "warna": "#ff4f7b",
+   "y": 240
+  },
+  {
+   "id": "t63",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "Abis taman & club, *bangun apa lagi?*",
+   "mulai": 1606,
+   "durasi": 162,
+   "y": 470
+  },
+  {
+   "id": "t64",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "*Tulis di komentar,* siapa tau beneran dibangun!",
+   "mulai": 1768,
+   "durasi": 95,
+   "y": 470
+  },
+  {
+   "id": "t65",
+   "track": "teks",
+   "jenis": "judul",
+   "teks": "SEE YOU 20.00",
+   "mulai": 1863,
+   "durasi": 90,
+   "kecil": "DI Y.H.A CLUB 🪩",
+   "warna": "#ff2fb3",
+   "y": 640
+  },
+  {
+   "id": "t66",
+   "track": "teks",
+   "jenis": "sub",
+   "teks": "IG *@jodohonline.company* · TikTok *@jodohonline.id*",
+   "mulai": 1863,
+   "durasi": 90,
+   "y": 1330
+  },
+  {
+   "id": "t67",
+   "track": "teks",
+   "jenis": "akun",
+   "teks": "@jodohonline.company",
+   "mulai": 0,
+   "durasi": 158,
+   "masuk": "none",
+   "y": 150,
+   "x": 130
+  }
+ ],
+ "sfx": [
+  {
+   "id": "s1",
+   "nama": "Pop POV: LU SKIP SEMALAM 💀",
+   "src": "sfx/pop.mp3",
+   "mulai": 1,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s2",
+   "nama": "Pop 📹 REC · 27.11 · 20.00",
+   "src": "sfx/pop.mp3",
+   "mulai": 0,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s3",
+   "nama": "Whoosh",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 154,
+   "durasi": 18,
+   "volume": 0.3
+  },
+  {
+   "id": "s4",
+   "nama": "Pop RESMI DIBUKA 🎡",
+   "src": "sfx/pop.mp3",
+   "mulai": 159,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s5",
+   "nama": "Pop 27.11 · 21.30 · 🎡 TAMAN CINTA",
+   "src": "sfx/pop.mp3",
+   "mulai": 158,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s6",
+   "nama": "Koin",
+   "src": "sfx/pop.mp3",
+   "mulai": 378,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s7",
+   "nama": "Whoosh DN",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 502,
+   "durasi": 18,
+   "volume": 0.3
+  },
+  {
+   "id": "s8",
+   "nama": "Pop DATE NIGHT 💘",
+   "src": "sfx/pop.mp3",
+   "mulai": 506,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s9",
+   "nama": "Pop 👗 DANDAN KENCAN",
+   "src": "sfx/pop.mp3",
+   "mulai": 598,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s10",
+   "nama": "Pop ☕ SPEED DATING",
+   "src": "sfx/pop.mp3",
+   "mulai": 678,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s11",
+   "nama": "Match",
+   "src": "sfx/match.mp3",
+   "mulai": 762,
+   "durasi": 30,
+   "volume": 0.3
+  },
+  {
+   "id": "s12",
+   "nama": "Pop 🎲 TRUTH OR DARE",
+   "src": "sfx/pop.mp3",
+   "mulai": 778,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s13",
+   "nama": "Pop RAJA & RATU KENCAN 👑",
+   "src": "sfx/pop.mp3",
+   "mulai": 841,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s14",
+   "nama": "Level up",
+   "src": "sfx/levelup.mp3",
+   "mulai": 846,
+   "durasi": 33,
+   "volume": 0.3
+  },
+  {
+   "id": "s15",
+   "nama": "Pop EITS… ✋",
+   "src": "sfx/pop.mp3",
+   "mulai": 987,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s16",
+   "nama": "Rem",
+   "src": "sfx/rem.mp3",
+   "mulai": 987,
+   "durasi": 20,
+   "volume": 0.45
+  },
+  {
+   "id": "s17",
+   "nama": "Whoosh club",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 1058,
+   "durasi": 18,
+   "volume": 0.35
+  },
+  {
+   "id": "s18",
+   "nama": "Pop NANTI MALAM 20.00 WIB 🪩",
+   "src": "sfx/pop.mp3",
+   "mulai": 1062,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s19",
+   "nama": "Pop 👑 GRAND OPENING · Y.H.A CLUB",
+   "src": "sfx/pop.mp3",
+   "mulai": 1061,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s20",
+   "nama": "Pop 💃 DANCE FLOOR LED",
+   "src": "sfx/pop.mp3",
+   "mulai": 1238,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s21",
+   "nama": "Pop 🎧 DJ · LAGU YOUTUBE",
+   "src": "sfx/pop.mp3",
+   "mulai": 1281,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s22",
+   "nama": "Pop 💎 VIP TABLE",
+   "src": "sfx/pop.mp3",
+   "mulai": 1358,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s23",
+   "nama": "Pop 🍹 MOCKTAIL BAR",
+   "src": "sfx/pop.mp3",
+   "mulai": 1394,
+   "durasi": 15,
+   "volume": 0.3
+  },
+  {
+   "id": "s24",
+   "nama": "Pop LAYAR UCAPAN 💌",
+   "src": "sfx/pop.mp3",
+   "mulai": 1441,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s25",
+   "nama": "Whip 41.3",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 1238,
+   "durasi": 10,
+   "volume": 0.18
+  },
+  {
+   "id": "s26",
+   "nama": "Whip 42.7",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 1280,
+   "durasi": 10,
+   "volume": 0.18
+  },
+  {
+   "id": "s27",
+   "nama": "Whip 45.25",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 1356,
+   "durasi": 10,
+   "volume": 0.18
+  },
+  {
+   "id": "s28",
+   "nama": "Whip 46.45",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 1392,
+   "durasi": 10,
+   "volume": 0.18
+  },
+  {
+   "id": "s29",
+   "nama": "Whip 48.0",
+   "src": "sfx/whoosh.mp3",
+   "mulai": 1438,
+   "durasi": 10,
+   "volume": 0.18
+  },
+  {
+   "id": "s30",
+   "nama": "Pop MAU DIBANGUN APA LAGI? 👇",
+   "src": "sfx/pop.mp3",
+   "mulai": 1607,
+   "durasi": 15,
+   "volume": 0.35
+  },
+  {
+   "id": "s31",
+   "nama": "Geser komentar",
+   "src": "sfx/geser.mp3",
+   "mulai": 1606,
+   "durasi": 18,
+   "volume": 0.8
+  },
+  {
+   "id": "s32",
+   "nama": "Ketik",
+   "src": "sfx/ketik.mp3",
+   "mulai": 1683,
+   "durasi": 40,
+   "volume": 1.0
+  },
+  {
+   "id": "s33",
+   "nama": "Ketuk kirim",
+   "src": "sfx/ketuk.mp3",
+   "mulai": 1832,
+   "durasi": 12,
+   "volume": 0.45
+  },
+  {
+   "id": "s34",
+   "nama": "Pop akhir",
+   "src": "sfx/levelup.mp3",
+   "mulai": 1864,
+   "durasi": 30,
+   "volume": 0.3
+  }
+ ]
+}
