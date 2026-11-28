@@ -53,6 +53,9 @@ Login username + kata sandi. Isinya:
 ### 📢 Papan Informasi (halaman depan)
 Layar LED raksasa 2 sisi di halaman depan dekat pintu masuk, terlihat dari jalan, halaman, dan pintu. Info dari Direktur tampil bergantian seperti slide (ikon, judul, isi, tanggal), dengan lampu LED berjalan di bingkai, jam WIB, dan teks berjalan berisi semua judul. Tamu mengetuk papan untuk membaca semua info; tamu yang sedang online mendapat notifikasi saat ada info baru. Direktur menulis, menyematkan 📌, dan menghapus info lewat papan itu atau **Panel → Kuasa → 📢 Papan Informasi** (6 pilihan warna, 12 ikon). Hanya Direktur yang bisa menulis (aturan `papanInfo`).
 
+### 🎮 Game Center
+Buka dari mesin arcade di lobi, menu ⭐ → Harian → 🎮 Game Center, atau Mas Bayu (Game Master). 7 game: 💗 Tangkap Hati, 🃏 **Kartu Jodoh** (memori 8 pasang, juara mingguan), 🐍 **Ular Cinta** (snake, juara mingguan), 🔤 **Kata Cinta Harian** (tebak kata 5 huruf, sama untuk semua tamu tiap hari, hasil bisa dibagikan), 🎡 **Roda Hoki** (putar 1×/hari, hadiah EXP), 🧠 Kuis Cinta, 🍘 Lomba Kerupuk. 3 permainan pertama tiap game per hari dapat EXP (`kantor/permainan.js`). **Truth or Dare** di meja: 150 soal dalam 3 level (😄 Santai, 💗 Baper, 🔥 Berani), soal tidak berulang dalam satu sesi.
+
 ### 🎵 Musik latar & efek suara
 Semua musik & suara disintesis langsung di browser (`kantor/musik.js`, Web Audio API): tanpa file lagu, bebas hak cipta, dan sedikit berbeda tiap putaran. Lagu berganti otomatis dengan crossfade: **🎵 Ceria** (lobi, halaman, Taman Cinta), **☕ Santai lo-fi** (ruangan kantor & saat main Tangkap Hati), **🌙 Malam bossa** (Lounge & suite Direktur). Efek suara untuk duduk/berdiri, pesan kopi/minum/makan, chat, foto, koin, level naik, match, hadiah, pembayaran, game, ketukan & pintu suite, tidur, lambai, dll. Tombol **🎵** di kanan layar: hidup/mati & volume musik dan efek (tersimpan di perangkat). Musik otomatis dikecilkan saat telepon dan berhenti saat tab disembunyikan.
 

@@ -3,11 +3,11 @@
 //  arah, acara terjadwal, peringkat, toko (EXP & VIP),
 //  dan notifikasi dari Direktur.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611280202';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611280202';
-import * as Musik from './musik.js?v=202611280202';
-import * as Bayar from './bayar.js?v=202611280202';
-import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611280202';
+import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611280641';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611280641';
+import * as Musik from './musik.js?v=202611280641';
+import * as Bayar from './bayar.js?v=202611280641';
+import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611280641';
 
 // ---------------------------------------------------------------- DATA TUGAS
 const RUANG_TUJUAN = { jodoh: 'kafe', teman: 'meja', curhat: 'taman' };
@@ -211,6 +211,7 @@ function tabHarian() {
   return {
     html: `<div class="kotakHarian"><b>🔥 Streak ${fmt(st)} hari</b><div class="streakBaris">${[1, 2, 3, 4, 5, 6, 7].map(i => `<span class="${st && i <= h ? 'on' : ''}">${i === 7 ? '💠' : '🔥'}<small>H${i}</small></span>`).join('')}</div><p class="kecil">Check-in otomatis tiap kamu datang. Tiap kelipatan 7 hari: +20 💠 Diamond.</p></div>
       <div class="kuasaGrid">
+        <button type="button" data-h="game">🎮 Game Center<small>7 game + papan juara</small></button>
         <button type="button" data-h="amplop">🎁 Amplop Cinta<small>1× gratis tiap hari, isinya acak</small></button>
         <button type="button" data-h="menfess">📮 Menfess<small>Kirim pesan anonim</small></button>
         <button type="button" data-h="speed">💘 Speed Dating<small>Kenalan 3 menit, pilih ❤</small></button>

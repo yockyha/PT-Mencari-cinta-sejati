@@ -8,11 +8,11 @@
 //                 + permainan khusus (putar destinasi, roda random, dll)
 //  Data: mejaChat/<meja>, mejaPapan/<meja>, mejaVote/<meja>/<hari>/<uid>
 // =====================================================================
-import { LS, bersih, esc, hariIni, sensor } from '../js/common.js?v=202611280202';
-import { TS } from '../js/db.js?v=202611280202';
-import { K, toast, bukaKartu, tutupKartu, jam, tanggalJam } from './ui.js?v=202611280202';
-import * as Prog from './progres.js?v=202611280202';
-import * as Sosial from './sosial.js?v=202611280202';
+import { LS, bersih, esc, hariIni, sensor } from '../js/common.js?v=202611280641';
+import { TS } from '../js/db.js?v=202611280641';
+import { K, toast, bukaKartu, tutupKartu, jam, tanggalJam } from './ui.js?v=202611280641';
+import * as Prog from './progres.js?v=202611280641';
+import * as Sosial from './sosial.js?v=202611280641';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const cari = q => encodeURIComponent(q);
@@ -249,7 +249,8 @@ function gambarSeru(el) {
   el.innerHTML = `<h3>🤔 Pilih Mana? <small class="kecil">(ganti tiap hari)</small></h3>
     <div class="pilihDua">${tombolPilih('a', a, na, pa)}<span>atau</span>${tombolPilih('b', b, nb, pb)}</div>
     <p class="kecil">${saya ? 'Pilihanmu sudah tercatat. Bahas alasannya di 💬 Ngobrol!' : 'Pilih dulu buat lihat hasil voting orang-orang.'}</p>
-    <h3>🍾 Truth or Dare</h3><p class="kecil">Putar botol: salah satu yang duduk di meja ini kena TRUTH atau DARE, hasilnya muncul di obrolan meja.</p>
+    <h3>🍾 Truth or Dare <small class="kecil">${K.Aktivitas.jumlahSoalTod()} soal</small></h3><p class="kecil">Pilih level, lalu putar botol: salah satu yang duduk di meja ini kena TRUTH atau DARE, hasilnya muncul di obrolan meja.</p>
+    <div class="sw teks" id="sLv">${Object.entries(K.Aktivitas.LEVEL_TOD).map(([k, n]) => `<button type="button" data-lv="${k}" class="${(buka.lv || 'santai') === k ? 'on' : ''}">${n}</button>`).join('')}</div>
     <div class="baris"><button class="btn" type="button" id="sTd">🍾 Putar botol</button></div>
     <h3>💡 Kartu Pemantik</h3>
     <div class="kartuPemantik" id="sK">${esc(acak(m.pemantik))}</div>
@@ -264,7 +265,8 @@ function gambarSeru(el) {
     K.L.db.set(`mejaVote/${m.id}/${hariIni()}/${uid}`, k).catch(() => toast('Gagal memilih. Coba lagi.'));
     if (!saya) Prog.lapor('mejaSeru');
   });
-  el.querySelector('#sTd').onclick = () => { const h = K.Aktivitas.putarBotol(m.id, [{ uid: uid, nama: K.prof?.n || 'Aku' }, ...diMeja(buka.topik)]); if (h) { buka.tab = 'ngobrol'; gambar(); } };
+  el.querySelectorAll('[data-lv]').forEach(b => b.onclick = () => { buka.lv = b.dataset.lv; el.querySelectorAll('[data-lv]').forEach(x => x.classList.toggle('on', x === b)); });
+  el.querySelector('#sTd').onclick = () => { const h = K.Aktivitas.putarBotol(m.id, [{ uid: uid, nama: K.prof?.n || 'Aku' }, ...diMeja(buka.topik)], buka.lv || 'santai'); if (h) { buka.tab = 'ngobrol'; gambar(); } };
   const kartu = el.querySelector('#sK');
   el.querySelector('#sG').onclick = () => { let t; do t = acak(m.pemantik); while (t === kartu.textContent && m.pemantik.length > 1); kartu.textContent = t; };
   el.querySelector('#sT').onclick = () => { if (kirimChat('❓ ' + kartu.textContent)) { buka.tab = 'ngobrol'; gambar(); } };
