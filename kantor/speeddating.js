@@ -6,10 +6,10 @@
 //    ❤ = Suka biasa: kalau saling ❤ langsung match & obrolan pribadi terbuka.
 //  Data ronde: speedDating = { buka, ronde: { no, mulai, durasi, pasangan: {uid: lawan} } }
 // =====================================================================
-import { LS, bersih, esc, fmt } from '../js/common.js?v=202611280725';
-import { TS } from '../js/db.js?v=202611280725';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam } from './ui.js?v=202611280725';
-import * as Seru from './seru.js?v=202611280725';
+import { LS, bersih, esc, fmt } from '../js/common.js?v=202611280848';
+import { TS } from '../js/db.js?v=202611280848';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam } from './ui.js?v=202611280848';
+import * as Seru from './seru.js?v=202611280848';
 
 const PEMANTIK = ['Kalau weekend ideal kamu kayak apa?', 'Makanan yang bikin kamu bahagia?', 'Lagu yang lagi sering kamu puter?', 'Kencan pertama impianmu?', 'Hal kecil yang bikin kamu jatuh hati?', 'Kamu tipe chat duluan atau nunggu?', 'Tempat liburan impianmu?', 'Satu hal yang orang jarang tahu tentang kamu?', 'Love language kamu apa?', 'Kopi atau teh?'];
 const DURASI = 180;

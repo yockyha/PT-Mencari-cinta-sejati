@@ -3,33 +3,35 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611280725';
-import { bukaDB } from '../js/db.js?v=202611280725';
-import { buatLayanan } from '../js/layanan.js?v=202611280725';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611280725';
-import * as Sosial from './sosial.js?v=202611280725';
-import * as Direktur from './direktur.js?v=202611280725';
-import * as Prog from './progres.js?v=202611280725';
-import * as Game from './game.js?v=202611280725';
-import * as Bayar from './bayar.js?v=202611280725';
-import * as Meja from './meja.js?v=202611280725';
-import * as Karyawan from './karyawan.js?v=202611280725';
-import * as Hadir from './hadir.js?v=202611280725';
-import * as Foto from './foto.js?v=202611280725';
-import * as Seru from './seru.js?v=202611280725';
-import * as Speed from './speeddating.js?v=202611280725';
-import * as Aktivitas from './aktivitas.js?v=202611280725';
-import * as Komunitas from './komunitas.js?v=202611280725';
-import * as RuangDir from './ruangdir.js?v=202611280725';
-import * as Gedung from './gedung.js?v=202611280725';
-import * as Club from './club.js?v=202611280725';
-import * as PapanInfo from './papaninfo.js?v=202611280725';
-import * as Permainan from './permainan.js?v=202611280725';
-import * as Duel from './duel.js?v=202611280725';
-import * as Musik from './musik.js?v=202611280725';
-import * as Suara from './suara.js?v=202611280725';
-import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611280725';
-import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2, SETELAN_DIR, setelanDir } from '../js/pakaian.js?v=202611280725';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611280848';
+import { bukaDB } from '../js/db.js?v=202611280848';
+import { buatLayanan } from '../js/layanan.js?v=202611280848';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611280848';
+import * as Sosial from './sosial.js?v=202611280848';
+import * as Direktur from './direktur.js?v=202611280848';
+import * as Prog from './progres.js?v=202611280848';
+import * as Game from './game.js?v=202611280848';
+import * as Bayar from './bayar.js?v=202611280848';
+import * as Meja from './meja.js?v=202611280848';
+import * as Karyawan from './karyawan.js?v=202611280848';
+import * as Hadir from './hadir.js?v=202611280848';
+import * as Foto from './foto.js?v=202611280848';
+import * as Seru from './seru.js?v=202611280848';
+import * as Speed from './speeddating.js?v=202611280848';
+import * as Aktivitas from './aktivitas.js?v=202611280848';
+import * as Komunitas from './komunitas.js?v=202611280848';
+import * as RuangDir from './ruangdir.js?v=202611280848';
+import * as Gedung from './gedung.js?v=202611280848';
+import * as Club from './club.js?v=202611280848';
+import * as PapanInfo from './papaninfo.js?v=202611280848';
+import * as Permainan from './permainan.js?v=202611280848';
+import * as Duel from './duel.js?v=202611280848';
+import * as Bioskop from './bioskop.js?v=202611280848';
+import * as Bianglala from './bianglala.js?v=202611280848';
+import * as Musik from './musik.js?v=202611280848';
+import * as Suara from './suara.js?v=202611280848';
+import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611280848';
+import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2, SETELAN_DIR, setelanDir } from '../js/pakaian.js?v=202611280848';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
@@ -399,6 +401,7 @@ function bangunDunia() {
   }
   // gedung baru (Taman Cinta, dst.): dibangun sesuai jadwal di kantor/gedung.js
   Gedung.pasang({ THREE, scene, M, GEO, kanvas, FD, FB, bulat, lantai, tabrak, kursi, titikAksi, ambilFoto: (j, l) => ambilFoto(j, l), buatKarakter, pose, bentukHati, naik: () => !!naikBianglala, mulaiNaik: o => { berdiri(); naikBianglala = { ...o, t0: performance.now() }; } });
+  Bianglala.pasang({ THREE, scene, camera, naik: () => naikBianglala, mulaiNaik: o => { berdiri(); naikBianglala = { ...o, t0: performance.now() }; }, turun: turunBianglala, ambilFoto: (j, l, o) => ambilFoto(j, l, o) });
   // batas dunia
   tabrak.push({ x1: -100, x2: 100, z1: 50, z2: 51 });
   tabrak.push({ x1: -100, x2: -99, z1: -100, z2: 51 }, { x1: 99, x2: 100, z1: -100, z2: 51 }, { x1: -100, x2: 100, z1: -100, z2: -99 });
@@ -1147,7 +1150,7 @@ function sinkronLain(obj) {
     }
     Object.assign(o, {
       nama: nm, tj, lv, s: bersih(p.s, 20), b: bersih(p.b, 100), gd: GENDER[p.g] ? p.g : '', ig: igBersih(p.ig), gl: bersih(p.gl, 30), mj: bersih(p.mj, 30), zd: Number.isInteger(p.zd) ? p.zd : -1, mb: bersih(p.mb, 4), ll: Number.isInteger(p.ll) ? p.ll : -1, lg: bersih(p.lg, 40), md: p.md | 0, st: p.st | 0,
-      tx: +p.x || 0, tz: +p.z || 0, tr: +p.r || 0, ta: p.a | 0,
+      tx: +p.x || 0, tz: +p.z || 0, tr: +p.r || 0, ta: p.a | 0, bg: Number.isInteger(p.bg) && p.bg >= 0 && p.bg < 8 ? p.bg : -1, bs: p.bs ? 1 : 0,
     });
   }
   for (const [uid, o] of lain) if (!ada.has(uid)) { scene.remove(o.g); lain.delete(uid); }
@@ -1167,8 +1170,9 @@ function kirimPosisi(t) {
     n: prof.n, tj: prof.tj, s: prof.tj === 'jodoh' ? (prof.s || '') : '', b: prof.b || '', g: prof.g || '', ig: '', // ig, TikTok & nama lengkap tidak dikirim ke publik (ada di profilPribadi)
     zd: Number.isInteger(prof.zd) ? prof.zd : -1, mb: prof.mb || '', ll: Number.isInteger(prof.ll) ? prof.ll : -1, lg: prof.lg || '', md: prof.md | 0, st: Seru.streakSaya(), gl: prof.gl || '',
     l: Prog.lookAman(saya.look), lv: Prog.level(), x: +saya.x.toFixed(2), z: +saya.z.toFixed(2), r: +saya.r.toFixed(2), a: saya.a, mj: saya.meja || '',
+    bg: naikBianglala ? naikBianglala.gi : -1, bs: naikBianglala ? naikBianglala.sisi | 0 : 0,
   };
-  const k = `${p.x},${p.z},${p.r},${p.a},${p.mj}`;
+  const k = `${p.x},${p.z},${p.r},${p.a},${p.mj},${p.bg},${p.bs}`;
   const detak = L.mode === 'lokal' ? 4000 : 20000;
   if ((k !== posTerakhir && t - posWaktu > (L.mode === 'lokal' ? 120 : 200)) || t - posWaktu > detak) { posTerakhir = k; posWaktu = t; L.hadir(p); }
 }
@@ -1608,7 +1612,12 @@ function bukaKoin() {
 let airLompat = 0;
 
 // ---------------------------------------------------------------- BENDA INTERAKTIF
-let naikBianglala = null; // { cx, cz, cy, r, lama, t0 }
+let naikBianglala = null; // { cx, cz, lama, t0, gi (gondola), sisi, pos() }
+function turunBianglala(diam = false, pesan = '🎡 Turun dari bianglala') {
+  const n = naikBianglala; if (!n) return;
+  naikBianglala = null; saya.x = n.cx + 4 + (n.sisi ? 0.8 : 0); saya.z = n.cz; saya.a = 0;
+  if (!diam) { toast(pesan); Musik.sfx('berdiri'); }
+}
 // PAPAN INFORMASI: layar LED raksasa 2 sisi di halaman depan (konten & animasi di kantor/papaninfo.js)
 let infoKV = null, infoPos = null, infoT = 0;
 function papanInformasi(x, z, r) {
@@ -1817,9 +1826,14 @@ function gambarBingkai(x, W, H, b) {
   if (b === 'pesta') { const w = ['#ff4f7b', '#ffd23f', '#8fd3ff', '#2f9e6e', '#8e5cc9']; for (let i = 0; i < 90; i++) { x.fillStyle = w[i % 5]; x.fillRect((i * 97) % W, (i * 53) % (H * 0.25), 12, 18); } x.font = '70px sans-serif'; x.textAlign = 'center'; x.fillText('🎉', 70, 90); x.fillText('🎊', W - 70, 90); }
   if (b === 'polaroid') { x.fillStyle = '#fffdf7'; x.fillRect(0, 0, W, 40); x.fillRect(0, 0, 40, H); x.fillRect(W - 40, 0, 40, H); }
 }
-function ambilFoto(judul, latar, { bingkai = 'merek', grup = false } = {}) {
+function ambilFoto(judul, latar, { bingkai = 'merek', grup = false, dariKamera = false } = {}) {
   Musik.sfx('jepret');
   if (!saya.g) return;
+  const W = 864, H = 1080;
+  if (dariKamera) { // foto pemandangan dari sudut kamera sekarang (mis. dari atas bianglala / teropong)
+    kamFoto.position.copy(camera.position); kamFoto.quaternion.copy(camera.quaternion); kamFoto.fov = Math.min(62, camera.fov * 1.1); kamFoto.updateProjectionMatrix();
+  } else {
+  kamFoto.fov = 46; kamFoto.updateProjectionMatrix();
   berdiri();
   if (latar) { saya.r = Math.atan2(saya.x - latar[0], saya.z - latar[1]); saya.g.rotation.y = saya.r; }
   saya.g.position.set(saya.x, 0, saya.z);
@@ -1828,9 +1842,10 @@ function ambilFoto(judul, latar, { bingkai = 'merek', grup = false } = {}) {
   const ikut = grup ? [...lain.values()].filter(o => Math.hypot(o.x - saya.x, o.z - saya.z) < 3.5) : [];
   const cx = (saya.x + ikut.reduce((s, o) => s + o.x, 0)) / (ikut.length + 1), cz = (saya.z + ikut.reduce((s, o) => s + o.z, 0)) / (ikut.length + 1);
   const lebar = ikut.reduce((m, o) => Math.max(m, Math.hypot(o.x - cx, o.z - cz)), 0);
-  const d = 4.8 + lebar * 1.6, W = 864, H = 1080;
+  const d = 4.8 + lebar * 1.6;
   kamFoto.position.set(cx + Math.sin(saya.r) * d, 1.55, cz + Math.cos(saya.r) * d);
   kamFoto.lookAt(cx, 1.5, cz);
+  }
   let blob = null;
   const rt = new THREE.WebGLRenderTarget(W, H, { samples: 4 });
   rt.texture.colorSpace = THREE.SRGBColorSpace;
@@ -1852,7 +1867,7 @@ function ambilFoto(judul, latar, { bingkai = 'merek', grup = false } = {}) {
     c.toBlob(bl => { blob = bl; tampil(); }, 'image/jpeg', 0.9);
   } catch (e) { console.warn(e); renderer.setRenderTarget(null); toast('Kamera gagal dipakai di perangkat ini.'); }
   rt.dispose();
-  saya.lambai = 2.5;
+  if (!dariKamera) saya.lambai = 2.5;
   function tampil() {
     if (!blob) { toast('Kamera gagal dipakai di perangkat ini.'); return; }
     fotoUrl = URL.createObjectURL(blob);
@@ -1862,7 +1877,7 @@ function ambilFoto(judul, latar, { bingkai = 'merek', grup = false } = {}) {
       <div class="baris">${bisaShare ? '<button class="btn" type="button" id="fB">📤 Simpan / Bagikan</button>' : ''}<a class="btn ${bisaShare ? 'putih' : ''}" href="${fotoUrl}" download="jodohonline-foto.jpg">💾 Unduh</a><button class="btn putih" type="button" id="fU">Foto lagi</button></div>
       <p class="kecil">Di HP bisa juga <b>tekan lama fotonya → Simpan ke Foto</b>. Bagikan ke IG Story & tag @${esc(CFG.instagramNama || CFG.instagram || '')} ya!</p>`, {
       pasang(i) {
-        i.querySelector('#fU').onclick = () => { tutupKartu(); setTimeout(() => ambilFoto(judul, latar, { bingkai, grup }), 100); };
+        i.querySelector('#fU').onclick = () => { tutupKartu(); setTimeout(() => ambilFoto(judul, latar, { bingkai, grup, dariKamera }), 100); };
         const fb = i.querySelector('#fB');
         if (fb) fb.onclick = () => navigator.share({ files: [file], title: CFG.namaPT, text: 'Fotoku di kantor ' + CFG.namaPT + ' 💘' }).catch(() => {});
       },
@@ -2010,8 +2025,8 @@ function langkah() {
   if (besar > 0.12) saya.emoteT = 0;
 
   // pemain sendiri
-  if (naikBianglala && besar > 0.12) { const n = naikBianglala; naikBianglala = null; saya.x = n.cx + 4; saya.z = n.cz; toast('🎡 Turun dari bianglala'); }
-  if (naikBianglala && (t - naikBianglala.t0) / 1000 > naikBianglala.lama) { const n = naikBianglala; naikBianglala = null; saya.x = n.cx + 4; saya.z = n.cz; toast('🎡 Satu putaran selesai. Seru kan?'); }
+  if (naikBianglala && besar > 0.12 && !Bianglala.teropongAktif()) turunBianglala();
+  if (naikBianglala && (t - naikBianglala.t0) / 1000 > naikBianglala.lama) turunBianglala(false, '🎡 Tiga putaran selesai. Seru kan? Naik lagi kapan-kapan!');
   if (saya.g) {
     saya.g.position.set(saya.x, 0, saya.z); saya.g.rotation.y = saya.r;
     if (naikBianglala) {
@@ -2027,6 +2042,7 @@ function langkah() {
     else { const k = Math.min(1, dt * 8); o.x += (o.tx - o.x) * k; o.z += (o.tz - o.z) * k; }
     o.r = sudutLerp(o.r, o.tr, Math.min(1, dt * 10));
     const a = o.ta === 2 ? 2 : o.ta >= 5 && d < 0.05 ? o.ta : (d > 0.05 || o.ta === 1 ? (d > 0.02 ? 1 : 0) : 0);
+    if (o.bg >= 0 && Gedung.sudahBuka('tamanCinta')) { const p = Bianglala.posGondola(o.bg, o.bs); o.g.position.set(p.x, p.y - 1.42, p.z); o.g.rotation.y = Math.PI / 2; pose(o.g, 2, dt); continue; } // duduk di gondola bianglala
     o.g.position.set(o.x, 0, o.z); o.g.rotation.y = o.r; pose(o.g, a, dt);
   }
   // bot
@@ -2045,6 +2061,7 @@ function langkah() {
   cekPenghalang(dt, t);
   if (infoKV && t - infoT > 85 && Math.hypot(saya.x - infoPos.x, saya.z - infoPos.z) < 50) { infoT = t; infoKV.ulang(); }
   Gedung.update(dt, t, saya);
+  Bianglala.update(dt, t);
   if (airHati) { airLompat = Math.max(0, airLompat - dt); airHati.rotation.y += dt * (1.2 + airLompat * 8); airHati.position.y = 1.5 + Math.sin(t / 600) * 0.12 + airLompat * 0.6; }
 
   // kamera
@@ -2053,8 +2070,10 @@ function langkah() {
   kam.x += (kx - kam.x) * k; kam.z += (kz - kam.z) * k;
   kam.y += ((naikBianglala ? saya.g.position.y + 1.4 : 1.4) - kam.y) * k;
   const cp = Math.cos(kam.pitch);
-  camera.position.set(kam.x - Math.sin(kam.yaw) * cp * kam.jarak, kam.y + Math.sin(kam.pitch) * kam.jarak, kam.z - Math.cos(kam.yaw) * cp * kam.jarak);
-  camera.lookAt(kam.x, kam.y, kam.z);
+  if (!Bianglala.kamera(camera)) {   // 🔭 teropong bianglala mengambil alih kamera
+    camera.position.set(kam.x - Math.sin(kam.yaw) * cp * kam.jarak, kam.y + Math.sin(kam.pitch) * kam.jarak, kam.z - Math.cos(kam.yaw) * cp * kam.jarak);
+    camera.lookAt(kam.x, kam.y, kam.z);
+  }
   matahari.position.set(kam.x + 28, 46, kam.z + 22); matahari.target.position.set(kam.x, 0, kam.z);
 
   if (dindingKV && t - dindingT > 70 && Math.abs(saya.z + 19.8) < 26 && Math.abs(saya.x - 3) < 34) { dindingT = t; dindingKV.ulang(); } // monitor buku tamu bergerak saat terlihat
@@ -2062,7 +2081,7 @@ function langkah() {
   if (t - cekT > 1000) {
     cekT = t;
     Prog.cekPosisi(saya.x, saya.z);
-    { const lk = lokasiDi(saya.x, saya.z); Musik.lokasi(['lounge', 'direktur'].includes(lk) ? 'malam' : ['lobi', 'halaman', 'plaza', ''].includes(lk) ? 'ceria' : 'santai'); Musik.redamkan(Suara.sedangTelepon() || Club.musikClubNyala()); }
+    { const lk = lokasiDi(saya.x, saya.z); Musik.lokasi(['lounge', 'direktur'].includes(lk) ? 'malam' : ['lobi', 'halaman', 'plaza', ''].includes(lk) ? 'ceria' : 'santai'); Musik.redamkan(Suara.sedangTelepon() || Club.musikClubNyala() || Bioskop.nyala()); }
     if (L && lokasiDi(saya.x, saya.z) === 'lounge' && !Prog.vipSaya() && !K.peran[L.uid]) { pindah(0, -51.8, 0); toast('VIPmu sudah tidak aktif.'); }
     if (L && lokasiDi(saya.x, saya.z) === 'direktur' && !RuangDir.bolehMasuk()) { pindah(12.5, 16, -Math.PI / 2); toast('🚪 Ruang Direktur privat. Ketuk pintu dulu, nanti Direktur yang membukakan.', 3600); }
   }
@@ -2143,7 +2162,7 @@ async function mulai() {
   K.Foto = Foto; K.BARANG = BARANG;
   K.simpanProfil = () => { simpanProfil(prof); posWaktu = 0; };
   K.streakSaya = Seru.streakSaya;
-  K.Game = Game; K.bukaGameCenter = Permainan.bukaCenter; K.Duel = Duel;
+  K.Game = Game; K.bukaGameCenter = Permainan.bukaCenter; K.Duel = Duel; K.Bioskop = Bioskop; K.Bianglala = Bianglala;
   K.bukaHarian = k => ({ game: Permainan.bukaCenter, amplop: Seru.bukaAmplop, menfess: () => Seru.bukaMenfess(), speed: Speed.buka, mood: Seru.bukaMood, season: Komunitas.bukaSeason, kuis: Aktivitas.bukaKuis, kerupuk: Aktivitas.bukaKerupuk, kisah: Komunitas.bukaKisah, undang: Komunitas.bukaUndang, lencana: Komunitas.bukaLencana, kamar: () => Komunitas.bukaKamar() })[k]();
   K.Aktivitas = Aktivitas; K.Komunitas = Komunitas; K.kirimEfek = Hadir.kirimEfek;
   K.emote = (a, dur) => { berdiri(); saya.emoteA = a; saya.emoteT = dur; posWaktu = 0; Musik.sfx({ 4: 'makan', 5: 'lambai', 7: 'menari', 12: 'tidur' }[a] || 'emote'); };
@@ -2151,7 +2170,7 @@ async function mulai() {
   K.bukaPapanInfo = PapanInfo.buka;
   K.gedungBuka = Gedung.sudahBuka; K.lihatProyek = Gedung.lihatProyek;
   K.bolehRuangDir = RuangDir.bolehMasuk; K.ketukDir = RuangDir.ketuk; K.panelPintuDir = RuangDir.bukaPanelIzin;
-  Sosial.mulai(); Direktur.mulai(); Prog.mulai(); Hadir.mulai(); Bayar.cekServer(); Foto.mulai(); Seru.mulai(); Seru.pasangEmote(); Club.mulai(); Speed.mulai(); Aktivitas.mulai(); Komunitas.mulai(); RuangDir.mulai(); Duel.mulai(); PapanInfo.mulai(() => infoKV && infoKV.ulang()); Bayar.mulaiPapan(() => papanDonasiKV && papanDonasiKV.ulang()); setInterval(() => papanDonasiKV && papanDonasiKV.ulang(), 30000); setTimeout(dekorMusim, 1500);
+  Sosial.mulai(); Direktur.mulai(); Prog.mulai(); Hadir.mulai(); Bayar.cekServer(); Foto.mulai(); Seru.mulai(); Seru.pasangEmote(); Club.mulai(); Speed.mulai(); Aktivitas.mulai(); Komunitas.mulai(); RuangDir.mulai(); Duel.mulai(); Bioskop.mulai(); Bianglala.mulai(); PapanInfo.mulai(() => infoKV && infoKV.ulang()); Bayar.mulaiPapan(() => papanDonasiKV && papanDonasiKV.ulang()); setInterval(() => papanDonasiKV && papanDonasiKV.ulang(), 30000); setTimeout(dekorMusim, 1500);
   hitungOnline();
   setTimeout(() => {
     Bayar.kembaliDariBayar();

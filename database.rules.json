@@ -692,6 +692,82 @@
         ".validate": "newData.child('n').isNumber() && newData.child('n').val() <= ((root.child('vip/' + auth.uid + '/tingkat').val() === 'vvip' && root.child('vip/' + auth.uid + '/sampai').val() > now) ? 5 : 2) && ((newData.child('n').val() === 1 && newData.child('t0').val() === now && (!data.exists() || now - data.child('t0').val() >= 86400000)) || (data.exists() && now - data.child('t0').val() < 86400000 && newData.child('t0').val() === data.child('t0').val() && newData.child('n').val() === data.child('n').val() + 1))"
       }
     },
+    "bioskop": {
+      ".read": true,
+      "film": {
+        "$f": {
+          ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+          ".validate": "$f.matches(/^yt[a-z0-9]{4,16}$/) && newData.hasChildren(['v', 'j', 'd', 's']) && newData.child('v').val().matches(/^[A-Za-z0-9_-]{11}$/) && newData.child('j').isString() && newData.child('j').val().length <= 60 && newData.child('d').isNumber() && newData.child('d').val() >= 30 && newData.child('d').val() <= 600 && newData.child('s').isNumber() && newData.child('s').val() >= 0"
+        }
+      },
+      "jadwal": {
+        "$id": {
+          ".write": "auth != null && root.child('peran/' + auth.uid).val() === 'direktur'",
+          ".validate": "newData.hasChildren(['f', 'mulai']) && (newData.child('f').val().matches(/^(bbb|agent|coffee|hero|charge|wingit|llama|spring|sintel|sprite)$/) || root.child('bioskop/film/' + newData.child('f').val()).exists()) && newData.child('mulai').isNumber() && (!newData.child('n').exists() || newData.child('n').isString() && newData.child('n').val().length <= 30)"
+        }
+      },
+      "tayang": {
+        ".write": "auth != null && (root.child('peran/' + auth.uid).val() === 'direktur' || (newData.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && (!data.exists() || data.child('akhir').val() < now)))",
+        ".validate": "newData.hasChildren(['f', 'mulai', 'akhir', 'uid', 'n']) && (newData.child('f').val().matches(/^(bbb|agent|coffee|hero|charge|wingit|llama|spring|sintel|sprite)$/) || root.child('bioskop/film/' + newData.child('f').val()).exists()) && newData.child('uid').val() === auth.uid && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('mulai').isNumber() && newData.child('akhir').isNumber() && newData.child('akhir').val() > newData.child('mulai').val() && (root.child('peran/' + auth.uid).val() === 'direktur' || (newData.child('mulai').val() >= now - 15000 && newData.child('mulai').val() <= now + 5000 && newData.child('akhir').val() - newData.child('mulai').val() <= 330000))",
+        "f": {
+          ".validate": true
+        },
+        "mulai": {
+          ".validate": true
+        },
+        "akhir": {
+          ".validate": true
+        },
+        "uid": {
+          ".validate": true
+        },
+        "n": {
+          ".validate": true
+        },
+        "$lain": {
+          ".validate": false
+        }
+      }
+    },
+    "ajakBL": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        "$dari": {
+          ".write": "auth != null && ((newData.exists() && auth.uid === $dari && $dari !== $uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))) || (!newData.exists() && (auth.uid === $uid || auth.uid === $dari)))",
+          ".validate": "newData.hasChildren(['n', 'g', 't']) && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('g').isNumber() && newData.child('g').val() >= 0 && newData.child('g').val() <= 7 && newData.child('t').val() === now"
+        }
+      }
+    },
+    "gondolaObrol": {
+      "$room": {
+        ".read": "auth != null && ($room.beginsWith(auth.uid + '_') || $room.endsWith('_' + auth.uid))",
+        "$id": {
+          ".write": "auth != null && !data.exists() && ($room.beginsWith(auth.uid + '_') || $room.endsWith('_' + auth.uid)) && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists()))",
+          ".validate": "newData.child('uid').val() === auth.uid && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('m').isString() && newData.child('m').val().length > 0 && newData.child('m').val().length <= 120 && newData.child('t').val() === now"
+        }
+      }
+    },
+    "lampion": {
+      ".read": true,
+      "$id": {
+        ".write": "auth != null && ((!data.exists() && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && (!root.child('lampionT/' + auth.uid).exists() || root.child('lampionT/' + auth.uid).val() < now - 60000) && newData.parent().parent().child('lampionT/' + auth.uid).val() === now) || (!newData.exists() && (root.child('peran/' + auth.uid).exists() || data.child('uid').val() === auth.uid)))",
+        ".validate": "newData.hasChildren(['uid', 'n', 't']) && newData.child('uid').val() === auth.uid && newData.child('n').isString() && newData.child('n').val().length <= 30 && (!newData.child('m').exists() || newData.child('m').isString() && newData.child('m').val().length <= 60) && newData.child('t').val() === now"
+      }
+    },
+    "lampionT": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+        ".validate": "newData.val() === now"
+      }
+    },
+    "kembangApi": {
+      ".read": true,
+      "$uid": {
+        ".write": "auth != null && auth.uid === $uid && ((!root.child('ban/' + auth.uid + '/sampai').exists() || root.child('ban/' + auth.uid + '/sampai').val() <= now) && (root.child('setelan/tutup').val() !== true || root.child('peran/' + auth.uid).exists()) && (root.child('anggota/' + auth.uid).exists() || root.child('peran/' + auth.uid).exists())) && (!data.exists() || data.child('t').val() < now - 120000)",
+        ".validate": "newData.hasChildren(['n', 't']) && newData.child('n').isString() && newData.child('n').val().length <= 30 && newData.child('t').val() === now"
+      }
+    },
     "undangan": {
       "$ke": {
         ".read": "auth != null && auth.uid === $ke",

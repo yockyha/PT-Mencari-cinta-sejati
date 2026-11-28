@@ -5,9 +5,9 @@
 //  lampu LED berjalan, jam WIB, dan teks berjalan di bawah.
 //  Data: papanInfo/<id> { j: judul, m: isi, ik: ikon, w: warna, pin, t }
 // =====================================================================
-import { esc, bersih } from '../js/common.js?v=202611280725';
-import { TS, kunciBaru } from '../js/db.js?v=202611280725';
-import { K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611280725';
+import { esc, bersih } from '../js/common.js?v=202611280848';
+import { TS, kunciBaru } from '../js/db.js?v=202611280848';
+import { K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611280848';
 
 export const TEMA = {
   pink: { nama: 'Pink', c: '#ff4f7b' }, emas: { nama: 'Emas', c: '#ffd23f' }, biru: { nama: 'Biru', c: '#3a9bdc' },
