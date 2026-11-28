@@ -11,9 +11,9 @@
 //  Catatan: kunci katalog di bawah harus sama dengan regex di
 //  alat/aturan/69_bioskop.py (KATALOG_ID).
 // =====================================================================
-import { esc, bersih, LS } from '../js/common.js?v=202611280918';
-import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611280918';
-import * as Musik from './musik.js?v=202611280918';
+import { esc, bersih, LS } from '../js/common.js?v=202611280952';
+import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611280952';
+import * as Musik from './musik.js?v=202611280952';
 
 export const AREA = [-78, -24, -62, -6];        // x1, z1, x2, z2 (sama dengan gedung.js)
 export const PINTU = { x: -60.2, z: -15, r: -Math.PI / 2 };

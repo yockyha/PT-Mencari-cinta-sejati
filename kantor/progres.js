@@ -3,11 +3,11 @@
 //  arah, acara terjadwal, peringkat, toko (EXP & VIP),
 //  dan notifikasi dari Direktur.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611280918';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611280918';
-import * as Musik from './musik.js?v=202611280918';
-import * as Bayar from './bayar.js?v=202611280918';
-import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611280918';
+import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611280952';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611280952';
+import * as Musik from './musik.js?v=202611280952';
+import * as Bayar from './bayar.js?v=202611280952';
+import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611280952';
 
 // ---------------------------------------------------------------- DATA TUGAS
 const RUANG_TUJUAN = { jodoh: 'kafe', teman: 'meja', curhat: 'taman' };
@@ -42,6 +42,9 @@ export const direkturSaya = () => !!(K.L && K.peran[K.L.uid] === 'direktur');
 export const totalExp = () => (direkturSaya() ? Infinity : (P.exp || 0) + (P.beli || 0));
 export const level = () => (direkturSaya() ? 99 : levelDari(totalExp()));
 // tingkat langganan: '' | 'vip' | 'vvip'. Direktur = vvip (semua fitur terbuka)
+// gaya chat: 'dir' (Direktur, paling mewah) > 'vvip' > 'vip' > '' (tamu biasa)
+export const gayaChat = uid => (K.peran && K.peran[uid] === 'direktur' ? 'dir' : K.peran && K.peran[uid] ? '' : tingkat(uid));
+export const tagChat = uid => { const g = gayaChat(uid); return g === 'vvip' ? '<small class="vvipTag">👑 VVIP</small>' : g === 'vip' ? '<small class="vipTag">💎 VIP</small>' : ''; };
 export const tingkat = uid => {
   if (K.peran && K.peran[uid] === 'direktur') return 'vvip';
   const v = K.vip && K.vip[uid];

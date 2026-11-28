@@ -3,35 +3,35 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611280918';
-import { bukaDB } from '../js/db.js?v=202611280918';
-import { buatLayanan } from '../js/layanan.js?v=202611280918';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611280918';
-import * as Sosial from './sosial.js?v=202611280918';
-import * as Direktur from './direktur.js?v=202611280918';
-import * as Prog from './progres.js?v=202611280918';
-import * as Game from './game.js?v=202611280918';
-import * as Bayar from './bayar.js?v=202611280918';
-import * as Meja from './meja.js?v=202611280918';
-import * as Karyawan from './karyawan.js?v=202611280918';
-import * as Hadir from './hadir.js?v=202611280918';
-import * as Foto from './foto.js?v=202611280918';
-import * as Seru from './seru.js?v=202611280918';
-import * as Speed from './speeddating.js?v=202611280918';
-import * as Aktivitas from './aktivitas.js?v=202611280918';
-import * as Komunitas from './komunitas.js?v=202611280918';
-import * as RuangDir from './ruangdir.js?v=202611280918';
-import * as Gedung from './gedung.js?v=202611280918';
-import * as Club from './club.js?v=202611280918';
-import * as PapanInfo from './papaninfo.js?v=202611280918';
-import * as Permainan from './permainan.js?v=202611280918';
-import * as Duel from './duel.js?v=202611280918';
-import * as Bioskop from './bioskop.js?v=202611280918';
-import * as Bianglala from './bianglala.js?v=202611280918';
-import * as Musik from './musik.js?v=202611280918';
-import * as Suara from './suara.js?v=202611280918';
-import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611280918';
-import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2, SETELAN_DIR, setelanDir } from '../js/pakaian.js?v=202611280918';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611280952';
+import { bukaDB } from '../js/db.js?v=202611280952';
+import { buatLayanan } from '../js/layanan.js?v=202611280952';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611280952';
+import * as Sosial from './sosial.js?v=202611280952';
+import * as Direktur from './direktur.js?v=202611280952';
+import * as Prog from './progres.js?v=202611280952';
+import * as Game from './game.js?v=202611280952';
+import * as Bayar from './bayar.js?v=202611280952';
+import * as Meja from './meja.js?v=202611280952';
+import * as Karyawan from './karyawan.js?v=202611280952';
+import * as Hadir from './hadir.js?v=202611280952';
+import * as Foto from './foto.js?v=202611280952';
+import * as Seru from './seru.js?v=202611280952';
+import * as Speed from './speeddating.js?v=202611280952';
+import * as Aktivitas from './aktivitas.js?v=202611280952';
+import * as Komunitas from './komunitas.js?v=202611280952';
+import * as RuangDir from './ruangdir.js?v=202611280952';
+import * as Gedung from './gedung.js?v=202611280952';
+import * as Club from './club.js?v=202611280952';
+import * as PapanInfo from './papaninfo.js?v=202611280952';
+import * as Permainan from './permainan.js?v=202611280952';
+import * as Duel from './duel.js?v=202611280952';
+import * as Bioskop from './bioskop.js?v=202611280952';
+import * as Bianglala from './bianglala.js?v=202611280952';
+import * as Musik from './musik.js?v=202611280952';
+import * as Suara from './suara.js?v=202611280952';
+import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611280952';
+import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2, SETELAN_DIR, setelanDir } from '../js/pakaian.js?v=202611280952';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
@@ -880,12 +880,12 @@ function gelembung(teks, gaya = '') {
     const lh = 36, bh = b.length * lh + 26;
     const bw = Math.min(w - 8, Math.max(...b.map(s => x.measureText(s).width)) + 40);
     const X = (w - bw) / 2, Y = h - bh - 22;
-    const dir = gaya === 'direktur';
-    x.fillStyle = dir ? '#2a1a06' : '#fff'; x.strokeStyle = dir ? '#ffd23f' : '#2a1420'; x.lineWidth = dir ? 6 : 5;
+    const dir = gaya === 'direktur', vv = gaya === 'vvip', vp = gaya === 'vip';
+    x.fillStyle = dir ? '#2a1a06' : vv ? '#2c0b3f' : vp ? '#0b2540' : '#fff'; x.strokeStyle = dir ? '#ffd23f' : vv ? '#ff7ad9' : vp ? '#7fdcff' : '#2a1420'; x.lineWidth = dir ? 6 : 5;
     bulat(x, X, Y, bw, bh, 22); x.fill(); x.stroke();
     x.beginPath(); x.moveTo(w / 2 - 14, Y + bh - 2); x.lineTo(w / 2, h - 4); x.lineTo(w / 2 + 14, Y + bh - 2); x.closePath(); x.fill();
     x.beginPath(); x.moveTo(w / 2 - 14, Y + bh); x.lineTo(w / 2, h - 4); x.lineTo(w / 2 + 14, Y + bh); x.stroke();
-    x.fillStyle = dir ? '#ffd23f' : '#2a1420'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.fillStyle = dir ? '#ffd23f' : vv ? '#ffd6f4' : vp ? '#dff6ff' : '#2a1420'; x.textAlign = 'center'; x.textBaseline = 'middle';
     b.forEach((s, i) => x.fillText(s, w / 2, Y + 13 + lh / 2 + i * lh));
   });
   const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: kv.t, transparent: true, depthWrite: false, depthTest: false }));
@@ -894,8 +894,8 @@ function gelembung(teks, gaya = '') {
 }
 function bicara(o, teks) {
   if (o.gel) { o.g.remove(o.gel); o.gel.material.map.dispose(); o.gel.material.dispose(); }
-  const dir = (o === saya && L && K.peran[L.uid] === 'direktur') || (o.uid && K.peran[o.uid] === 'direktur');
-  o.gel = gelembung(teks, dir ? 'direktur' : ''); if (dir) o.gel.position.y = 3.3; o.g.add(o.gel); o.gelT = 6 + teks.length / 20;
+  const uid = o === saya ? L && L.uid : o.uid, g = uid ? Prog.gayaChat(uid) : '', dir = g === 'dir';
+  o.gel = gelembung(teks, dir ? 'direktur' : g); if (dir) o.gel.position.y = 3.3; o.g.add(o.gel); o.gelT = 6 + teks.length / 20;
 }
 
 // ---------------------------------------------------------------- TABRAKAN
@@ -1229,7 +1229,7 @@ function terimaChat(obj) {
     if (!c || !c.m || K.sembunyi.has(c.uid)) continue;
     if (c.t && c.t < mulaiChat - 5 * 60000) continue;
     const nama = bersih(c.n, 20), teks = bersih(c.m, 120);
-    tulisLog(ikonPeran(c.uid) + nama, teks, K.peran[c.uid] === 'direktur' ? 'dir' : '');
+    tulisLog(ikonPeran(c.uid) + nama, teks, Prog.gayaChat(c.uid));
     const o = c.uid === L.uid ? saya : lain.get(c.uid);
     if (o && o.g) bicara(o, teks);
     if (c.uid !== L.uid) Musik.sfx('masuk', { jeda: 700 });
