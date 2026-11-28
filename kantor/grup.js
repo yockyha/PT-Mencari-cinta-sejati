@@ -7,11 +7,11 @@
 //  Data: grup/<id>, grupPesan/<id>, grupku/<uid>/<id>, grupUndangan/<uid>/<id>,
 //        grupPublik/<id> {nama,ikon,pemilik,pn,jml,maks,t}, grupMinta/<id>/<uid> {n,t}
 // =====================================================================
-import { LS, bersih, esc, fmt } from '../js/common.js?v=202611280641';
-import { TS, kunciBaru } from '../js/db.js?v=202611280641';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611280641';
-import * as Prog from './progres.js?v=202611280641';
-import * as Stiker from './stiker.js?v=202611280641';
+import { LS, bersih, esc, fmt } from '../js/common.js?v=202611280725';
+import { TS, kunciBaru } from '../js/db.js?v=202611280725';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611280725';
+import * as Prog from './progres.js?v=202611280725';
+import * as Stiker from './stiker.js?v=202611280725';
 
 const IKON = ['👥', '🎮', '🎵', '🍜', '✈️', '💘', '📚', '⚽', '🐱', '☕', '🎬', '🌙'];
 const BATAS = { '': { anggota: 10, grup: 2 }, vip: { anggota: 30, grup: 5 }, vvip: { anggota: 100, grup: 10 } };
@@ -215,8 +215,9 @@ export function bukaGrup(g, undangLangsung = false) {
         if (!o) { box.innerHTML = '<p class="kecil">Grup ini sudah dihapus atau kamu bukan anggota lagi.</p>'; L.db.set(`grupku/${L.uid}/${g}`, null).catch(() => {}); return; }
         const n = Object.keys(o.anggota || {}).length;
         isi.querySelector('#gJ').textContent = `${o.ikon || '👥'} ${bersih(o.nama, 30)}`;
-        isi.querySelector('#gKet').innerHTML = `${fmt(n)} anggota · ${o.anggota && o.anggota[L.uid] ? '<button type="button" id="gK">Keluar grup</button>' : '👑 Kamu melihat sebagai Direktur'}`;
+        isi.querySelector('#gKet').innerHTML = `<button type="button" id="gKK">⚡ Kuis Kilat grup</button> · ${fmt(n)} anggota · ${o.anggota && o.anggota[L.uid] ? '<button type="button" id="gK">Keluar grup</button>' : '👑 Kamu melihat sebagai Direktur'}`;
         const k = isi.querySelector('#gK'); if (k) k.onclick = () => keluar(g, o);
+        isi.querySelector('#gKK').onclick = () => K.Duel.bukaKilat(K.Duel.kamarGrup(g), `${o.ikon || '👥'} ${bersih(o.nama, 30)}`);
         if (undangLangsung) { undangLangsung = false; bukaAnggota(g, o); }
       });
       lepasRuang = L.db.on('grupPesan/' + g, o => {

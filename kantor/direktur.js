@@ -3,12 +3,12 @@
 //  Semua tindakan juga dijaga database.rules.json di server, jadi
 //  tamu biasa tidak bisa memakainya walau mengutak-atik browser.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, fmt, esc, bersih, kodeTamu } from '../js/common.js?v=202611280641';
-import * as Prog from './progres.js?v=202611280641';
-import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611280641';
-import * as Hadir from './hadir.js?v=202611280641';
-import * as Speed from './speeddating.js?v=202611280641';
-import { TS, kunciBaru } from '../js/db.js?v=202611280641';
+import { CFG, TUJUAN, LOKASI, fmt, esc, bersih, kodeTamu } from '../js/common.js?v=202611280725';
+import * as Prog from './progres.js?v=202611280725';
+import { $, K, toast, bukaKartu, tutupKartu, tanggalJam } from './ui.js?v=202611280725';
+import * as Hadir from './hadir.js?v=202611280725';
+import * as Speed from './speeddating.js?v=202611280725';
+import { TS, kunciBaru } from '../js/db.js?v=202611280725';
 
 let laporan = {}, saran = {}, larangan = {}, pesanan = {}, lepas = [], tabAktif = '';
 const peranku = () => K.L && K.peran[K.L.uid];
@@ -199,7 +199,7 @@ function orang() {
       <h3>Sedang dikeluarkan</h3>
       ${diusir.length ? `<div class="daftar">${diusir.map(([u, b]) => `<div><span>${esc(b.n || namaDari(u))}<br><small>${b.sampai > now + 3650 * 86400e3 ? 'diblokir' : 'sampai ' + esc(tanggalJam(b.sampai))} · ${esc(b.alasan || '')}</small></span><button type="button" class="mini putih" data-ampun="${esc(u)}">Ampuni</button></div>`).join('')}</div>` : '<p class="kecil">Tidak ada.</p>'}`,
     pasang(isi) {
-      isi.querySelectorAll('[data-lihat]').forEach(b => b.onclick = () => import('./sosial.js?v=202611280641').then(S => S.bukaProfil(o.find(x => x.uid === b.dataset.lihat))));
+      isi.querySelectorAll('[data-lihat]').forEach(b => b.onclick = () => import('./sosial.js?v=202611280725').then(S => S.bukaProfil(o.find(x => x.uid === b.dataset.lihat))));
       isi.querySelectorAll('[data-mod]').forEach(b => b.onclick = () => bukaModerasiOrang(o.find(x => x.uid === b.dataset.mod)));
       isi.querySelectorAll('[data-ampun]').forEach(b => b.onclick = () => {
         const u = b.dataset.ampun;
@@ -240,16 +240,35 @@ export function bukaModerasiOrang(o) {
   });
 }
 
+function balasSaran(id) {
+  const v = saran[id]; if (!v) return;
+  bukaKartu(`<h2>💬 Balas saran</h2><p class="kutipSaran">“${esc(v.m)}”<br><small>— ${esc(v.n || 'Tamu')}</small></p>
+    <label for="bsT">Balasanmu</label><textarea id="bsT" maxlength="300" rows="3" placeholder="contoh: Terima kasih idenya! Jumat ini kita adakan ya 🙌">${esc(v.bls || '')}</textarea>
+    <p class="kecil">Tamu akan menerima balasan ini sebagai surat dari Direktur, lengkap dengan saran aslinya.</p>
+    <div class="baris"><button class="btn" type="button" id="bsK">Kirim balasan</button><button class="btn putih" type="button" id="bsB">Batal</button></div>`, {
+    gaya: 'dir',
+    pasang(el) {
+      el.querySelector('#bsB').onclick = () => bukaPanel('laporan');
+      el.querySelector('#bsK').onclick = () => {
+        const t = bersih(el.querySelector('#bsT').value, 300); if (t.length < 2) { toast('Tulis balasannya dulu.'); return; }
+        K.L.tanggapiSaran(id, v, t).then(() => { toast(`💬 Balasan terkirim ke ${v.n || 'tamu'}`); bukaPanel('laporan'); }).catch(gagal);
+      };
+    },
+  });
+}
 function tabLaporan() {
   const lp = Object.entries(laporan).sort((a, b) => (b[1]?.t || 0) - (a[1]?.t || 0));
   const sr = Object.entries(saran).sort((a, b) => (b[1]?.t || 0) - (a[1]?.t || 0));
   return {
     html: `<h3>🚩 Laporan</h3>${lp.length ? `<div class="daftar">${lp.map(([k, v]) => `<div><span><b>${esc(v.n || namaDari(v.target))}</b> dilaporkan<br><small>${esc(v.alasan)} · ${esc(tanggalJam(v.t))} · oleh ${esc(namaDari(v.dari))}</small></span>
         <span class="tombolKecil"><button type="button" class="mini" data-usir="${esc(k)}">Usir 1 hari</button><button type="button" class="mini putih" data-hl="${esc(k)}">Selesai</button></span></div>`).join('')}</div>` : '<p class="kecil">Tidak ada laporan. Kantor aman 👍</p>'}
-      <h3>💡 Saran untuk Direktur</h3>${sr.length ? `<div class="daftar">${sr.map(([k, v]) => `<div><span>“${esc(v.m)}”<br><small>${esc(v.n || '')} · ${esc(tanggalJam(v.t))}</small></span><button type="button" class="mini putih" data-hs="${esc(k)}">Arsipkan</button></div>`).join('')}</div>` : '<p class="kecil">Belum ada saran.</p>'}`,
+      <h3>💡 Saran untuk Direktur</h3>${sr.length ? `<div class="daftar">${sr.map(([k, v]) => `<div class="saranItem"><span>“${esc(v.m)}”<br><small>${esc(v.n || '')} · ${esc(tanggalJam(v.t))}</small>${v.st ? `<br><small class="stSaran">${v.st === 'dibalas' ? `💬 Dibalas: “${esc(v.bls || '')}”` : '✅ Sudah diterima'}</small>` : ''}</span>
+        <span class="tombolKecil">${v.st ? '' : `<button type="button" class="mini" data-terima="${esc(k)}">✅ Terima</button>`}<button type="button" class="mini" data-balas="${esc(k)}">💬 ${v.st === 'dibalas' ? 'Balas lagi' : 'Balas'}</button><button type="button" class="mini putih" data-hs="${esc(k)}">Arsipkan</button></span></div>`).join('')}</div>` : '<p class="kecil">Belum ada saran.</p>'}`,
     pasang(isi) {
       isi.querySelectorAll('[data-hl]').forEach(b => b.onclick = () => K.L.hapus('laporan/' + b.dataset.hl).catch(gagal));
       isi.querySelectorAll('[data-hs]').forEach(b => b.onclick = () => K.L.hapus('saran/' + b.dataset.hs).catch(gagal));
+      isi.querySelectorAll('[data-terima]').forEach(b => b.onclick = () => { const v = saran[b.dataset.terima]; if (!v) return; b.disabled = true; K.L.tanggapiSaran(b.dataset.terima, v).then(() => toast(`✅ ${v.n || 'Tamu'} diberi tahu sarannya diterima`)).catch(gagal); });
+      isi.querySelectorAll('[data-balas]').forEach(b => b.onclick = () => balasSaran(b.dataset.balas));
       isi.querySelectorAll('[data-usir]').forEach(b => b.onclick = () => {
         const v = laporan[b.dataset.usir]; if (!v) return;
         const bt = K.bot.find(x => x.uid === v.target);

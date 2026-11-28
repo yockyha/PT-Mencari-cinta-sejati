@@ -7,12 +7,12 @@
 //  Skor tersimpan di lomba/<jenis>/<periode>/<uid> (dijaga aturan Firebase: hanya bisa naik).
 //  EXP hanya diberikan untuk 3 permainan pertama tiap game per hari.
 // =====================================================================
-import { LS, bersih, esc, fmt, hariIni } from '../js/common.js?v=202611280641';
-import { TS } from '../js/db.js?v=202611280641';
-import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611280641';
-import * as Prog from './progres.js?v=202611280641';
-import * as Musik from './musik.js?v=202611280641';
-import { mingguIni } from './aktivitas.js?v=202611280641';
+import { LS, bersih, esc, fmt, hariIni } from '../js/common.js?v=202611280725';
+import { TS } from '../js/db.js?v=202611280725';
+import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611280725';
+import * as Prog from './progres.js?v=202611280725';
+import * as Musik from './musik.js?v=202611280725';
+import { mingguIni } from './aktivitas.js?v=202611280725';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const kocok = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -48,12 +48,13 @@ export const DAFTAR = [
 ];
 export function bukaCenter() {
   const roda = LS.get('roda_' + hariIni(), 0), kata = (LS.get('kata_' + hariIni(), null) || {}).selesai;
-  bukaKartu(`<h2>🎮 Game Center</h2><p class="kecil">Main bareng tamu lain, kumpulkan EXP (3 permainan pertama tiap game per hari), dan rebut papan juara!</p>
+  bukaKartu(`<h2>🎮 Game Center</h2><p class="kecil">⚔️ Tantang tamu lain duel XOX / Empat Hati / Suit, atau main ⚡ Kuis Kilat rame-rame di meja, kafe & grup. Game sendiri juga ada: kumpulkan EXP (3 permainan pertama tiap game per hari), dan rebut papan juara!</p>
     <div class="kuasaGrid gameGrid">${DAFTAR.map(g => `<button type="button" data-g="${g.id}"><span class="gIkon">${g.ikon}</span>${esc(g.nama)}<small>${esc(g.id === 'roda' ? (roda ? '✅ Sudah diputar hari ini' : '🎁 Belum diputar hari ini!') : g.id === 'kata' ? (kata ? '✅ Teka-teki hari ini selesai' : '🆕 Teka-teki hari ini menunggu') : g.ket)}</small></button>`).join('')}</div>
-    <div class="baris"><button class="btn putih" type="button" id="gcJ">🏆 Papan juara</button></div>`, {
+    <div class="baris"><button class="btn" type="button" id="gcB">⚔️ Main Bareng / Tantang</button><button class="btn putih" type="button" id="gcJ">🏆 Papan juara</button></div>`, {
     pasang(el) {
       el.querySelectorAll('[data-g]').forEach(b => b.onclick = () => { const g = DAFTAR.find(x => x.id === b.dataset.g); tutupKartu(); setTimeout(g.buka, 60); });
       el.querySelector('#gcJ').onclick = bukaJuara;
+      el.querySelector('#gcB').onclick = () => K.Duel && K.Duel.bukaMainBareng();
     },
   });
 }

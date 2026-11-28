@@ -56,6 +56,12 @@ Layar LED raksasa 2 sisi di halaman depan dekat pintu masuk, terlihat dari jalan
 ### 🎮 Game Center
 Buka dari mesin arcade di lobi, menu ⭐ → Harian → 🎮 Game Center, atau Mas Bayu (Game Master). 7 game: 💗 Tangkap Hati, 🃏 **Kartu Jodoh** (memori 8 pasang, juara mingguan), 🐍 **Ular Cinta** (snake, juara mingguan), 🔤 **Kata Cinta Harian** (tebak kata 5 huruf, sama untuk semua tamu tiap hari, hasil bisa dibagikan), 🎡 **Roda Hoki** (putar 1×/hari, hadiah EXP), 🧠 Kuis Cinta, 🍘 Lomba Kerupuk. 3 permainan pertama tiap game per hari dapat EXP (`kantor/permainan.js`). **Truth or Dare** di meja: 150 soal dalam 3 level (😄 Santai, 💗 Baper, 🔥 Berani), soal tidak berulang dalam satu sesi.
 
+### ⚔️ Main bareng (realtime)
+`kantor/duel.js`: **Duel 1 lawan 1** (❌⭕ XOX Cinta, 🔴 Empat Hati / Connect Four, ✊ Suit best of 3). Tantang dari profil orang, tombol ⚔️ di obrolan pribadi, tab Seru di meja nongkrong & kafe, atau Game Center → ⚔️ Main Bareng. Lawan harus menerima dulu; pemenang +5 EXP. **⚡ Kuis Kilat** kelompok di meja, kafe & grup: 5 soal, semua berebut menjawab paling cepat, juara +8 EXP. Maks. 10 kemenangan berhadiah per hari. Aturan Firebase: `alat/aturan/67_main_bareng.py` (duel hanya bisa dibaca/diubah kedua pemain).
+
+### 💡 Saran untuk Direktur
+Tamu mengirim saran lewat Meja Direktur / Mbak Citra. Direktur (Panel → Laporan atau Dashboard → Laporan) bisa **✅ Terima** (tamu dapat kabar sarannya diterima) atau **💬 Balas**; tamu menerima surat emas dari Direktur berisi saran aslinya & balasannya.
+
 ### 🎵 Musik latar & efek suara
 Semua musik & suara disintesis langsung di browser (`kantor/musik.js`, Web Audio API): tanpa file lagu, bebas hak cipta, dan sedikit berbeda tiap putaran. Lagu berganti otomatis dengan crossfade: **🎵 Ceria** (lobi, halaman, Taman Cinta), **☕ Santai lo-fi** (ruangan kantor & saat main Tangkap Hati), **🌙 Malam bossa** (Lounge & suite Direktur). Efek suara untuk duduk/berdiri, pesan kopi/minum/makan, chat, foto, koin, level naik, match, hadiah, pembayaran, game, ketukan & pintu suite, tidur, lambai, dll. Tombol **🎵** di kanan layar: hidup/mati & volume musik dan efek (tersimpan di perangkat). Musik otomatis dikecilkan saat telepon dan berhenti saat tab disembunyikan.
 

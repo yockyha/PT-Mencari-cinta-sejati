@@ -16,12 +16,12 @@
 //  pakai kuota harian, tamu biasa bayar per ucapan (paket.js → layar).
 //  Data: club/lagu · club/dj/<uid> · club/antre/<id> · clubMeja/<meja>/<id> · clubLayar/<id> · clubLayarKuota/<uid>/<hari>
 // =====================================================================
-import { esc, bersih, LS, hariIni, sensor, kasar, PAKET, rupiah } from '../js/common.js?v=202611280641';
-import { TS } from '../js/db.js?v=202611280641';
-import { K, toast, bukaKartu, tutupKartu, jam } from './ui.js?v=202611280641';
-import * as Musik from './musik.js?v=202611280641';
-import * as Prog from './progres.js?v=202611280641';
-import * as Bayar from './bayar.js?v=202611280641';
+import { esc, bersih, LS, hariIni, sensor, kasar, PAKET, rupiah } from '../js/common.js?v=202611280725';
+import { TS } from '../js/db.js?v=202611280725';
+import { K, toast, bukaKartu, tutupKartu, jam } from './ui.js?v=202611280725';
+import * as Musik from './musik.js?v=202611280725';
+import * as Prog from './progres.js?v=202611280725';
+import * as Bayar from './bayar.js?v=202611280725';
 
 // ---------------------------------------------------------------- TATA LETAK
 export const AREA = [40, -22, 88, 28];          // lahan (pagar proyek)

@@ -3,10 +3,10 @@
 //  Lomba Makan Kerupuk, Raja/Ratu Hati mingguan, Kuis "Seberapa Kenal Kamu?",
 //  Lempar Bunga, dan Peluk (harus disetujui dua-duanya).
 // =====================================================================
-import { LS, bersih, esc, fmt, hariIni } from '../js/common.js?v=202611280641';
-import { TS } from '../js/db.js?v=202611280641';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog } from './ui.js?v=202611280641';
-import * as Prog from './progres.js?v=202611280641';
+import { LS, bersih, esc, fmt, hariIni } from '../js/common.js?v=202611280725';
+import { TS } from '../js/db.js?v=202611280725';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog } from './ui.js?v=202611280725';
+import * as Prog from './progres.js?v=202611280725';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const kocok = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
@@ -41,7 +41,7 @@ export function putarBotol(mejaId, peserta, level = 'santai') {
 }
 
 // ---------------------------------------------------------------- KUIS (Tebak Lagu + Teka-teki Cinta)
-const SOAL = [
+export const SOAL = [
   ['🎵 Tebak judul lagu: 🌻 🌷 🏡', ['Lihat Kebunku', 'Kupu-Kupu', 'Pelangi-Pelangi', 'Balonku'], 0],
   ['🎵 Tebak judul lagu: 🧢 ⚪ 3️⃣', ['Topi Saya Bundar', 'Balonku', 'Burung Kakak Tua', 'Naik Delman'], 0],
   ['🎵 Tebak judul lagu: 🌙 🎶 💤', ['Lagu Tidur', 'Nina Bobo', 'Bintang Kecil', 'Pelangi'], 1],

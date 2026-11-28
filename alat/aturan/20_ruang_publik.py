@@ -11,6 +11,7 @@ def pasang(r):
       "peluk": {"$uid": {".write": f"{A} && auth.uid === $uid && (!newData.exists() || {BEBAS})", ".validate": "newData.val() === true"}},
       "balas": {"$b": buatHapus(pesan(160))}}}
     r["curhatPemilik"] = {".read": f"{A} && {STAF}", ".write": f"{A} && {DIR}", "$id": {".write": f"{A} && ((!data.exists() && newData.val() === auth.uid && {BEBAS}) || (!newData.exists() && {STAF}))"}}
-    for node, val in [("saran", "newData.child('dari').val() === auth.uid && newData.child('m').isString() && newData.child('m').val().length <= 300 && newData.child('t').val() === now"),
+    # saran: tamu menulis; Direktur boleh menandai diterima/dibalas (st, bls, bt)
+    for node, val in [("saran", f"({DIR} && newData.child('m').isString() && (!newData.child('bls').exists() || (newData.child('bls').isString() && newData.child('bls').val().length <= 300))) || (newData.child('dari').val() === auth.uid && newData.child('m').isString() && newData.child('m').val().length <= 300 && newData.child('t').val() === now)"),
                       ("laporan", "newData.child('dari').val() === auth.uid && newData.child('target').isString() && newData.child('alasan').isString() && newData.child('alasan').val().length <= 120 && newData.child('t').val() === now")]:
-        r[node] = {".read": f"{A} && {STAF}", ".write": f"{A} && {DIR}", "$id": {".write": f"{A} && ((!data.exists() && {BEBAS}) || (!newData.exists() && {STAF}))", ".validate": val}}
+        r[node] = {".read": f"{A} && {STAF}", ".write": f"{A} && {DIR}", "$id": {".write": f"{A} && ((!data.exists() && {BEBAS}) || (!newData.exists() && {STAF}) || {DIR})", ".validate": val}}

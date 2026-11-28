@@ -3,8 +3,8 @@
 //  ajakan ngobrol, obrolan pribadi, suka & match, laporan, dan
 //  alat Direktur/Staf. Struktur data ini sama dengan database.rules.json.
 // =====================================================================
-import { TS, kunciBaru } from './db.js?v=202611280641';
-import { CFG, bersih, sensor, rupiah, kodeTamu, ucapanDonasi, namaPapan } from './common.js?v=202611280641';
+import { TS, kunciBaru } from './db.js?v=202611280725';
+import { CFG, bersih, sensor, rupiah, kodeTamu, ucapanDonasi, namaPapan } from './common.js?v=202611280725';
 
 export function buatLayanan(db) {
   const uid = db.uid;
@@ -205,6 +205,12 @@ export function buatLayanan(db) {
       const lama = (await db.get('vip/' + target).catch(() => null)) || {};
       const dari = Math.max(db.now(), lama.sampai || 0);
       return db.set('vip/' + target, { sampai: dari + hari * 86400e3, tingkat: tingkat || (lama.sampai > db.now() && lama.tingkat) || 'vip' });
+    },
+    // Direktur menanggapi saran: tandai diterima, atau balas. Tamu mendapat surat dari Direktur berisi saran aslinya.
+    async tanggapiSaran(id, v, balasan = '') {
+      const b = bersih(balasan, 300);
+      await db.update('saran/' + id, { st: b ? 'dibalas' : 'diterima', ...(b ? { bls: b } : {}), bt: TS });
+      return db.push(`notif/${v.dari}`, { m: b ? bersih(b, 200) : 'Terima kasih! Saranmu sudah dibaca dan diterima Direktur. Akan kami pertimbangkan 🙏', t: TS, j: b ? 'balasSaran' : 'saranDiterima', s: bersih(v.m, 120) });
     },
     kirimNotif(target, m, j = '') { return db.push(`notif/${target}`, { m: bersih(m, 200), t: TS, ...(j ? { j } : {}) }); },
     // ---- privasi Instagram: ig disimpan di profilPribadi (dibaca sesuai izin, diatur aturan Firebase)

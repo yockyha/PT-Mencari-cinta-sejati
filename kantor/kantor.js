@@ -3,32 +3,33 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611280641';
-import { bukaDB } from '../js/db.js?v=202611280641';
-import { buatLayanan } from '../js/layanan.js?v=202611280641';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611280641';
-import * as Sosial from './sosial.js?v=202611280641';
-import * as Direktur from './direktur.js?v=202611280641';
-import * as Prog from './progres.js?v=202611280641';
-import * as Game from './game.js?v=202611280641';
-import * as Bayar from './bayar.js?v=202611280641';
-import * as Meja from './meja.js?v=202611280641';
-import * as Karyawan from './karyawan.js?v=202611280641';
-import * as Hadir from './hadir.js?v=202611280641';
-import * as Foto from './foto.js?v=202611280641';
-import * as Seru from './seru.js?v=202611280641';
-import * as Speed from './speeddating.js?v=202611280641';
-import * as Aktivitas from './aktivitas.js?v=202611280641';
-import * as Komunitas from './komunitas.js?v=202611280641';
-import * as RuangDir from './ruangdir.js?v=202611280641';
-import * as Gedung from './gedung.js?v=202611280641';
-import * as Club from './club.js?v=202611280641';
-import * as PapanInfo from './papaninfo.js?v=202611280641';
-import * as Permainan from './permainan.js?v=202611280641';
-import * as Musik from './musik.js?v=202611280641';
-import * as Suara from './suara.js?v=202611280641';
-import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611280641';
-import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2, SETELAN_DIR, setelanDir } from '../js/pakaian.js?v=202611280641';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611280725';
+import { bukaDB } from '../js/db.js?v=202611280725';
+import { buatLayanan } from '../js/layanan.js?v=202611280725';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611280725';
+import * as Sosial from './sosial.js?v=202611280725';
+import * as Direktur from './direktur.js?v=202611280725';
+import * as Prog from './progres.js?v=202611280725';
+import * as Game from './game.js?v=202611280725';
+import * as Bayar from './bayar.js?v=202611280725';
+import * as Meja from './meja.js?v=202611280725';
+import * as Karyawan from './karyawan.js?v=202611280725';
+import * as Hadir from './hadir.js?v=202611280725';
+import * as Foto from './foto.js?v=202611280725';
+import * as Seru from './seru.js?v=202611280725';
+import * as Speed from './speeddating.js?v=202611280725';
+import * as Aktivitas from './aktivitas.js?v=202611280725';
+import * as Komunitas from './komunitas.js?v=202611280725';
+import * as RuangDir from './ruangdir.js?v=202611280725';
+import * as Gedung from './gedung.js?v=202611280725';
+import * as Club from './club.js?v=202611280725';
+import * as PapanInfo from './papaninfo.js?v=202611280725';
+import * as Permainan from './permainan.js?v=202611280725';
+import * as Duel from './duel.js?v=202611280725';
+import * as Musik from './musik.js?v=202611280725';
+import * as Suara from './suara.js?v=202611280725';
+import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611280725';
+import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2, SETELAN_DIR, setelanDir } from '../js/pakaian.js?v=202611280725';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
@@ -2142,7 +2143,7 @@ async function mulai() {
   K.Foto = Foto; K.BARANG = BARANG;
   K.simpanProfil = () => { simpanProfil(prof); posWaktu = 0; };
   K.streakSaya = Seru.streakSaya;
-  K.Game = Game; K.bukaGameCenter = Permainan.bukaCenter;
+  K.Game = Game; K.bukaGameCenter = Permainan.bukaCenter; K.Duel = Duel;
   K.bukaHarian = k => ({ game: Permainan.bukaCenter, amplop: Seru.bukaAmplop, menfess: () => Seru.bukaMenfess(), speed: Speed.buka, mood: Seru.bukaMood, season: Komunitas.bukaSeason, kuis: Aktivitas.bukaKuis, kerupuk: Aktivitas.bukaKerupuk, kisah: Komunitas.bukaKisah, undang: Komunitas.bukaUndang, lencana: Komunitas.bukaLencana, kamar: () => Komunitas.bukaKamar() })[k]();
   K.Aktivitas = Aktivitas; K.Komunitas = Komunitas; K.kirimEfek = Hadir.kirimEfek;
   K.emote = (a, dur) => { berdiri(); saya.emoteA = a; saya.emoteT = dur; posWaktu = 0; Musik.sfx({ 4: 'makan', 5: 'lambai', 7: 'menari', 12: 'tidur' }[a] || 'emote'); };
@@ -2150,7 +2151,7 @@ async function mulai() {
   K.bukaPapanInfo = PapanInfo.buka;
   K.gedungBuka = Gedung.sudahBuka; K.lihatProyek = Gedung.lihatProyek;
   K.bolehRuangDir = RuangDir.bolehMasuk; K.ketukDir = RuangDir.ketuk; K.panelPintuDir = RuangDir.bukaPanelIzin;
-  Sosial.mulai(); Direktur.mulai(); Prog.mulai(); Hadir.mulai(); Bayar.cekServer(); Foto.mulai(); Seru.mulai(); Seru.pasangEmote(); Club.mulai(); Speed.mulai(); Aktivitas.mulai(); Komunitas.mulai(); RuangDir.mulai(); PapanInfo.mulai(() => infoKV && infoKV.ulang()); Bayar.mulaiPapan(() => papanDonasiKV && papanDonasiKV.ulang()); setInterval(() => papanDonasiKV && papanDonasiKV.ulang(), 30000); setTimeout(dekorMusim, 1500);
+  Sosial.mulai(); Direktur.mulai(); Prog.mulai(); Hadir.mulai(); Bayar.cekServer(); Foto.mulai(); Seru.mulai(); Seru.pasangEmote(); Club.mulai(); Speed.mulai(); Aktivitas.mulai(); Komunitas.mulai(); RuangDir.mulai(); Duel.mulai(); PapanInfo.mulai(() => infoKV && infoKV.ulang()); Bayar.mulaiPapan(() => papanDonasiKV && papanDonasiKV.ulang()); setInterval(() => papanDonasiKV && papanDonasiKV.ulang(), 30000); setTimeout(dekorMusim, 1500);
   hitungOnline();
   setTimeout(() => {
     Bayar.kembaliDariBayar();
