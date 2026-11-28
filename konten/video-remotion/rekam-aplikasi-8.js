@@ -141,6 +141,7 @@ const ketik = (s, sel, teks, k) => ev(s, ([sel, v]) => { const e = document.quer
     const s = await club();
     await ev(s, () => { const K = __kantor; K.pindah(73.5, 0.5, -Math.PI / 2); });
     await maju(s, 2000); await kam(s, { yaw: -Math.PI / 2, pitch: 0.15, jarak: 5, y: 2.4 });
+    await ev(s, () => { const L = __kantor.L; return L.db.set('vip/urina', { tingkat: 'vvip', sampai: L.db.now() + 864e6 }); }); await maju(s, 500);
     const ke = 'kamu yang pake gaun merah', m = 'Joget bareng yuk nanti jam 8? 🥹💃';
     await adegan(s, 'cl_layar', 8, async (i, t) => {
       if (i === 5) await tekanE(s);
