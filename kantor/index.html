@@ -56,6 +56,21 @@ button,input,select{font:inherit}
 .suitPilih button small{font:800 12px Nunito,sans-serif}.suitPilih button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
 .duelPapan.suit p{text-align:center}
 .kilatHasil{background:#fff0f4;border:2px solid var(--pink);border-radius:12px;padding:8px 10px}
+/* 🎬 Bioskop Cinta & 🎡 Bianglala */
+.tayangK{display:flex;gap:10px;align-items:center;background:#1b1220;color:#fff;border-radius:14px;padding:8px;margin:4px 0 10px}
+.tayangK img{width:42%;max-width:180px;aspect-ratio:16/9;object-fit:cover;border-radius:10px}.tayangK>div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.tayangK small{opacity:.8}.tayangK small:first-child{color:#ffd23f;font-weight:900;opacity:1}.tayangK b{font-size:16px}.tayangK .baris{margin:6px 0 0}
+.filmDaftar{display:grid;gap:8px}
+.filmK{display:flex;gap:9px;align-items:flex-start;border:2px solid #f1dfe5;border-radius:12px;padding:7px;background:#fff}
+.filmK img{width:112px;flex:0 0 112px;aspect-ratio:16/9;object-fit:cover;border-radius:8px;background:#1b1220}
+.filmK>div{display:flex;flex-direction:column;gap:1px;min-width:0}.filmK small{color:#7a6670}.filmK .ket{font-size:12px}.filmK .baris{margin:5px 0 0;flex-wrap:wrap}
+.dirBioskop{margin-top:12px;border-top:2px dashed #e9c46a;padding-top:4px}
+.kartuDir .filmK{background:#ffffff0f;border-color:#d4a01766}.kartuDir .filmK small{color:#e8d9b0}.kartuDir .filmK b{color:#fff}
+.obrolGondola{max-height:38vh;min-height:90px;overflow-y:auto;background:#fff6f8;border-radius:12px;padding:8px;margin:6px 0}
+.obrolGondola p{margin:0 0 6px;padding:6px 9px;border-radius:12px;background:#fff;max-width:85%;width:fit-content;box-shadow:0 1px 2px #0001}
+.obrolGondola p.aku{margin-left:auto;background:#ffe0ea}.obrolGondola small{color:#9a8790;font-size:10px}
+.chipBaris{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}.chipBaris::-webkit-scrollbar{display:none}
+.chipBaris .chip{flex:0 0 auto;border:2px solid #ffc2d3;background:#fff;border-radius:999px;padding:5px 10px;font:800 12px Nunito,sans-serif;color:#b03a5b;cursor:pointer}
 .pilihEmpat .dipilih{outline:4px solid #ffd23f;outline-offset:-2px}
 .peringkat.kecilP{margin-top:8px}.peringkat.kecilP li{padding:3px 10px;font-size:14px}
 
@@ -426,7 +441,7 @@ table.season{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}t
 .tlpCatatan{color:#d9b8c4;margin-top:8px}
 @media (prefers-reduced-motion:reduce){.dmMerah{animation:none}}
 </style>
-<script src="../config.js?v=202611280725"></script>
+<script src="../config.js?v=202611280851"></script>
 <script type="importmap">{"imports":{"three":"../vendor/three.module.js"}}</script>
 </head>
 <body>
@@ -468,6 +483,6 @@ table.season{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}t
 <div id="tirai" hidden><div class="isi"></div></div>
 <div id="loading"><div><span class="hati">❤</span>Membuka pintu kantor…</div></div>
 
-<script type="module" src="kantor.js?v=202611280725"></script>
+<script type="module" src="kantor.js?v=202611280851"></script>
 </body>
 </html>

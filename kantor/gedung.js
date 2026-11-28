@@ -10,10 +10,12 @@
 //  (js/common.js) bila perlu tombol pintasan.
 //  Direktur bisa membuka lebih cepat / mengikuti jadwal lewat papan proyek.
 // =====================================================================
-import { esc } from '../js/common.js?v=202611280725';
-import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611280725';
-import * as Musik from './musik.js?v=202611280725';
-import * as Club from './club.js?v=202611280725';
+import { esc } from '../js/common.js?v=202611280851';
+import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611280851';
+import * as Musik from './musik.js?v=202611280851';
+import * as Club from './club.js?v=202611280851';
+import * as Bioskop from './bioskop.js?v=202611280851';
+import * as Bianglala from './bianglala.js?v=202611280851';
 
 export const GEDUNG = [
   {
@@ -258,15 +260,8 @@ function bangunTamanCinta(g) {
   dindingB(BX2, BZ1, BX2, -16.6); dindingB(BX2, -13.4, BX2, BZ2);  // pintu masuk timur
   tampil(kotakKe(J, 0.5, 1.2, 9, BX2 + 0.3, TB - 0.4, -15, '#ff4f7b'));
   tampil(papan(J, 8.4, 1.0, D.kanvas(800, 96, (c, w, h) => { c.fillStyle = '#1b1220'; c.fillRect(0, 0, w, h); c.fillStyle = '#ffd23f'; c.font = D.FD(60); c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('🎬 BIOSKOP CINTA', w / 2, h / 2 + 3, w - 30); }), BX2 + 0.58, TB + 0.2, -15, Math.PI / 2));
-  // layar (judul Nobar dari Direktur)
-  const layar = D.kanvas(800, 400, (c, w, h) => {
-    const n = K.setelan && K.setelan.nobar, t = performance.now() / 1000;
-    const gr = c.createRadialGradient(w / 2, h / 2, 20, w / 2, h / 2, w / 1.4); gr.addColorStop(0, '#2c2040'); gr.addColorStop(1, '#07060a'); c.fillStyle = gr; c.fillRect(0, 0, w, h);
-    c.textAlign = 'center'; c.fillStyle = '#ff4f7b'; c.font = D.FD(52); c.fillText('🎬 BIOSKOP CINTA', w / 2, 90);
-    c.fillStyle = '#fff'; c.font = D.FB(36, 900); c.fillText(n && n.url ? n.judul : 'Segera tayang: Film pilihan Direktur', w / 2, 200, w - 60);
-    c.fillStyle = '#8fd3ff'; c.font = D.FB(26, 800); c.fillText(n && n.url ? 'Ketuk "Nonton film" untuk menonton bareng' : 'Duduk santai dulu, popcorn di depan 🍿', w / 2, 270, w - 60);
-    for (let i = 0; i < 18; i++) { c.fillStyle = `rgba(255,${200 + (i * 3) % 55},120,${0.4 + 0.4 * Math.sin(t * 3 + i)})`; c.beginPath(); c.arc(30 + i * 43, h - 30, 6, 0, 7); c.fill(); }
-  });
+  // layar: film yang sedang tayang / jadwal berikutnya (kantor/bioskop.js)
+  const layar = D.kanvas(800, 400, (c, w, h) => Bioskop.gambarLayar(c, w, h));
   tampil(papan(J, 11, 5.5 * 0.5 + 0.6, layar, BX1 + 0.4, 2.3, -15, Math.PI / 2));
   for (let baris = 0; baris < 4; baris++) for (let i = 0; i < 7; i++) {
     const x = BX1 + 6 + baris * 2.2, z = -21 + i * 1.0 + (i >= 4 ? 0.8 : 0);
@@ -274,13 +269,19 @@ function bangunTamanCinta(g) {
     kotakKe(k, 0.6, 0.42, 0.6, 0, 0, 0, '#c0392b'); kotakKe(k, 0.6, 0.7, 0.14, 0, 0.42, -0.28, '#a52a1e');
     D.kursi.push({ x, z, r: -Math.PI / 2, y: 0.45, syaratDuduk: () => g.buka });
   }
-  aksiBuka(g, { x: BX1 + 4, z: -15, r: 2.0, label: '🎬 Nonton film', aksi: () => K.Komunitas && K.Komunitas.bukaNobar ? K.Komunitas.bukaNobar() : toast('Belum ada film diputar.') });
+  aksiBuka(g, { x: BX1 + 4, z: -15, r: 2.0, label: '🎬 Nonton film', aksi: () => Bioskop.buka() });
+  // loket tiket
+  kotakKe(J, 1.6, 1.1, 1.0, BX2 + 2.6, 0, -9.6, '#3d2a4f', { tab: g.tabJadi }); kotakKe(J, 1.8, 0.1, 1.2, BX2 + 2.6, 1.1, -9.6, '#ffd23f');
+  for (const dx of [-0.8, 0.8]) kotakKe(J, 0.08, 1.2, 0.08, BX2 + 2.6 + dx, 1.2, -9.15, '#2a1420');
+  tampil(kotakKe(J, 1.9, 0.12, 1.3, BX2 + 2.6, 2.4, -9.6, '#ff4f7b'));
+  tampil(papan(J, 1.7, 0.4, D.kanvas(320, 76, (c, w, h) => { c.fillStyle = '#1b1220'; c.fillRect(0, 0, w, h); c.fillStyle = '#ffd23f'; c.font = D.FD(42); c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('🎟️ LOKET', w / 2, h / 2 + 2, w - 16); }), BX2 + 2.6, 2.0, -9.08));
+  aksiBuka(g, { x: BX2 + 2.6, z: -8.1, r: 1.5, label: '🎟️ Loket: pilih film & jadwal tayang', aksi: () => Bioskop.buka() });
   kotakKe(J, 1.4, 1.0, 0.7, BX2 + 2.2, 0, -19, '#ffd23f', { tab: g.tabJadi }); kotakKe(J, 1.5, 0.12, 0.8, BX2 + 2.2, 1.0, -19, '#c0392b');
   aksiBuka(g, { x: BX2 + 2.2, z: -17.6, r: 1.4, label: '🍿 Beli popcorn', aksi: () => { K.emote && K.emote(4, 5); toast('🍿 Popcorn karamel siap! Selamat menonton 🎬'); } });
   g.anim.push((dt, t, buka) => { if (buka && t - (g.layarT || 0) > 150) { g.layarT = t; layar.ulang(); } });
 
   // 🎡 BIANGLALA (barat laut)
-  const wx = -70, wz = 14, WR = 6.2, WY = 7.4;
+  const { x: wx, z: wz, r: WR, y: WY } = Bianglala.RODA;
   const kaki = new THREE.Group(); kaki.position.set(wx, 0, wz); kaki.rotation.y = Math.PI / 2; J.add(kaki); g.naik.push({ m: kaki, penuh: 1, grup: true });
   for (const dz of [-1.2, 1.2]) for (const s of [-1, 1]) { const b = kotakKe(kaki, 0.3, 8.2, 0.3, s * 1.9, 0, dz, '#f2f2f2'); b.rotation.z = s * 0.24; b.position.x = s * 0.95; }
   const roda = new THREE.Group(); roda.position.set(wx, WY, wz); roda.rotation.y = Math.PI / 2; J.add(tampil(roda)); // menghadap timur (gerbang)
@@ -294,14 +295,13 @@ function bangunTamanCinta(g) {
   }
   const lampuR = []; for (let i = 0; i < 24; i++) { const b = new THREE.Mesh(new THREE.SphereGeometry(0.1, 6, 4), new THREE.MeshBasicMaterial({ color: '#fff2c4' })); roda.add(b); lampuR.push({ b, a: i / 24 * Math.PI * 2 }); }
   g.gondola = gondola;
-  let sudut = 0;
   g.anim.push((dt, t, buka) => {
-    if (buka) sudut += dt * 0.12;
+    const sudut = buka ? Bianglala.sudutRoda() : 0;   // sama di semua perangkat (jam server)
     for (const o of gondola) o.gd.position.set(Math.cos(o.a + sudut) * WR, Math.sin(o.a + sudut) * WR, 0);
     for (const o of lampuR) { o.b.position.set(Math.cos(o.a + sudut) * WR, Math.sin(o.a + sudut) * WR, 1.0); o.b.material.color.setHSL(((o.a / 6.28) + t / 4000) % 1, 0.8, 0.7); }
   });
   const tb = { x1: wx - 1.6, x2: wx + 1.6, z1: wz - 2.4, z2: wz + 2.4 }; tb._asli = { ...tb }; D.tabrak.push(tb); g.tabJadi.push(tb);
-  aksiBuka(g, { x: wx + 4, z: wz, r: 2.4, label: '🎡 Naik bianglala', aksi: () => naikBianglala(g, wx, wz, WY, WR) });
+  aksiBuka(g, { x: wx + 4, z: wz, r: 2.4, label: '🎡 Naik bianglala', aksi: () => Bianglala.bukaNaik() });
   aksiBuka(g, { x: wx + 7, z: wz + 3, r: 2.0, label: '📸 Foto di bianglala', aksi: () => D.ambilFoto('Foto di Bianglala Taman Cinta', [wx, wz]) });
 
   // 🍦 KEDAI (sisi utara)
@@ -329,14 +329,4 @@ function bukaHarapan(cipratkan) {
       };
     },
   });
-}
-
-// naik bianglala: kamera ikut gondola selama satu putaran singkat
-function naikBianglala(g, wx, wz, WY, WR) {
-  if (D.naik && D.naik()) return;
-  toast('🎡 Naik bianglala! Nikmati pemandangan kantor dari atas (gerak untuk turun).', 4200);
-  // naik gondola yang paling bawah, ikut berputar satu putaran penuh
-  const v = new D.THREE.Vector3();
-  const pilih = g.gondola.reduce((a, o) => (o.gd.getWorldPosition(v).y < a.y ? { o, y: v.y } : a), { o: null, y: 1e9 }).o;
-  D.mulaiNaik({ cx: wx, cz: wz, lama: 52, pos: () => pilih.gd.getWorldPosition(new D.THREE.Vector3()) });
 }
