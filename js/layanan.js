@@ -3,8 +3,8 @@
 //  ajakan ngobrol, obrolan pribadi, suka & match, laporan, dan
 //  alat Direktur/Staf. Struktur data ini sama dengan database.rules.json.
 // =====================================================================
-import { TS, kunciBaru } from './db.js?v=202611280851';
-import { CFG, bersih, sensor, rupiah, kodeTamu, ucapanDonasi, namaPapan } from './common.js?v=202611280851';
+import { TS, kunciBaru } from './db.js?v=202611280918';
+import { CFG, bersih, sensor, rupiah, kodeTamu, ucapanDonasi, namaPapan } from './common.js?v=202611280918';
 
 export function buatLayanan(db) {
   const uid = db.uid;

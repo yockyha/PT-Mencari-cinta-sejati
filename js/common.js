@@ -1,7 +1,7 @@
 // Utilitas bersama untuk semua halaman.
-import PAKET from '../paket.js?v=202611280851';
-export { TINGKAT_DONASI, tingkatDonasi, ucapanDonasi, namaPapan } from '../paket.js?v=202611280851';
-import { PAKAIAN, SLOT } from './pakaian.js?v=202611280851';
+import PAKET from '../paket.js?v=202611280918';
+export { TINGKAT_DONASI, tingkatDonasi, ucapanDonasi, namaPapan } from '../paket.js?v=202611280918';
+import { PAKAIAN, SLOT } from './pakaian.js?v=202611280918';
 export const CFG = Object.assign({
   namaPT: 'PT Mencari Cinta Sejati', singkatan: 'PT MCS', instagram: '', instagramNama: '', tiktok: '', wajibFollow: null,
   kuota: 10000, firebase: null, mading: [], domainLogin: 'ptmcs.id', direkturDemo: null,

@@ -3,7 +3,7 @@ from _inti import *  # noqa: F401,F403
 
 
 def pasang(r):
-    r["chat"] = {".read": True, ".write": f"{A} && {DIR}", "$id": buatHapus(pesan(120))}
+    r["chat"] = {".read": True, ".write": f"{A} && {DIR}", "$id": buatHapus(pesan(120) + " && " + ST_OK)}  # stiker VIP/VVIP hanya untuk pemiliknya
     r["papan"] = {".read": True, ".write": f"{A} && {DIR}", "$id": buatHapus(pesan(80))}
     r["curhat"] = {".read": True, ".write": f"{A} && {DIR}", "$id": {
       **buatHapus("newData.child('m').isString() && newData.child('m').val().length > 0 && newData.child('m').val().length <= 300 && newData.child('t').isNumber()"),

@@ -11,11 +11,11 @@
 //  jadi tamu lain melihatmu duduk di gondola yang benar.
 //  Data: ajakBL/<penerima>/<pengirim> · gondolaObrol/<uidA_uidB> · lampion · kembangApi
 // =====================================================================
-import { esc, bersih, LS, hariIni, sensor, kasar } from '../js/common.js?v=202611280851';
-import { TS } from '../js/db.js?v=202611280851';
-import { K, toast, bukaKartu, tutupKartu, kartuTerbuka, jam } from './ui.js?v=202611280851';
-import * as Musik from './musik.js?v=202611280851';
-import * as Prog from './progres.js?v=202611280851';
+import { esc, bersih, LS, hariIni, sensor, kasar } from '../js/common.js?v=202611280918';
+import { TS } from '../js/db.js?v=202611280918';
+import { K, toast, bukaKartu, tutupKartu, kartuTerbuka, jam } from './ui.js?v=202611280918';
+import * as Musik from './musik.js?v=202611280918';
+import * as Prog from './progres.js?v=202611280918';
 
 export const RODA = { x: -70, z: 14, y: 7.4, r: 6.2, laju: 0.12, n: 8 };
 export const LAMA_NAIK = 157;                 // 3 putaran (detik)
