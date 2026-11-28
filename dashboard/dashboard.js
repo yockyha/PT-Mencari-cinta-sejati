@@ -3,9 +3,9 @@
 //  Login username + kata sandi → ringkasan, persetujuan pendaftar,
 //  anggota, online, aktivitas, acara, toko, laporan, siaran & data.
 // =====================================================================
-import { CFG, LS, TUJUAN, LOKASI, GENDER, BARANG_DIAMOND, IKON_DM, esc, fmt, bersih, levelDari, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611280202';
-import { bukaDB } from '../js/db.js?v=202611280202';
-import { buatLayanan } from '../js/layanan.js?v=202611280202';
+import { CFG, LS, TUJUAN, LOKASI, GENDER, BARANG_DIAMOND, IKON_DM, esc, fmt, bersih, levelDari, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611280725';
+import { bukaDB } from '../js/db.js?v=202611280725';
+import { buatLayanan } from '../js/layanan.js?v=202611280725';
 
 const $ = id => document.getElementById(id);
 let db = null, L = null;
@@ -467,11 +467,13 @@ function vLaporan() {
     html: `<div class="dua">
       <div class="panel" style="margin-top:0"><h3>🚩 Laporan <small>${lp.length}</small></h3>${lp.length ? `<ul class="feed">${lp.map(([k, v]) => `<li><span class="isi"><b>${esc(v.n || nama(v.target))}</b> dilaporkan<br><span class="kecil">${esc(v.alasan)} · oleh ${esc(nama(v.dari))} · ${esc(lalu(v.t))}</span></span>
         <span class="baris"><button class="btn putih kecil" type="button" data-kelola="${esc(v.target)}">Kelola</button><button class="btn kecil" type="button" data-usir="${esc(k)}">Usir 1 hari</button><button class="btn putih kecil" type="button" data-hl="${esc(k)}">Selesai</button></span></li>`).join('')}</ul>` : '<p class="kosong">Tidak ada laporan. Kantor aman 👍</p>'}</div>
-      <div class="panel" style="margin-top:0"><h3>💡 Saran untuk Direktur <small>${sr.length}</small></h3>${sr.length ? `<ul class="feed">${sr.map(([k, v]) => `<li><span class="isi">“${esc(v.m)}”<br><span class="kecil">${esc(v.n || nama(v.dari))} · ${esc(lalu(v.t))}</span></span><button class="btn putih kecil" type="button" data-hs="${esc(k)}">Arsipkan</button></li>`).join('')}</ul>` : '<p class="kosong">Belum ada saran.</p>'}</div>
+      <div class="panel" style="margin-top:0"><h3>💡 Saran untuk Direktur <small>${sr.length}</small></h3>${sr.length ? `<ul class="feed">${sr.map(([k, v]) => `<li><span class="isi">“${esc(v.m)}”<br><span class="kecil">${esc(v.n || nama(v.dari))} · ${esc(lalu(v.t))}${v.st ? ` · ${v.st === 'dibalas' ? `💬 Dibalas: “${esc(v.bls || '')}”` : '✅ Diterima'}` : ''}</span></span><span class="baris">${v.st ? '' : `<button class="btn kecil" type="button" data-terima="${esc(k)}">✅ Terima</button>`}<button class="btn kecil" type="button" data-balas="${esc(k)}">💬 Balas</button><button class="btn putih kecil" type="button" data-hs="${esc(k)}">Arsipkan</button></span></li>`).join('')}</ul>` : '<p class="kosong">Belum ada saran.</p>'}</div>
     </div>`,
     pasang(el) {
       el.querySelectorAll('[data-hl]').forEach(b => b.onclick = () => L.hapus('laporan/' + b.dataset.hl).then(() => toast('Laporan selesai')).catch(gagal));
       el.querySelectorAll('[data-hs]').forEach(b => b.onclick = () => L.hapus('saran/' + b.dataset.hs).then(() => toast('Saran diarsipkan')).catch(gagal));
+      el.querySelectorAll('[data-terima]').forEach(b => b.onclick = () => { const v = S.saran[b.dataset.terima]; if (!v) return; b.disabled = true; L.tanggapiSaran(b.dataset.terima, v).then(() => toast('✅ Tamu diberi tahu sarannya diterima')).catch(gagal); });
+      el.querySelectorAll('[data-balas]').forEach(b => b.onclick = () => { const v = S.saran[b.dataset.balas]; if (!v) return; const t = prompt(`Balas saran dari ${v.n || 'tamu'}:\n“${v.m}”`, v.bls || ''); if (!t || !t.trim()) return; L.tanggapiSaran(b.dataset.balas, v, t).then(() => toast('💬 Balasan terkirim')).catch(gagal); });
       el.querySelectorAll('[data-kelola]').forEach(b => b.onclick = () => { pilihAnggota = b.dataset.kelola; bagian = 'anggota'; history.replaceState(null, '', '#anggota'); gambar(true); });
       el.querySelectorAll('[data-usir]').forEach(b => b.onclick = () => { const v = S.laporan[b.dataset.usir]; if (!v) return; L.usir(v.target, 1440, 'Dilaporkan: ' + v.alasan, v.n || nama(v.target)).then(() => L.hapus('laporan/' + b.dataset.usir)).then(() => toast('Dikeluarkan 1 hari 🚪')).catch(gagal); });
     },

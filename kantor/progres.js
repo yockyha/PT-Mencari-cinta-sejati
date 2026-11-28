@@ -3,11 +3,11 @@
 //  arah, acara terjadwal, peringkat, toko (EXP & VIP),
 //  dan notifikasi dari Direktur.
 // =====================================================================
-import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611280202';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611280202';
-import * as Musik from './musik.js?v=202611280202';
-import * as Bayar from './bayar.js?v=202611280202';
-import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611280202';
+import { CFG, TUJUAN, LOKASI, LS, esc, fmt, bersih, levelDari, ambangLevel, hariIni, lokasiDi, kodeTamu } from '../js/common.js?v=202611280725';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, tanggalJam, kartuTerbuka } from './ui.js?v=202611280725';
+import * as Musik from './musik.js?v=202611280725';
+import * as Bayar from './bayar.js?v=202611280725';
+import { PAKAIAN, BARANG, SLOT, lookV2 } from '../js/pakaian.js?v=202611280725';
 
 // ---------------------------------------------------------------- DATA TUGAS
 const RUANG_TUJUAN = { jodoh: 'kafe', teman: 'meja', curhat: 'taman' };
@@ -195,12 +195,12 @@ function tampilNotif(n) {
       pasang(i) { i.querySelector('#nOk').onclick = tutupKartu; const b = i.querySelector('#nKe'); if (b) b.onclick = () => { tutupKartu(); pergiKe(ke); }; },
     });
   }
-  const judul = n.j === 'balasSapa' ? '👑 Direktur membalas sapaanmu' : n.j === 'hadiah' ? '🎁 Hadiah dari Direktur' : n.j === 'bayar' ? '✅ Pembayaran berhasil' : n.j === 'donasi' ? '💖 Donasi diterima' : '📬 Pesan dari Direktur';
+  const judul = n.j === 'balasSaran' ? '💡 Direktur membalas saranmu' : n.j === 'saranDiterima' ? '💡 Saranmu diterima Direktur' : n.j === 'balasSapa' ? '👑 Direktur membalas sapaanmu' : n.j === 'hadiah' ? '🎁 Hadiah dari Direktur' : n.j === 'bayar' ? '✅ Pembayaran berhasil' : n.j === 'donasi' ? '💖 Donasi diterima' : '📬 Pesan dari Direktur';
   if (n.j === 'hadiah' || n.j === 'balasSapa' || n.j === 'donasi') K.efekLokal && K.efekLokal('hati', 30);
   if (n.j === 'bayar') K.efekLokal && K.efekLokal('kembangapi', 50);
   const dariDir = !['bayar', 'donasi'].includes(n.j);
   if (dariDir) return bukaKartu(`<div class="suratDir"><div class="mahkotaDir">👑</div><small class="dirTag">SURAT DARI DIREKTUR UTAMA</small>
-      <h2>${judul.replace(/^\S+\s/, '')}</h2><p class="isiSurat">${m}</p><p class="ttdDir">— ${esc(bersih(CFG.namaDirektur || 'Direktur', 30))}<br><small>Direktur Utama ${esc(CFG.namaPT || '')}</small></p>
+      <h2>${judul.replace(/^\S+\s/, '')}</h2>${n.s ? `<p class="kutipSaran">Saranmu: “${esc(bersih(n.s, 120))}”</p>` : ''}<p class="isiSurat">${m}</p><p class="ttdDir">— ${esc(bersih(CFG.namaDirektur || 'Direktur', 30))}<br><small>Direktur Utama ${esc(CFG.namaPT || '')}</small></p>
       <div class="baris"><button class="btn emas" type="button" id="nOk">Terima kasih, Direktur 🙏</button></div></div>`, { gaya: 'dir', pasang(i) { i.querySelector('#nOk').onclick = tutupKartu; } });
   bukaKartu(`<h2>${judul}</h2><p style="font-size:18px">${m}</p><div class="baris"><button class="btn" type="button" id="nOk">Oke</button></div>`, { pasang(i) { i.querySelector('#nOk').onclick = tutupKartu; } });
 }
@@ -211,6 +211,7 @@ function tabHarian() {
   return {
     html: `<div class="kotakHarian"><b>🔥 Streak ${fmt(st)} hari</b><div class="streakBaris">${[1, 2, 3, 4, 5, 6, 7].map(i => `<span class="${st && i <= h ? 'on' : ''}">${i === 7 ? '💠' : '🔥'}<small>H${i}</small></span>`).join('')}</div><p class="kecil">Check-in otomatis tiap kamu datang. Tiap kelipatan 7 hari: +20 💠 Diamond.</p></div>
       <div class="kuasaGrid">
+        <button type="button" data-h="game">🎮 Game Center<small>7 game + papan juara</small></button>
         <button type="button" data-h="amplop">🎁 Amplop Cinta<small>1× gratis tiap hari, isinya acak</small></button>
         <button type="button" data-h="menfess">📮 Menfess<small>Kirim pesan anonim</small></button>
         <button type="button" data-h="speed">💘 Speed Dating<small>Kenalan 3 menit, pilih ❤</small></button>

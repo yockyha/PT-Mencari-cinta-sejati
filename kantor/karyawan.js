@@ -6,8 +6,8 @@
 //    (kurir datang ke lobi), istirahat, beres-beres; OB ngepel & menyapu.
 //  Disimulasikan di tiap perangkat (tidak lewat database).
 // =====================================================================
-import { CFG, LOKASI, esc } from '../js/common.js?v=202611280202';
-import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611280202';
+import { CFG, LOKASI, esc } from '../js/common.js?v=202611280725';
+import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611280725';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const jarak = (a, x, z) => Math.hypot(a.x - x, a.z - z);
@@ -298,7 +298,7 @@ const PANDUAN = {
     tombol: [['✍ Tulis di papan rapat', 'papan'], ['📖 Lihat buku tamu', 'bukuTamu']] }),
   sekretaris: () => ({ isi: `<p>Saya bantu urusan dengan Direktur:</p><ul><li>💡 Kirim <b>saran</b> atau masukan untuk Direktur.</li><li>💎 <b>VIP</b>: lihat siapa yang menyukaimu, akses Lounge Eksekutif, dan barang emas.</li><li>💠 Top up <b>Diamond</b> & lemari Diamond di Toko.</li></ul>`,
     tombol: [['💡 Kirim saran', 'saran'], ['🛍️ Toko & VIP', 'toko'], ['💎 Ke Lounge', 'lounge']] }),
-  game: () => ({ isi: `<p><b>💗 Tangkap Hati</b>: tangkap hati yang jatuh pakai keranjang, hindari 💔. Skor tertinggi tiap hari masuk peringkat, dan main sekali sehari dapat EXP!</p>`, tombol: [['🎮 Main sekarang', 'arcade'], ['🏆 Peringkat', 'peringkat']] }),
+  game: () => ({ isi: `<p>Selamat datang di <b>🎮 Game Center</b>! Ada 7 game: 💗 Tangkap Hati, 🃏 Kartu Jodoh, 🐍 Ular Cinta, 🔤 Kata Cinta Harian, 🎡 Roda Hoki, 🧠 Kuis Cinta, dan 🍘 Lomba Kerupuk.</p><ul><li>3 permainan pertama tiap game per hari dapat EXP.</li><li>🎡 Roda Hoki gratis diputar sekali sehari.</li><li>🔤 Kata Cinta: satu teka-teki baru tiap hari, sama untuk semua tamu.</li><li>🏆 Rebut papan juara mingguan!</li></ul>`, tombol: [['🎮 Buka Game Center', 'gameCenter'], ['💗 Tangkap Hati', 'arcade'], ['🏆 Peringkat', 'peringkat']] }),
   pengawal: () => ({ isi: `<p>Saya <b>pengawal pribadi Direktur</b>. Ruang Direktur adalah area privat.</p>
       <ul><li>✊ <b>Ketuk pintu</b> dulu, nanti Direktur yang memutuskan boleh masuk atau tidak.</li><li>Kalau diizinkan, pintu otomatis terbuka untukmu selama waktu izin.</li><li>Mau kasih saran ke Direktur? Lewat <b>Mbak Citra</b> (sekretaris) di sebelah.</li></ul>`,
     tombol: [['✊ Ketuk pintu', 'ketukDir'], ['💡 Kirim saran', 'saran']] }),

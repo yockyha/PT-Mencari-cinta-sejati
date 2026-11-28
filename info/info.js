@@ -1,5 +1,5 @@
 // Bagian bersama halaman info: menu, kaki, kontak, dan tabel harga dari paket.js.
-import PAKET from '../paket.js?v=202611280202';
+import PAKET from '../paket.js?v=202611280725';
 
 const c = window.PT_CONFIG || {};
 const rp = n => 'Rp' + Number(n).toLocaleString('id-ID');

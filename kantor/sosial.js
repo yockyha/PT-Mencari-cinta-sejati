@@ -2,16 +2,16 @@
 //  Interaksi antar-tamu: profil, ajak ngobrol (pribadi), suka & match,
 //  papan curhat, daftar orang di kantor, lapor & sembunyikan.
 // =====================================================================
-import { TUJUAN, GENDER, LS, bersih, esc, fmt, kasar, igBersih, kodeTamu } from '../js/common.js?v=202611280202';
-import { TS } from '../js/db.js?v=202611280202';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611280202';
-import * as Musik from './musik.js?v=202611280202';
-import * as Prog from './progres.js?v=202611280202';
-import * as Suara from './suara.js?v=202611280202';
-import * as Grup from './grup.js?v=202611280202';
-import * as Stiker from './stiker.js?v=202611280202';
-import * as Foto from './foto.js?v=202611280202';
-import * as Seru from './seru.js?v=202611280202';
+import { TUJUAN, GENDER, LS, bersih, esc, fmt, kasar, igBersih, kodeTamu } from '../js/common.js?v=202611280725';
+import { TS } from '../js/db.js?v=202611280725';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611280725';
+import * as Musik from './musik.js?v=202611280725';
+import * as Prog from './progres.js?v=202611280725';
+import * as Suara from './suara.js?v=202611280725';
+import * as Grup from './grup.js?v=202611280725';
+import * as Stiker from './stiker.js?v=202611280725';
+import * as Foto from './foto.js?v=202611280725';
+import * as Seru from './seru.js?v=202611280725';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const siap = () => { if (!K.resmi()) { toast('👀 Kamu masih pengunjung. Daftar dulu untuk berinteraksi.'); K.bukaDaftar(); return false; } if (K.terkunci) { toast('Kamu belum bisa berinteraksi sekarang.'); return false; } return true; };
@@ -113,6 +113,7 @@ export function bukaProfil(o) {
       <button class="btn" type="button" id="pA">${adaRuang ? '💬 Buka obrolan' : '💌 Ajak ngobrol'}</button>
       ${bisaSuka ? `<button class="btn putih" type="button" id="pL">${sukaKu.has(uid) ? '💔 Batal suka' : '❤ Suka'}</button>` : ''}
       <button class="btn putih" type="button" id="pD">🚶 Datangi</button>
+      ${o.npc ? '' : '<button class="btn" type="button" id="pG">⚔️ Tantang main</button>'}
       ${o.npc ? '' : '<button class="btn putih" type="button" id="pBg">💐 Lempar bunga <small id="pBgN"></small></button><button class="btn putih" type="button" id="pPk">🤗 Peluk</button><button class="btn putih" type="button" id="pKm">🏠 Kamar</button>'}
       ${(adaRuang || (K.match && K.match[uid])) && !o.npc ? '<button class="btn" type="button" id="pT">📞 Telepon</button>' : ''}
     </div>
@@ -121,6 +122,7 @@ export function bukaProfil(o) {
     pasang(isi) {
       isi.querySelector('#pS').onclick = () => { if (!siap()) return; tutupKartu(); $('chatI').value = `Halo ${nama}! `; $('chatI').focus(); };
       isi.querySelector('#pD').onclick = () => { tutupKartu(); K.pindah(o.x + 1.2, o.z + 1.2); };
+      const pg = isi.querySelector('#pG'); if (pg) pg.onclick = () => K.Duel.pilihGame(uid, nama);
       const pbg = isi.querySelector('#pBg');
       if (pbg) {
         K.Aktivitas.jumlahBunga(uid).then(n => { const e = isi.querySelector('#pBgN'); if (e && n) e.textContent = `(${n})`; });
@@ -166,7 +168,7 @@ export function bukaProfil(o) {
         K.segarkanOrang(); gambarUndangan(); tutupKartu();
         toast(`${nama} disembunyikan. Chat & ajakannya tidak akan muncul lagi.`, 3200);
       };
-      const pm = isi.querySelector('#pM'); if (pm) pm.onclick = () => import('./direktur.js?v=202611280202').then(D => D.bukaModerasiOrang(o));
+      const pm = isi.querySelector('#pM'); if (pm) pm.onclick = () => import('./direktur.js?v=202611280725').then(D => D.bukaModerasiOrang(o));
     },
   });
 }
@@ -335,7 +337,7 @@ function bukaRuang(r) {
   const u = L.lawan(r), nama = bersih(info.n || orangDariUid(u)?.nama || 'Teman', 20);
   // telepon: pasangan yang saling match ATAU obrolan pribadi yang sudah diterima kedua pihak (ruang ini)
   const bisaTelp = !u.startsWith('bot:');
-  bukaKartu(`<div class="kepalaRuang"><button type="button" class="mini putih" id="rB">← Obrolan</button><h2>${Foto.htmlAvatar(u, nama, 'kecil')}${esc(nama)} <small class="dmStreak" id="rStk"></small></h2>${bisaTelp ? '<button type="button" class="mini" id="rC" aria-label="Telepon">📞</button>' : ''}</div>
+  bukaKartu(`<div class="kepalaRuang"><button type="button" class="mini putih" id="rB">← Obrolan</button><h2>${Foto.htmlAvatar(u, nama, 'kecil')}${esc(nama)} <small class="dmStreak" id="rStk"></small></h2><button type="button" class="mini" id="rG" aria-label="Ajak main">⚔️</button>${bisaTelp ? '<button type="button" class="mini" id="rC" aria-label="Telepon">📞</button>' : ''}</div>
     <div class="dmIsi" id="rI" aria-live="polite"><p class="kecil">Memuat…</p></div>
     <div class="pemilihStiker" id="rSt" hidden></div>
     <form id="rF" class="dmForm" autocomplete="off"><button class="btn putih" type="button" id="rSb" aria-label="Stiker">😀</button><input id="rT" maxlength="300" placeholder="Tulis pesan…" enterkeyhint="send" aria-label="Pesan pribadi">${Suara.bisaRekam() ? '<button class="btn putih" type="button" id="rV" aria-label="Rekam pesan suara">🎤</button>' : ''}<button class="btn" type="submit">Kirim</button></form>
@@ -364,6 +366,7 @@ function bukaRuang(r) {
         L.bacaDm(r);
       }, { limit: 60 });
       isi.querySelector('#rB').onclick = () => bukaObrolan();
+      isi.querySelector('#rG').onclick = () => K.Duel.pilihGame(u, nama);
       Stiker.pasangPemilih(isi.querySelector('#rSb'), isi.querySelector('#rSt'), id => { if (!siap()) return; L.kirimDm(r, K.prof.n, '[stiker]', id); if (u.startsWith('bot:')) botBalas(r, u, 'balas'); });
       const rc = isi.querySelector('#rC'); if (rc) rc.onclick = () => { if (!siap()) return; Suara.telepon(L, u, nama, K.prof.n); };
       // ---- rekam pesan suara
