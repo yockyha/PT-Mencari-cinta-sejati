@@ -3,35 +3,35 @@
 //  Dunia 3D (three.js) + karyawan lain (online / lokal) + chat.
 // =====================================================================
 import * as THREE from 'three';
-import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611280851';
-import { bukaDB } from '../js/db.js?v=202611280851';
-import { buatLayanan } from '../js/layanan.js?v=202611280851';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611280851';
-import * as Sosial from './sosial.js?v=202611280851';
-import * as Direktur from './direktur.js?v=202611280851';
-import * as Prog from './progres.js?v=202611280851';
-import * as Game from './game.js?v=202611280851';
-import * as Bayar from './bayar.js?v=202611280851';
-import * as Meja from './meja.js?v=202611280851';
-import * as Karyawan from './karyawan.js?v=202611280851';
-import * as Hadir from './hadir.js?v=202611280851';
-import * as Foto from './foto.js?v=202611280851';
-import * as Seru from './seru.js?v=202611280851';
-import * as Speed from './speeddating.js?v=202611280851';
-import * as Aktivitas from './aktivitas.js?v=202611280851';
-import * as Komunitas from './komunitas.js?v=202611280851';
-import * as RuangDir from './ruangdir.js?v=202611280851';
-import * as Gedung from './gedung.js?v=202611280851';
-import * as Club from './club.js?v=202611280851';
-import * as PapanInfo from './papaninfo.js?v=202611280851';
-import * as Permainan from './permainan.js?v=202611280851';
-import * as Duel from './duel.js?v=202611280851';
-import * as Bioskop from './bioskop.js?v=202611280851';
-import * as Bianglala from './bianglala.js?v=202611280851';
-import * as Musik from './musik.js?v=202611280851';
-import * as Suara from './suara.js?v=202611280851';
-import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611280851';
-import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2, SETELAN_DIR, setelanDir } from '../js/pakaian.js?v=202611280851';
+import { CFG, TUJUAN, tujuanAman, TOPIK, STATUS, GENDER, LOKASI, lokasiDi, LS, bersih, igBersih, igSah, ttBersih, ttSah, kodeTamu, kasar, esc, fmt, hash, profil, simpanProfil, jamJakarta } from '../js/common.js?v=202611280918';
+import { bukaDB } from '../js/db.js?v=202611280918';
+import { buatLayanan } from '../js/layanan.js?v=202611280918';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, modalTengah, tanggalJam } from './ui.js?v=202611280918';
+import * as Sosial from './sosial.js?v=202611280918';
+import * as Direktur from './direktur.js?v=202611280918';
+import * as Prog from './progres.js?v=202611280918';
+import * as Game from './game.js?v=202611280918';
+import * as Bayar from './bayar.js?v=202611280918';
+import * as Meja from './meja.js?v=202611280918';
+import * as Karyawan from './karyawan.js?v=202611280918';
+import * as Hadir from './hadir.js?v=202611280918';
+import * as Foto from './foto.js?v=202611280918';
+import * as Seru from './seru.js?v=202611280918';
+import * as Speed from './speeddating.js?v=202611280918';
+import * as Aktivitas from './aktivitas.js?v=202611280918';
+import * as Komunitas from './komunitas.js?v=202611280918';
+import * as RuangDir from './ruangdir.js?v=202611280918';
+import * as Gedung from './gedung.js?v=202611280918';
+import * as Club from './club.js?v=202611280918';
+import * as PapanInfo from './papaninfo.js?v=202611280918';
+import * as Permainan from './permainan.js?v=202611280918';
+import * as Duel from './duel.js?v=202611280918';
+import * as Bioskop from './bioskop.js?v=202611280918';
+import * as Bianglala from './bianglala.js?v=202611280918';
+import * as Musik from './musik.js?v=202611280918';
+import * as Suara from './suara.js?v=202611280918';
+import { buatKarakter, pose, bentukHati } from './karakter.js?v=202611280918';
+import { PAKAIAN, BARANG, SLOT, SLOT_AKS, WARNA_BAJU, WARNA_CELANA, KULIT, RAMBUT, WARNA_RAMBUT, lookV2, lookAcakV2, SETELAN_DIR, setelanDir } from '../js/pakaian.js?v=202611280918';
 
 const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const acak = a => a[Math.floor(Math.random() * a.length)];
@@ -39,7 +39,7 @@ const sudutLerp = (a, b, t) => { let d = ((b - a + Math.PI) % (Math.PI * 2) + Ma
 
 // ---------------------------------------------------------------- renderer
 const canvas = $('c');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' }); // alpha: layar bioskop (video di belakang kanvas)
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -816,6 +816,7 @@ function papanCurhat() {
 const peranOrang = uid => (K.peran[uid] === 'direktur' ? 'direktur' : K.peran[uid] === 'staf' ? 'staf' : 'tamu');
 function labelNama(teks, gaya = '') {
   if (gaya === 'direktur') return labelDirektur(teks);
+  if (gaya === 'vip' || gaya === 'vvip') return labelVip(teks, gaya === 'vvip');
   if (gaya === 'guard') {
     const kv = kanvas(300, 72, (x, w, h) => { x.fillStyle = 'rgba(12,12,16,.95)'; bulat(x, 40, 8, w - 80, 56, 10); x.fill(); x.strokeStyle = '#c9c9d1'; x.lineWidth = 3; bulat(x, 42, 10, w - 84, 52, 9); x.stroke(); x.fillStyle = '#fff'; x.font = FD(36); x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(teks, w / 2, 38, w - 100); });
     const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: kv.t, transparent: true, depthWrite: false }));
@@ -831,6 +832,29 @@ function labelNama(teks, gaya = '') {
   });
   const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: kv.t, transparent: true, depthWrite: false }));
   s.scale.set(1.97, 0.4, 1); s.position.y = 2.5; s.renderOrder = 5;
+  return s;
+}
+// label VIP (biru berlian) & VVIP (ungu-pink-emas): pita gelap bercahaya + baris status, beda jelas dari tamu biasa
+function labelVip(teks, vvip) {
+  const kv = kanvas(440, 116, (x, w, h) => {
+    x.font = FD(36); const tw = Math.min(w - 8, x.measureText(teks).width + 50);
+    const gr = x.createLinearGradient(0, 0, 0, 70);
+    if (vvip) { gr.addColorStop(0, '#46136b'); gr.addColorStop(1, '#1a0626'); } else { gr.addColorStop(0, '#0d3558'); gr.addColorStop(1, '#061a2e'); }
+    x.shadowColor = vvip ? 'rgba(255,90,210,.95)' : 'rgba(110,220,255,.9)'; x.shadowBlur = 14; x.fillStyle = gr; bulat(x, (w - tw) / 2, 8, tw, 60, 30); x.fill(); x.shadowBlur = 0;
+    const bg = x.createLinearGradient((w - tw) / 2, 0, (w + tw) / 2, 0);
+    if (vvip) { bg.addColorStop(0, '#ff5ad2'); bg.addColorStop(0.5, '#ffd23f'); bg.addColorStop(1, '#ff5ad2'); } else { bg.addColorStop(0, '#8fe3ff'); bg.addColorStop(0.5, '#ffffff'); bg.addColorStop(1, '#8fe3ff'); }
+    x.strokeStyle = bg; x.lineWidth = 4; bulat(x, (w - tw) / 2 + 2, 10, tw - 4, 56, 28); x.stroke();
+    const tg = x.createLinearGradient(0, 16, 0, 62);
+    if (vvip) { tg.addColorStop(0, '#ffe1f6'); tg.addColorStop(1, '#ff8ae0'); } else { tg.addColorStop(0, '#ffffff'); tg.addColorStop(1, '#a8ecff'); }
+    x.fillStyle = tg; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(teks, w / 2, 40, w - 36);
+    const pita = vvip ? '✦ 👑 VVIP ✦' : '💎 VIP MEMBER', pw = vvip ? 150 : 166;
+    const pg = x.createLinearGradient(w / 2 - pw / 2, 0, w / 2 + pw / 2, 0);
+    if (vvip) { pg.addColorStop(0, '#ff5ad2'); pg.addColorStop(1, '#ffd23f'); } else { pg.addColorStop(0, '#6fd6ff'); pg.addColorStop(1, '#c9f3ff'); }
+    x.fillStyle = pg; bulat(x, w / 2 - pw / 2, 76, pw, 30, 15); x.fill();
+    x.fillStyle = vvip ? '#2a0838' : '#06243d'; x.font = FB(19, 900); x.fillText(pita, w / 2, 92);
+  });
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: kv.t, transparent: true, depthWrite: false }));
+  s.scale.set(2.3, 0.606, 1); s.position.y = 2.66; s.renderOrder = 5;
   return s;
 }
 // label Direktur: tulisan kuning emas di pita gelap berbingkai emas + baris "DIREKTUR UTAMA", lebih besar dari label lain
@@ -1129,7 +1153,7 @@ const ikonPeran = uid => (K.peran[uid] === 'direktur' ? '👑 ' : K.peran[uid] =
 const gayaPeran = uid => (K.peran[uid] === 'direktur' ? 'direktur' : K.peran[uid] === 'staf' ? 'staf' : Prog.isVvip(uid) ? 'vvip' : Prog.isVip(uid) ? 'vip' : '');
 // hiasan label: mood & streak 🔥 (≥3 hari)
 const hiasLabel = (teks, md, st, uid, gd) => (uid && Aktivitas.gelarRaja(uid, gd) ? Aktivitas.gelarRaja(uid, gd).split(' ')[0] + ' ' : '') + teks + (st >= 3 ? ` 🔥${st}` : '') + (Seru.MOOD[md] ? ' · ' + Seru.MOOD[md].split(' ')[0] : '');
-const teksLabel = (n, tj, uid, lv = 1) => (ikonPeran(uid) || (Prog.isVvip(uid) ? '✨VVIP ' : Prog.isVip(uid) ? '💎 ' : (TUJUAN[tj]?.ikon || '') + ' ')) + n + (lv > 1 && K.peran[uid] !== 'direktur' ? ' ⭐' + lv : '');
+const teksLabel = (n, tj, uid, lv = 1) => (ikonPeran(uid) || (Prog.isVip(uid) ? '' : (TUJUAN[tj]?.ikon || '') + ' ')) + n + (lv > 1 && K.peran[uid] !== 'direktur' ? ' ⭐' + lv : '');
 
 function sinkronLain(obj) {
   if (!L) return;
@@ -1916,6 +1940,7 @@ function kursiDekat() {
 function duduk(k) {
   Musik.sfx('duduk');
   saya.duduk = k; k.oleh = saya; saya.x = k.x; saya.z = k.z; saya.r = k.r; saya.a = 2; posWaktu = 0;
+  if (Bioskop.dalam(k.x, k.z)) { saya.meja = ''; kam.yaw = k.r; kam.pitch = 0.1; kam.jarak = Math.min(kam.jarak, 3.2); return; } // kursi bioskop: kamera dekat menghadap layar
   if (k.aksiDuduk) { saya.meja = ''; k.aksiDuduk(); return; }   // mis. table Y.H.A Club
   const m = MEJA.find(m => Math.abs(m.x - k.x) < 1.6 && Math.abs(m.z - k.z) < 1.8);
   saya.meja = m ? m.topik : '';
@@ -2088,6 +2113,7 @@ function langkah() {
   perbaruiAksi();
   kirimPosisi(t);
   renderer.render(scene, camera);
+  Bioskop.render(camera);
 }
 
 // ---------------------------------------------------------------- GANTI MODE: DIREKTUR ⇄ TAMU
@@ -2162,7 +2188,16 @@ async function mulai() {
   K.Foto = Foto; K.BARANG = BARANG;
   K.simpanProfil = () => { simpanProfil(prof); posWaktu = 0; };
   K.streakSaya = Seru.streakSaya;
-  K.Game = Game; K.bukaGameCenter = Permainan.bukaCenter; K.Duel = Duel; K.Bioskop = Bioskop; K.Bianglala = Bianglala;
+  K.Game = Game; K.bukaGameCenter = Permainan.bukaCenter; K.Duel = Duel; K.Bioskop = Bioskop;
+  // duduk otomatis di kursi kosong yang memenuhi syarat (mis. kursi bioskop), pilih yang paling tengah
+  K.dudukDi = (f, { jarak, pitch = 0.18 } = {}) => {
+    const cocok = kursi.filter(f); if (!cocok.length) return false;
+    const cx = cocok.reduce((a, k) => a + k.x, 0) / cocok.length, cz = cocok.reduce((a, k) => a + k.z, 0) / cocok.length;
+    const bebas = cocok.filter(k => (!k.oleh || k.oleh === saya) && (!k.syaratDuduk || k.syaratDuduk()) && ![...lain.values()].some(o => o.ta === 2 && Math.hypot(o.tx - k.x, o.tz - k.z) < 0.3))
+      .sort((a, b) => Math.hypot(a.x - cx, a.z - cz) - Math.hypot(b.x - cx, b.z - cz));
+    if (!bebas.length) return false;
+    berdiri(); duduk(bebas[0]); kam.yaw = bebas[0].r; kam.pitch = pitch; if (jarak) kam.jarak = jarak; return true;
+  }; K.Bianglala = Bianglala;
   K.bukaHarian = k => ({ game: Permainan.bukaCenter, amplop: Seru.bukaAmplop, menfess: () => Seru.bukaMenfess(), speed: Speed.buka, mood: Seru.bukaMood, season: Komunitas.bukaSeason, kuis: Aktivitas.bukaKuis, kerupuk: Aktivitas.bukaKerupuk, kisah: Komunitas.bukaKisah, undang: Komunitas.bukaUndang, lencana: Komunitas.bukaLencana, kamar: () => Komunitas.bukaKamar() })[k]();
   K.Aktivitas = Aktivitas; K.Komunitas = Komunitas; K.kirimEfek = Hadir.kirimEfek;
   K.emote = (a, dur) => { berdiri(); saya.emoteA = a; saya.emoteT = dur; posWaktu = 0; Musik.sfx({ 4: 'makan', 5: 'lambai', 7: 'menari', 12: 'tidur' }[a] || 'emote'); };

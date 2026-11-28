@@ -10,12 +10,12 @@
 //  (js/common.js) bila perlu tombol pintasan.
 //  Direktur bisa membuka lebih cepat / mengikuti jadwal lewat papan proyek.
 // =====================================================================
-import { esc } from '../js/common.js?v=202611280851';
-import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611280851';
-import * as Musik from './musik.js?v=202611280851';
-import * as Club from './club.js?v=202611280851';
-import * as Bioskop from './bioskop.js?v=202611280851';
-import * as Bianglala from './bianglala.js?v=202611280851';
+import { esc } from '../js/common.js?v=202611280918';
+import { K, toast, bukaKartu, tutupKartu } from './ui.js?v=202611280918';
+import * as Musik from './musik.js?v=202611280918';
+import * as Club from './club.js?v=202611280918';
+import * as Bioskop from './bioskop.js?v=202611280918';
+import * as Bianglala from './bianglala.js?v=202611280918';
 
 export const GEDUNG = [
   {
@@ -263,6 +263,7 @@ function bangunTamanCinta(g) {
   // layar: film yang sedang tayang / jadwal berikutnya (kantor/bioskop.js)
   const layar = D.kanvas(800, 400, (c, w, h) => Bioskop.gambarLayar(c, w, h));
   tampil(papan(J, 11, 5.5 * 0.5 + 0.6, layar, BX1 + 0.4, 2.3, -15, Math.PI / 2));
+  Bioskop.pasang3D(D.THREE, J, BX1 + 0.43, 2.3, -15, Math.PI / 2);   // film YouTube tampil tepat di layar ini
   for (let baris = 0; baris < 4; baris++) for (let i = 0; i < 7; i++) {
     const x = BX1 + 6 + baris * 2.2, z = -21 + i * 1.0 + (i >= 4 ? 0.8 : 0);
     const k = new THREE.Group(); k.position.set(x, 0, z); k.rotation.y = -Math.PI / 2; J.add(tampil(k));
