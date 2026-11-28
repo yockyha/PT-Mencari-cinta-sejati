@@ -27,15 +27,16 @@ async function adegan(s, nama, detik, aksi) {
   for (let i = 0; i < n; i++) { await aksi(i, i / 30); if (i % 6 === 0) await s.ctx.clock.fastForward(200); }
   await s.p.screenshot({ path: `${OUT}/cek-${nama}.png` }); console.log('cek', nama);
 }
+const rapi = s => s.p.addStyleTag({ content: '#arah{display:none!important}' });
 const tekanE = s => s.p.keyboard.press('e');
 const ketik = (s, sel, teks, k) => ev(s, ([sel, v]) => { const e = document.querySelector(sel); if (e) { e.value = v; e.dispatchEvent(new Event('input', { bubbles: true })); } }, [sel, [...teks].slice(0, k).join('')]);
 
 (async () => {
   fs.mkdirSync(OUT, { recursive: true });
   const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
-  const tc = async () => { const s = await sesi(b, { jam: MALAM_TC }); await ev(s, () => __kantor.L.setelan({ gedung_tamanCinta: 'buka' })); await maju(s, 1500); return s; };
+  const tc = async () => { const s = await sesi(b, { jam: MALAM_TC }); await rapi(s); await ev(s, () => __kantor.L.setelan({ gedung_tamanCinta: 'buka' })); await maju(s, 1500); return s; };
   const club = async () => {
-    const s = await sesi(b, { jam: MALAM_CL });
+    const s = await sesi(b, { jam: MALAM_CL }); await rapi(s);
     await ev(s, () => __kantor.L.setelan({ gedung_yhaClub: 'buka' }));
     await ev(s, () => { const L = __kantor.L; return L.db.set('club/lagu', { id: 'dQw4w9WgXcQ', list: '', judul: 'Y.H.A Club Opening Night Mix', ulang: true, n: 'DJ Rendi', oleh: L.uid, t: L.db.now() }); });
     await maju(s, 1500); return s;
@@ -55,10 +56,10 @@ const ketik = (s, sel, teks, k) => ev(s, ([sel, v]) => { const e = document.quer
     const s = await tc();
     await ramai(s, [[-49.5, 6, -1.2, 0], [-58.5, 1.5, 1, 5]]);
     await ev(s, () => { const K = __kantor; K.pindah(-54, 9.2, 0); });
-    await maju(s, 2000); await kam(s, { yaw: 0.5, pitch: 0.22, jarak: 6.5, y: 1.6 }); await maju(s, 800);
+    await maju(s, 2000); await kam(s, { yaw: Math.PI + 0.5, pitch: 0.22, jarak: 6.5, y: 1.6 }); await maju(s, 800);
     const teks = 'semoga cepet ketemu jodoh 💍';
     await adegan(s, 'tc_koin', 5.5, async (i, t) => {
-      await kam(s, { yaw: 0.5 - t * 0.08, pitch: 0.22, jarak: 6.5 - t * 0.2, y: 1.6 });
+      await kam(s, { yaw: Math.PI + 0.5 - t * 0.08, pitch: 0.22, jarak: 6.5 - t * 0.2, y: 1.6 });
       if (i === 6) await tekanE(s);
       if (i > 20 && i <= 70) await ketik(s, '#hpT', teks, Math.round((i - 20) / 50 * [...teks].length));
       if (i === 80) await klik(s, '#hpL');
