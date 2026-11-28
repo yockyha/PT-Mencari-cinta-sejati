@@ -15,6 +15,14 @@ const COVER = {
       { look: { s: 'l', at: 'kemeja', wa: 1, lh: 'dasiKupu', tg: 'buket' }, a: 0, x: 0.42, ry: -0.45 },
     ],
   },
+  club: {
+    jam: '2026-11-28T20:05:00+07:00',
+    latar: { x: 64, z: 34, yaw: Math.PI + 0.12, pitch: 0.1, jarak: 14, y: 4.2 },
+    tokoh: [
+      { look: { s: 'p', at: 'gaun', wa: 1, r: 1, w: 4, tl: 'antingBulat' }, a: 5, x: -0.42, ry: 0.45 },
+      { look: { s: 'l', at: 'kemeja', wa: 5, r: 4, lh: 'dasiKupu' }, a: 0, x: 0.42, ry: -0.45 },
+    ],
+  },
   pegawai: {
     latar: { x: 0, z: 15.5, yaw: Math.PI, pitch: 0.2, jarak: 9, y: 1.6 },
     tokoh: [],
@@ -33,11 +41,12 @@ const COVER = {
   fs.mkdirSync(OUT, { recursive: true });
   const V = fs.readFileSync('/tmp/claude-0/-home-user-PT-Mencari-cinta-sejati/b6f39f92-0519-5b23-874c-9957b4f02bef/scratchpad/situs/kantor/index.html', 'utf8').match(/kantor\.js\?v=(\d+)/)[1];
   const b = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
-  const s = await sesi(b, { jam: '2026-11-28T16:30:00+07:00' });
-  await ev(s, () => __kantor.L.setelan({ gedung_tamanCinta: 'buka' }));
-  await maju(s, 1500);
   for (const [nama, C] of Object.entries(COVER)) {
     if (!ingin(nama)) continue;
+    const s = await sesi(b, { jam: C.jam || '2026-11-28T16:30:00+07:00' });
+    await ev(s, () => __kantor.L.setelan({ gedung_tamanCinta: 'buka', gedung_yhaClub: 'buka' }));
+    await s.p.addStyleTag({ content: '#clubPemutar{display:none!important}' });
+    await maju(s, 1500);
     // latar bersih: sembunyikan semua UI, sisakan kanvas 3D
     await ev(s, ([c]) => { const K = __kantor; K.pindah(c.x, c.z, c.yaw); K.saya.g.visible = false; Object.assign(K.kam, { yaw: c.yaw, pitch: c.pitch, jarak: c.jarak, y: c.y }); }, [C.latar]);
     const gaya = await s.p.addStyleTag({ content: 'body *{visibility:hidden!important} canvas{visibility:visible!important}' });
@@ -46,7 +55,7 @@ const COVER = {
     await s.p.screenshot({ path: `${OUT}/latar-${nama}.png`, clip: await kanvas.boundingBox() });
     await gaya.evaluate(e => e.remove());
     console.log('ok latar', nama);
-    if (!C.tokoh.length) continue;
+    if (!C.tokoh.length) { await s.ctx.close(); continue; }
     // tokoh: render karakter ke target transparan 1600×1600
     const url = await s.p.evaluate(async ([V, tokoh]) => {
       const THREE = await import('three');
@@ -74,6 +83,7 @@ const COVER = {
     }, [V, C.tokoh]);
     fs.writeFileSync(`${OUT}/tokoh-${nama}.png`, Buffer.from(url.split(',')[1], 'base64'));
     console.log('ok tokoh', nama);
+    await s.ctx.close();
   }
   await b.close();
 })();
