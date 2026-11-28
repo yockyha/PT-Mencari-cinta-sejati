@@ -131,9 +131,9 @@ const ketik = (s, sel, teks, k) => ev(s, ([sel, v]) => { const e = document.quer
   if (ingin('cl_vip')) {
     const s = await club();
     await ramai(s, [[78.2, -13.8, -Math.PI / 2, 0], [78.2, -12.2, -Math.PI / 2, 5], [78.2, -8.2, -Math.PI / 2, 0], [78.2, -6.8, -Math.PI / 2, 0]]);
-    await ev(s, () => { const K = __kantor; K.pindah(73, -10, Math.PI / 2); K.saya.g.visible = false; });
+    await ev(s, () => { const K = __kantor; K.pindah(76, -10.2, Math.PI / 2); K.saya.g.visible = false; });
     await maju(s, 2000);
-    await adegan(s, 'cl_vip', 4, async (i, t) => { await kam(s, { yaw: Math.PI / 2 + 0.5 - t * 0.2, pitch: 0.22, jarak: 7 - t * 0.5, y: 2 }); });
+    await adegan(s, 'cl_vip', 4, async (i, t) => { await kam(s, { yaw: Math.PI / 2 + 0.35 - t * 0.18, pitch: 0.38, jarak: 6 - t * 0.4, y: 1.4 }); });
     await s.ctx.close();
   }
   // 💌 layar ucapan: tulis ucapan → tayang di layar raksasa
