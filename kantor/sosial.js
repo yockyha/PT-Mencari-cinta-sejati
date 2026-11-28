@@ -2,16 +2,16 @@
 //  Interaksi antar-tamu: profil, ajak ngobrol (pribadi), suka & match,
 //  papan curhat, daftar orang di kantor, lapor & sembunyikan.
 // =====================================================================
-import { TUJUAN, GENDER, LS, bersih, esc, fmt, kasar, igBersih, kodeTamu } from '../js/common.js?v=202611280918';
-import { TS } from '../js/db.js?v=202611280918';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611280918';
-import * as Musik from './musik.js?v=202611280918';
-import * as Prog from './progres.js?v=202611280918';
-import * as Suara from './suara.js?v=202611280918';
-import * as Grup from './grup.js?v=202611280918';
-import * as Stiker from './stiker.js?v=202611280918';
-import * as Foto from './foto.js?v=202611280918';
-import * as Seru from './seru.js?v=202611280918';
+import { TUJUAN, GENDER, LS, bersih, esc, fmt, kasar, igBersih, kodeTamu } from '../js/common.js?v=202611280952';
+import { TS } from '../js/db.js?v=202611280952';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611280952';
+import * as Musik from './musik.js?v=202611280952';
+import * as Prog from './progres.js?v=202611280952';
+import * as Suara from './suara.js?v=202611280952';
+import * as Grup from './grup.js?v=202611280952';
+import * as Stiker from './stiker.js?v=202611280952';
+import * as Foto from './foto.js?v=202611280952';
+import * as Seru from './seru.js?v=202611280952';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const siap = () => { if (!K.resmi()) { toast('👀 Kamu masih pengunjung. Daftar dulu untuk berinteraksi.'); K.bukaDaftar(); return false; } if (K.terkunci) { toast('Kamu belum bisa berinteraksi sekarang.'); return false; } return true; };
@@ -168,7 +168,7 @@ export function bukaProfil(o) {
         K.segarkanOrang(); gambarUndangan(); tutupKartu();
         toast(`${nama} disembunyikan. Chat & ajakannya tidak akan muncul lagi.`, 3200);
       };
-      const pm = isi.querySelector('#pM'); if (pm) pm.onclick = () => import('./direktur.js?v=202611280918').then(D => D.bukaModerasiOrang(o));
+      const pm = isi.querySelector('#pM'); if (pm) pm.onclick = () => import('./direktur.js?v=202611280952').then(D => D.bukaModerasiOrang(o));
     },
   });
 }
@@ -353,7 +353,7 @@ function bukaRuang(r) {
       let dibersihkan = false;
       lepasRuang = L.db.on(`dm/${r}/pesan`, o => {
         const msgs = Object.entries(o || {}).sort((a, b) => (a[0] < b[0] ? -1 : 1)).map(([, v]) => v);
-        box.innerHTML = msgs.length ? msgs.map(m => `<div class="dm ${m.uid === L.uid ? 'saya' : ''} ${K.peran[m.uid] === 'direktur' ? 'dmDir' : ''}">${K.peran[m.uid] === 'direktur' ? '<small class="dirTag">👑 DIREKTUR UTAMA</small>' : ''}${m.sv && m.sv.id ? Suara.htmlSuara(m) : m.st ? Stiker.html(m.st) : `<span>${esc(m.m)}</span>`}<small>${esc(jam(m.t))}</small></div>`).join('') : '<p class="kecil">Belum ada pesan. Sapa duluan!</p>';
+        box.innerHTML = msgs.length ? msgs.map(m => `<div class="dm ${m.uid === L.uid ? 'saya' : ''} ${K.peran[m.uid] === 'direktur' ? 'dmDir' : Prog.gayaChat(m.uid) === 'vvip' ? 'dmVvip' : Prog.gayaChat(m.uid) === 'vip' ? 'dmVip' : ''}">${K.peran[m.uid] === 'direktur' ? '<small class="dirTag">👑 DIREKTUR UTAMA</small>' : Prog.tagChat(m.uid)}${m.sv && m.sv.id ? Suara.htmlSuara(m) : m.st ? Stiker.html(m.st) : `<span>${esc(m.m)}</span>`}<small>${esc(jam(m.t))}</small></div>`).join('') : '<p class="kecil">Belum ada pesan. Sapa duluan!</p>';
         Suara.pasangPemutar(L, r, box);
         Stiker.isiGambar(box);
         // streak ngobrol: hari berturut-turut (sampai hari ini/kemarin) yang dua-duanya mengirim pesan

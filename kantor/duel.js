@@ -6,12 +6,12 @@
 //  Pemenang dapat EXP sedikit (duel +5, kuis kilat +8; maks. 10 kemenangan berhadiah per hari).
 //  Data: duel/<id>, duelUndang/<uid>/<id>, kilat/<room>, kilatIkut/<room>/<uid>, kilatJawab/<room>/<ronde>/<uid>
 // =====================================================================
-import { LS, bersih, esc, fmt, hariIni } from '../js/common.js?v=202611280918';
-import { TS, kunciBaru } from '../js/db.js?v=202611280918';
-import { K, toast, bukaKartu, tutupKartu, tulisLog } from './ui.js?v=202611280918';
-import * as Prog from './progres.js?v=202611280918';
-import * as Musik from './musik.js?v=202611280918';
-import { SOAL } from './aktivitas.js?v=202611280918';
+import { LS, bersih, esc, fmt, hariIni } from '../js/common.js?v=202611280952';
+import { TS, kunciBaru } from '../js/db.js?v=202611280952';
+import { K, toast, bukaKartu, tutupKartu, tulisLog } from './ui.js?v=202611280952';
+import * as Prog from './progres.js?v=202611280952';
+import * as Musik from './musik.js?v=202611280952';
+import { SOAL } from './aktivitas.js?v=202611280952';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const kocok = a => { a = [...a]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };

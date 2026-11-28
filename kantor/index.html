@@ -126,6 +126,17 @@ button,input,select{font:inherit}
 .kotakInfo{border:2px dashed #ffb3c6;border-radius:12px;padding:8px 12px;margin:6px 0 12px}.kotakInfo summary{cursor:pointer}.aksiInfo{white-space:nowrap}.infoList>div{align-items:flex-start}
 #log p.dir{background:rgba(30,18,4,.92);border:2px solid #ffd23f;color:#ffe9a0}#log p.dir b{color:#ffd23f}
 #log p.pudar{opacity:0}
+/* 💎 VIP & 👑 VVIP di chat: warna sama dengan label kepala, tanpa kilau emas (kilau & cahaya besar hanya untuk Direktur) */
+.vipTag,.vvipTag{display:inline-block;font:900 10px/1 Nunito,sans-serif;letter-spacing:1px;padding:3px 7px;border-radius:999px;margin:0 0 4px}
+.vipTag{color:#06243d;background:linear-gradient(90deg,#6fd6ff,#c9f3ff)}
+.vvipTag{color:#2a0838;background:linear-gradient(90deg,#ff5ad2,#ffd23f)}
+.dm .vipTag,.dm .vvipTag{align-self:flex-start;width:fit-content}.dm.saya .vipTag,.dm.saya .vvipTag{align-self:flex-end}
+.dm.dmVip span,.dm.saya.dmVip span{background:linear-gradient(135deg,#0b2540,#133a5e);color:#dff6ff;border:2px solid #7fdcff;font-weight:700}
+.dm.dmVvip span,.dm.saya.dmVvip span{background:linear-gradient(135deg,#2c0b3f,#4a1466);color:#ffe1f6;border:2px solid #ff7ad9;box-shadow:0 0 6px rgba(255,90,210,.3);font-weight:700}
+.dm.dmVip small{color:#3a86b0}.dm.dmVvip small{color:#b04a9c}
+#log p.vip{background:rgba(11,37,64,.9);border:2px solid #7fdcff;color:#dff6ff}#log p.vip b{color:#8fe3ff}
+#log p.vvip{background:rgba(44,11,63,.9);border:2px solid #ff7ad9;color:#ffe1f6}#log p.vvip b{color:#ff9ae6}
+
 #chatF{position:fixed;left:10px;bottom:max(10px,env(safe-area-inset-bottom));width:min(380px,calc(100% - 140px));display:flex;gap:6px;z-index:5}
 #chatI{flex:1;min-width:0;border:3px solid var(--ink);border-radius:999px;padding:7px 14px;font-size:16px;background:rgba(255,246,239,.95);color:var(--ink)}
 #chatF .btn{padding:6px 12px}
@@ -441,7 +452,7 @@ table.season{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}t
 .tlpCatatan{color:#d9b8c4;margin-top:8px}
 @media (prefers-reduced-motion:reduce){.dmMerah{animation:none}}
 </style>
-<script src="../config.js?v=202611280918"></script>
+<script src="../config.js?v=202611280952"></script>
 <script type="importmap">{"imports":{"three":"../vendor/three.module.js"}}</script>
 </head>
 <body>
@@ -483,6 +494,6 @@ table.season{width:100%;border-collapse:collapse;margin-top:8px;font-size:13px}t
 <div id="tirai" hidden><div class="isi"></div></div>
 <div id="loading"><div><span class="hati">❤</span>Membuka pintu kantor…</div></div>
 
-<script type="module" src="kantor.js?v=202611280918"></script>
+<script type="module" src="kantor.js?v=202611280952"></script>
 </body>
 </html>

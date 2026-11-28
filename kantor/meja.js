@@ -8,11 +8,11 @@
 //                 + permainan khusus (putar destinasi, roda random, dll)
 //  Data: mejaChat/<meja>, mejaPapan/<meja>, mejaVote/<meja>/<hari>/<uid>
 // =====================================================================
-import { LS, bersih, esc, hariIni, sensor } from '../js/common.js?v=202611280918';
-import { TS } from '../js/db.js?v=202611280918';
-import { K, toast, bukaKartu, tutupKartu, jam, tanggalJam } from './ui.js?v=202611280918';
-import * as Prog from './progres.js?v=202611280918';
-import * as Sosial from './sosial.js?v=202611280918';
+import { LS, bersih, esc, hariIni, sensor } from '../js/common.js?v=202611280952';
+import { TS } from '../js/db.js?v=202611280952';
+import { K, toast, bukaKartu, tutupKartu, jam, tanggalJam } from './ui.js?v=202611280952';
+import * as Prog from './progres.js?v=202611280952';
+import * as Sosial from './sosial.js?v=202611280952';
 
 const acak = a => a[Math.floor(Math.random() * a.length)];
 const cari = q => encodeURIComponent(q);
@@ -146,7 +146,7 @@ function gambarNgobrol(el) {
   const bawah = C.scrollHeight - C.scrollTop - C.clientHeight < 40;
   const list = D.chat.filter(c => !K.sembunyi.has(c.uid));
   C.innerHTML = list.length
-    ? list.map(c => `<div class="dm ${c.uid === uid ? 'saya' : ''} ${K.peran[c.uid] === 'direktur' ? 'dmDir' : ''}"><small>${K.peran[c.uid] === 'direktur' ? '<span class="dirTag">👑 DIREKTUR UTAMA</span> · ' : c.uid === uid ? '' : `<b>${esc(bersih(c.n, 20))}</b> · `}${esc(jam(c.t))}</small><span>${esc(c.m)}</span></div>`).join('')
+    ? list.map(c => `<div class="dm ${c.uid === uid ? 'saya' : ''} ${K.peran[c.uid] === 'direktur' ? 'dmDir' : Prog.gayaChat(c.uid) === 'vvip' ? 'dmVvip' : Prog.gayaChat(c.uid) === 'vip' ? 'dmVip' : ''}"><small>${K.peran[c.uid] === 'direktur' ? '<span class="dirTag">👑 DIREKTUR UTAMA</span> · ' : (c.uid === uid ? '' : `<b>${esc(bersih(c.n, 20))}</b> · `) + (Prog.gayaChat(c.uid) === 'vvip' ? '<span class="vvipTag">👑 VVIP</span> · ' : Prog.gayaChat(c.uid) === 'vip' ? '<span class="vipTag">💎 VIP</span> · ' : '')}${esc(jam(c.t))}</small><span>${esc(c.m)}</span></div>`).join('')
     : `<p class="kecil">Belum ada obrolan di meja ini. Buka dengan pertanyaan, misalnya:<br><b>“${esc(acak(buka.m.pemantik))}”</b></p>`;
   if (bawah || !ada) C.scrollTop = C.scrollHeight;
 }

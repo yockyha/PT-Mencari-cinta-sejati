@@ -7,11 +7,11 @@
 //  Data: grup/<id>, grupPesan/<id>, grupku/<uid>/<id>, grupUndangan/<uid>/<id>,
 //        grupPublik/<id> {nama,ikon,pemilik,pn,jml,maks,t}, grupMinta/<id>/<uid> {n,t}
 // =====================================================================
-import { LS, bersih, esc, fmt } from '../js/common.js?v=202611280918';
-import { TS, kunciBaru } from '../js/db.js?v=202611280918';
-import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611280918';
-import * as Prog from './progres.js?v=202611280918';
-import * as Stiker from './stiker.js?v=202611280918';
+import { LS, bersih, esc, fmt } from '../js/common.js?v=202611280952';
+import { TS, kunciBaru } from '../js/db.js?v=202611280952';
+import { $, K, toast, bukaKartu, tutupKartu, tulisLog, jam, tanggalJam } from './ui.js?v=202611280952';
+import * as Prog from './progres.js?v=202611280952';
+import * as Stiker from './stiker.js?v=202611280952';
 
 const IKON = ['👥', '🎮', '🎵', '🍜', '✈️', '💘', '📚', '⚽', '🐱', '☕', '🎬', '🌙'];
 const BATAS = { '': { anggota: 10, grup: 2 }, vip: { anggota: 30, grup: 5 }, vvip: { anggota: 100, grup: 10 } };
@@ -222,7 +222,7 @@ export function bukaGrup(g, undangLangsung = false) {
       });
       lepasRuang = L.db.on('grupPesan/' + g, o => {
         const msgs = Object.entries(o || {}).sort((a, b) => (a[0] < b[0] ? -1 : 1)).map(([k, v]) => ({ ...v, k })).filter(m => !K.sembunyi.has(m.uid));
-        box.innerHTML = msgs.length ? msgs.map(m => m.sis ? `<p class="kecil sistem">${esc(m.m)}</p>` : `<div class="dm ${m.uid === L.uid ? 'saya' : ''} ${m.st ? 'stikerPesan' : ''} ${dirUid(m.uid) ? 'dmDir' : ''}">${dirUid(m.uid) ? '<small class="dirTag">👑 DIREKTUR UTAMA</small>' : m.uid === L.uid ? '' : `<small><b>${esc(bersih(m.n, 30))}</b></small>`}${m.st ? Stiker.html(m.st) : `<span>${esc(m.m)}</span>`}<small>${esc(jam(m.t))}${direktur() && m.uid !== L.uid ? ` · <button type="button" class="tautan" data-hp="${esc(m.k)}">hapus</button>` : ''}</small></div>`).join('')
+        box.innerHTML = msgs.length ? msgs.map(m => m.sis ? `<p class="kecil sistem">${esc(m.m)}</p>` : `<div class="dm ${m.uid === L.uid ? 'saya' : ''} ${m.st ? 'stikerPesan' : ''} ${dirUid(m.uid) ? 'dmDir' : Prog.gayaChat(m.uid) === 'vvip' ? 'dmVvip' : Prog.gayaChat(m.uid) === 'vip' ? 'dmVip' : ''}">${dirUid(m.uid) ? '<small class="dirTag">👑 DIREKTUR UTAMA</small>' : (m.uid === L.uid ? '' : `<small><b>${esc(bersih(m.n, 30))}</b></small>`) + Prog.tagChat(m.uid)}${m.st ? Stiker.html(m.st) : `<span>${esc(m.m)}</span>`}<small>${esc(jam(m.t))}${direktur() && m.uid !== L.uid ? ` · <button type="button" class="tautan" data-hp="${esc(m.k)}">hapus</button>` : ''}</small></div>`).join('')
           : '<p class="kecil">Belum ada pesan. Sapa anggota grup!</p>';
         Stiker.isiGambar(box);
         box.querySelectorAll('[data-hp]').forEach(b => b.onclick = () => L.db.set(`grupPesan/${g}/${b.dataset.hp}`, null).catch(() => toast('Gagal menghapus.')));
